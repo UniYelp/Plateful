@@ -1,0 +1,16 @@
+{
+	"recommendations": [
+		"vitest.explorer",
+		"biomejs.biome",
+		"aaron-bond.better-comments",
+		"johnpapa.vscode-cloak",
+		"streetsidesoftware.code-spell-checker",
+		"usernamehw.errorlens",
+		"eamodio.gitlens",
+		"github.vscode-pull-request-github",
+		"astro-build.houston",
+		"kisstkondoros.vscode-gutter-preview",
+		"davidanson.vscode-markdownlint",
+		"yoavbls.pretty-ts-errors"
+	]
+}
