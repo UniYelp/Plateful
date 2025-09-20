@@ -1,1 +1,1 @@
-# Plateful
+# 🍽 Plateful
