@@ -9,5 +9,17 @@
 			"mode": "auto"
 		}
 	],
-	"cSpell.words": ["vercel"]
+	"cSpell.words": ["vercel"],
+	"vsicons.associations.folders": [
+		{
+			"extensions": ["_"],
+			"icon": "private",
+			"format": "svg"
+		},
+		{
+			"extensions": ["notes"],
+			"icon": "docs",
+			"format": "svg"
+		}
+	]
 }
