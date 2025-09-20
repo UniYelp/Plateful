@@ -1,0 +1,1 @@
+A shopping list is a list of [[Ingredients]] that are on short supply or not sufficient for a [[Meal Plan]] or [[Recipes]]. It saves in a convenient way all the ingredients that should be bought.
