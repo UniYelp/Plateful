@@ -1,0 +1,2 @@
+This app provides a remastered cooking and household management experience, making cooking and shopping for food ingredients easy and fun.
+It does so by providing accessible and inviting interface for managing [[Ingredients]], [[Recipes]] and everything in between, divided into [[Households]] for intuitive usage.
