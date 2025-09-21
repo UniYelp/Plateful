@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
-      "LiAudioWaveform",
-      "LiTestTube2",
-      "LiTestTubeDiagonal",
-      "LiSquareStack",
-      "🦔"
+      "LiList",
+      "LiClipboardPenLine",
+      "LiFileText",
+      "LiPencil",
+      "LiAudioWaveform"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -45,5 +45,8 @@
   "Architecture/Stack": "LiSquareStack",
   "Architecture/Services/PostHog.md": "🦔",
   "Architecture/Testing": "LiTestTube2",
-  "Architecture/Monitoring": "LiAudioWaveform"
+  "Architecture/Monitoring": "LiAudioWaveform",
+  "Design": "LiPencil",
+  "Requirements": "LiFileText",
+  "Feature Backlog": "LiList"
 }
