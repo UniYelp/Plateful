@@ -1,4 +1,0 @@
-Possibilities:
-- SQL
-- NoSQL
-- Graph

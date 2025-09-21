@@ -2,7 +2,7 @@
 stack:
   - "[[React]]"
   - "[[Tanstack Router]]"
-  - "[[Typescript]]"
+  - "[[TypeScript]]"
 deployed: "[[Vercel]]"
 ---
 Options:

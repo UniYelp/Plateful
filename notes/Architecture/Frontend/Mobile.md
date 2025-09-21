@@ -2,5 +2,5 @@
 stack:
   - "[[React Native]]"
   - "[[Expo]]"
-  - "[[Typescript]]"
+  - "[[TypeScript]]"
 ---
