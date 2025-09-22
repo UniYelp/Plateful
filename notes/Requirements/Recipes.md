@@ -11,3 +11,10 @@ A recipe is a guide on how to cook a meal, using [[Ingredients]].
 9. when creating a recipe, the user should be provided with 2 options to choose from. the chosen option will be opened as the recipe.
 10. the recipe creation should not take more than 1 minute
 11. when a recipe is completed, the ingredients should be subtructed automatically
+
+Recipe creation flow:
+1. the user initiates the recipe creation
+2. the user can send a paragraph detailing what he wants to eat
+3. the user can choose quick tags like vegan, low effort, snack, healthy etc
+4. until the recipe is done, the user will be shown a loader
+5. the recipe page will be shown after it is created
