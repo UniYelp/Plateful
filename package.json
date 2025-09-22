@@ -2,6 +2,7 @@
     "name": "root",
     "private": true,
     "scripts": {
+        "preinstall": "npx -y only-allow pnpm",
         "build": "turbo run build",
         "dev": "turbo run dev",
         "lint": "pnpm exec biome lint",

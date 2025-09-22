@@ -1,7 +1,11 @@
 {
 	"$schema": "https://turborepo.com/schema.json",
 	"ui": "tui",
+	"globalDependencies": [".env*"],
 	"tasks": {
+		"_transit": {
+			"dependsOn": ["^_transit"]
+		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
@@ -14,10 +18,34 @@
 		},
 		"test": {
 			"with": ["test:types"],
-			"dependsOn": ["^build"]
+			"dependsOn": ["_transit"]
 		},
 		"test:types": {
-			"dependsOn": ["^test:types"]
+			"dependsOn": ["_transit"]
+		},
+		"backend#dev": {
+			// "with": ["clerk:webhook"],
+			"cache": false,
+			"persistent": true,
+			"interactive": true,
+			"env": [
+				"CONVEX_DEPLOYMENT",
+				"CONVEX_URL",
+				"CLERK_JWT_ISSUER_DOMAIN",
+				"CLERK_WEBHOOK_SECRET",
+				"CLERK_SECRET_KEY"
+			]
+		},
+		"backend#clerk:webhook": {
+			"cache": false,
+			"persistent": true,
+			"env": ["NGROK_URL"]
+		},
+		"web#dev": {
+			"cache": false,
+			"persistent": true,
+			"with": ["backend#dev"],
+			"env": ["CLERK_PUBLISHABLE_KEY"]
 		}
 	}
 }
