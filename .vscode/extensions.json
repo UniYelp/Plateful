@@ -11,6 +11,7 @@
 		"astro-build.houston",
 		"kisstkondoros.vscode-gutter-preview",
 		"davidanson.vscode-markdownlint",
-		"yoavbls.pretty-ts-errors"
+		"yoavbls.pretty-ts-errors",
+		"bradlc.vscode-tailwindcss"
 	]
 }

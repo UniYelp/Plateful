@@ -1,13 +1,11 @@
 ---
 stack:
   - "[[React]]"
-  - "[[Tanstack Router]]"
+  - "[[TanStack Router]]"
   - "[[TypeScript]]"
-deployed: "[[Vercel]]"
+  - "[[TailwindCSS]]"
+deployed_to: "[[Vercel]]"
+monitored_by: "[[PostHog]]"
 ---
-Options:
-- Tanstack Router
-- Next.Js
-- React Router
-- Tanstack Start
+
 

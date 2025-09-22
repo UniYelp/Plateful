@@ -99,5 +99,5 @@ The best ORM for a project depends on the database you choose (SQL, NoSQL, or Gr
 
 ---
 
-Choice: PostgresSql, Redis
+Choice: PostgreSql, Redis
 Hosting provider: ??
