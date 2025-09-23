@@ -1,50 +1,50 @@
 import {
-    createRouter,
-    type LinkComponentProps,
-    RouterProvider,
-} from '@tanstack/react-router';
-import { StrictMode } from 'react';
-import ReactDOM from 'react-dom/client';
+	createRouter,
+	type LinkComponentProps,
+	RouterProvider,
+} from "@tanstack/react-router";
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
 
 // Import the generated route tree
-import { routeTree } from './routeTree.gen';
+import { routeTree } from "./routeTree.gen";
 
-import './styles.css';
-import reportWebVitals from './reportWebVitals';
+import "./styles.css";
+import reportWebVitals from "./reportWebVitals";
 
 // Create a new router instance
 const router = createRouter({
-    routeTree,
-    context: {},
-    defaultPreload: 'intent',
-    scrollRestoration: true,
-    defaultStructuralSharing: true,
-    defaultPreloadStaleTime: 0,
+	routeTree,
+	context: {},
+	defaultPreload: "intent",
+	scrollRestoration: true,
+	defaultStructuralSharing: true,
+	defaultPreloadStaleTime: 0,
 });
 
 // Register the router instance for type safety
-declare module '@tanstack/react-router' {
-    interface Register {
-        router: typeof router;
-    }
+declare module "@tanstack/react-router" {
+	interface Register {
+		router: typeof router;
+	}
 
-    interface StaticDataRouteOption {
-        links?: (LinkComponentProps & {
-            label: string;
-        })[];
-        loader?: React.ReactElement;
-    }
+	interface StaticDataRouteOption {
+		links?: (LinkComponentProps & {
+			label: string;
+		})[];
+		loader?: React.ReactElement;
+	}
 }
 
 // Render the app
-const rootElement = document.getElementById('app');
+const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
-    const root = ReactDOM.createRoot(rootElement);
-    root.render(
-        <StrictMode>
-            <RouterProvider router={router} />
-        </StrictMode>
-    );
+	const root = ReactDOM.createRoot(rootElement);
+	root.render(
+		<StrictMode>
+			<RouterProvider router={router} />
+		</StrictMode>,
+	);
 }
 
 // If you want to start measuring performance in your app, pass a function
