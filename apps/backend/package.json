@@ -1,0 +1,24 @@
+{
+    "name": "backend",
+    "type": "module",
+    "version": "0.0.0",
+    "private": "true",
+    "files": [],
+    "scripts": {
+        "predev": "convex dev --until-success && convex dashboard",
+        "dev": "convex dev",
+        "logs": "convex logs",
+        "setup": "convex dev --once && convex env set VALIDATE_ENV=true",
+        "seed": "convex dev --once && convex run init",
+        "clerk:webhook": "dotenvx run -f .env.local -- node scripts/setup-webhook-endpoint.js"
+    },
+    "dependencies": {
+        "@clerk/backend": "^2.15.0",
+        "@convex-dev/migrations": "^0.2.9",
+        "convex": "^1.27.1",
+        "svix": "^1.76.1"
+    },
+    "devDependencies": {
+        "@dotenvx/dotenvx": "^1.50.1"
+    }
+}

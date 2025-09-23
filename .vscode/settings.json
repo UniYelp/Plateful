@@ -20,6 +20,16 @@
 			"extensions": ["notes"],
 			"icon": "docs",
 			"format": "svg"
+		},
+		{
+			"extensions": ["mobile"],
+			"icon": "client",
+			"format": "svg"
+		},
+		{
+			"extensions": ["backend"],
+			"icon": "server",
+			"format": "svg"
 		}
 	]
 }
