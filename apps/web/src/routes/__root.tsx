@@ -20,6 +20,7 @@ export const Route = createRootRoute({
             <TanstackDevtools
                 config={{
                     position: 'bottom-left',
+                    hideUntilHover: true,
                 }}
                 plugins={[
                     {

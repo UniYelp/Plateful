@@ -1,8 +1,11 @@
 {
 	"typescript.tsdk": "node_modules\\typescript\\lib",
+	"files.autoSave": "afterDelay",
+	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": {
 		"source.fixAll.biome": "explicit",
-		"source.organizeImports.biome": "explicit"
+		"source.organizeImports.biome": "explicit",
+		"source.removeUnusedImports": "explicit"
 	},
 	"eslint.workingDirectories": [
 		{

@@ -1,4 +1,8 @@
-import { createRouter, RouterProvider } from '@tanstack/react-router';
+import {
+    createRouter,
+    type LinkComponentProps,
+    RouterProvider,
+} from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -22,6 +26,13 @@ const router = createRouter({
 declare module '@tanstack/react-router' {
     interface Register {
         router: typeof router;
+    }
+
+    interface StaticDataRouteOption {
+        links?: (LinkComponentProps & {
+            label: string;
+        })[];
+        loader?: React.ReactElement;
     }
 }
 
