@@ -19,10 +19,13 @@
             "nursery": {
                 "useSortedClasses": {
                     "level": "error",
+                    "fix": "safe",
                     "options": {
                         "functions": [
                             "clsx",
-                            "cva"
+                            "cva",
+                            "cn",
+                            "twMerge"
                         ]
                     }
                 }
