@@ -10,7 +10,20 @@ import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
+
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
+import { ENV } from "@/configs/env.config";
+import { convexClient } from "./configs/convex.config";
 import reportWebVitals from "./reportWebVitals";
+
+posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
+	api_host: ENV.VITE_PUBLIC_POSTHOG_HOST,
+	person_profiles: "always",
+	defaults: "2025-05-24",
+});
 
 // Create a new router instance
 const router = createRouter({
@@ -42,7 +55,13 @@ if (rootElement && !rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 	root.render(
 		<StrictMode>
-			<RouterProvider router={router} />
+			<PostHogProvider client={posthog}>
+				<ClerkProvider publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}>
+					<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
+						<RouterProvider router={router} />
+					</ConvexProviderWithClerk>
+				</ClerkProvider>
+			</PostHogProvider>
 		</StrictMode>,
 	);
 }

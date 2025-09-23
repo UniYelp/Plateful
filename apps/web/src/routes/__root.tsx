@@ -1,19 +1,29 @@
-import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { ConvexProviderWithClerk } from "convex/react-clerk";
-import { convexClient } from "@/configs/convex.config";
-import { ENV } from "@/configs/env.config";
+import { usePostHog } from "posthog-js/react";
+import { useEffect } from "react";
 
 export const Route = createRootRoute({
-	component: () => (
+	component: RootComponent,
+});
+
+function RootComponent() {
+	const posthog = usePostHog();
+	const { user } = useUser();
+
+	useEffect(() => {
+		if (user && posthog) {
+			posthog.identify(user.id, {
+				email: user?.primaryEmailAddress?.emailAddress,
+			});
+		}
+	}, [posthog, user]);
+
+	return (
 		<>
-			<ClerkProvider publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}>
-				<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
-					<Outlet />
-				</ConvexProviderWithClerk>
-			</ClerkProvider>
+			<Outlet />
 			<TanstackDevtools
 				config={{
 					position: "bottom-left",
@@ -27,5 +37,5 @@ export const Route = createRootRoute({
 				]}
 			/>
 		</>
-	),
-});
+	);
+}

@@ -4,6 +4,9 @@
 
 import { execSync } from "node:child_process";
 
+/**
+ * {@link https://clerk.com/docs/webhooks/sync-data}
+ */
 const ngrokUrl = process.env.NGROK_URL;
 const CONVEX_URL = process.env.CONVEX_URL || 6790;
 

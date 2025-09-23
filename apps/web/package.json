@@ -50,6 +50,7 @@
         "embla-carousel-react": "^8.6.0",
         "input-otp": "^1.4.2",
         "lucide-react": "^0.544.0",
+        "posthog-js": "^1.268.1",
         "react": "^19.1.1",
         "react-day-picker": "^9.11.0",
         "react-dom": "^19.1.1",

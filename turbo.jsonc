@@ -27,25 +27,17 @@
 			// "with": ["clerk:webhook"],
 			"cache": false,
 			"persistent": true,
-			"interactive": true,
-			"env": [
-				"CONVEX_DEPLOYMENT",
-				"CONVEX_URL",
-				"CLERK_JWT_ISSUER_DOMAIN",
-				"CLERK_WEBHOOK_SECRET",
-				"CLERK_SECRET_KEY"
-			]
+			"interactive": true
 		},
-		"backend#clerk:webhook": {
-			"cache": false,
-			"persistent": true,
-			"env": ["NGROK_URL"]
-		},
+		// "backend#clerk:webhook": {
+		// 	"cache": false,
+		// 	"persistent": true
+		// },
 		"web#dev": {
-			"cache": false,
-			"persistent": true,
 			"with": ["backend#dev"],
-			"env": ["CLERK_PUBLISHABLE_KEY"]
+			"inputs": ["$TURBO_DEFAULT$", "convex/**/*"],
+			"cache": false,
+			"persistent": true
 		}
 	}
 }
