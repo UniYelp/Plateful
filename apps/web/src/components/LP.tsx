@@ -1,32 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { CheckCircle } from 'lucide-react';
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
-import { Nothing } from '@/components/Nothing';
 import { features, SectionHash, stages } from '@/pages/landing-page';
-import '../App.css';
-
-export const Route = createFileRoute('/')({
-    component: LandingPage,
-    staticData: {
-        links: [
-            {
-                label: 'Features',
-                to: '.',
-                hash: SectionHash.Features,
-            },
-            {
-                label: 'How It Works',
-                to: '.',
-                hash: SectionHash.HowItWorks,
-            },
-            {
-                label: 'A',
-                to: '/a'
-            }
-        ],
-    },
-});
+import { Footer } from './Footer';
+import { Header } from './Header';
+import { Nothing } from './Nothing';
 
 const Button = Nothing;
 const Badge = Nothing;
@@ -37,7 +13,7 @@ export default function LandingPage() {
     return (
         <div className='min-h-screen bg-background'>
             <Header />
-
+            {/* Hero Section */}
             <section className='px-4 py-20'>
                 <div className='container mx-auto max-w-4xl text-center'>
                     <Badge variant='secondary' className='mb-6'>
@@ -68,6 +44,7 @@ export default function LandingPage() {
                         </Button>
                     </div>
 
+                    {/* Hero Image Placeholder */}
                     {/* <div className='relative'>
                         <Card className='overflow-hidden border-2 border-primary/20 shadow-2xl'>
                             <CardContent className='p-0'>
@@ -81,7 +58,7 @@ export default function LandingPage() {
                     </div> */}
                 </div>
             </section>
-
+            {/* Features Section */}
             <section
                 id={SectionHash.Features}
                 className='bg-muted/30 px-4 py-20'
@@ -142,7 +119,6 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
-
             <section id={SectionHash.HowItWorks} className='px-4 py-20'>
                 <div className='container mx-auto'>
                     <div className='mb-16 text-center'>
@@ -174,7 +150,7 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
-
+            ;
             <section className='bg-primary px-4 py-20 text-primary-foreground'>
                 <div className='container mx-auto text-center'>
                     <h2 className='mb-4 font-bold text-3xl md:text-4xl'>
