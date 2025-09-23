@@ -1,3 +1,3 @@
 export const appConfig = {
-    appName: 'Plateful',
+	appName: "Plateful",
 } as const;
