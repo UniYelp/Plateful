@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { CheckCircle } from 'lucide-react';
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
+import { Footer } from '@/components/layouts/Footer';
+import { Header } from '@/components/layouts/Header';
 import { Nothing } from '@/components/Nothing';
 import { features, SectionHash, stages } from '@/pages/landing-page';
 import '../App.css';
@@ -22,8 +22,8 @@ export const Route = createFileRoute('/')({
             },
             {
                 label: 'A',
-                to: '/a'
-            }
+                to: '/a',
+            },
         ],
     },
 });
