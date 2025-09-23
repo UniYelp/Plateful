@@ -1,8 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle } from "lucide-react";
+import { SignInButton } from "@clerk/clerk-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Authenticated, Unauthenticated } from "convex/react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { Footer } from "@/components/layouts/Footer";
 import { Header } from "@/components/layouts/Header";
-import { Nothing } from "@/components/Nothing";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/Card";
 import { features, SectionHash, stages } from "@/pages/landing-page";
 import "../App.css";
 
@@ -28,10 +32,11 @@ export const Route = createFileRoute("/")({
 	},
 });
 
-const Button = Nothing;
-const Badge = Nothing;
-const Card = Nothing;
-const CardContent = Nothing;
+const StartNowBtn = () => (
+	<>
+		Start Cooking Today <ArrowRight className="ml-2 h-5 w-5" />
+	</>
+);
 
 export default function LandingPage() {
 	return (
@@ -54,10 +59,18 @@ export default function LandingPage() {
 					</p>
 					<div className="mb-12 flex flex-col justify-center gap-4 sm:flex-row">
 						<Button size="lg" className="px-8 text-lg" asChild>
-							{/* <Link href='/auth/signup'>
-                                Start Cooking Today
-                                <ArrowRight className='ml-2 h-5 w-5' />
-                            </Link> */}
+							<div>
+								<Unauthenticated>
+									<SignInButton>
+										<StartNowBtn />
+									</SignInButton>
+								</Unauthenticated>
+								<Authenticated>
+									<Link to="/">
+										<StartNowBtn />
+									</Link>
+								</Authenticated>
+							</div>
 						</Button>
 						<Button
 							variant="outline"

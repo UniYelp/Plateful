@@ -17,7 +17,9 @@ export function Header() {
 					</Unauthenticated>
 					<Authenticated>
 						<UserButton />
-						{user?.firstName} {user?.lastName}
+						<span className="hidden font-medium text-sm sm:block">
+							{user?.firstName} {user?.lastName}
+						</span>
 					</Authenticated>
 					<AuthLoading>
 						<p>...</p>
