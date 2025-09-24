@@ -2,4 +2,5 @@
 stack:
   - "[[Convex]]"
   - "[[TypeScript]]"
+  - "[[Hono]]"
 ---

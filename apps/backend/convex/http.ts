@@ -1,23 +1,56 @@
 import type { WebhookEvent } from "@clerk/backend";
-import { httpRouter } from "convex/server";
-import { Webhook } from "svix";
+import { zValidator } from "@hono/zod-validator";
+import {
+	type HonoWithConvex,
+	HttpRouterWithHono,
+} from "convex-helpers/server/hono";
+import { Hono } from "hono";
+import { Webhook, type WebhookRequiredHeaders } from "svix";
+import { z } from "zod";
 import { internal } from "./_generated/api";
-import { httpAction } from "./_generated/server";
+import type { ActionCtx } from "./_generated/server";
 
-const http = httpRouter();
+/**
+ * {@link https://stack.convex.dev/hono-with-convex}
+ */
+const app: HonoWithConvex<ActionCtx> = new Hono();
 
-http.route({
-	path: "/webhooks/clerk",
-	method: "POST",
-	handler: httpAction(async (ctx, request) => {
-		const event = await validateRequest(request);
+const webhooks: HonoWithConvex<ActionCtx> = new Hono();
+
+webhooks.post(
+	"/clerk",
+	zValidator(
+		"header",
+		z
+			.object({
+				"svix-id": z.string(),
+				"svix-timestamp": z.string(),
+				"svix-signature": z.string(),
+			})
+			.loose(),
+	),
+	async (c) => {
+		const payloadString = await c.req.text();
+
+		const headers = c.req.valid("header");
+
+		const svixHeaders = {
+			"svix-id": headers["svix-id"],
+			"svix-timestamp": headers["svix-timestamp"],
+			"svix-signature": headers["svix-signature"],
+		} satisfies WebhookRequiredHeaders;
+
+		const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!);
+		const event = await verifyWebhookEvent(wh, payloadString, svixHeaders);
 
 		if (!event) {
 			return new Response("Error occurred", { status: 400 });
 		}
 
+		const ctx = c.env;
+
 		switch (event.type) {
-			case "user.created": // intentional fallthrough
+			case "user.created": //? intentional fallthrough
 			case "user.updated":
 				await ctx.runMutation(internal.users.upsertFromClerk, {
 					data: event.data,
@@ -35,20 +68,16 @@ http.route({
 		}
 
 		return new Response(null, { status: 200 });
-	}),
-});
+	},
+);
 
-async function validateRequest(req: Request): Promise<WebhookEvent | null> {
-	const payloadString = await req.text();
+app.route("/webhooks", webhooks);
 
-	const svixHeaders = {
-		"svix-id": req.headers.get("svix-id")!,
-		"svix-timestamp": req.headers.get("svix-timestamp")!,
-		"svix-signature": req.headers.get("svix-signature")!,
-	};
-
-	const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!);
-
+async function verifyWebhookEvent(
+	wh: Webhook,
+	payloadString: string,
+	svixHeaders: WebhookRequiredHeaders,
+): Promise<WebhookEvent | null> {
 	try {
 		return wh.verify(payloadString, svixHeaders) as unknown as WebhookEvent;
 	} catch (error) {
@@ -57,4 +86,4 @@ async function validateRequest(req: Request): Promise<WebhookEvent | null> {
 	}
 }
 
-export default http;
+export default new HttpRouterWithHono(app);

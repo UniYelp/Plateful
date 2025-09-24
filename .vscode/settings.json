@@ -24,7 +24,8 @@
 			"mode": "auto"
 		}
 	],
-	"cSpell.words": ["vercel"],
+	"tailwindCSS.classFunctions": ["cva", "cx", "clsx", "cn", "twMerge"],
+	"cSpell.words": ["svix", "vercel"],
 	"vsicons.associations.folders": [
 		{
 			"extensions": ["_"],

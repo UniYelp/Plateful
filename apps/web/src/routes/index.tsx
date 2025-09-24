@@ -1,6 +1,4 @@
-import { SignInButton } from "@clerk/clerk-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Authenticated, Unauthenticated } from "convex/react";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Footer } from "@/components/layouts/Footer";
 import { Header } from "@/components/layouts/Header";
@@ -59,18 +57,9 @@ export default function LandingPage() {
 					</p>
 					<div className="mb-12 flex flex-col justify-center gap-4 sm:flex-row">
 						<Button size="lg" className="px-8 text-lg" asChild>
-							<div>
-								<Unauthenticated>
-									<SignInButton>
-										<StartNowBtn />
-									</SignInButton>
-								</Unauthenticated>
-								<Authenticated>
-									<Link to="/">
-										<StartNowBtn />
-									</Link>
-								</Authenticated>
-							</div>
+							<Link to=".">
+								<StartNowBtn />
+							</Link>
 						</Button>
 						<Button
 							variant="outline"

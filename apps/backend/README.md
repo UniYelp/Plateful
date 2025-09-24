@@ -11,7 +11,7 @@
 1. Sign up for [Convex](../../notes/Architecture/Services/Convex.md)
 1. Create a project (or request to join the team's project)
 1. Setup Clerk [auth](#auth) or follow [`Convex`'s `Clerk` integration guide](https://docs.convex.dev/auth/clerk) (Stages 1-3)
-1. Setup Clerk [webhooks](#webhooks) or follow [`Convex`'s guid](https://docs.convex.dev/auth/database-auth#configure-the-webhook-endpoint-in-clerk)
+1. Setup Clerk [webhooks](#webhooks) or follow [Convex's guid](https://docs.convex.dev/auth/database-auth#configure-the-webhook-endpoint-in-clerk)
 1. Run `npm run dev` or `npm run dev --filter backend`
 1. Use the interactive mode to follow the convex cli prompts (select the project you created in cloud mode)
 1. Make sure you have the following environment variables in your `Convex` project:
