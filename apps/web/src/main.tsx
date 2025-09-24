@@ -16,11 +16,13 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { ENV } from "@/configs/env.config";
+import { appConfig } from "./configs/app.config";
 import { convexClient } from "./configs/convex.config";
 import reportWebVitals from "./reportWebVitals";
 
 posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 	api_host: ENV.VITE_PUBLIC_POSTHOG_HOST,
+	name: appConfig.appName,
 	person_profiles: "always",
 	defaults: "2025-05-24",
 });
