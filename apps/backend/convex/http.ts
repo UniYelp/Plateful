@@ -18,6 +18,9 @@ const app: HonoWithConvex<ActionCtx> = new Hono();
 const webhooks: HonoWithConvex<ActionCtx> = new Hono();
 
 webhooks.post(
+	/**
+	 * {@link https://docs.convex.dev/auth/database-auth#configure-the-webhook-endpoint-in-clerk}
+	 */
 	"/clerk",
 	zValidator(
 		"header",

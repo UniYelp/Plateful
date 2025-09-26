@@ -6,7 +6,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
 	server: {
-		port: 3000,
+		//? 3000 + 'Plateful'.split('').map(c => c.charCodeAt(0)).reduce((p, n) => p + n, 0)
+		port: 3829,
 	},
 	plugins: [
 		tsconfigPaths() as PluginOption,

@@ -8,8 +8,12 @@
  * @module
  */
 
+import type * as crons from "../crons.js";
+import type * as functions from "../functions.js";
+import type * as households from "../households.js";
 import type * as http from "../http.js";
 import type * as migrations from "../migrations.js";
+import type * as triggers_index from "../triggers/index.js";
 import type * as users from "../users.js";
 
 import type {
@@ -27,8 +31,12 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  crons: typeof crons;
+  functions: typeof functions;
+  households: typeof households;
   http: typeof http;
   migrations: typeof migrations;
+  "triggers/index": typeof triggers_index;
   users: typeof users;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

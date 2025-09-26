@@ -1,65 +1,73 @@
-import type { UserJSON } from '@clerk/backend';
-import { type Validator, v } from 'convex/values';
-import { internalMutation, type QueryCtx, query } from './_generated/server';
+import type { UserJSON } from "@clerk/backend";
+import { type Validator, v } from "convex/values";
+import { type QueryCtx, query } from "./_generated/server";
+import { internalMutation } from "./functions";
+import { createUserHousehold } from "./households";
 
+// #region Queries
 export const current = query({
-    args: {},
-    handler: async (ctx) => {
-        return await getCurrentUser(ctx);
-    },
+	args: {},
+	handler: async (ctx) => {
+		return await getCurrentUser(ctx);
+	},
 });
 
+// #region Mutations
 export const upsertFromClerk = internalMutation({
-    args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
-    async handler(ctx, { data }) {
-        const userAttributes = {
-            externalId: data.id,
-        };
+	args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
+	async handler(ctx, { data }) {
+		const userAttributes = {
+			externalId: data.id,
+		};
 
-        const user = await userByExternalId(ctx, data.id);
+		const user = await userByExternalId(ctx, data.id);
 
-        if (user === null) {
-            await ctx.db.insert('users', userAttributes);
-        } else {
-            await ctx.db.patch(user._id, userAttributes);
-        }
-    },
+		if (user === null) {
+			const userId = await ctx.db.insert("users", userAttributes);
+			await createUserHousehold(ctx, userId, {
+				name: "My Household",
+			});
+		} else {
+			await ctx.db.patch(user._id, userAttributes);
+		}
+	},
 });
 
 export const deleteFromClerk = internalMutation({
-    args: { clerkUserId: v.string() },
-    async handler(ctx, { clerkUserId }) {
-        const user = await userByExternalId(ctx, clerkUserId);
+	args: { clerkUserId: v.string() },
+	async handler(ctx, { clerkUserId }) {
+		const user = await userByExternalId(ctx, clerkUserId);
 
-        if (user !== null) {
-            await ctx.db.delete(user._id);
-        } else {
-            console.warn(
-                `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`
-            );
-        }
-    },
+		if (user !== null) {
+			await ctx.db.delete(user._id);
+		} else {
+			console.warn(
+				`Can't delete user, there is none for Clerk user ID: ${clerkUserId}`,
+			);
+		}
+	},
 });
 
+// #region Helpers
 export async function getCurrentUserOrThrow(ctx: QueryCtx) {
-    const userRecord = await getCurrentUser(ctx);
-    if (!userRecord) throw new Error("Can't get current user");
-    return userRecord;
+	const userRecord = await getCurrentUser(ctx);
+	if (!userRecord) throw new Error("Not authenticated");
+	return userRecord;
 }
 
 export async function getCurrentUser(ctx: QueryCtx) {
-    const identity = await ctx.auth.getUserIdentity();
+	const identity = await ctx.auth.getUserIdentity();
 
-    if (identity === null) {
-        return null;
-    }
+	if (identity === null) {
+		return null;
+	}
 
-    return await userByExternalId(ctx, identity.subject);
+	return await userByExternalId(ctx, identity.subject);
 }
 
 async function userByExternalId(ctx: QueryCtx, externalId: string) {
-    return await ctx.db
-        .query('users')
-        .withIndex('byExternalId', (q) => q.eq('externalId', externalId))
-        .unique();
+	return await ctx.db
+		.query("users")
+		.withIndex("byExternalId", (q) => q.eq("externalId", externalId))
+		.unique();
 }

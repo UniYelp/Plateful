@@ -36,7 +36,7 @@ const StartNowBtn = () => (
 	</>
 );
 
-export default function LandingPage() {
+function LandingPage() {
 	return (
 		<div className="min-h-screen bg-background">
 			<Header />

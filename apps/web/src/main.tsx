@@ -22,7 +22,7 @@ import reportWebVitals from "./reportWebVitals";
 
 posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 	api_host: ENV.VITE_PUBLIC_POSTHOG_HOST,
-	name: appConfig.appName,
+	name: appConfig.platform,
 	person_profiles: "always",
 	defaults: "2025-05-24",
 });
