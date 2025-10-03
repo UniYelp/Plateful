@@ -51,5 +51,6 @@
   "Feature Backlog": "LiList",
   "Architecture/Services/Clerk.md": "LiLock",
   "Architecture/Services/Convex.md": "LiDatabaseZap",
-  "Architecture/Services/Prisma.md": "LiDatabaseZap"
+  "Architecture/Services/Prisma.md": "LiDatabaseZap",
+  "Architecture/Services/Upstash.md": "LiDatabaseZap"
 }

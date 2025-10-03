@@ -1,4 +1,5 @@
 {
+	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"target": "ES2022",
 		"jsx": "react-jsx",
@@ -23,14 +24,8 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"&/*": ["./src/features/*"],
-			"@backend/*": ["../backend/convex/_generated/*"],
-			"@barcode": ["../barcode-service/src/app.ts"]
+			"@backend/*": ["../backend/convex/_generated/*"]
 		}
 	},
-	"include": [
-		"**/*.ts",
-		"**/*.tsx",
-		"../backend/convex/_generated",
-		"../barcode-service/src/app.ts"
-	]
+	"include": ["**/*.ts", "**/*.tsx", "../backend/convex/_generated"]
 }

@@ -55,7 +55,7 @@ Graph databases are a specialized subset of NoSQL databases designed to manage d
 | **Query Language**   | SQL.                                                                            | Varies by database; often uses APIs or its own language.              | Specialized graph query languages like Cypher or Gremlin.                 |
 | **Data Integrity**   | High (ACID compliant).                                                          | Varies by database (often BASE compliant for higher availability).    | Varies, with some systems offering ACID properties.                       |
 | **Example DBs**      | MySQL, PostgreSQL, Oracle, SQL Server.                                          | MongoDB, Cassandra, Redis.                                            | Neo4j, Amazon Neptune.                                                    |
-| **Hosted solutions** | Prisma Postgres, CockroachDB, Vercel Postgres, MariaDB, etc...                  | Redis, Upstash, MongoDB, etc...                                       |                                                                           |
+| **Hosted solutions** | Prisma Postgres, CockroachDB, Vercel Postgres, MariaDB, etc...                  | Redis, Upstash, MongoDB, Convex, etc...                               |                                                                           |
 
 ### ORM varieties and ease of use by language
 
@@ -96,8 +96,8 @@ The best ORM for a project depends on the database you choose (SQL, NoSQL, or Gr
 - **For NoSQL databases** (like MongoDB), ORMs are often called ODMs (Object-Document Mappers). Libraries like Mongoose for TypeScript or MongoEngine for Python abstract the document-based data, though some general-purpose ORMs like Prisma also support them.
 - **For Graph databases,** traditional ORMs are not a good fit due to the highly relational nature of the data. Developers typically use graph-native libraries that interact with the database using its specific query language, such as the Cypher-based drivers for Neo4j.
 
-
 ---
 
-Choice: PostgreSql, Redis
-Hosting provider: ??
+We ended up choosing a combination of [[Convex]], [[Prisma]] Postgres, and [[Redis]] (via [[Upstash]]), each covering a different part of the system. Convex is at the core of our [[Web]] and [[Mobile]] apps, providing a serverless backend with a built-in database, real-time queries, and reactive state management. This lets us move quickly without managing infrastructure while ensuring the apps stay consistent and responsive.
+
+Alongside that, we’re using Prisma Postgres for a separate [[Recipe Recommendations Service]]. It maintains its own set of relational tables, giving us strong ACID guarantees, complex querying power, and the flexibility to run recommendation logic while still being able to query Convex when needed. Finally, Redis through Upstash supports the [[Barcode Service]], dedicated to caching data from external APIs required by the apps. With its low-latency key-value model and serverless pricing, it’s a great fit for handling ephemeral data and speeding up integrations. Together, this setup gives us a balanced architecture: Convex for app logic and real-time data, Prisma Postgres for structured recommendation workloads, and Redis for high-performance caching of external data.

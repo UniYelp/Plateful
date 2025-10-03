@@ -23,19 +23,16 @@
 		"test:types": {
 			"dependsOn": ["_transit"]
 		},
-		"backend#dev": {
+		"@plateful/backend#dev": {
 			// "with": ["clerk:webhook"],
 			"cache": false,
 			"persistent": true,
 			"interactive": true
 		},
-		// "backend#clerk:webhook": {
-		// 	"cache": false,
-		// 	"persistent": true
-		// },
-		"web#dev": {
-			"with": ["backend#dev", "barcode-service#dev"],
+		"@plateful/web#dev": {
+			"with": ["@plateful/backend#dev", "@plateful/barcode-service#dev"],
 			"inputs": ["$TURBO_DEFAULT$", "convex/**/*"],
+			"dependsOn": ["^build"],
 			"cache": false,
 			"persistent": true
 		}
