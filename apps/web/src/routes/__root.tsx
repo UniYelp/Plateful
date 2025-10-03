@@ -1,15 +1,25 @@
 import { useUser } from "@clerk/clerk-react";
-import { TanstackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import {
+	type TanStackDevtoolsReactPlugin,
+	TanstackDevtools,
+} from "@tanstack/react-devtools";
+import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import type { QueryClient } from "@tanstack/react-query";
+
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+
 import { usePostHog } from "posthog-js/react";
 import { useEffect } from "react";
 
-export const Route = createRootRoute({
-	component: RootComponent,
+export const Route = createRootRouteWithContext<{
+	queryClient: QueryClient;
+}>()({
+	component: Root,
 });
 
-function RootComponent() {
+function Root() {
 	const posthog = usePostHog();
 	const { user } = useUser();
 
@@ -31,9 +41,14 @@ function RootComponent() {
 				}}
 				plugins={[
 					{
-						name: "Tanstack Router",
+						name: "TanStack Router",
 						render: <TanStackRouterDevtoolsPanel />,
 					},
+					{
+						name: "TanStack Query",
+						render: <ReactQueryDevtoolsPanel />,
+					},
+					FormDevtoolsPlugin() as TanStackDevtoolsReactPlugin,
 				]}
 			/>
 		</>

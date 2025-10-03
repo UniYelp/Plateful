@@ -1,24 +1,20 @@
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import {
-	createRouter,
 	type LinkComponentProps,
 	RouterProvider,
 } from "@tanstack/react-router";
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-
-// Import the generated route tree
-import { routeTree } from "./routeTree.gen";
-
-import "./styles.css";
-
-import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
 import { ENV } from "@/configs/env.config";
 import { appConfig } from "./configs/app.config";
 import { convexClient } from "./configs/convex.config";
 import reportWebVitals from "./reportWebVitals";
+import { getRouter } from "./router";
+
+import "./styles.css";
 
 posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 	api_host: ENV.VITE_PUBLIC_POSTHOG_HOST,
@@ -28,14 +24,7 @@ posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 });
 
 // Create a new router instance
-const router = createRouter({
-	routeTree,
-	context: {},
-	defaultPreload: "intent",
-	scrollRestoration: true,
-	defaultStructuralSharing: true,
-	defaultPreloadStaleTime: 0,
-});
+const router = getRouter();
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {

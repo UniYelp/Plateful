@@ -1,31 +1,32 @@
 import { createEnv } from "@t3-oss/env-core";
+import { /**upstashRedis, */ vercel } from "@t3-oss/env-core/presets-zod";
 import { z } from "zod";
 
 export const ENV = createEnv({
-	server: {},
+	extends: [vercel() /**upstashRedis() */],
+	server: {
+		// CLERK_PUBLISHABLE_KEY: z.string(),
+		// CLERK_SECRET_KEY: z.string(),
+
+		ALLOWED_ORIGINS: z.codec(z.string(), z.url().array(), {
+			decode: (val) => val.split(",").map((origin) => origin.trim()),
+			encode: (val) => val.join(","),
+		}),
+	},
 
 	/**
 	 * The prefix that client-side variables must have. This is enforced both at
 	 * a type-level and at runtime.
 	 */
-	clientPrefix: "VITE_",
+	clientPrefix: undefined,
 
-	client: {
-		VITE_CONVEX_URL: z.url(),
-
-		VITE_CLERK_PUBLISHABLE_KEY: z.string().min(1),
-
-		VITE_PUBLIC_POSTHOG_KEY: z.string().min(1),
-		VITE_PUBLIC_POSTHOG_HOST: z.url(),
-
-		VITE_BARCODE_SERVICE_URL: z.url(),
-	},
+	client: {},
 
 	/**
 	 * What object holds the environment variables at runtime. This is usually
 	 * `process.env` or `import.meta.env`.
 	 */
-	runtimeEnv: import.meta.env,
+	runtimeEnv: process.env,
 
 	/**
 	 * By default, this library will feed the environment variables directly to

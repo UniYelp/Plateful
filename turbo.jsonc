@@ -34,7 +34,7 @@
 		// 	"persistent": true
 		// },
 		"web#dev": {
-			"with": ["backend#dev"],
+			"with": ["backend#dev", "barcode-service#dev"],
 			"inputs": ["$TURBO_DEFAULT$", "convex/**/*"],
 			"cache": false,
 			"persistent": true
