@@ -4,6 +4,27 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@clerk/backend':
+      specifier: ^2.15.0
+      version: 2.15.0
+    '@hono/clerk-auth':
+      specifier: ^3.0.3
+      version: 3.0.3
+    '@hono/zod-validator':
+      specifier: ^0.7.3
+      version: 0.7.3
+    convex:
+      specifier: ^1.27.1
+      version: 1.27.1
+    hono:
+      specifier: ^4.9.9
+      version: 4.9.9
+    zod:
+      specifier: ^4.1.11
+      version: 4.1.11
+
 importers:
 
   .:
@@ -42,28 +63,28 @@ importers:
   apps/backend:
     dependencies:
       '@clerk/backend':
-        specifier: ^2.15.0
+        specifier: 'catalog:'
         version: 2.15.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@convex-dev/migrations':
         specifier: ^0.2.9
         version: 0.2.9(convex@1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))
       '@hono/zod-validator':
-        specifier: ^0.7.3
-        version: 0.7.3(hono@4.9.8)(zod@4.1.11)
+        specifier: 'catalog:'
+        version: 0.7.3(hono@4.9.9)(zod@4.1.11)
       convex:
-        specifier: ^1.27.1
+        specifier: 'catalog:'
         version: 1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
       convex-helpers:
         specifier: ^0.1.104
-        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(hono@4.9.8)(react@19.1.1)(typescript@5.9.2)(zod@4.1.11)
+        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(hono@4.9.9)(react@19.1.1)(typescript@5.9.2)(zod@4.1.11)
       hono:
-        specifier: ^4.9.8
-        version: 4.9.8
+        specifier: 'catalog:'
+        version: 4.9.9
       svix:
         specifier: ^1.76.1
         version: 1.76.1
       zod:
-        specifier: ^4.1.11
+        specifier: 'catalog:'
         version: 4.1.11
     devDependencies:
       '@dotenvx/dotenvx':
@@ -75,20 +96,17 @@ importers:
       convex-test:
         specifier: ^0.0.38
         version: 0.0.38(convex@1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@edge-runtime/vm@5.0.0)(@types/node@22.18.6)(@vitest/ui@3.2.4)(jiti@2.5.1)(jsdom@27.0.0(postcss@8.5.6))(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   apps/barcode-service:
     dependencies:
       '@clerk/backend':
-        specifier: ^2.15.0
+        specifier: 'catalog:'
         version: 2.15.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@hono/clerk-auth':
-        specifier: ^3.0.3
+        specifier: 'catalog:'
         version: 3.0.3(hono@4.9.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@hono/zod-validator':
-        specifier: ^0.7.3
+        specifier: 'catalog:'
         version: 0.7.3(hono@4.9.9)(zod@4.1.11)
       '@t3-oss/env-core':
         specifier: ^0.13.8
@@ -100,10 +118,10 @@ importers:
         specifier: ^17.2.3
         version: 17.2.3
       hono:
-        specifier: ^4.9.9
+        specifier: 'catalog:'
         version: 4.9.9
       zod:
-        specifier: ^4.1.11
+        specifier: 'catalog:'
         version: 4.1.11
     devDependencies:
       '@dotenvx/dotenvx':
@@ -245,7 +263,7 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       convex:
-        specifier: ^1.27.1
+        specifier: 'catalog:'
         version: 1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
       embla-carousel-react:
         specifier: ^8.6.0
@@ -287,7 +305,7 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       zod:
-        specifier: ^4.1.11
+        specifier: 'catalog:'
         version: 4.1.11
     devDependencies:
       '@testing-library/dom':
@@ -3383,10 +3401,6 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
-  hono@4.9.8:
-    resolution: {integrity: sha512-JW8Bb4RFWD9iOKxg5PbUarBYGM99IcxFl2FPBo2gSJO11jjUDqlP1Bmfyqt8Z/dGhIQ63PMA9LdcLefXyIasyg==}
-    engines: {node: '>=16.9.0'}
-
   hono@4.9.9:
     resolution: {integrity: sha512-Hxw4wT6zjJGZJdkJzAx9PyBdf7ZpxaTSA0NfxqjLghwMrLBX8p33hJBzoETRakF3UJu6OdNQBZAlNSkGqKFukw==}
     engines: {node: '>=16.9.0'}
@@ -5304,11 +5318,6 @@ snapshots:
     dependencies:
       hono: 4.9.9
 
-  '@hono/zod-validator@0.7.3(hono@4.9.8)(zod@4.1.11)':
-    dependencies:
-      hono: 4.9.8
-      zod: 4.1.11
-
   '@hono/zod-validator@0.7.3(hono@4.9.9)(zod@4.1.11)':
     dependencies:
       hono: 4.9.9
@@ -6617,7 +6626,7 @@ snapshots:
       '@babel/generator': 7.28.3
       '@babel/parser': 7.28.4
       '@babel/preset-typescript': 7.27.1(@babel/core@7.28.4)
-      ansis: 4.1.0
+      ansis: 4.2.0
       diff: 8.0.2
     transitivePeerDependencies:
       - supports-color
@@ -7224,12 +7233,12 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(hono@4.9.8)(react@19.1.1)(typescript@5.9.2)(zod@4.1.11):
+  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(hono@4.9.9)(react@19.1.1)(typescript@5.9.2)(zod@4.1.11):
     dependencies:
       convex: 1.27.1(@clerk/clerk-react@5.48.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
     optionalDependencies:
       '@standard-schema/spec': 1.0.0
-      hono: 4.9.8
+      hono: 4.9.9
       react: 19.1.1
       typescript: 5.9.2
       zod: 4.1.11
@@ -7691,8 +7700,6 @@ snapshots:
       csstype: 3.1.3
 
   graceful-fs@4.2.11: {}
-
-  hono@4.9.8: {}
 
   hono@4.9.9: {}
 

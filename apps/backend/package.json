@@ -17,19 +17,18 @@
 		"clerk:webhook": "dotenvx run -f .env.local -- node scripts/setup-webhook-endpoint.js"
 	},
 	"dependencies": {
-		"@clerk/backend": "^2.15.0",
+		"@clerk/backend": "catalog:",
 		"@convex-dev/migrations": "^0.2.9",
-		"@hono/zod-validator": "^0.7.3",
-		"convex": "^1.27.1",
+		"@hono/zod-validator": "catalog:",
+		"convex": "catalog:",
 		"convex-helpers": "^0.1.104",
-		"hono": "^4.9.8",
+		"hono": "catalog:",
 		"svix": "^1.76.1",
-		"zod": "^4.1.11"
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@dotenvx/dotenvx": "^1.50.1",
 		"@edge-runtime/vm": "^5.0.0",
-		"convex-test": "^0.0.38",
-		"vitest": "^3.2.4"
+		"convex-test": "^0.0.38"
 	}
 }
