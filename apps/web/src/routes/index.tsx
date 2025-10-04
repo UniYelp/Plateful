@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { features, SectionHash, stages } from "@/pages/landing-page";
-import "../App.css";
+import "@/styles/home.css";
 
 export const Route = createFileRoute("/")({
 	component: LandingPage,

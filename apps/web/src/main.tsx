@@ -1,8 +1,5 @@
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
-import {
-	type LinkComponentProps,
-	RouterProvider,
-} from "@tanstack/react-router";
+import { RouterProvider } from "@tanstack/react-router";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
@@ -14,8 +11,6 @@ import { convexClient } from "./configs/convex.config";
 import reportWebVitals from "./reportWebVitals";
 import { getRouter } from "./router";
 
-import "./styles.css";
-
 posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 	api_host: ENV.VITE_PUBLIC_POSTHOG_HOST,
 	name: appConfig.platform,
@@ -25,20 +20,6 @@ posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 
 // Create a new router instance
 const router = getRouter();
-
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-	interface Register {
-		router: typeof router;
-	}
-
-	interface StaticDataRouteOption {
-		links?: (LinkComponentProps & {
-			label: string;
-		})[];
-		loader?: React.ReactElement;
-	}
-}
 
 // Render the app
 const rootElement = document.getElementById("app");
