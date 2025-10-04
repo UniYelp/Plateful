@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as appARouteImport } from './routes/(app)/a'
+import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
+import { Route as appauthedRouteRouteImport } from './routes/(app)/(authed)/route'
+import { Route as appauthedARouteImport } from './routes/(app)/(authed)/a'
 
 const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
@@ -22,37 +24,57 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appARoute = appARouteImport.update({
+const authSignInRoute = authSignInRouteImport.update({
+  id: '/(auth)/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const appauthedRouteRoute = appauthedRouteRouteImport.update({
+  id: '/(authed)',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appauthedARoute = appauthedARouteImport.update({
   id: '/a',
   path: '/a',
-  getParentRoute: () => appRouteRoute,
+  getParentRoute: () => appauthedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof appRouteRouteWithChildren
-  '/a': typeof appARoute
+  '/': typeof appauthedRouteRouteWithChildren
+  '/sign-in': typeof authSignInRoute
+  '/a': typeof appauthedARoute
 }
 export interface FileRoutesByTo {
-  '/': typeof appRouteRouteWithChildren
-  '/a': typeof appARoute
+  '/': typeof appauthedRouteRouteWithChildren
+  '/sign-in': typeof authSignInRoute
+  '/a': typeof appauthedARoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
-  '/(app)/a': typeof appARoute
+  '/(app)/(authed)': typeof appauthedRouteRouteWithChildren
+  '/(auth)/sign-in': typeof authSignInRoute
+  '/(app)/(authed)/a': typeof appauthedARoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/a'
+  fullPaths: '/' | '/sign-in' | '/a'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/a'
-  id: '__root__' | '/' | '/(app)' | '/(app)/a'
+  to: '/' | '/sign-in' | '/a'
+  id:
+    | '__root__'
+    | '/'
+    | '/(app)'
+    | '/(app)/(authed)'
+    | '/(auth)/sign-in'
+    | '/(app)/(authed)/a'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
+  authSignInRoute: typeof authSignInRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -71,22 +93,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)/a': {
-      id: '/(app)/a'
+    '/(auth)/sign-in': {
+      id: '/(auth)/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof authSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/(authed)': {
+      id: '/(app)/(authed)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof appauthedRouteRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(authed)/a': {
+      id: '/(app)/(authed)/a'
       path: '/a'
       fullPath: '/a'
-      preLoaderRoute: typeof appARouteImport
-      parentRoute: typeof appRouteRoute
+      preLoaderRoute: typeof appauthedARouteImport
+      parentRoute: typeof appauthedRouteRoute
     }
   }
 }
 
+interface appauthedRouteRouteChildren {
+  appauthedARoute: typeof appauthedARoute
+}
+
+const appauthedRouteRouteChildren: appauthedRouteRouteChildren = {
+  appauthedARoute: appauthedARoute,
+}
+
+const appauthedRouteRouteWithChildren = appauthedRouteRoute._addFileChildren(
+  appauthedRouteRouteChildren,
+)
+
 interface appRouteRouteChildren {
-  appARoute: typeof appARoute
+  appauthedRouteRoute: typeof appauthedRouteRouteWithChildren
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
-  appARoute: appARoute,
+  appauthedRouteRoute: appauthedRouteRouteWithChildren,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
@@ -96,6 +144,7 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
+  authSignInRoute: authSignInRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
