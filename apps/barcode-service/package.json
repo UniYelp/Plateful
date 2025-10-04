@@ -27,14 +27,14 @@
 		"test:w": "vitest --typecheck"
 	},
 	"dependencies": {
-		"@clerk/backend": "^2.15.0",
-		"@hono/clerk-auth": "^3.0.3",
-		"@hono/zod-validator": "^0.7.3",
+		"@clerk/backend": "catalog:",
+		"@hono/clerk-auth": "catalog:",
+		"@hono/zod-validator": "catalog:",
 		"@t3-oss/env-core": "^0.13.8",
 		"@upstash/redis": "^1.35.4",
 		"dotenv": "^17.2.3",
-		"hono": "^4.9.9",
-		"zod": "^4.1.11"
+		"hono": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@dotenvx/dotenvx": "^1.50.1",
