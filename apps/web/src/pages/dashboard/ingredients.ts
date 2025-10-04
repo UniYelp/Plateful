@@ -63,3 +63,14 @@ export const mockIngredients = [
 ]
 
 export const categories = ["all", "vegetables", "fruits", "meat", "dairy", "herbs", "oils", "grains"]
+
+export const ingredientsCategories = [
+	{ value: "vegetables", label: "Vegetables" },
+	{ value: "fruits", label: "Fruits" },
+	{ value: "meat", label: "Meat & Poultry" },
+	{ value: "dairy", label: "Dairy" },
+	{ value: "herbs", label: "Herbs & Spices" },
+	{ value: "oils", label: "Oils & Condiments" },
+	{ value: "grains", label: "Grains & Cereals" },
+	{ value: "other", label: "Other" },
+];

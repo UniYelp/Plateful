@@ -8304,7 +8304,7 @@ snapshots:
       '@oxc-project/runtime': 0.82.3
       '@oxc-project/types': 0.82.3
       '@rolldown/pluginutils': 1.0.0-beta.35
-      ansis: 4.1.0
+      ansis: 4.2.0
     optionalDependencies:
       '@rolldown/binding-android-arm64': 1.0.0-beta.35
       '@rolldown/binding-darwin-arm64': 1.0.0-beta.35

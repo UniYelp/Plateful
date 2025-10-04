@@ -13,7 +13,14 @@ import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as appARouteImport } from './routes/(app)/a'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
+import { Route as appDashboardShoppingListIndexRouteImport } from './routes/(app)/dashboard/shopping-list/index'
+import { Route as appDashboardRecipesIndexRouteImport } from './routes/(app)/dashboard/recipes/index'
+import { Route as appDashboardMealPlansIndexRouteImport } from './routes/(app)/dashboard/meal-plans/index'
 import { Route as appDashboardIngredientsIndexRouteImport } from './routes/(app)/dashboard/ingredients/index'
+import { Route as appDashboardRecipesCreateRouteImport } from './routes/(app)/dashboard/recipes/create'
+import { Route as appDashboardRecipesIdRouteImport } from './routes/(app)/dashboard/recipes/$id'
+import { Route as appDashboardMealPlansCreateRouteImport } from './routes/(app)/dashboard/meal-plans/create'
+import { Route as appDashboardMealPlansIdRouteImport } from './routes/(app)/dashboard/meal-plans/$id'
 import { Route as appDashboardIngredientsAddRouteImport } from './routes/(app)/dashboard/ingredients/add'
 
 const appRouteRoute = appRouteRouteImport.update({
@@ -35,12 +42,52 @@ const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appDashboardShoppingListIndexRoute =
+  appDashboardShoppingListIndexRouteImport.update({
+    id: '/dashboard/shopping-list/',
+    path: '/dashboard/shopping-list/',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+const appDashboardRecipesIndexRoute =
+  appDashboardRecipesIndexRouteImport.update({
+    id: '/dashboard/recipes/',
+    path: '/dashboard/recipes/',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+const appDashboardMealPlansIndexRoute =
+  appDashboardMealPlansIndexRouteImport.update({
+    id: '/dashboard/meal-plans/',
+    path: '/dashboard/meal-plans/',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 const appDashboardIngredientsIndexRoute =
   appDashboardIngredientsIndexRouteImport.update({
     id: '/dashboard/ingredients/',
     path: '/dashboard/ingredients/',
     getParentRoute: () => appRouteRoute,
   } as any)
+const appDashboardRecipesCreateRoute =
+  appDashboardRecipesCreateRouteImport.update({
+    id: '/dashboard/recipes/create',
+    path: '/dashboard/recipes/create',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+const appDashboardRecipesIdRoute = appDashboardRecipesIdRouteImport.update({
+  id: '/dashboard/recipes/$id',
+  path: '/dashboard/recipes/$id',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appDashboardMealPlansCreateRoute =
+  appDashboardMealPlansCreateRouteImport.update({
+    id: '/dashboard/meal-plans/create',
+    path: '/dashboard/meal-plans/create',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+const appDashboardMealPlansIdRoute = appDashboardMealPlansIdRouteImport.update({
+  id: '/dashboard/meal-plans/$id',
+  path: '/dashboard/meal-plans/$id',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appDashboardIngredientsAddRoute =
   appDashboardIngredientsAddRouteImport.update({
     id: '/dashboard/ingredients/add',
@@ -53,14 +100,28 @@ export interface FileRoutesByFullPath {
   '/a': typeof appARoute
   '/dashboard': typeof appDashboardIndexRoute
   '/dashboard/ingredients/add': typeof appDashboardIngredientsAddRoute
+  '/dashboard/meal-plans/$id': typeof appDashboardMealPlansIdRoute
+  '/dashboard/meal-plans/create': typeof appDashboardMealPlansCreateRoute
+  '/dashboard/recipes/$id': typeof appDashboardRecipesIdRoute
+  '/dashboard/recipes/create': typeof appDashboardRecipesCreateRoute
   '/dashboard/ingredients': typeof appDashboardIngredientsIndexRoute
+  '/dashboard/meal-plans': typeof appDashboardMealPlansIndexRoute
+  '/dashboard/recipes': typeof appDashboardRecipesIndexRoute
+  '/dashboard/shopping-list': typeof appDashboardShoppingListIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
   '/a': typeof appARoute
   '/dashboard': typeof appDashboardIndexRoute
   '/dashboard/ingredients/add': typeof appDashboardIngredientsAddRoute
+  '/dashboard/meal-plans/$id': typeof appDashboardMealPlansIdRoute
+  '/dashboard/meal-plans/create': typeof appDashboardMealPlansCreateRoute
+  '/dashboard/recipes/$id': typeof appDashboardRecipesIdRoute
+  '/dashboard/recipes/create': typeof appDashboardRecipesCreateRoute
   '/dashboard/ingredients': typeof appDashboardIngredientsIndexRoute
+  '/dashboard/meal-plans': typeof appDashboardMealPlansIndexRoute
+  '/dashboard/recipes': typeof appDashboardRecipesIndexRoute
+  '/dashboard/shopping-list': typeof appDashboardShoppingListIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,7 +130,14 @@ export interface FileRoutesById {
   '/(app)/a': typeof appARoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/dashboard/ingredients/add': typeof appDashboardIngredientsAddRoute
+  '/(app)/dashboard/meal-plans/$id': typeof appDashboardMealPlansIdRoute
+  '/(app)/dashboard/meal-plans/create': typeof appDashboardMealPlansCreateRoute
+  '/(app)/dashboard/recipes/$id': typeof appDashboardRecipesIdRoute
+  '/(app)/dashboard/recipes/create': typeof appDashboardRecipesCreateRoute
   '/(app)/dashboard/ingredients/': typeof appDashboardIngredientsIndexRoute
+  '/(app)/dashboard/meal-plans/': typeof appDashboardMealPlansIndexRoute
+  '/(app)/dashboard/recipes/': typeof appDashboardRecipesIndexRoute
+  '/(app)/dashboard/shopping-list/': typeof appDashboardShoppingListIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -78,14 +146,28 @@ export interface FileRouteTypes {
     | '/a'
     | '/dashboard'
     | '/dashboard/ingredients/add'
+    | '/dashboard/meal-plans/$id'
+    | '/dashboard/meal-plans/create'
+    | '/dashboard/recipes/$id'
+    | '/dashboard/recipes/create'
     | '/dashboard/ingredients'
+    | '/dashboard/meal-plans'
+    | '/dashboard/recipes'
+    | '/dashboard/shopping-list'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/a'
     | '/dashboard'
     | '/dashboard/ingredients/add'
+    | '/dashboard/meal-plans/$id'
+    | '/dashboard/meal-plans/create'
+    | '/dashboard/recipes/$id'
+    | '/dashboard/recipes/create'
     | '/dashboard/ingredients'
+    | '/dashboard/meal-plans'
+    | '/dashboard/recipes'
+    | '/dashboard/shopping-list'
   id:
     | '__root__'
     | '/'
@@ -93,7 +175,14 @@ export interface FileRouteTypes {
     | '/(app)/a'
     | '/(app)/dashboard/'
     | '/(app)/dashboard/ingredients/add'
+    | '/(app)/dashboard/meal-plans/$id'
+    | '/(app)/dashboard/meal-plans/create'
+    | '/(app)/dashboard/recipes/$id'
+    | '/(app)/dashboard/recipes/create'
     | '/(app)/dashboard/ingredients/'
+    | '/(app)/dashboard/meal-plans/'
+    | '/(app)/dashboard/recipes/'
+    | '/(app)/dashboard/shopping-list/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,11 +220,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardIndexRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/dashboard/shopping-list/': {
+      id: '/(app)/dashboard/shopping-list/'
+      path: '/dashboard/shopping-list'
+      fullPath: '/dashboard/shopping-list'
+      preLoaderRoute: typeof appDashboardShoppingListIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/recipes/': {
+      id: '/(app)/dashboard/recipes/'
+      path: '/dashboard/recipes'
+      fullPath: '/dashboard/recipes'
+      preLoaderRoute: typeof appDashboardRecipesIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/meal-plans/': {
+      id: '/(app)/dashboard/meal-plans/'
+      path: '/dashboard/meal-plans'
+      fullPath: '/dashboard/meal-plans'
+      preLoaderRoute: typeof appDashboardMealPlansIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/dashboard/ingredients/': {
       id: '/(app)/dashboard/ingredients/'
       path: '/dashboard/ingredients'
       fullPath: '/dashboard/ingredients'
       preLoaderRoute: typeof appDashboardIngredientsIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/recipes/create': {
+      id: '/(app)/dashboard/recipes/create'
+      path: '/dashboard/recipes/create'
+      fullPath: '/dashboard/recipes/create'
+      preLoaderRoute: typeof appDashboardRecipesCreateRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/recipes/$id': {
+      id: '/(app)/dashboard/recipes/$id'
+      path: '/dashboard/recipes/$id'
+      fullPath: '/dashboard/recipes/$id'
+      preLoaderRoute: typeof appDashboardRecipesIdRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/meal-plans/create': {
+      id: '/(app)/dashboard/meal-plans/create'
+      path: '/dashboard/meal-plans/create'
+      fullPath: '/dashboard/meal-plans/create'
+      preLoaderRoute: typeof appDashboardMealPlansCreateRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/meal-plans/$id': {
+      id: '/(app)/dashboard/meal-plans/$id'
+      path: '/dashboard/meal-plans/$id'
+      fullPath: '/dashboard/meal-plans/$id'
+      preLoaderRoute: typeof appDashboardMealPlansIdRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/dashboard/ingredients/add': {
@@ -152,14 +290,28 @@ interface appRouteRouteChildren {
   appARoute: typeof appARoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
   appDashboardIngredientsAddRoute: typeof appDashboardIngredientsAddRoute
+  appDashboardMealPlansIdRoute: typeof appDashboardMealPlansIdRoute
+  appDashboardMealPlansCreateRoute: typeof appDashboardMealPlansCreateRoute
+  appDashboardRecipesIdRoute: typeof appDashboardRecipesIdRoute
+  appDashboardRecipesCreateRoute: typeof appDashboardRecipesCreateRoute
   appDashboardIngredientsIndexRoute: typeof appDashboardIngredientsIndexRoute
+  appDashboardMealPlansIndexRoute: typeof appDashboardMealPlansIndexRoute
+  appDashboardRecipesIndexRoute: typeof appDashboardRecipesIndexRoute
+  appDashboardShoppingListIndexRoute: typeof appDashboardShoppingListIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appARoute: appARoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
   appDashboardIngredientsAddRoute: appDashboardIngredientsAddRoute,
+  appDashboardMealPlansIdRoute: appDashboardMealPlansIdRoute,
+  appDashboardMealPlansCreateRoute: appDashboardMealPlansCreateRoute,
+  appDashboardRecipesIdRoute: appDashboardRecipesIdRoute,
+  appDashboardRecipesCreateRoute: appDashboardRecipesCreateRoute,
   appDashboardIngredientsIndexRoute: appDashboardIngredientsIndexRoute,
+  appDashboardMealPlansIndexRoute: appDashboardMealPlansIndexRoute,
+  appDashboardRecipesIndexRoute: appDashboardRecipesIndexRoute,
+  appDashboardShoppingListIndexRoute: appDashboardShoppingListIndexRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(

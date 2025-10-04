@@ -25,7 +25,7 @@
 		}
 	],
 	"tailwindCSS.classFunctions": ["cva", "cx", "clsx", "cn", "twMerge"],
-	"cSpell.words": ["Redix", "svix", "vercel"],
+	"cSpell.words": ["Carbonara", "Redix", "svix", "vercel"],
 	"vsicons.associations.folders": [
 		{
 			"extensions": ["_"],
