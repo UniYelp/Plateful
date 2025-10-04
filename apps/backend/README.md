@@ -1,6 +1,6 @@
-# Web
+# Backend
 
-[General Info](../../notes/Architecture/Backend/convex.md)
+[General Info](../../notes/Architecture/Backend/Backend.md)
 
 ---
 

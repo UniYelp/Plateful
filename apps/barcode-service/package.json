@@ -22,7 +22,9 @@
 	"scripts": {
 		"dev": "dotenvx run -- tsx watch src/dev.ts",
 		"dev:p": "tsdown watch",
-		"build": "tsdown"
+		"build": "tsdown",
+		"test": "vitest run --typecheck",
+		"test:w": "vitest --typecheck"
 	},
 	"dependencies": {
 		"@clerk/backend": "^2.15.0",

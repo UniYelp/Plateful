@@ -9,7 +9,7 @@
 		"lint": "pnpm exec biome lint",
 		"test": "turbo run test",
 		"test:types": "turbo run test:types",
-		"test:v": "vitest --typecheck",
+		"test:v": "vitest --typecheck --passWithNoTests",
 		"vercel": "vercel",
 		"knip": "knip"
 	},
