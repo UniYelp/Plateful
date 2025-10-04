@@ -10,7 +10,9 @@ const {
 export default defineConfig({
 	entry: ["./src/client/index.ts"],
 	platform: "browser",
-	dts: true,
+	dts: {
+		build: true,
+	},
 	exports: {
 		devExports,
 	},

@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as appARouteImport } from './routes/(app)/a'
+import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
+import { Route as appDashboardIngredientsIndexRouteImport } from './routes/(app)/dashboard/ingredients/index'
+import { Route as appDashboardIngredientsAddRouteImport } from './routes/(app)/dashboard/ingredients/add'
 
 const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
@@ -27,27 +30,70 @@ const appARoute = appARouteImport.update({
   path: '/a',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appDashboardIngredientsIndexRoute =
+  appDashboardIngredientsIndexRouteImport.update({
+    id: '/dashboard/ingredients/',
+    path: '/dashboard/ingredients/',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+const appDashboardIngredientsAddRoute =
+  appDashboardIngredientsAddRouteImport.update({
+    id: '/dashboard/ingredients/add',
+    path: '/dashboard/ingredients/add',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof appRouteRouteWithChildren
   '/a': typeof appARoute
+  '/dashboard': typeof appDashboardIndexRoute
+  '/dashboard/ingredients/add': typeof appDashboardIngredientsAddRoute
+  '/dashboard/ingredients': typeof appDashboardIngredientsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
   '/a': typeof appARoute
+  '/dashboard': typeof appDashboardIndexRoute
+  '/dashboard/ingredients/add': typeof appDashboardIngredientsAddRoute
+  '/dashboard/ingredients': typeof appDashboardIngredientsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
   '/(app)/a': typeof appARoute
+  '/(app)/dashboard/': typeof appDashboardIndexRoute
+  '/(app)/dashboard/ingredients/add': typeof appDashboardIngredientsAddRoute
+  '/(app)/dashboard/ingredients/': typeof appDashboardIngredientsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/a'
+  fullPaths:
+    | '/'
+    | '/a'
+    | '/dashboard'
+    | '/dashboard/ingredients/add'
+    | '/dashboard/ingredients'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/a'
-  id: '__root__' | '/' | '/(app)' | '/(app)/a'
+  to:
+    | '/'
+    | '/a'
+    | '/dashboard'
+    | '/dashboard/ingredients/add'
+    | '/dashboard/ingredients'
+  id:
+    | '__root__'
+    | '/'
+    | '/(app)'
+    | '/(app)/a'
+    | '/(app)/dashboard/'
+    | '/(app)/dashboard/ingredients/add'
+    | '/(app)/dashboard/ingredients/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -78,15 +124,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appARouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/dashboard/': {
+      id: '/(app)/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof appDashboardIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/ingredients/': {
+      id: '/(app)/dashboard/ingredients/'
+      path: '/dashboard/ingredients'
+      fullPath: '/dashboard/ingredients'
+      preLoaderRoute: typeof appDashboardIngredientsIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/ingredients/add': {
+      id: '/(app)/dashboard/ingredients/add'
+      path: '/dashboard/ingredients/add'
+      fullPath: '/dashboard/ingredients/add'
+      preLoaderRoute: typeof appDashboardIngredientsAddRouteImport
+      parentRoute: typeof appRouteRoute
+    }
   }
 }
 
 interface appRouteRouteChildren {
   appARoute: typeof appARoute
+  appDashboardIndexRoute: typeof appDashboardIndexRoute
+  appDashboardIngredientsAddRoute: typeof appDashboardIngredientsAddRoute
+  appDashboardIngredientsIndexRoute: typeof appDashboardIngredientsIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appARoute: appARoute,
+  appDashboardIndexRoute: appDashboardIndexRoute,
+  appDashboardIngredientsAddRoute: appDashboardIngredientsAddRoute,
+  appDashboardIngredientsIndexRoute: appDashboardIngredientsIndexRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
