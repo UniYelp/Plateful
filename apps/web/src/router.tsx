@@ -22,6 +22,9 @@ import { routeTree } from "./routeTree.gen";
  * Convex
  * - {@link https://docs.convex.dev/client/tanstack/tanstack-query}
  * - {@link https://tanstack.com/router/v1/docs/framework/react/examples/start-convex-trellaux?path=examples%2Freact%2Fstart-convex-trellaux%2Fsrc%2Frouter.tsx}
+ *
+ * Clerk:
+ * - {@link https://tanstack.com/router/v1/docs/framework/react/examples/start-clerk-basic?path=examples%2Freact%2Fstart-clerk-basic%2Fsrc%2Frouter.tsx}
  */
 export function getRouter() {
 	if (typeof document !== "undefined") {
