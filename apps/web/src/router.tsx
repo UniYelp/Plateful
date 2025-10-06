@@ -1,6 +1,7 @@
 import { createRouter, type LinkComponentProps } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
-import { Devtools } from "@/components/layouts/DevTools";
+
+import { Devtools } from "@/components/layouts/Devtools";
 import { queryClient } from "@/configs/query.config";
 import { routeTree } from "./routeTree.gen";
 

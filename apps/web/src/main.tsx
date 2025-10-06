@@ -5,9 +5,10 @@ import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+
+import { appConfig } from "@/configs/app.config";
+import { convexClient } from "@/configs/convex.config";
 import { ENV } from "@/configs/env.config";
-import { appConfig } from "./configs/app.config";
-import { convexClient } from "./configs/convex.config";
 import reportWebVitals from "./reportWebVitals";
 import { getRouter } from "./router";
 

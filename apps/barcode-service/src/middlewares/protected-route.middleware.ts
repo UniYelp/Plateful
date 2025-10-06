@@ -1,5 +1,6 @@
 import { getAuth } from "@hono/clerk-auth";
 import { createMiddleware } from "hono/factory";
+
 import type { ProtectedRouteContext } from "../ctx.js";
 
 export const protectedRouteMiddleware = createMiddleware<ProtectedRouteContext>(

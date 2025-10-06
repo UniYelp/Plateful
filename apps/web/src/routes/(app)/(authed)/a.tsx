@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+
 import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/(app)/(authed)/a")({

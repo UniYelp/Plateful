@@ -1,5 +1,6 @@
 import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
+
 import { Brand } from "./Brand";
 import { Navbar } from "./Navbar";
 

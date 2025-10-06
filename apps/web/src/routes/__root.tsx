@@ -5,9 +5,11 @@ import {
 	Outlet,
 	Scripts,
 } from "@tanstack/react-router";
+
 import { usePosthogUserSetup } from "@/hooks/usePosthogUserSetup";
-import styles from "@/styles/styles.css?url";
 import { seo } from "@/utils/seo";
+
+import globalsCss from "@/styles/globals.css?url";
 
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
@@ -27,7 +29,7 @@ export const Route = createRootRouteWithContext<{
 			}),
 		],
 		links: [
-			{ rel: "stylesheet", href: styles },
+			{ rel: "stylesheet", href: globalsCss },
 			{
 				rel: "apple-touch-icon",
 				sizes: "180x180",

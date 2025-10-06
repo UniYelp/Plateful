@@ -6,6 +6,7 @@ import { csrf } from "hono/csrf";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { requestId } from "hono/request-id";
+
 import { appConfig } from "./configs/app.config.js";
 import { ENV } from "./configs/env.config.js";
 import type { AppBindings } from "./ctx.js";
