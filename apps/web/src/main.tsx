@@ -1,13 +1,10 @@
-import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { RouterProvider } from "@tanstack/react-router";
-import { ConvexProviderWithClerk } from "convex/react-clerk";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
 import { appConfig } from "@/configs/app.config";
-import { convexClient } from "@/configs/convex.config";
 import { ENV } from "@/configs/env.config";
 import reportWebVitals from "./reportWebVitals";
 import { getRouter } from "./router";
@@ -29,11 +26,7 @@ if (rootElement && !rootElement.innerHTML) {
 	root.render(
 		<StrictMode>
 			<PostHogProvider client={posthog}>
-				<ClerkProvider publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}>
-					<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
-						<RouterProvider router={router} />
-					</ConvexProviderWithClerk>
-				</ClerkProvider>
+				<RouterProvider router={router} />
 			</PostHogProvider>
 		</StrictMode>,
 	);

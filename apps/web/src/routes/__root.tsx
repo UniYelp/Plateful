@@ -5,6 +5,7 @@ import {
 	Outlet,
 	Scripts,
 } from "@tanstack/react-router";
+import { Toaster } from "sonner";
 
 import { usePosthogUserSetup } from "@/hooks/usePosthogUserSetup";
 import { seo } from "@/utils/seo";
@@ -49,6 +50,7 @@ function RootComponent() {
 		<>
 			<HeadContent />
 			<Outlet />
+			<Toaster richColors position="bottom-right" />
 			<Scripts />
 		</>
 	);
