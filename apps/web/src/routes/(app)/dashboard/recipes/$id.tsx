@@ -1,14 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	ArrowLeft,
-	Clock,
-	Edit,
-	Heart,
-	Play,
-	Star,
-	Users,
-} from "lucide-react";
+import { ArrowLeft, Clock, Edit, Heart, Play, Star, Users } from "lucide-react";
 import { useState } from "react";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
@@ -25,15 +18,13 @@ export const Route = createFileRoute("/(app)/dashboard/recipes/$id")({
 });
 
 function RouteComponent() {
-	return <RecipeDetailPage/>;
+	return <RecipeDetailPage />;
 }
 
-
-export default function RecipeDetailPage() {
+function RecipeDetailPage() {
 	const { id } = Route.useParams();
 	const [recipe] = useState(mockRecipe);
 	const [isFavorited, setIsFavorited] = useState(false);
-
 
 	const availableIngredients = recipe.ingredients.filter(
 		(ing) => ing.available,

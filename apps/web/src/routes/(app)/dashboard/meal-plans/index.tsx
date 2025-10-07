@@ -1,12 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	Calendar,
-	CalendarDays,
-	Edit,
-	Plus,
-	Trash2,
-} from "lucide-react";
+import { Calendar, CalendarDays, Edit, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
@@ -23,23 +18,23 @@ export const Route = createFileRoute("/(app)/dashboard/meal-plans/")({
 });
 
 function RouteComponent() {
-	return <MealPlansPage/>;
+	return <MealPlansPage />;
 }
 
-export default function MealPlansPage() {
+function MealPlansPage() {
 	const [mealPlans] = useState(mockMealPlans);
 
 	const formatDateRange = (startDate: string, endDate: string) => {
 		const start = new Date(startDate).toLocaleDateString("en-US", {
 			month: "short",
 			day: "numeric",
-		})
+		});
 		const end = new Date(endDate).toLocaleDateString("en-US", {
 			month: "short",
 			day: "numeric",
-		})
+		});
 		return `${start} - ${end}`;
-	}
+	};
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -169,5 +164,5 @@ export default function MealPlansPage() {
 				)}
 			</div>
 		</div>
-	)
+	);
 }

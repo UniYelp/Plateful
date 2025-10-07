@@ -1,13 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	Calendar,
-	Check,
-	Package,
-	Plus,
-	ShoppingCart,
-	X,
-} from "lucide-react";
+import { Calendar, Check, Package, Plus, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
@@ -19,18 +13,22 @@ import {
 } from "@/components/ui/Card";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/Input";
-import { categories, mockShoppingItems, priorityColors, sourceLabels } from "@/pages/dashboard/shopping-list";
+import {
+	categories,
+	mockShoppingItems,
+	priorityColors,
+	sourceLabels,
+} from "@/pages/dashboard/shopping-list";
 
 export const Route = createFileRoute("/(app)/dashboard/shopping-list/")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	return <ShoppingPage/>;
+	return <ShoppingPage />;
 }
 
-
-export default function ShoppingPage() {
+function ShoppingPage() {
 	const [selectedCategory, setSelectedCategory] = useState("all");
 	const [shoppingItems, setShoppingItems] = useState(mockShoppingItems);
 	const [newItem, setNewItem] = useState("");

@@ -1,15 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	BookOpen,
-	Clock,
-	Play,
-	Plus,
-	Search,
-	Star,
-	Users,
-} from "lucide-react";
-
+import { BookOpen, Clock, Play, Plus, Search, Star, Users } from "lucide-react";
 import { useState } from "react";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -21,14 +13,13 @@ export const Route = createFileRoute("/(app)/dashboard/recipes/")({
 });
 
 function RouteComponent() {
-	return <RecipesPage/>;
+	return <RecipesPage />;
 }
 
-export default function RecipesPage() {
+function RecipesPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedFilter, setSelectedFilter] = useState("all");
 	const [recipes] = useState(mockRecipes);
-
 
 	const filteredRecipes = recipes.filter((recipe) => {
 		const matchesSearch =

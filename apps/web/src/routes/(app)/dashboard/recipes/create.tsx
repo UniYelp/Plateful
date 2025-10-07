@@ -8,6 +8,7 @@ import {
 	Users,
 } from "lucide-react";
 import { useState } from "react";
+
 import { Button } from "@/components/ui/Button";
 import {
 	Card,
@@ -18,17 +19,21 @@ import {
 } from "@/components/ui/Card";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
-import { availableIngredients, quickTags, recipeOptions } from "@/pages/dashboard/recipes";
+import {
+	availableIngredients,
+	quickTags,
+	recipeOptions,
+} from "@/pages/dashboard/recipes";
 
 export const Route = createFileRoute("/(app)/dashboard/recipes/create")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	return <CreateRecipePage/>;
+	return <CreateRecipePage />;
 }
 
-export default function CreateRecipePage() {
+function CreateRecipePage() {
 	const router = useRouter();
 	const [step, setStep] = useState<
 		"input" | "generating" | "options" | "success"
@@ -37,7 +42,6 @@ export default function CreateRecipePage() {
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [selectedOption, setSelectedOption] = useState<string | null>(null);
 	const [createdRecipe, setCreatedRecipe] = useState<any>(null);
-
 
 	const toggleTag = (tagId: string) => {
 		setSelectedTags((prev) =>
@@ -68,7 +72,7 @@ export default function CreateRecipePage() {
 
 		// Auto-redirect after showing success
 		setTimeout(() => {
-			router.navigate({to: `/dashboard/recipes/${optionId}`});
+			router.navigate({ to: `/dashboard/recipes/${optionId}` });
 		}, 2000);
 	};
 

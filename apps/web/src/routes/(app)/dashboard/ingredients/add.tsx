@@ -30,7 +30,7 @@ function RouteComponent() {
 	return <AddIngredientPage/>;
 }
 
-export default function AddIngredientPage() {
+function AddIngredientPage() {
 	const router = useRouter();
 	const [formData, setFormData] = useState({
 		title: "",

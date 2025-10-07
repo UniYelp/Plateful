@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+
 import { Button } from "@/components/ui/Button";
 import {
 	Card,
@@ -29,18 +30,22 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/Select";
-import { availableRecipes, mealPlanTags, mealTypes, type MealPlan } from "@/pages/dashboard/meal-plan";
+import {
+	availableRecipes,
+	type MealPlan,
+	mealPlanTags,
+	mealTypes,
+} from "@/pages/dashboard/meal-plan";
 
 export const Route = createFileRoute("/(app)/dashboard/meal-plans/create")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	return <CreateMealPlanPage/>;
+	return <CreateMealPlanPage />;
 }
 
-
-export default function CreateMealPlanPage() {
+function CreateMealPlanPage() {
 	const router = useRouter();
 	const [formData, setFormData] = useState({
 		title: "",
@@ -160,7 +165,7 @@ export default function CreateMealPlanPage() {
 
 			// Auto-redirect after showing success
 			setTimeout(() => {
-				router.navigate({to: "/dashboard/meal-plans"});
+				router.navigate({ to: "/dashboard/meal-plans" });
 			}, 2000);
 		} catch (error) {
 			console.error("Failed to create meal plan:", error);

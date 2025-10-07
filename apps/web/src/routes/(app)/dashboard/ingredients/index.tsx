@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -15,7 +16,7 @@ function RouteComponent() {
 	return <IngredientsPage />;
 }
 
-export default function IngredientsPage() {
+function IngredientsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
 	const [ingredients] = useState(mockIngredients);

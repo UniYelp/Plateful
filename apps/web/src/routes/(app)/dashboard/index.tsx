@@ -68,7 +68,7 @@ function RouteComponent() {
 	return <DashboardPage />;
 }
 
-export default function DashboardPage() {
+function DashboardPage() {
 	const { user, isLoaded } = useUser();
 	const router = useRouter();
 	const [household, setHousehold] = useState(mockHousehold);
