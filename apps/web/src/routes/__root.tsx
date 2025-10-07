@@ -11,10 +11,12 @@ import { usePosthogUserSetup } from "@/hooks/usePosthogUserSetup";
 import { seo } from "@/utils/seo";
 
 import globalsCss from "@/styles/globals.css?url";
+import "@/styles/globals.css";
 
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
 }>()({
+	wrapInSuspense: true,
 	head: () => ({
 		meta: [
 			{
@@ -30,7 +32,10 @@ export const Route = createRootRouteWithContext<{
 			}),
 		],
 		links: [
-			{ rel: "stylesheet", href: globalsCss },
+			{
+				rel: "stylesheet",
+				href: globalsCss,
+			},
 			{
 				rel: "apple-touch-icon",
 				sizes: "180x180",
