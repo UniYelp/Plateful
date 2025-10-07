@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiAlignHorizontalDistributeStart",
       "LiDatabaseZap",
       "LiDatabase",
       "LiLock",
-      "LiList",
-      "LiClipboardPenLine"
+      "LiList"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -52,5 +52,6 @@
   "Architecture/Services/Clerk.md": "LiLock",
   "Architecture/Services/Convex.md": "LiDatabaseZap",
   "Architecture/Services/Prisma.md": "LiDatabaseZap",
-  "Architecture/Services/Upstash.md": "LiDatabaseZap"
+  "Architecture/Services/Upstash.md": "LiDatabaseZap",
+  "Standards": "LiAlignHorizontalDistributeStart"
 }
