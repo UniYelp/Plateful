@@ -1,6 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/(app)/a")({
+import { seo } from "@/utils/seo";
+
+export const Route = createFileRoute("/(app)/(authed)/a")({
+	head: () => ({
+		meta: [
+			...seo({
+				title: "Plateful | a",
+			}),
+		],
+	}),
 	component: RouteComponent,
 	staticData: {
 		links: [

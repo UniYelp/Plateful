@@ -55,7 +55,31 @@
 		"enabled": true,
 		"actions": {
 			"source": {
-				"organizeImports": "on"
+				"organizeImports": {
+					"level": "on",
+					"options": {
+						"groups": [
+							":URL:",
+							":BLANK_LINE:",
+							[":NODE:", ":BUN:"],
+							[
+								":PACKAGE:",
+								":PACKAGE_WITH_PROTOCOL:",
+								"!@plateful/**",
+								"!@backend/**"
+							],
+							":BLANK_LINE:",
+							"@plateful/**",
+							"@backend/**",
+							[":ALIAS:", "&/**", "!**/*.css*"],
+							":PATH:",
+							":BLANK_LINE:",
+							"**/*.css*",
+							":BLANK_LINE:",
+							"**/*.(svg|png|jpeg)"
+						]
+					}
+				}
 			}
 		}
 	}

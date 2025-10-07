@@ -1,4 +1,5 @@
 import { ChefHat } from "lucide-react";
+
 import { appConfig } from "@/configs/app.config";
 
 export function Brand() {

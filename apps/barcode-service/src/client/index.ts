@@ -1,4 +1,5 @@
 import { hc } from "hono/client";
+
 import type { app } from "../app.js";
 
 /**

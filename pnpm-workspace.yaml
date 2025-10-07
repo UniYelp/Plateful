@@ -11,4 +11,5 @@ catalog:
   hono: ^4.9.9
   zod: ^4.1.11
 
-catalogMode: prefer
+catalogMode: manual
+cleanupUnusedCatalogs: true

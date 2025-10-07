@@ -1,5 +1,6 @@
 import type { ClerkAuthVariables } from "@hono/clerk-auth";
 import type { RequestIdVariables } from "hono/request-id";
+
 import type { ENV } from "./configs/env.config.js";
 import type { redis } from "./configs/redis.config.js";
 import type { Bindings, Variables } from "./types.js";

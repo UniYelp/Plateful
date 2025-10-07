@@ -1,15 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUser } from '@clerk/clerk-react'
 import { ArrowRight, CheckCircle } from "lucide-react";
+
 import { Footer } from "@/components/layouts/Footer";
 import { Header } from "@/components/layouts/Header";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { features, SectionHash, stages } from "@/pages/landing-page";
-import "../App.css";
+
+import homeCss from "@/styles/home.css?url";
 
 export const Route = createFileRoute("/")({
+	head: () => ({
+		links: [{ rel: "stylesheet", href: homeCss }],
+	}),
 	component: LandingPage,
 	staticData: {
 		links: [

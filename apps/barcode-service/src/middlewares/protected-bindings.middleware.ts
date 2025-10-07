@@ -1,4 +1,5 @@
 import { createMiddleware } from "hono/factory";
+
 import { redis } from "../configs/redis.config.js";
 import type { ProtectedRouteContext } from "../ctx.js";
 
