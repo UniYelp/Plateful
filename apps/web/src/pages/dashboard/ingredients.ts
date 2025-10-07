@@ -1,0 +1,76 @@
+// Mock ingredients data
+export const mockIngredients = [
+  {
+    id: "1",
+    title: "Fresh Basil",
+    description: "Organic fresh basil leaves",
+    amount: "50g",
+    addedDate: "2024-01-15",
+    expiryDate: "2024-01-18",
+    image: "/fresh-basil.png",
+    category: "herbs",
+  },
+  {
+    id: "2",
+    title: "Whole Milk",
+    description: "Fresh whole milk",
+    amount: "1L",
+    addedDate: "2024-01-14",
+    expiryDate: "2024-01-20",
+    image: "/milk-carton.png",
+    category: "dairy",
+  },
+  {
+    id: "3",
+    title: "Chicken Breast",
+    description: "Boneless chicken breast",
+    amount: "500g",
+    addedDate: "2024-01-13",
+    expiryDate: "2024-01-19",
+    image: "/grilled-chicken-breast.png",
+    category: "meat",
+  },
+  {
+    id: "4",
+    title: "Roma Tomatoes",
+    description: "Fresh roma tomatoes",
+    amount: "6 pieces",
+    addedDate: "2024-01-12",
+    expiryDate: "2024-01-25",
+    image: "/roma-tomatoes.jpg",
+    category: "vegetables",
+  },
+  {
+    id: "5",
+    title: "Olive Oil",
+    description: "Extra virgin olive oil",
+    amount: "500ml",
+    addedDate: "2024-01-10",
+    expiryDate: "2024-06-10",
+    image: "/olive-oil-bottle.png",
+    category: "oils",
+  },
+  {
+    id: "6",
+    title: "Greek Yogurt",
+    description: "Plain Greek yogurt",
+    amount: "500g",
+    addedDate: "2024-01-14",
+    expiryDate: "2024-01-21",
+    image: "/greek-yogurt-container.png",
+    category: "dairy",
+  },
+]
+
+export const categories = ["all", "vegetables", "fruits", "meat", "dairy", "herbs", "oils", "grains"]
+
+export const ingredientsCategories = [
+	{ value: "vegetables", label: "Vegetables" },
+	{ value: "fruits", label: "Fruits" },
+	{ value: "meat", label: "Meat & Poultry" },
+	{ value: "dairy", label: "Dairy" },
+	{ value: "herbs", label: "Herbs & Spices" },
+	{ value: "oils", label: "Oils & Condiments" },
+	{ value: "grains", label: "Grains & Cereals" },
+	{ value: "other", label: "Other" },
+];
