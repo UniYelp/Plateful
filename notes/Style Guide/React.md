@@ -28,12 +28,16 @@
   > }
   > ```
 - Props order
-	1. **"Truthy" booleans** → use shorthand form (isEnabled, not isEnabled={true} or isEnabled={isEnabled} when always true)
-	2.  **Constants / literals** → `prop={"value"}` or `prop={42}`
-	3. **Variables / state values** → `prop={variable}`
-	4. **Functions / event handlers** → `onClick={handleClick}`
+	1. **key** prop
+	2. ref prop
+	3. **"Truthy" booleans** → use shorthand form (isEnabled, not isEnabled={true} or isEnabled={isEnabled} when always true)
+	4.  **Constants / literals** → `prop={"value"}` or `prop={42}`
+	5. **Variables / state values** → `prop={variable}`
+	6. **Functions / event handlers** → `onClick={handleClick}`
 	```tsx
 	<Component
+	  key={key}
+	  ref={ref}
 	  isEnabled
 	  prop={"value"}
 	  label={label}
