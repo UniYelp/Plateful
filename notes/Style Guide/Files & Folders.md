@@ -47,7 +47,7 @@
 	- `@plateful/web`
 	- `@plateful.tests/utils`
 
-## 🧩 Naming Conventions
+## Naming Conventions
 ### File Names
 - **Default casing:**
   All file names should use **`kebab-case`**.

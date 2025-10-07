@@ -30,6 +30,9 @@
 					}
 				}
 			},
+			"suspicious": {
+				"noDuplicateTestHooks": "error"
+			},
 			"nursery": {
 				"useSortedClasses": {
 					"level": "error",

@@ -1,4 +1,4 @@
-export const appConfig = {
-	appName: "Plateful",
+export const APP = {
+	name: "Plateful",
 	platform: "web",
 } as const;

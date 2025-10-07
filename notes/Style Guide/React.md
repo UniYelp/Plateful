@@ -2,8 +2,8 @@
 - Name the props type `Props`
   ```tsx
 	type Props = {
-	  title: string
-	}
+	  title: string;
+	};
 	```
   > [!warning] If it is necessary to export the type, or if the file contains multiple components (which is discouraged), name the Props type appropriately
 - When the component accepts `children`, use [[Architecture/Stack/React|React]]'s `PropsWithChildren`
@@ -24,7 +24,7 @@
   > [!warning] Acceptable for simple components
   > ```tsx
   > export function Card({ title, children }: Props) {
-  > 	return <div>{title}</div>
+  > 	return <div>{title}</div>;
   > }
   > ```
 - Components should be defined as `function declarations`, you can use `arrow functions` for small, one-liner, components, or for components declared within other components / methods
@@ -32,15 +32,15 @@
   Prefer TypeScript’s natural inference — it’s simpler, safer, and avoids `children` confusion.
 - Use the **Compound Component** pattern for elements that are **meant to be used together** (e.g. `Dropdown` + `Dropdown.Item`).
   ```tsx
-	export const Dropdown = ({ children }: Props) => <div>{children}</div>;
-	Dropdown.Item = ({ children }: Props) => <div>{children}</div>
+	export const Dropdown = ({ children }: Props) => <div>{children}</div>;;
+	Dropdown.Item = ({ children }: Props) => <div>{children}</div>;
 	// or
 	import { DropdownItem } from './DropdownItem.tsx';
 	export const Dropdown = ({ children }: Props) => <div>{children}</div>;
 	Dropdown.Item = DropdownItem;
 	```
 
-### ⚙️ React Hooks & Effects
+### React Hooks & Effects
 - Follow [[Architecture/Stack/React|React]]’s [“You Might Not Need an Effect”](https://react.dev/learn/you-might-not-need-an-effect) guide — **avoid unnecessary effects**.
 - When you **must** use effects for **event handling**, always pair them with [useEffectEvent](https://react.dev/reference/react/useEffectEvent)
 - **Place the effect as the last hook** in the file for clarity and consistency.
@@ -50,7 +50,7 @@
   ```tsx
 	export const Route = createFileRoute('/users')({
 		component: UsersPage,
-	})
+	});
 	
 	function UsersPage() {}
 		
@@ -61,6 +61,6 @@
 	export const Route = createFileRoute('/dashboard')({
 	  component: Dashboard,
 	  staticData: { links: [] },
-	})
+	});
 	```
 - [[Files & Folders#^tanstack-router-naming-conventions|Naming Conventions]]

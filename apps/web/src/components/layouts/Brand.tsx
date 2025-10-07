@@ -1,6 +1,6 @@
 import { ChefHat } from "lucide-react";
 
-import { appConfig } from "@/configs/app.config";
+import { APP } from "@/configs/app.config";
 
 export function Brand() {
 	return (
@@ -9,7 +9,7 @@ export function Brand() {
 				<ChefHat className="h-5 w-5 text-primary-foreground" />
 			</div>
 			<span className="font-bold text-foreground text-xl">
-				{appConfig.appName}
+				{APP.name}
 			</span>
 		</div>
 	);
