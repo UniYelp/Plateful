@@ -27,6 +27,40 @@
   > 	return <div>{title}</div>;
   > }
   > ```
+- Props order
+	1. **"Truthy" booleans** → use shorthand form (isEnabled, not isEnabled={true} or isEnabled={isEnabled} when always true)
+	2.  **Constants / literals** → `prop={"value"}` or `prop={42}`
+	3. **Variables / state values** → `prop={variable}`
+	4. **Functions / event handlers** → `onClick={handleClick}`
+	```tsx
+	<Component
+	  isEnabled
+	  prop={"value"}
+	  label={label}
+	  onClick={handleClick}
+	/>
+	```
+- Props destructure order
+	1. **Variables** → `{ isEnabled }`
+	2. **Variables with defaults** → `{ isEnabled = false }`
+	3. **Functions** → `{ onClick }`
+	4. **Functions with defaults** → `{ onClick = noop }`
+	5. **Ref** → `{ ref }`
+	6. **Children** → `{ children }`
+	7. **Rest** → `{ ...rest }`
+	```tsx
+	export function Button(props: Props) {
+		const {
+			 title,
+			 isDisabled = false,
+			 onClick,
+			 onClose = noop,
+			 ref,
+			 children,
+			 ...rest
+		} = props;
+	}
+	```
 - Components should be defined as `function declarations`, you can use `arrow functions` for small, one-liner, components, or for components declared within other components / methods
 - Do not use `React.FC`
   Prefer TypeScript’s natural inference — it’s simpler, safer, and avoids `children` confusion.
@@ -39,12 +73,10 @@
 	export const Dropdown = ({ children }: Props) => <div>{children}</div>;
 	Dropdown.Item = DropdownItem;
 	```
-
 ### React Hooks & Effects
 - Follow [[Architecture/Stack/React|React]]’s [“You Might Not Need an Effect”](https://react.dev/learn/you-might-not-need-an-effect) guide — **avoid unnecessary effects**.
 - When you **must** use effects for **event handling**, always pair them with [useEffectEvent](https://react.dev/reference/react/useEffectEvent)
 - **Place the effect as the last hook** in the file for clarity and consistency.
-
 ### [[TanStack Router]]
 - If a route file needs to reference its `Route` variable, **re-export it** with a clearer name — but **do not remove the original `export const Route`** (TanStack Router requires it).
   ```tsx
@@ -64,3 +96,5 @@
 	});
 	```
 - [[Files & Folders#^tanstack-router-naming-conventions|Naming Conventions]]
+- [Routing Concepts](https://tanstack.com/router/v1/docs/framework/react/routing/routing-concepts)
+- [Create Route Property Order](https://tanstack.com/router/v1/docs/eslint/create-route-property-order)
