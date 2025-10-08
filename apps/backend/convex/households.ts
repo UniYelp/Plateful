@@ -1,10 +1,9 @@
-import { v } from "convex/values";
-
 import type { Id } from "./_generated/dataModel.d";
-import { type MutationCtx, query } from "./_generated/server";
+import { , type MutationCtx, query } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server.d";
-import { internalMutation, mutation } from "./functions";
+import { internalMutation, mutation} from "./functions";
 import { getCurrentUserOrThrow } from "./users";
+import { v } from "./variables";
 
 // #region Queries
 export const getUserHouseholds = query({

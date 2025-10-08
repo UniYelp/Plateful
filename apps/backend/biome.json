@@ -1,0 +1,33 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+    "extends": "//",
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "style": {
+                "noRestrictedImports": {
+                    "level": "error",
+                    "options": {
+                        "patterns": [
+                            {
+                                "group": [
+                                    "*/_generated/server"
+                                ],
+                                "importNamePattern": "mutation|internalMutation",
+                                "message": "Use functions.ts for mutation"
+                            },
+                            {
+                                "group": [
+                                    "convex/values"
+                                ],
+                                "importNamePattern": "v",
+                                "message": "Use variables.ts for mutation"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

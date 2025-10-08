@@ -39,5 +39,8 @@
 			"icon": "server",
 			"format": "svg"
 		}
-	]
+	],
+	"[typescript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	}
 }

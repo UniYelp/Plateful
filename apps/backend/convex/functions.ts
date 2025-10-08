@@ -4,9 +4,9 @@ import {
 } from "convex-helpers/server/customFunctions";
 
 import {
-	// biome-ignore lint/style/noRestrictedImports: overriding these
+	// biome-ignore lint/style/noRestrictedImports: overriding this
 	internalMutation as rawInternalMutation,
-	// biome-ignore lint/style/noRestrictedImports: overriding these
+	// biome-ignore lint/style/noRestrictedImports: overriding this
 	mutation as rawMutation,
 } from "./_generated/server";
 import { triggers } from "./triggers";

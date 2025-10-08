@@ -17,21 +17,7 @@
         "rules": {
             "recommended": true,
             "style": {
-                "useConsistentCurlyBraces": "error",
-                "noRestrictedImports": {
-                    "level": "error",
-                    "options": {
-                        "patterns": [
-                            {
-                                "group": [
-                                    "*/_generated/server"
-                                ],
-                                "importNamePattern": "mutation|internalMutation",
-                                "message": "Use functions.ts for mutation"
-                            }
-                        ]
-                    }
-                }
+                "useConsistentCurlyBraces": "error"
             },
             "suspicious": {
                 "noDuplicateTestHooks": "error"

@@ -1,5 +1,8 @@
 import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+import {
+	// biome-ignore lint/style/noRestrictedImports: allowed for schema initialization
+	v,
+} from "convex/values";
 
 export default defineSchema({
 	users: defineTable({
