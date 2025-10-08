@@ -65,7 +65,7 @@ function LandingPage() {
 					</p>
 					<div className="mb-12 flex flex-col justify-center gap-4 sm:flex-row">
 						<Button size="lg" className="px-8 text-lg" asChild>
-							<Link to={isSignedIn ? "/dashboard" : "."}>
+							<Link to={isSignedIn ? "/dashboard" : "/sign-in"}>
 								<StartNowBtn />
 							</Link>
 						</Button>

@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiPalette",
       "LiDatabase",
       "SiReact",
       "LiFileStack",
-      "LiBrickWall",
-      "SiVitest"
+      "LiBrickWall"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -53,9 +53,6 @@
   "Architecture/Services/Convex.md": "LiDatabaseZap",
   "Architecture/Services/Prisma.md": "SiPrisma",
   "Architecture/Services/Upstash.md": "SiUpstash",
-  "Standards": "LiBrickWall",
-  "Standards/Files & Folders": "LiFileStack",
-  "Standards/DB": "LiDatabase",
   "Architecture/Stack/React.md": "SiReact",
   "Architecture/Stack/PostgreSQL.md": "SiPostgresql",
   "Architecture/Stack/TailwindCSS.md": "SiTailwindcss",
@@ -69,7 +66,7 @@
   "Architecture/Stack/Redis.md": "SiRedis",
   "Architecture/Stack/TypeScript.md": "SiTypescript",
   "Architecture/Stack/Vitest.md": "SiVitest",
-  "Style Guide": "LiBrickWall",
+  "Style Guide": "LiPalette",
   "Style Guide/Files & Folders.md": "LiFileStack",
   "Style Guide/TypeScript.md": "SiTypescript",
   "Style Guide/React.md": "SiReact",
