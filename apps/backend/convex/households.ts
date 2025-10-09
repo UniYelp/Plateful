@@ -1,15 +1,15 @@
 import type { Id } from "./_generated/dataModel.d";
-import { , type MutationCtx, query } from "./_generated/server";
+import { , type MutationCtx, } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server.d";
-import { internalMutation, mutation} from "./functions";
-import { getCurrentUserOrThrow } from "./users";
+import { internalMutation } from "./functions";
 import { v } from "./variables";
+import { authedMutation, authedQuery } from "./with-auth";
 
 // #region Queries
-export const getUserHouseholds = query({
+export const getUserHouseholds = authedQuery({
 	args: {},
 	handler: async (ctx) => {
-		const { _id: userId } = await getCurrentUserOrThrow(ctx);
+		const { _id: userId } = ctx.user;
 		const memberships = await getUserMemberships(ctx, userId);
 
 		const households = await Promise.all(
@@ -29,10 +29,10 @@ export const getUserHouseholds = query({
 	},
 });
 
-export const getHouseholdMembers = query({
+export const getHouseholdMembers = authedQuery({
 	args: { householdId: v.id("households") },
 	handler: async (ctx, args) => {
-		const { _id: userId } = await getCurrentUserOrThrow(ctx);
+		const { _id: userId } = ctx.user;
 
 		// Check if user is member of this household
 		const membership = await ctx.db
@@ -56,13 +56,13 @@ export const getHouseholdMembers = query({
 });
 
 // #region Mutations
-export const createHousehold = mutation({
+export const createHousehold = authedMutation({
 	args: {
 		name: v.string(),
 		description: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
-		const { _id: userId } = await getCurrentUserOrThrow(ctx);
+		const { _id: userId } = ctx.user;
 		const householdId = await createUserHousehold(ctx, userId, args);
 		return householdId;
 	},

@@ -1,10 +1,11 @@
 import type { UserJSON } from "@clerk/backend";
 import type { Validator } from "convex/values";
 
-import { type QueryCtx, query } from "./_generated/server";
+import { query } from "./_generated/server";
 import { internalMutation } from "./functions";
 import { createUserHousehold } from "./households";
 import { v } from "./variables";
+import { getCurrentUser, userByExternalId } from "./with-auth";
 
 // #region Queries
 export const current = query({
@@ -51,25 +52,3 @@ export const deleteFromClerk = internalMutation({
 });
 
 // #region Helpers
-export async function getCurrentUserOrThrow(ctx: QueryCtx) {
-	const userRecord = await getCurrentUser(ctx);
-	if (!userRecord) throw new Error("Not authenticated");
-	return userRecord;
-}
-
-export async function getCurrentUser(ctx: QueryCtx) {
-	const identity = await ctx.auth.getUserIdentity();
-
-	if (identity === null) {
-		return null;
-	}
-
-	return await userByExternalId(ctx, identity.subject);
-}
-
-async function userByExternalId(ctx: QueryCtx, externalId: string) {
-	return await ctx.db
-		.query("users")
-		.withIndex("byExternalId", (q) => q.eq("externalId", externalId))
-		.unique();
-}
