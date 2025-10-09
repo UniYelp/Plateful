@@ -17,10 +17,17 @@
         "rules": {
             "recommended": true,
             "style": {
+                "noEnum": "warn",
+                "noMagicNumbers": "warn",
+                "noDefaultExport": "warn",
+                "noYodaExpression": "warn",
                 "useConsistentCurlyBraces": "error"
             },
             "suspicious": {
                 "noDuplicateTestHooks": "error"
+            },
+            "correctness": {
+                "noRenderReturnValue": "on"
             },
             "nursery": {
                 "useSortedClasses": {
