@@ -1,9 +1,10 @@
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import viteReact from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react";
 import { defineConfig, type PluginOption } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+// biome-ignore lint/style/noDefaultExport: external config
 export default defineConfig({
 	server: {
 		//? 3000 + 'Plateful'.split('').map(c => c.charCodeAt(0)).reduce((p, n) => p + n, 0)
@@ -12,7 +13,11 @@ export default defineConfig({
 	plugins: [
 		tsconfigPaths() as PluginOption,
 		tanstackRouter({ autoCodeSplitting: true }),
-		viteReact(),
+		react({
+			babel: {
+				plugins: [["babel-plugin-react-compiler"]],
+			},
+		}),
 		tailwindcss() as PluginOption,
 	],
 });

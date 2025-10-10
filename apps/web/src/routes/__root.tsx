@@ -49,7 +49,7 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootComponent() {
-	usePosthogUserSetup();
+    usePosthogUserSetup();
 
 	return (
 		<>
