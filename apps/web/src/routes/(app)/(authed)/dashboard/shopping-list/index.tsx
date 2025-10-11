@@ -20,7 +20,9 @@ import {
 	sourceLabels,
 } from "@/pages/dashboard/shopping-list";
 
-export const Route = createFileRoute("/(app)/dashboard/shopping-list/")({
+export const Route = createFileRoute(
+	"/(app)/(authed)/dashboard/shopping-list/",
+)({
 	component: RouteComponent,
 });
 
@@ -185,7 +187,7 @@ function ShoppingPage() {
 										.map((item) => (
 											<div
 												key={item.id}
-												className={`flex items-center gap-3 rounded-lg border-l-4 bg-card p-3 ${priorityColors[item.priority]}`}
+												className={`flex items-center gap-3 rounded-lg border-l-4 bg-card p-3 ${priorityColors[item.priority as unknown as keyof typeof priorityColors]}`}
 											>
 												<Checkbox
 													checked={item.checked}
@@ -197,8 +199,18 @@ function ShoppingPage() {
 														<Badge variant="outline" className="text-xs">
 															{item.amount}
 														</Badge>
-														<Badge className={sourceLabels[item.source].color}>
-															{sourceLabels[item.source].label}
+														<Badge
+															className={
+																sourceLabels[
+																	item.source as unknown as keyof typeof sourceLabels
+																].color
+															}
+														>
+															{
+																sourceLabels[
+																	item.source as unknown as keyof typeof sourceLabels
+																].label
+															}
 														</Badge>
 													</div>
 													<p className="text-muted-foreground text-sm">

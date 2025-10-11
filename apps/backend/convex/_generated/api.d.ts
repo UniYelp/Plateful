@@ -16,7 +16,7 @@ import type * as ingredients from "../ingredients.js";
 import type * as migrations from "../migrations.js";
 import type * as triggers_index from "../triggers/index.js";
 import type * as users from "../users.js";
-import type * as variables from "../variables.js";
+import type * as with_auth from "../with_auth.js";
 
 import type {
   ApiFromModules,
@@ -41,7 +41,7 @@ declare const fullApi: ApiFromModules<{
   migrations: typeof migrations;
   "triggers/index": typeof triggers_index;
   users: typeof users;
-  variables: typeof variables;
+  with_auth: typeof with_auth;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

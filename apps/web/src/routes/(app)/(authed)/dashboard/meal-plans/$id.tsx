@@ -14,7 +14,9 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { fullMealTypes, mockMealPlan } from "@/pages/dashboard/meal-plan";
 
-export const Route = createFileRoute("/(app)/dashboard/meal-plans/$id")({
+export const Route = createFileRoute(
+	"/(app)/(authed)/dashboard/meal-plans/$id",
+)({
 	component: RouteComponent,
 });
 
@@ -101,7 +103,7 @@ function MealPlanDetailPage() {
 								Edit Plan
 							</Button>
 							<Button asChild>
-								<Link to="/dashboard/shopping">
+								<Link to="/dashboard/shopping-list">
 									<ShoppingCart className="mr-2 h-4 w-4" />
 									Shopping List
 								</Link>
@@ -169,6 +171,7 @@ function MealPlanDetailPage() {
 							<CardContent>
 								<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 									{fullMealTypes.map((mealType) => {
+										// eslint-disable-next-line @typescript-eslint/no-explicit-any
 										const meal = day[mealType.key as keyof typeof day] as any;
 										return (
 											<div key={mealType.key} className="space-y-2">
@@ -199,7 +202,8 @@ function MealPlanDetailPage() {
 																>
 																	{meal.canCook ? (
 																		<Link
-																			to={`/dashboard/recipes/${meal.id}/cook`}
+																			to="/dashboard/recipes/$id"
+																			params={{ id: meal.id }}
 																		>
 																			<Play className="mr-1 h-3 w-3" />
 																			Cook
@@ -212,7 +216,10 @@ function MealPlanDetailPage() {
 																	)}
 																</Button>
 																<Button variant="outline" size="sm" asChild>
-																	<Link to={`/dashboard/recipes/${meal.id}`}>
+																	<Link
+																		to="/dashboard/recipes/$id"
+																		params={{ id: meal.id }}
+																	>
 																		View
 																	</Link>
 																</Button>

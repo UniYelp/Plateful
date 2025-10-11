@@ -1,18 +1,16 @@
-import { v } from "convex/values";
-
-import { query } from "./_generated/server";
-import { mutation } from "./functions";
 import { validateUserInHouseholdOrThrow } from "./households";
-import { vIngredient } from "./schema";
-import { getCurrentUserOrThrow } from "./users";
+import { ingredientFields, vId } from "./schema";
+import { authedMutation, authedQuery } from "./with_auth";
+
+// #region Validators
 
 // #region Queries
-export const householdIngredients = query({
+export const householdIngredients = authedQuery({
 	args: {
-		householdId: v.id("households"),
+		householdId: vId("households"),
 	},
 	handler: async (ctx, args) => {
-		const { _id: userId } = await getCurrentUserOrThrow(ctx);
+		const { _id: userId } = ctx.user;
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		return await ctx.db
@@ -23,10 +21,11 @@ export const householdIngredients = query({
 });
 
 // #region Mutations
-export const addIngredient = mutation({
-	args: vIngredient,
+export const addIngredient = authedMutation({
+	args: ingredientFields,
 	handler: async (ctx, args) => {
-		const { _id: userId } = await getCurrentUserOrThrow(ctx);
+		const { _id: userId } = ctx.user;
+
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		const now = Date.now();

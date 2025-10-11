@@ -24,7 +24,7 @@ import {
 import { Textarea } from "@/components/ui/Textarea";
 import { ingredientsCategories } from "@/pages/dashboard/ingredients";
 
-export const Route = createFileRoute("/(app)/dashboard/ingredients/add")({
+export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/add")({
 	component: RouteComponent,
 });
 
@@ -74,17 +74,17 @@ function AddIngredientPage() {
 				(ingredient) =>
 					ingredient.toLowerCase().includes(value.toLowerCase()) &&
 					ingredient.toLowerCase() !== value.toLowerCase(),
-			);
+			)
 			setShowSimilarWarning(hasSimilar);
 		}
-	};
+	}
 
 	const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
 			setFormData((prev) => ({ ...prev, image: file }));
 		}
-	};
+	}
 
 	const validateForm = () => {
 		const newErrors: Record<string, string> = {};
@@ -110,13 +110,13 @@ function AddIngredientPage() {
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
-	};
+	}
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (!validateForm()) {
-			return;
+			return
 		}
 
 		setIsSubmitting(true);
@@ -132,7 +132,7 @@ function AddIngredientPage() {
 		} finally {
 			setIsSubmitting(false);
 		}
-	};
+	}
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -358,5 +358,5 @@ function AddIngredientPage() {
 				</Card>
 			</div>
 		</div>
-	);
+	)
 }

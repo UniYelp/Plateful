@@ -25,7 +25,9 @@ import {
 	recipeOptions,
 } from "@/pages/dashboard/recipes";
 
-export const Route = createFileRoute("/(app)/dashboard/recipes/create")({
+export const Route = createFileRoute(
+	"/(app)/(authed)/dashboard/recipes/create",
+)({
 	component: RouteComponent,
 });
 
@@ -41,7 +43,8 @@ function CreateRecipePage() {
 	const [recipeDescription, setRecipeDescription] = useState("");
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [selectedOption, setSelectedOption] = useState<string | null>(null);
-	const [createdRecipe, setCreatedRecipe] = useState<any>(null);
+	const [createdRecipe, setCreatedRecipe] =
+		useState<(typeof recipeOptions)[number]>();
 
 	const toggleTag = (tagId: string) => {
 		setSelectedTags((prev) =>
@@ -109,7 +112,7 @@ function CreateRecipePage() {
 								<div className="space-y-2">
 									<Label htmlFor="description">Recipe Description</Label>
 									<Textarea
-										id="description"
+										// id="description"
 										placeholder="e.g., I want a creamy pasta dish with chicken and vegetables that's not too heavy but still filling. Something that takes about 30 minutes to make and uses ingredients I probably have at home..."
 										value={recipeDescription}
 										onChange={(e) => setRecipeDescription(e.target.value)}

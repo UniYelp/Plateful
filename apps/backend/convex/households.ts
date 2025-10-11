@@ -1,9 +1,15 @@
-import type { Id } from "./_generated/dataModel.d";
-import { , type MutationCtx, } from "./_generated/server";
-import type { QueryCtx } from "./_generated/server.d";
+import type { Id } from "./_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalMutation } from "./functions";
-import { v } from "./variables";
-import { authedMutation, authedQuery } from "./with-auth";
+import {
+	type HouseholdFields,
+	householdFields,
+	type UserStampId,
+	vId,
+} from "./schema";
+import { authedMutation, authedQuery } from "./with_auth";
+
+// #region Validators
 
 // #region Queries
 export const getUserHouseholds = authedQuery({
@@ -30,7 +36,7 @@ export const getUserHouseholds = authedQuery({
 });
 
 export const getHouseholdMembers = authedQuery({
-	args: { householdId: v.id("households") },
+	args: { householdId: vId("households") },
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
 
@@ -57,20 +63,22 @@ export const getHouseholdMembers = authedQuery({
 
 // #region Mutations
 export const createHousehold = authedMutation({
-	args: {
-		name: v.string(),
-		description: v.optional(v.string()),
-	},
+	args: householdFields,
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
-		const householdId = await createUserHousehold(ctx, userId, args);
+		const householdId = await createUserHousehold({
+			ctx,
+			userId,
+			household: args,
+		});
+
 		return householdId;
 	},
 });
 
 export const deleteHouseholds = internalMutation({
 	args: {
-		userId: v.id("users"),
+		userId: vId("users"),
 	},
 	handler: async (ctx, args) => {
 		const memberships = await getUserMemberships(ctx, args.userId);
@@ -118,18 +126,24 @@ export async function validateUserInHouseholdOrThrow(
 	}
 }
 
-export async function createUserHousehold(
-	ctx: MutationCtx,
-	userId: Id<"users">,
-	household: { name: string; description?: string },
-) {
+export async function createUserHousehold({
+	ctx,
+	userId,
+	household,
+	createdBy = userId,
+}: {
+	ctx: MutationCtx;
+	userId: Id<"users">;
+	household: HouseholdFields;
+	createdBy?: UserStampId;
+}) {
 	const now = Date.now();
 
 	const householdId = await ctx.db.insert("households", {
 		name: household.name,
 		description: household.description,
-		createdBy: userId,
-		updatedBy: userId,
+		createdBy,
+		updatedBy: createdBy,
 		updatedAt: now,
 	});
 
@@ -138,6 +152,8 @@ export async function createUserHousehold(
 		userId,
 		role: "manager",
 		joinedAt: now,
+		createdBy,
+		updatedBy: createdBy,
 		updatedAt: now,
 	});
 

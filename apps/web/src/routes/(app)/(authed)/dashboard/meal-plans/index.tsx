@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/Card";
 import { mockMealPlans, statusColors } from "@/pages/dashboard/meal-plan";
 
-export const Route = createFileRoute("/(app)/dashboard/meal-plans/")({
+export const Route = createFileRoute("/(app)/(authed)/dashboard/meal-plans/")({
 	component: RouteComponent,
 });
 
@@ -107,6 +107,7 @@ function MealPlansPage() {
 										<div className="space-y-1">
 											{plan.meals.slice(0, 3).map((meal, index) => (
 												<div
+													// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 													key={index}
 													className="text-muted-foreground text-xs"
 												>
@@ -125,7 +126,10 @@ function MealPlansPage() {
 									{/* Actions */}
 									<div className="flex gap-2 pt-2">
 										<Button size="sm" className="flex-1" asChild>
-											<Link to={`/dashboard/meal-plans/${plan.id}`}>
+											<Link
+												to="/dashboard/meal-plans/$id"
+												params={{ id: plan.id }}
+											>
 												<CalendarDays className="mr-1 h-3 w-3" />
 												View Plan
 											</Link>

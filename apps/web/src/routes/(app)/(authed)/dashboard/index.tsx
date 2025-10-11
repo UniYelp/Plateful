@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	AlertTriangle,
 	BookOpen,
@@ -13,7 +13,7 @@ import {
 	Users,
 } from "lucide-react";
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarInitials } from "@/components/ui/Avatar";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
@@ -40,7 +40,7 @@ import {
 	mockStats,
 } from "@/pages/dashboard/dashboard-page";
 
-export const Route = createFileRoute("/(app)/dashboard/")({
+export const Route = createFileRoute("/(app)/(authed)/dashboard/")({
 	component: RouteComponent,
 	staticData: {
 		links: [
@@ -70,8 +70,7 @@ function RouteComponent() {
 
 function DashboardPage() {
 	const { user, isLoaded } = useUser();
-	const router = useRouter();
-	const [household, setHousehold] = useState(mockHousehold);
+	const [household] = useState(mockHousehold);
 	const [isQuickInviteOpen, setIsQuickInviteOpen] = useState(false);
 	const [quickInviteEmail, setQuickInviteEmail] = useState("");
 
@@ -319,11 +318,11 @@ function DashboardPage() {
 								<div className="space-y-3">
 									{household.members.map((member) => (
 										<div key={member.id} className="flex items-center gap-3">
-											<Avatar className="h-8 w-8">
+											{/* <Avatar className="h-8 w-8">
 												<AvatarFallback>
 													<AvatarInitials name={member.name} />
 												</AvatarFallback>
-											</Avatar>
+											</Avatar> */}
 											<div className="flex-1">
 												<p className="font-medium text-sm">{member.name}</p>
 												<p className="text-muted-foreground text-xs">
@@ -369,7 +368,7 @@ function DashboardPage() {
 												<div>
 													<Label htmlFor="quick-email">Email Address</Label>
 													<Input
-														id="quick-email"
+														// id="quick-email"
 														type="email"
 														placeholder="Enter email address"
 														value={quickInviteEmail}

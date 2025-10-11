@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { difficultyColors, mockRecipes } from "@/pages/dashboard/recipes";
 
-export const Route = createFileRoute("/(app)/dashboard/recipes/")({
+export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/")({
 	component: RouteComponent,
 });
 
@@ -185,7 +185,10 @@ function RecipesPage() {
 										asChild={recipe.canCook}
 									>
 										{recipe.canCook ? (
-											<Link to={`/dashboard/recipes/${recipe.id}/cook`}>
+											<Link
+												to="/dashboard/recipes/$id"
+												params={{ id: recipe.id }}
+											>
 												<Play className="mr-1 h-3 w-3" />
 												Cook Now
 											</Link>
@@ -197,7 +200,10 @@ function RecipesPage() {
 										)}
 									</Button>
 									<Button variant="outline" size="sm" asChild>
-										<Link to={`/dashboard/recipes/${recipe.id}`}>
+										<Link
+											to="/dashboard/recipes/$id"
+											params={{ id: recipe.id }}
+										>
 											<BookOpen className="h-3 w-3" />
 										</Link>
 									</Button>

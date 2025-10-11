@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { categories, mockIngredients } from "@/pages/dashboard/ingredients";
 
-export const Route = createFileRoute("/(app)/dashboard/ingredients/")({
+export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
 	component: RouteComponent,
 });
 
@@ -151,6 +151,7 @@ function IngredientsPage() {
 										<div className="flex items-center justify-between text-sm">
 											<span className="text-muted-foreground">Expires:</span>
 											<Badge
+												// eslint-disable-next-line @typescript-eslint/no-explicit-any
 												variant={expiryStatus.color as any}
 												className="text-xs"
 											>

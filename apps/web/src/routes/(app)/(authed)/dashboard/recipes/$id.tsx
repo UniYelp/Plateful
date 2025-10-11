@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/Card";
 import { mockRecipe } from "@/pages/dashboard/recipes";
 
-export const Route = createFileRoute("/(app)/dashboard/recipes/$id")({
+export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
 });
 
@@ -22,7 +22,7 @@ function RouteComponent() {
 }
 
 function RecipeDetailPage() {
-	const { id } = Route.useParams();
+	// const { id } = Route.useParams();
 	const [recipe] = useState(mockRecipe);
 	const [isFavorited, setIsFavorited] = useState(false);
 
@@ -114,7 +114,7 @@ function RecipeDetailPage() {
 								asChild={recipe.canCook}
 							>
 								{recipe.canCook ? (
-									<Link to={`/dashboard/recipes/${recipe.id}/cook`}>
+									<Link to="/dashboard/recipes/$id" params={{ id: recipe.id }}>
 										<Play className="mr-2 h-4 w-4" />
 										Start Cooking
 									</Link>
@@ -143,7 +143,9 @@ function RecipeDetailPage() {
 									className="mt-2 bg-transparent"
 									asChild
 								>
-									<Link to="/dashboard/shopping">Add to Shopping List</Link>
+									<Link to="/dashboard/shopping-list">
+										Add to Shopping List
+									</Link>
 								</Button>
 							</div>
 						)}
@@ -165,6 +167,7 @@ function RecipeDetailPage() {
 								<div className="space-y-3">
 									{recipe.ingredients.map((ingredient, index) => (
 										<div
+											// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 											key={index}
 											className="flex items-center justify-between"
 										>
@@ -233,6 +236,7 @@ function RecipeDetailPage() {
 							<CardContent>
 								<div className="space-y-4">
 									{recipe.steps.map((step, index) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 										<div key={index} className="flex gap-4">
 											<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
 												{index + 1}
@@ -252,6 +256,7 @@ function RecipeDetailPage() {
 							<CardContent>
 								<div className="grid gap-2">
 									{recipe.advantages.map((advantage, index) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 										<div key={index} className="flex items-center gap-2">
 											<div className="h-2 w-2 rounded-full bg-primary" />
 											<span className="text-sm">{advantage}</span>
