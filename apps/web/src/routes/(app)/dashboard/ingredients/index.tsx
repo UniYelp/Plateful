@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
 import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
+import { api } from "@backend/api";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -16,10 +18,20 @@ function RouteComponent() {
 	return <IngredientsPage />;
 }
 
+// TODO: refactor
+
 function IngredientsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
 	const [ingredients] = useState(mockIngredients);
+
+	const households = useQuery(api.households.getUserHouseholds);
+	const household = households?.[0];
+
+	const ingredients2 = useQuery(
+		api.ingredients.householdIngredients,
+		household ? { householdId: household._id } : "skip",
+	);
 
 	const filteredIngredients = ingredients.filter((ingredient) => {
 		const matchesSearch =
@@ -71,6 +83,8 @@ function IngredientsPage() {
 						</Link>
 					</Button>
 				</div>
+
+				{ingredients2 ? ingredients2.map((ing) => ing.name) : "Loading..."}
 
 				{/* Search and Filter */}
 				<div className="mb-6 flex flex-col gap-4 sm:flex-row">

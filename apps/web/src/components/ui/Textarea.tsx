@@ -3,7 +3,7 @@ import { cn } from "@/utils/ui";
 
 export interface TextareaProps
 	extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-	ref: Ref<HTMLTextAreaElement>;
+	ref?: Ref<HTMLTextAreaElement>;
 }
 
 const Textarea = ({ className, ref, ...props }: TextareaProps) => {

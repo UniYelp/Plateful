@@ -1,7 +1,9 @@
+import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { AlertCircle, ArrowLeft, Package, Upload } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+
 import { Button } from "@/components/ui/Button";
 import {
 	Card,
@@ -27,11 +29,25 @@ export const Route = createFileRoute("/(app)/dashboard/ingredients/add")({
 });
 
 function RouteComponent() {
-	return <AddIngredientPage/>;
+	return <AddIngredientPage />;
 }
 
 function AddIngredientPage() {
 	const router = useRouter();
+	const form = useForm({
+		defaultValues: {
+			name: "",
+			description: "",
+			amount: "",
+			category: "",
+			expiryDate: "",
+			image: null as File | null,
+		},
+		onSubmit: ({value}) => {
+			console.log(value)
+		},
+	});
+
 	const [formData, setFormData] = useState({
 		title: "",
 		description: "",
@@ -210,7 +226,6 @@ function AddIngredientPage() {
 											accept="image/*"
 											onChange={handleImageUpload}
 											className="hidden"
-											id="image-upload"
 										/>
 										<Label htmlFor="image-upload" className="cursor-pointer">
 											<Button type="button" variant="outline" size="sm" asChild>
@@ -228,40 +243,44 @@ function AddIngredientPage() {
 							</div>
 
 							{/* Title */}
-							<div className="space-y-2">
-								<Label htmlFor="title">Title *</Label>
-								<Input
-									id="title"
-									placeholder="e.g., Fresh Basil"
-									value={formData.title}
-									onChange={(e) => handleInputChange("title", e.target.value)}
-									className={errors.title ? "border-destructive" : ""}
-								/>
-								{errors.title && (
-									<p className="text-destructive text-sm">{errors.title}</p>
+							<form.Field name="name">
+								{(field) => (
+								<div className="space-y-2">
+									<Label htmlFor="title">Title *</Label>
+									<Input
+										placeholder="e.g., Fresh Basil"
+										value={field.state.value}
+										onChange={(e) => field.handleChange(e.target.value)}
+										className={errors.title ? "border-destructive" : ""}
+									/>
+									{errors.title && (
+										<p className="text-destructive text-sm">{errors.title}</p>
+									)}									
+								</div>
 								)}
-							</div>
+							</form.Field>
 
 							{/* Description */}
-							<div className="space-y-2">
-								<Label htmlFor="description">Description</Label>
-								<Textarea
-									id="description"
-									placeholder="e.g., Organic fresh basil leaves from local farm"
-									value={formData.description}
-									onChange={(e) =>
-										handleInputChange("description", e.target.value)
-									}
-									rows={3}
-								/>
-							</div>
-
+							<form.Field name="description" >
+								{(field) => (
+									<div className="space-y-2">
+										<Label htmlFor="description">Description</Label>
+										<Textarea
+											placeholder="e.g., Organic fresh basil leaves from local farm"
+											value={field.state.value}
+											onChange={(e) =>
+												field.handleChange(e.target.value)
+											}
+											rows={3}
+										/>
+									</div>
+								)}
+							</form.Field>
 							{/* Amount and Category */}
 							<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 								<div className="space-y-2">
 									<Label htmlFor="amount">Amount *</Label>
 									<Input
-										id="amount"
 										placeholder="e.g., 50g, 1L, 3 pieces"
 										value={formData.amount}
 										onChange={(e) =>
@@ -307,7 +326,6 @@ function AddIngredientPage() {
 							<div className="space-y-2">
 								<Label htmlFor="expiryDate">Expiry Date *</Label>
 								<Input
-									id="expiryDate"
 									type="date"
 									value={formData.expiryDate}
 									onChange={(e) =>

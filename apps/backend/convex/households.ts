@@ -91,7 +91,7 @@ export const deleteVacantHouseholds = internalMutation({
 });
 
 // #region Helpers
-async function getUserMemberships(
+export async function getUserMemberships(
 	ctx: QueryCtx | MutationCtx,
 	userId: Id<"users">,
 ) {
@@ -99,6 +99,24 @@ async function getUserMemberships(
 		.query("householdMembers")
 		.withIndex("by_user", (q) => q.eq("userId", userId))
 		.collect();
+}
+
+export async function validateUserInHouseholdOrThrow(
+	ctx: QueryCtx | MutationCtx,
+	userId: Id<"users">,
+	householdId: Id<"households">,
+) {
+	const membership = await ctx.db
+		.query("householdMembers")
+		.withIndex("by_household_and_user", (q) =>
+			q.eq("householdId", householdId).eq("userId", userId),
+		)
+		.unique();
+	if (!membership) {
+		throw new Error(
+			`User with ID ${userId} is not a member of household with ID ${householdId}.`,
+		);
+	}
 }
 
 export async function createUserHousehold(
@@ -112,6 +130,7 @@ export async function createUserHousehold(
 		name: household.name,
 		description: household.description,
 		createdBy: userId,
+		updatedBy: userId,
 		updatedAt: now,
 	});
 

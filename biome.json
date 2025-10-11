@@ -37,7 +37,8 @@
 					"options": {
 						"functions": ["clsx", "cva", "cn", "twMerge"]
 					}
-				}
+				},
+				"noFloatingPromises": "error"
 			}
 		}
 	},
