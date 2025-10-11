@@ -1,6 +1,6 @@
 ---
 stack:
-  - "[[TypeScript]]"
+  - "[[Architecture/Stack/TypeScript]]"
   - "[[Hono]]"
   - "[[Clerk]]"
 ---

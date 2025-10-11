@@ -6,7 +6,7 @@ tags:
   - web
   - api
 ---
-A powerful data-fetching and caching library for [[React]] that simplifies server-state management. It provides declarative APIs for managing loading states, error handling, caching, and background refetching, all without having to manually write boilerplate `useEffect` + `fetch` code.
+A powerful data-fetching and caching library for [[Architecture/Stack/React]] that simplifies server-state management. It provides declarative APIs for managing loading states, error handling, caching, and background refetching, all without having to manually write boilerplate `useEffect` + `fetch` code.
 
 A key advantage is how seamlessly it integrates with [[TanStack Router]] from the [[TanStack]] ecosystem. Because both libraries are designed to work together, routing and data-fetching can be co-located and declaratively defined. This makes for a smooth flow where routes can define their own data requirements, and React Query automatically keeps that data fresh.
 

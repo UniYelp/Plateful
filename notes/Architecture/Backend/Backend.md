@@ -1,6 +1,6 @@
 ---
 stack:
   - "[[Convex]]"
-  - "[[TypeScript]]"
+  - "[[Architecture/Stack/TypeScript]]"
   - "[[Hono]]"
 ---

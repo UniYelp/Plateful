@@ -29,6 +29,7 @@
 	"devDependencies": {
 		"@dotenvx/dotenvx": "^1.50.1",
 		"@edge-runtime/vm": "^5.0.0",
+		"@plateful/types": "workspace:*",
 		"convex-test": "^0.0.38",
 		"vite": "^7.1.7"
 	}

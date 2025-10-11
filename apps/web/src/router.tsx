@@ -13,6 +13,7 @@ import { toast } from "sonner";
 
 import { Devtools } from "@/components/layouts/Devtools";
 import { ENV } from "@/configs/env.config";
+import { NotFound } from "./components/layouts/NotFound";
 import { routeTree } from "./routeTree.gen";
 
 /**
@@ -77,6 +78,7 @@ export function getRouter() {
 				<Devtools />
 			</>
 		),
+		defaultNotFoundComponent: NotFound,
 	});
 
 	setupRouterSsrQueryIntegration({

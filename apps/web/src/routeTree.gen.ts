@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DevRouteImport } from './routes/dev'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
@@ -25,6 +26,11 @@ import { Route as appDashboardMealPlansCreateRouteImport } from './routes/(app)/
 import { Route as appDashboardMealPlansIdRouteImport } from './routes/(app)/dashboard/meal-plans/$id'
 import { Route as appDashboardIngredientsAddRouteImport } from './routes/(app)/dashboard/ingredients/add'
 
+const DevRoute = DevRouteImport.update({
+  id: '/dev',
+  path: '/dev',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
   getParentRoute: () => rootRouteImport,
@@ -108,6 +114,7 @@ const appDashboardIngredientsAddRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof appauthedRouteRouteWithChildren
+  '/dev': typeof DevRoute
   '/sign-in': typeof authSignInRoute
   '/a': typeof appauthedARoute
   '/dashboard': typeof appDashboardIndexRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof appauthedRouteRouteWithChildren
+  '/dev': typeof DevRoute
   '/sign-in': typeof authSignInRoute
   '/a': typeof appauthedARoute
   '/dashboard': typeof appDashboardIndexRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
+  '/dev': typeof DevRoute
   '/(app)/(authed)': typeof appauthedRouteRouteWithChildren
   '/(auth)/sign-in': typeof authSignInRoute
   '/(app)/(authed)/a': typeof appauthedARoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dev'
     | '/sign-in'
     | '/a'
     | '/dashboard'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dev'
     | '/sign-in'
     | '/a'
     | '/dashboard'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/(app)'
+    | '/dev'
     | '/(app)/(authed)'
     | '/(auth)/sign-in'
     | '/(app)/(authed)/a'
@@ -207,11 +219,19 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
+  DevRoute: typeof DevRoute
   authSignInRoute: typeof authSignInRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/dev': {
+      id: '/dev'
+      path: '/dev'
+      fullPath: '/dev'
+      preLoaderRoute: typeof DevRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(app)': {
       id: '/(app)'
       path: '/'
@@ -367,6 +387,7 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
+  DevRoute: DevRoute,
   authSignInRoute: authSignInRoute,
 }
 export const routeTree = rootRouteImport

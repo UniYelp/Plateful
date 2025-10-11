@@ -1,8 +1,8 @@
 ---
 stack:
-  - "[[React]]"
+  - "[[Architecture/Stack/React]]"
   - "[[TanStack Router]]"
-  - "[[TypeScript]]"
+  - "[[Architecture/Stack/TypeScript]]"
   - "[[TailwindCSS]]"
   - "[[Convex]]"
   - "[[Clerk]]"

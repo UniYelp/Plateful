@@ -2,7 +2,7 @@
 stack:
   - "[[React Native]]"
   - "[[Expo]]"
-  - "[[TypeScript]]"
+  - "[[Architecture/Stack/TypeScript]]"
   - "[[NativeWind]]"
 monitored_by: "[[PostHog]]"
 ---

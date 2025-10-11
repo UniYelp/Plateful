@@ -1,5 +1,5 @@
+import { useUser } from "@clerk/clerk-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useUser } from '@clerk/clerk-react'
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 import { Footer } from "@/components/layouts/Footer";
@@ -43,7 +43,7 @@ const StartNowBtn = () => (
 );
 
 function LandingPage() {
-	const { isSignedIn } = useUser()
+	const { isSignedIn } = useUser();
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -65,7 +65,7 @@ function LandingPage() {
 					</p>
 					<div className="mb-12 flex flex-col justify-center gap-4 sm:flex-row">
 						<Button size="lg" className="px-8 text-lg" asChild>
-							<Link to={ isSignedIn? "/dashboard" : "."}>
+							<Link to={isSignedIn ? "/dashboard" : "/sign-in"}>
 								<StartNowBtn />
 							</Link>
 						</Button>

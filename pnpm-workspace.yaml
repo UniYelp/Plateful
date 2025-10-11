@@ -7,7 +7,7 @@ catalog:
   '@clerk/backend': ^2.15.0
   '@hono/clerk-auth': ^3.0.3
   '@hono/zod-validator': ^0.7.3
-  convex: ^1.27.1
+  convex: ^1.27.4
   hono: ^4.9.9
   zod: ^4.1.11
 

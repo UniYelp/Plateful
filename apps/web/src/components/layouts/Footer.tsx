@@ -1,4 +1,4 @@
-import { appConfig } from "@/configs/app.config";
+import { APP } from "@/configs/app.config";
 import { Brand } from "./Brand";
 
 export function Footer() {
@@ -66,7 +66,7 @@ export function Footer() {
 
 				<div className="mt-8 border-border border-t pt-8 text-center text-muted-foreground">
 					<p>
-						&copy; 2025 {appConfig.appName}. All rights reserved. Made with ❤️
+						&copy; 2025 {APP.name}. All rights reserved. Made with ❤️
 						for home cooks everywhere.
 					</p>
 				</div>

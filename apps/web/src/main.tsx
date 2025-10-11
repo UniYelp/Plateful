@@ -4,14 +4,14 @@ import { PostHogProvider } from "posthog-js/react";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-import { appConfig } from "@/configs/app.config";
+import { APP } from "@/configs/app.config";
 import { ENV } from "@/configs/env.config";
 import reportWebVitals from "./reportWebVitals";
 import { getRouter } from "./router";
 
 posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 	api_host: ENV.VITE_PUBLIC_POSTHOG_HOST,
-	name: appConfig.platform,
+	name: APP.platform,
 	person_profiles: "always",
 	defaults: "2025-05-24",
 });

@@ -1,4 +1,5 @@
 import { defineConfig } from "tsdown";
+
 import tsConfig from "../../tsconfig.base.json" with { type: "json" };
 
 const {
@@ -7,6 +8,7 @@ const {
 	},
 } = tsConfig;
 
+// biome-ignore lint/style/noDefaultExport: external config
 export default defineConfig({
 	entry: ["./src/client/index.ts"],
 	platform: "browser",
