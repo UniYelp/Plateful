@@ -4,10 +4,10 @@ import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { api } from "@backend/api";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui-0/badge";
+import { Button } from "@/components/ui-0/Button";
+import { Card, CardContent } from "@/components/ui-0/card";
+import { Input } from "@/components/ui-0/input";
 import { categories, mockIngredients } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({

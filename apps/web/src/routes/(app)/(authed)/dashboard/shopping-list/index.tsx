@@ -2,17 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calendar, Check, Package, Plus, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui-0/badge";
+import { Button } from "@/components/ui-0/Button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui-0/card";
+import { Checkbox } from "@/components/ui-0/checkbox";
+import { Input } from "@/components/ui-0/input";
 import {
 	categories,
 	mockShoppingItems,

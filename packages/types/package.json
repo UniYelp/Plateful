@@ -24,7 +24,7 @@
 	},
 	"scripts": {
 		"build": "tsdown",
-		"dev": "tsdown watch",
+		"dev": "tsdown --watch",
 		"test": "vitest run --typecheck",
 		"test:w": "vitest --typecheck",
 		"test:types": "tsc --noEmit"

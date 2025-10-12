@@ -4,27 +4,29 @@ import { AlertCircle, ArrowLeft, Package, Upload } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/Textarea";
+import { Button } from "@/components/ui-0/Button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/ui-0/card";
+import { Input } from "@/components/ui-0/input";
+import { Label } from "@/components/ui-0/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/Textarea";
+} from "@/components/ui-0/select";
 import { ingredientsCategories } from "@/pages/dashboard/ingredients";
 
-export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/add")({
+export const Route = createFileRoute(
+	"/(app)/(authed)/dashboard/ingredients/add",
+)({
 	component: RouteComponent,
 });
 
@@ -43,8 +45,8 @@ function AddIngredientPage() {
 			expiryDate: "",
 			image: null as File | null,
 		},
-		onSubmit: ({value}) => {
-			console.log(value)
+		onSubmit: ({ value }) => {
+			console.log(value);
 		},
 	});
 
@@ -74,17 +76,17 @@ function AddIngredientPage() {
 				(ingredient) =>
 					ingredient.toLowerCase().includes(value.toLowerCase()) &&
 					ingredient.toLowerCase() !== value.toLowerCase(),
-			)
+			);
 			setShowSimilarWarning(hasSimilar);
 		}
-	}
+	};
 
 	const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
 			setFormData((prev) => ({ ...prev, image: file }));
 		}
-	}
+	};
 
 	const validateForm = () => {
 		const newErrors: Record<string, string> = {};
@@ -110,13 +112,13 @@ function AddIngredientPage() {
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
-	}
+	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (!validateForm()) {
-			return
+			return;
 		}
 
 		setIsSubmitting(true);
@@ -132,7 +134,7 @@ function AddIngredientPage() {
 		} finally {
 			setIsSubmitting(false);
 		}
-	}
+	};
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -245,32 +247,30 @@ function AddIngredientPage() {
 							{/* Title */}
 							<form.Field name="name">
 								{(field) => (
-								<div className="space-y-2">
-									<Label htmlFor="title">Title *</Label>
-									<Input
-										placeholder="e.g., Fresh Basil"
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
-										className={errors.title ? "border-destructive" : ""}
-									/>
-									{errors.title && (
-										<p className="text-destructive text-sm">{errors.title}</p>
-									)}
-								</div>
+									<div className="space-y-2">
+										<Label htmlFor="title">Title *</Label>
+										<Input
+											placeholder="e.g., Fresh Basil"
+											value={field.state.value}
+											onChange={(e) => field.handleChange(e.target.value)}
+											className={errors.title ? "border-destructive" : ""}
+										/>
+										{errors.title && (
+											<p className="text-destructive text-sm">{errors.title}</p>
+										)}
+									</div>
 								)}
 							</form.Field>
 
 							{/* Description */}
-							<form.Field name="description" >
+							<form.Field name="description">
 								{(field) => (
 									<div className="space-y-2">
 										<Label htmlFor="description">Description</Label>
 										<Textarea
 											placeholder="e.g., Organic fresh basil leaves from local farm"
 											value={field.state.value}
-											onChange={(e) =>
-												field.handleChange(e.target.value)
-											}
+											onChange={(e) => field.handleChange(e.target.value)}
 											rows={3}
 										/>
 									</div>
@@ -358,5 +358,5 @@ function AddIngredientPage() {
 				</Card>
 			</div>
 		</div>
-	)
+	);
 }

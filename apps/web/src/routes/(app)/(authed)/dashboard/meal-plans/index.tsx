@@ -2,15 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calendar, CalendarDays, Edit, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui-0/Button";
+import { Badge } from "@/components/ui-0/badge";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui-0/card";
 import { mockMealPlans, statusColors } from "@/pages/dashboard/meal-plan";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/meal-plans/")({

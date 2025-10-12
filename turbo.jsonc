@@ -8,8 +8,11 @@
 		},
 		"dev": {
 			"cache": false,
-			"persistent": true,
-			"dependsOn": ["^build"]
+			"persistent": true
+		},
+		"dev:p": {
+			"cache": false,
+			"persistent": true
 		},
 		"build": {
 			"dependsOn": ["^build"],
@@ -30,9 +33,11 @@
 			"interactive": true
 		},
 		"@plateful/web#dev": {
-			"with": ["@plateful/backend#dev", "@plateful/barcode-service#dev"],
+			"with": [
+				"@plateful/backend#dev",
+				"@plateful/barcode-service#dev"
+			],
 			"inputs": ["$TURBO_DEFAULT$", "convex/**/*"],
-			"dependsOn": ["^build"],
 			"cache": false,
 			"persistent": true
 		}
