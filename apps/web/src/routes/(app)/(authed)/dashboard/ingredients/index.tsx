@@ -151,7 +151,6 @@ function IngredientsPage() {
 										<div className="flex items-center justify-between text-sm">
 											<span className="text-muted-foreground">Expires:</span>
 											<Badge
-												// eslint-disable-next-line @typescript-eslint/no-explicit-any
 												variant={expiryStatus.color as any}
 												className="text-xs"
 											>

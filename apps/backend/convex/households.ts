@@ -5,7 +5,7 @@ import {
 	type HouseholdFields,
 	householdFields,
 	type UserStampId,
-	vId,
+	vv,
 } from "./schema";
 import { authedMutation, authedQuery } from "./with_auth";
 
@@ -36,7 +36,7 @@ export const getUserHouseholds = authedQuery({
 });
 
 export const getHouseholdMembers = authedQuery({
-	args: { householdId: vId("households") },
+	args: { householdId: vv.id("households") },
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
 
@@ -78,7 +78,7 @@ export const createHousehold = authedMutation({
 
 export const deleteHouseholds = internalMutation({
 	args: {
-		userId: vId("users"),
+		userId: vv.id("users"),
 	},
 	handler: async (ctx, args) => {
 		const memberships = await getUserMemberships(ctx, args.userId);

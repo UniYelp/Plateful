@@ -8,7 +8,7 @@ const {
 	},
 } = tsConfig;
 
-// biome-ignore lint/style/noDefaultExport: external config
+// biome-ignore lint/style/noDefaultExport: external
 export default defineConfig({
 	format: "esm",
 	platform: "neutral",

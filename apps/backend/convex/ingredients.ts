@@ -1,5 +1,5 @@
 import { validateUserInHouseholdOrThrow } from "./households";
-import { ingredientFields, vId } from "./schema";
+import { ingredientFields, vv } from "./schema";
 import { authedMutation, authedQuery } from "./with_auth";
 
 // #region Validators
@@ -7,7 +7,7 @@ import { authedMutation, authedQuery } from "./with_auth";
 // #region Queries
 export const householdIngredients = authedQuery({
 	args: {
-		householdId: vId("households"),
+		householdId: vv.id("households"),
 	},
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;

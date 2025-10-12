@@ -4,27 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-catalogs:
-  default:
-    '@clerk/backend':
-      specifier: ^2.15.0
-      version: 2.15.0
-    '@hono/clerk-auth':
-      specifier: ^3.0.3
-      version: 3.0.3
-    '@hono/zod-validator':
-      specifier: ^0.7.3
-      version: 0.7.3
-    convex:
-      specifier: ^1.27.4
-      version: 1.27.4
-    hono:
-      specifier: ^4.9.9
-      version: 4.9.9
-    zod:
-      specifier: ^4.1.11
-      version: 4.1.11
-
 importers:
 
   .:

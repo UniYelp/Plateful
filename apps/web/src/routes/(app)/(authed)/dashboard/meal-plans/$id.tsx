@@ -171,7 +171,6 @@ function MealPlanDetailPage() {
 							<CardContent>
 								<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 									{fullMealTypes.map((mealType) => {
-										// eslint-disable-next-line @typescript-eslint/no-explicit-any
 										const meal = day[mealType.key as keyof typeof day] as any;
 										return (
 											<div key={mealType.key} className="space-y-2">

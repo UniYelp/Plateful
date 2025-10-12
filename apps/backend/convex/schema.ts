@@ -8,8 +8,10 @@ import {
 	type Infer,
 	type ObjectType,
 	type VId,
+	// biome-ignore lint/style/noRestrictedImports: used for schema values
 	v,
 } from "convex/values";
+import { typedV } from "convex-helpers/validators";
 
 import type { TableNames } from "./_generated/dataModel";
 
@@ -60,8 +62,7 @@ export const ingredientFields = {
 	expiredAt: vTimestamp,
 };
 
-// biome-ignore lint/style/noDefaultExport: external config
-export default defineSchema({
+const schema = defineSchema({
 	users: defineTable({
 		// this the Clerk ID, stored in the subject JWT field
 		externalId: v.string(),
@@ -97,3 +98,15 @@ export default defineSchema({
 export const vId: <const TableName extends TableNames | SystemTableNames>(
 	tableName: TableName,
 ) => VId<GenericId<TableName>> = v.id;
+
+/**
+ * @description A {@link v} instance with types based on the {@link schema}
+ *
+ * {@link https://stack.convex.dev/argument-validation-without-repetition}
+ *
+ * @note //! DO NOT USE THIS IN THE schema file | It'll break the schema types
+ */
+export const vv = typedV(schema);
+
+// biome-ignore lint/style/noDefaultExport: external
+export default schema;

@@ -56,7 +56,6 @@ function CreateMealPlanPage() {
 		duration: "7", // days
 	});
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [allowOutOfStock, _setAllowOutOfStock] = useState(false);
 	const [mealPlan, setMealPlan] = useState<MealPlan>({});
 	const [errors, setErrors] = useState<Record<string, string>>({});
@@ -81,19 +80,16 @@ function CreateMealPlanPage() {
 		);
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const _handleDragStart = (e: React.DragEvent, recipeId: string) => {
 		setDraggedRecipe(recipeId);
 		e.dataTransfer.effectAllowed = "move";
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const _handleDragOver = (e: React.DragEvent) => {
 		e.preventDefault();
 		e.dataTransfer.dropEffect = "move";
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const _handleDrop = (e: React.DragEvent, day: string, mealType: string) => {
 		e.preventDefault();
 		if (draggedRecipe) {
@@ -266,7 +262,7 @@ function CreateMealPlanPage() {
 	const generateDays = () => {
 		const days = [];
 		const startDate = new Date(formData.startDate || Date.now());
-		const duration = Number.parseInt(formData.duration);
+		const duration = Number.parseInt(formData.duration, 10);
 
 		for (let i = 0; i < duration; i++) {
 			const date = new Date(startDate);

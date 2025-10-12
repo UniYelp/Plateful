@@ -8,10 +8,18 @@ import tseslint from "typescript-eslint";
 /**
  * @type {import("eslint").Linter.Config[]}
  */
-// biome-ignore lint/style/noDefaultExport: external config
+// biome-ignore lint/style/noDefaultExport: external
 export default defineConfig(
     globalIgnores(["dist"]),
-    tseslint.configs.recommended,
+    {
+        files: ["**/*.{ts,tsx}"],
+        languageOptions: {
+            parser: tseslint.parser,
+            parserOptions: {
+                projectService: true,
+            },
+        }
+    },
     {
         files: ["apps/web/**/*.{ts,tsx}"],
         plugins: {
