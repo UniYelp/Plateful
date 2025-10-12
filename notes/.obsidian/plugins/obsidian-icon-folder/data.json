@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
-      "LiPalette",
-      "LiDatabase",
-      "SiReact",
-      "LiFileStack",
-      "LiBrickWall"
+      "SiReacthookform",
+      "SiReactquery",
+      "LiRouter",
+      "🏝",
+      "SiShadcnui"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -70,5 +70,11 @@
   "Style Guide/Files & Folders.md": "LiFileStack",
   "Style Guide/TypeScript.md": "SiTypescript",
   "Style Guide/React.md": "SiReact",
-  "Style Guide/DB.md": "LiDatabase"
+  "Style Guide/DB.md": "LiDatabase",
+  "Architecture/Stack/Shadcn.md": "SiShadcnui",
+  "Architecture/Stack/TanStack": "🏝",
+  "Architecture/Stack/TanStack/TanStack Router.md": "LiRouter",
+  "Architecture/Stack/TanStack/TanStack Query.md": "SiReactquery",
+  "Architecture/Stack/TanStack/TanStack Form.md": "SiReacthookform",
+  "Architecture/Stack/TanStack/TanStack.md": "🏝"
 }

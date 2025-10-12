@@ -81,6 +81,9 @@
 - Follow [[Architecture/Stack/React|React]]’s [“You Might Not Need an Effect”](https://react.dev/learn/you-might-not-need-an-effect) guide — **avoid unnecessary effects**.
 - When you **must** use effects for **event handling**, always pair them with [useEffectEvent](https://react.dev/reference/react/useEffectEvent)
 - **Place the effect as the last hook** in the file for clarity and consistency.
+### [[Shadcn]]
+> [!warning] Do not add any files to the `@/components/ui` folder, only use `pnpm dlx shadcn@latest add [component]` to add ui components
+- [[Files & Folders#^shadcn-naming-conventions|Naming Conventions]]
 ### [[TanStack Router]]
 - If a route file needs to reference its `Route` variable, **re-export it** with a clearer name — but **do not remove the original `export const Route`** (TanStack Router requires it).
   ```tsx
