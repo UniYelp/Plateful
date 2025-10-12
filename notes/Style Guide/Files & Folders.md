@@ -69,3 +69,5 @@
   In the [[Web]] app's `components/ui/` directory, do not modify the names of the files created by the `shadcn cli` ^shadcn-naming-conventions
 - **Route files:**
   In the [[Web]] app’s `routes/` directory, follow [[TanStack Router]]'s official [naming conventions](https://tanstack.com/router/latest/docs/framework/react/routing/file-naming-conventions) ^tanstack-router-naming-conventions
+-  [[Style Guide/Convex#^129b26|Convex]]
+

@@ -31,7 +31,7 @@ tags: [excalidraw]
 
 [[Upstash]] ^jlcpGKtp
 
-[[Convex]] ^A6nHYA61
+[[Architecture/Services/Convex]] ^A6nHYA61
 
 %%
 ## Drawing

@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiDatabaseZap",
       "SiReacthookform",
       "SiReactquery",
       "LiRouter",
-      "🏝",
-      "SiShadcnui"
+      "🏝"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -76,5 +76,6 @@
   "Architecture/Stack/TanStack/TanStack Router.md": "LiRouter",
   "Architecture/Stack/TanStack/TanStack Query.md": "SiReactquery",
   "Architecture/Stack/TanStack/TanStack Form.md": "SiReacthookform",
-  "Architecture/Stack/TanStack/TanStack.md": "🏝"
+  "Architecture/Stack/TanStack/TanStack.md": "🏝",
+  "Style Guide/Convex.md": "LiDatabaseZap"
 }
