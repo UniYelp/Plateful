@@ -9,16 +9,16 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { Textarea } from "@/components/ui/Textarea";
-import { Button } from "@/components/ui-0/button";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui-0/card";
-import { Label } from "@/components/ui-0/label";
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/Textarea";
 import {
 	availableIngredients,
 	quickTags,

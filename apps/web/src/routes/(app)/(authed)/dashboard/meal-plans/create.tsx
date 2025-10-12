@@ -12,24 +12,24 @@ import {
 import type React from "react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui-0/button";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui-0/card";
-import { Checkbox } from "@/components/ui-0/checkbox";
-import { Input } from "@/components/ui-0/input";
-import { Label } from "@/components/ui-0/label";
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui-0/select";
+} from "@/components/ui/select";
 import {
 	availableRecipes,
 	type MealPlan,

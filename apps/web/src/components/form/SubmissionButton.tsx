@@ -1,5 +1,5 @@
 import { useFormContext } from "@/lib/form/context";
-import { Button } from "../ui-0/button";
+import { Button } from "../ui/button";
 
 type Props = {
 	label?: string;

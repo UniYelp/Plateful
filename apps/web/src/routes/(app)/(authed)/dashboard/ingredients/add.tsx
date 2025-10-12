@@ -4,24 +4,24 @@ import { AlertCircle, ArrowLeft, Package, Upload } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 
-import { Textarea } from "@/components/ui/Textarea";
-import { Button } from "@/components/ui-0/button";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui-0/card";
-import { Input } from "@/components/ui-0/input";
-import { Label } from "@/components/ui-0/label";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui-0/select";
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/Textarea";
 import { ingredientsCategories } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(

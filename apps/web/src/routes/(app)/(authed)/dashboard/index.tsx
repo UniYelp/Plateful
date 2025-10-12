@@ -14,15 +14,15 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui-0/badge";
-import { Button } from "@/components/ui-0/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui-0/card";
+} from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -30,9 +30,9 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@/components/ui-0/dialog";
-import { Input } from "@/components/ui-0/input";
-import { Label } from "@/components/ui-0/label";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	mockExpiringSoon,
 	mockHousehold,
