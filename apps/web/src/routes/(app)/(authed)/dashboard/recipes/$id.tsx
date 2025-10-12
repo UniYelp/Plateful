@@ -2,15 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Clock, Edit, Heart, Play, Star, Users } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/Card";
+} from "@/components/ui/card";
 import { mockRecipe } from "@/pages/dashboard/recipes";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({

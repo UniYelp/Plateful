@@ -4,9 +4,9 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 
 import { Footer } from "@/components/layouts/Footer";
 import { Header } from "@/components/layouts/Header";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { features, SectionHash, stages } from "@/pages/landing-page";
 
 import homeCss from "@/styles/home.css?url";

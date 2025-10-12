@@ -9,15 +9,15 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/Card";
-import { Label } from "@/components/ui/Label";
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/Textarea";
 import {
 	availableIngredients,

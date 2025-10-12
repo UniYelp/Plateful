@@ -4,23 +4,23 @@ import { AlertCircle, ArrowLeft, Package, Upload } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/Card";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/Select";
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/Textarea";
 import { ingredientsCategories } from "@/pages/dashboard/ingredients";
 
@@ -255,7 +255,7 @@ function AddIngredientPage() {
 									/>
 									{errors.title && (
 										<p className="text-destructive text-sm">{errors.title}</p>
-									)}									
+									)}
 								</div>
 								)}
 							</form.Field>
