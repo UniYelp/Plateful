@@ -3,7 +3,7 @@ import { ArrowLeft, Clock, Edit, Heart, Play, Star, Users } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui-0/badge";
-import { Button } from "@/components/ui-0/Button";
+import { Button } from "@/components/ui-0/button";
 import {
 	Card,
 	CardContent,

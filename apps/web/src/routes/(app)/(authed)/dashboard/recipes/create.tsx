@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 
 import { Textarea } from "@/components/ui/Textarea";
-import { Button } from "@/components/ui-0/Button";
+import { Button } from "@/components/ui-0/button";
 import {
 	Card,
 	CardContent,

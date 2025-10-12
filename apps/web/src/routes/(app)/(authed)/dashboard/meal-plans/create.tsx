@@ -12,7 +12,7 @@ import {
 import type React from "react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui-0/Button";
+import { Button } from "@/components/ui-0/button";
 import {
 	Card,
 	CardContent,

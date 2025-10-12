@@ -10,8 +10,13 @@ import {
 import { useState } from "react";
 
 import { Badge } from "@/components/ui-0/badge";
-import { Button } from "@/components/ui-0/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui-0/card";
+import { Button } from "@/components/ui-0/button";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui-0/card";
 import { fullMealTypes, mockMealPlan } from "@/pages/dashboard/meal-plan";
 
 export const Route = createFileRoute(

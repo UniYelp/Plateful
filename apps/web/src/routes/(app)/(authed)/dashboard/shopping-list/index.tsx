@@ -3,7 +3,7 @@ import { Calendar, Check, Package, Plus, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui-0/badge";
-import { Button } from "@/components/ui-0/Button";
+import { Button } from "@/components/ui-0/button";
 import {
 	Card,
 	CardContent,

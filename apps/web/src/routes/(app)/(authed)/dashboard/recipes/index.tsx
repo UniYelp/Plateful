@@ -3,7 +3,7 @@ import { BookOpen, Clock, Play, Plus, Search, Star, Users } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui-0/badge";
-import { Button } from "@/components/ui-0/Button";
+import { Button } from "@/components/ui-0/button";
 import { Card, CardContent } from "@/components/ui-0/card";
 import { Input } from "@/components/ui-0/input";
 import { difficultyColors, mockRecipes } from "@/pages/dashboard/recipes";
