@@ -21,7 +21,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea_dsdg";
+import { TextArea } from "@/components/ui/textarea";
 import { ingredientsCategories } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(
@@ -267,7 +267,7 @@ function AddIngredientPage() {
 								{(field) => (
 									<div className="space-y-2">
 										<Label htmlFor="description">Description</Label>
-										<Textarea
+										<TextArea
 											placeholder="e.g., Organic fresh basil leaves from local farm"
 											value={field.state.value}
 											onChange={(e) => field.handleChange(e.target.value)}

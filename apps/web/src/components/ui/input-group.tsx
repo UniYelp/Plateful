@@ -3,8 +3,8 @@ import type * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TextArea } from "@/components/ui/textarea";
 import { cn } from "@/utils/ui";
-import { Textarea } from "./textarea_dsdg";
 
 function InputGroup({ className, ...props }: React.ComponentProps<"fieldset">) {
 	return (
@@ -147,7 +147,7 @@ function InputGroupTextarea({
 	...props
 }: React.ComponentProps<"textarea">) {
 	return (
-		<Textarea
+		<TextArea
 			data-slot="input-group-control"
 			className={cn(
 				"flex-1 resize-none rounded-none border-0 bg-transparent py-3 shadow-none focus-visible:ring-0 dark:bg-transparent",

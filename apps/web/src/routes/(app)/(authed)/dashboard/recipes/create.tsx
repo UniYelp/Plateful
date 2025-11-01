@@ -18,7 +18,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea_dsdg";
+import { TextArea } from "@/components/ui/textarea";
 import {
 	availableIngredients,
 	quickTags,
@@ -111,7 +111,7 @@ function CreateRecipePage() {
 							<CardContent className="space-y-4">
 								<div className="space-y-2">
 									<Label htmlFor="description">Recipe Description</Label>
-									<Textarea
+									<TextArea
 										// id="description"
 										placeholder="e.g., I want a creamy pasta dish with chicken and vegetables that's not too heavy but still filling. Something that takes about 30 minutes to make and uses ingredients I probably have at home..."
 										value={recipeDescription}
