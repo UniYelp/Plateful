@@ -21,7 +21,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/Textarea";
+import { Textarea } from "@/components/ui/textarea_dsdg";
 import { ingredientsCategories } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(

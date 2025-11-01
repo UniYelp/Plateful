@@ -27,7 +27,6 @@ export const Route = createRootRouteWithContext<{
 				content: "width=device-width, initial-scale=1",
 			},
 			...seo({
-				title: "Plateful",
 				description: "🍳 Making Cooking Fun & Easy",
 			}),
 		],

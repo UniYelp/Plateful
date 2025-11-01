@@ -8,7 +8,8 @@
         "build": "vite build && tsc",
         "serve": "vite preview",
         "test": "vitest run --typecheck",
-        "test:w": "vitest --typecheck"
+        "test:w": "vitest --typecheck",
+        "shadcn:add": "pnpm dlx shadcn@latest add"
     },
     "dependencies": {
         "@clerk/clerk-react": "^5.48.1",

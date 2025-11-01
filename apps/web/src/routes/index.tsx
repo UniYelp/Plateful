@@ -15,7 +15,6 @@ export const Route = createFileRoute("/")({
 	head: () => ({
 		links: [{ rel: "stylesheet", href: homeCss }],
 	}),
-	component: LandingPage,
 	staticData: {
 		links: [
 			{
@@ -28,12 +27,9 @@ export const Route = createFileRoute("/")({
 				to: ".",
 				hash: SectionHash.HowItWorks,
 			},
-			{
-				label: "A",
-				to: "/a",
-			},
 		],
 	},
+	component: LandingPage,
 });
 
 const StartNowBtn = () => (

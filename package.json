@@ -20,6 +20,7 @@
         "test:types": "turbo run test:types",
         "test:v": "vitest --typecheck --passWithNoTests",
         "test:v:ui": "pnpm run test:v -- --ui",
+        "shadcn:add": "turbo run shadcn:add",
         "vercel": "vercel",
         "knip": "knip"
     },
@@ -36,7 +37,7 @@
         "knip": "^5.63.1",
         "tsdown": "^0.15.12",
         "turbo": "^2.5.6",
-        "typescript": "5.9.2",
+        "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.0",
         "vercel": "^48.2.0",
         "vitest": "catalog:test"

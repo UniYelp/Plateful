@@ -1,7 +1,15 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
+import { seo } from "@/utils/seo";
+
 export const Route = createFileRoute("/(app)/(authed)/dashboard")({
-	component: RouteComponent,
+	head: () => ({
+		meta: [
+			...seo({
+				title: "dashboard",
+			}),
+		],
+	}),
 	staticData: {
 		links: [
 			{
@@ -22,6 +30,7 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 			},
 		],
 	},
+	component: RouteComponent,
 });
 
 function RouteComponent() {

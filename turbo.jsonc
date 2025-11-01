@@ -43,6 +43,10 @@
                 "_transit"
             ]
         },
+        "shadcn:add": {
+            "cache": false,
+            "interactive": true
+        },
         "@plateful/backend#dev": {
             // "with": ["clerk:webhook"],
             "cache": false,
