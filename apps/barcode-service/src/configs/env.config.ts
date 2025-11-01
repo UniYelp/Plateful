@@ -5,13 +5,7 @@ import { z } from "zod";
 export const ENV = createEnv({
 	extends: [vercel() /**upstashRedis() */],
 	server: {
-		// CLERK_PUBLISHABLE_KEY: z.string(),
-		// CLERK_SECRET_KEY: z.string(),
-
-		ALLOWED_ORIGINS: z.codec(z.string(), z.url().array(), {
-			decode: (val) => val.split(",").map((origin) => origin.trim()),
-			encode: (val) => val.join(","),
-		}),
+		API_KEY: z.string(),
 	},
 
 	/**

@@ -2,7 +2,6 @@
 stack:
   - "[[Architecture/Stack/TypeScript]]"
   - "[[Hono]]"
-  - "[[Clerk]]"
 ---
 The **Barcode Service** is responsible for managing scanned barcodes within our system.
 
@@ -26,5 +25,5 @@ The main reasons:
 - **Developer Experience**: The DX of Hono with TypeScript, Vercel deployments, and pnpm/Turborepo integration is streamlined. This provides fast iteration cycles, consistent tooling, and easier onboarding for developers already familiar with TypeScript.
 - **Simplicity of Requirements**: Our service doesn’t need Elixir’s advanced concurrency or fault-tolerance capabilities. The core logic is mostly cache lookups and API calls—tasks that TypeScript with Hono handles very well.
 - **Hosting and Infrastructure**: With [[Vercel]] and [[Upstash]], deploying and scaling a TypeScript-based Hono service is straightforward, serverless-friendly, and integrates seamlessly with our existing infrastructure.
-    
+
 In short, while Elixir is powerful and would shine in high-concurrency, low-latency scenarios, the Barcode Service fits more naturally into our existing TypeScript monorepo. By choosing Hono, we optimize for maintainability, consistency, and developer velocity.

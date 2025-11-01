@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"composite": true,
+		"target": "ESNext",
+		"module": "NodeNext",
+		"strict": true,
+		"skipLibCheck": true,
+		"types": ["node"],
+		"jsx": "react-jsx",
+		"jsxImportSource": "hono/jsx",
+		"outDir": "./dist"
+	},
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.test.json"
+		}
+	],
+	"include": ["**/*"],
+	"exclude": ["node_modules"]
+}

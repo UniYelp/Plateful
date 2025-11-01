@@ -12,13 +12,12 @@ export const ENV = createEnv({
 
 	client: {
 		VITE_CONVEX_URL: z.url(),
+		VITE_API_URL: z.url(),
 
 		VITE_CLERK_PUBLISHABLE_KEY: z.string().min(1),
 
 		VITE_PUBLIC_POSTHOG_KEY: z.string().min(1),
 		VITE_PUBLIC_POSTHOG_HOST: z.url(),
-
-		VITE_BARCODE_SERVICE_URL: z.url(),
 	},
 
 	/**

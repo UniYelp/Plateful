@@ -11,5 +11,12 @@ catalog:
   hono: ^4.9.9
   zod: ^4.1.11
 
+catalogs:
+  build:
+    tsdown: ^0.15.12
+  test:
+    "@vitest/ui": ^4.0.6
+    vitest: ^4.0.6
+
 catalogMode: manual
 cleanupUnusedCatalogs: true
