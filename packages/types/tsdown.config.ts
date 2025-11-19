@@ -12,7 +12,10 @@ const {
 export default defineConfig({
 	format: "esm",
 	platform: "neutral",
-	entry: ["./src/index.ts"],
+	entry: {
+		index: "./src/index.ts",
+		experimental: "./src/experimental/index.ts",
+	},
 	dts: {
 		build: true,
 	},

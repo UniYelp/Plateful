@@ -1,5 +1,20 @@
 {
-	"compilerOptions": {
-		"customConditions": ["@plateful/dev-src"]
-	}
+    "compilerOptions": {
+        "customConditions": [
+            "@plateful/dev-src"
+        ],
+        "plugins": [
+            {
+                "name": "@effect/language-service",
+                "transform": "@effect/language-service/transform",
+                "namespaceImportPackages": [
+                    "effect",
+                    "@effect/*"
+                ],
+                "importAliases": {
+                    "Array": "Arr"
+                }
+            }
+        ]
+    }
 }

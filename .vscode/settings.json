@@ -1,49 +1,68 @@
 {
-	"typescript.tsdk": "node_modules\\typescript\\lib",
-	"files.autoSave": "afterDelay",
-	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "biomejs.biome",
-	"editor.codeActionsOnSave": {
-		"source.fixAll.biome": "explicit",
-		"source.organizeImports.biome": "explicit"
-		// "source.action.useSortedKeys.biome": "explicit",
-		// "source.action.useSortedAttributes.biome": "explicit"
-		/** Biome has this setting */
-		// "source.removeUnusedImports": "explicit"
-	},
-	"eslint.workingDirectories": [
-		{
-			"mode": "auto"
-		}
-	],
-	"tailwindCSS.classFunctions": ["cva", "cx", "clsx", "cn", "twMerge"],
-	"cSpell.words": ["Redix", "svix", "vercel"],
-	"vsicons.associations.folders": [
-		{
-			"extensions": ["_"],
-			"icon": "private",
-			"format": "svg"
-		},
-		{
-			"extensions": ["notes"],
-			"icon": "docs",
-			"format": "svg"
-		},
-		{
-			"extensions": ["mobile"],
-			"icon": "client",
-			"format": "svg"
-		},
-		{
-			"extensions": ["backend"],
-			"icon": "server",
-			"format": "svg"
-		}
-	],
-	"[typescript]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[typescriptreact]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	}
+    // "typescript.tsdk": "node_modules\\typescript\\lib",
+    "files.autoSave": "afterDelay",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.biome": "explicit",
+        "source.organizeImports.biome": "explicit"
+        // "source.action.useSortedKeys.biome": "explicit",
+        // "source.action.useSortedAttributes.biome": "explicit"
+        /** Biome has this setting */
+        // "source.removeUnusedImports": "explicit"
+    },
+    "eslint.workingDirectories": [
+        {
+            "mode": "auto"
+        }
+    ],
+    "tailwindCSS.classFunctions": [
+        "cva",
+        "cx",
+        "clsx",
+        "cn",
+        "twMerge"
+    ],
+    "cSpell.words": [
+        "Redix",
+        "svix",
+        "vercel"
+    ],
+    "vsicons.associations.folders": [
+        {
+            "extensions": [
+                "_"
+            ],
+            "icon": "private",
+            "format": "svg"
+        },
+        {
+            "extensions": [
+                "notes"
+            ],
+            "icon": "docs",
+            "format": "svg"
+        },
+        {
+            "extensions": [
+                "mobile"
+            ],
+            "icon": "client",
+            "format": "svg"
+        },
+        {
+            "extensions": [
+                "backend"
+            ],
+            "icon": "server",
+            "format": "svg"
+        }
+    ],
+    "[typescript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "typescript.experimental.useTsgo": true
 }

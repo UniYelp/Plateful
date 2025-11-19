@@ -63,10 +63,24 @@ export const ingredientFields = {
 };
 
 const schema = defineSchema({
+	// #region systemland
 	users: defineTable({
 		// this the Clerk ID, stored in the subject JWT field
 		externalId: v.string(),
 	}).index("byExternalId", ["externalId"]),
+	units: defineTable({
+        name: v.string(),
+		symbol: v.string(),
+		aliases: v.array(v.string()),
+		...stampsFields,
+	}),
+	unitConversions: defineTable({
+		from: v.id("units"),
+		to: v.id("units"),
+		by: v.number(),
+		...stampsFields,
+	}),
+	// #region userland
 	households: defineTable({
 		...householdFields,
 		...stampsFields,
