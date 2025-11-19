@@ -115,7 +115,7 @@ const appauthedDashboardIngredientsAddRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof appauthedRouteRouteWithChildren
+  '/': typeof IndexRoute
   '/dev': typeof DevRoute
   '/sign-in': typeof authSignInRoute
   '/dashboard': typeof appauthedDashboardRouteRouteWithChildren
@@ -131,7 +131,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/shopping-list': typeof appauthedDashboardShoppingListIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof appauthedRouteRouteWithChildren
+  '/': typeof IndexRoute
   '/dev': typeof DevRoute
   '/sign-in': typeof authSignInRoute
   '/dashboard': typeof appauthedDashboardIndexRoute
@@ -234,8 +234,8 @@ declare module '@tanstack/react-router' {
     }
     '/(app)': {
       id: '/(app)'
-      path: '/'
-      fullPath: '/'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof appRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -255,8 +255,8 @@ declare module '@tanstack/react-router' {
     }
     '/(app)/(authed)': {
       id: '/(app)/(authed)'
-      path: '/'
-      fullPath: '/'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof appauthedRouteRouteImport
       parentRoute: typeof appRouteRoute
     }

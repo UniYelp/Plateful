@@ -20,7 +20,7 @@ catalogs:
       version: 1.27.4
     effect:
       specifier: ^3.19.4
-      version: 3.19.3
+      version: 3.19.4
     hono:
       specifier: ^4.9.9
       version: 4.9.9
@@ -94,19 +94,22 @@ importers:
         version: 3.0.3(hono@4.9.9)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@hono/zod-validator':
         specifier: 'catalog:'
-        version: 0.7.3(hono@4.9.9)(zod@4.1.12)
+        version: 0.7.3(hono@4.9.9)(zod@4.1.11)
       '@plateful/http':
         specifier: workspace:*
         version: link:../../packages/http
       '@t3-oss/env-core':
         specifier: ^0.13.8
-        version: 0.13.8(typescript@5.9.3)(zod@4.1.12)
+        version: 0.13.8(typescript@5.9.3)(zod@4.1.11)
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
       hono:
         specifier: 'catalog:'
         version: 4.9.9
+      zod:
+        specifier: 'catalog:'
+        version: 4.1.11
     devDependencies:
       '@dotenvx/dotenvx':
         specifier: ^1.50.1
@@ -353,16 +356,6 @@ importers:
         version: link:../types
 
   packages/types: {}
-
-  packages/units:
-    dependencies:
-      effect:
-        specifier: 'catalog:'
-        version: 3.19.3
-    devDependencies:
-      '@plateful/types':
-        specifier: workspace:*
-        version: link:../types
 
   packages/utils:
     devDependencies:
@@ -3615,9 +3608,6 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  effect@3.19.3:
-    resolution: {integrity: sha512-LodiPXiyUJWQ5LoMhUGbu0acD2ff5A5teJtUlLKDPVfoeWEBcZLlzK8BeVXpVa0f30UsdHouVCf0C/E0TxYMrA==}
-
   effect@3.19.4:
     resolution: {integrity: sha512-gApFffMwpDVgmw/FzCaYWt6zw4m0xAnQf5+cPS0+Sl85AxfeovJeEIsiEQVlk+ZvtBYcoPXxi65GIyruzanQ5g==}
 
@@ -6395,11 +6385,6 @@ snapshots:
       hono: 4.9.9
       zod: 4.1.11
 
-  '@hono/zod-validator@0.7.3(hono@4.9.9)(zod@4.1.12)':
-    dependencies:
-      hono: 4.9.9
-      zod: 4.1.12
-
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.7':
@@ -8505,11 +8490,6 @@ snapshots:
       pretty-ms: 7.0.1
       signal-exit: 4.0.2
       time-span: 4.0.0
-
-  effect@3.19.3:
-    dependencies:
-      '@standard-schema/spec': 1.0.0
-      fast-check: 3.23.2
 
   effect@3.19.4:
     dependencies:

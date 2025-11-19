@@ -1,44 +1,45 @@
 {
-  "name": "@plateful/api-gateway",
-  "version": "0.0.0",
-  "type": "module",
-  "private": true,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "@plateful/dev-src": "./src/client/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "publishConfig": {
+    "name": "@plateful/api-gateway",
+    "version": "0.0.0",
+    "type": "module",
+    "private": true,
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
-      ".": "./dist/index.js",
-      "./package.json": "./package.json"
+        ".": {
+            "@plateful/dev-src": "./src/client/index.ts",
+            "default": "./dist/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "publishConfig": {
+        "exports": {
+            ".": "./dist/index.js",
+            "./package.json": "./package.json"
+        }
+    },
+    "scripts": {
+        "dev": "dotenvx run -- tsx watch src/dev.ts",
+        "dev:p": "tsdown --watch",
+        "build": "tsdown",
+        "test": "vitest run --typecheck",
+        "test:w": "vitest --typecheck"
+    },
+    "dependencies": {
+        "@clerk/backend": "catalog:",
+        "@hono/clerk-auth": "catalog:",
+        "@hono/zod-validator": "catalog:",
+        "@plateful/http": "workspace:*",
+        "@t3-oss/env-core": "^0.13.8",
+        "dotenv": "^17.2.3",
+        "hono": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@dotenvx/dotenvx": "^1.50.1",
+        "@hono/node-server": "^1.19.5",
+        "@plateful/barcode-service": "workspace:*",
+        "tsx": "^4.7.1"
     }
-  },
-  "scripts": {
-    "dev": "dotenvx run -- tsx watch src/dev.ts",
-    "dev:p": "tsdown --watch",
-    "build": "tsdown",
-    "test": "vitest run --typecheck",
-    "test:w": "vitest --typecheck"
-  },
-  "dependencies": {
-    "@clerk/backend": "catalog:",
-    "@hono/clerk-auth": "catalog:",
-    "@hono/zod-validator": "catalog:",
-    "@plateful/http": "workspace:*",
-    "@t3-oss/env-core": "^0.13.8",
-    "dotenv": "^17.2.3",
-    "hono": "catalog:"
-  },
-  "devDependencies": {
-    "@dotenvx/dotenvx": "^1.50.1",
-    "@hono/node-server": "^1.19.5",
-    "@plateful/barcode-service": "workspace:*",
-    "tsx": "^4.7.1"
-  }
 }
