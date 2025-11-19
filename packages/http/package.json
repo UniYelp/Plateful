@@ -32,9 +32,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@plateful/types": "workspace:*",
-    "@vitest/ui": "catalog:test",
-    "tsdown": "catalog:build",
-    "vitest": "catalog:test"
+    "@plateful/types": "workspace:*"
   }
 }

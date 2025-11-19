@@ -1,38 +1,36 @@
 {
-	"name": "@plateful/backend",
-	"type": "module",
-	"version": "0.0.0",
-	"private": "true",
-	"files": [],
-	"scripts": {
-		"predev": "convex dev --until-success && convex dashboard",
-		"dev": "convex dev",
-		"logs": "convex logs",
-		"setup": "convex dev --once && convex env set VALIDATE_ENV=true",
-		"seed": "convex dev --once && convex run init",
-		"test": "vitest run --typecheck",
-		"test:w": "vitest --typecheck",
-		"test:debug": "vitest --inspect-brk --typecheck --no-file-parallelism",
-		"test:coverage": "vitest run --typecheck --coverage --coverage.reporter=text",
-		"clerk:webhook": "dotenvx run -f .env.local -- node scripts/setup-webhook-endpoint.js"
-	},
-	"dependencies": {
-		"@clerk/backend": "catalog:",
-		"@convex-dev/migrations": "^0.2.9",
-		"@hono/zod-validator": "catalog:",
-		"convex": "catalog:",
-		"convex-helpers": "^0.1.104",
-		"hono": "catalog:",
-		"svix": "^1.76.1",
-		"zod": "catalog:"
-	},
-	"devDependencies": {
-		"@dotenvx/dotenvx": "^1.50.1",
-		"@edge-runtime/vm": "^5.0.0",
-		"@plateful/types": "workspace:*",
-        "@vitest/ui": "catalog:test",
-		"convex-test": "^0.0.38",
-		"vite": "^7.1.7",
-        "vitest": "catalog:test"
-	}
+    "name": "@plateful/backend",
+    "type": "module",
+    "version": "0.0.0",
+    "private": "true",
+    "files": [],
+    "scripts": {
+        "predev": "convex dev --until-success && convex dashboard",
+        "dev": "convex dev",
+        "logs": "convex logs",
+        "setup": "convex dev --once && convex env set VALIDATE_ENV=true",
+        "migrate:dev": "convex run convex/migrations.ts:runAll",
+        "seed": "convex dev --once && convex run init",
+        "test": "vitest run --typecheck",
+        "test:w": "vitest --typecheck",
+        "test:debug": "vitest --inspect-brk --typecheck --no-file-parallelism",
+        "test:coverage": "vitest run --typecheck --coverage --coverage.reporter=text"
+    },
+    "dependencies": {
+        "@clerk/backend": "catalog:",
+        "@convex-dev/migrations": "^0.2.9",
+        "@hono/zod-validator": "catalog:",
+        "convex": "catalog:",
+        "convex-helpers": "^0.1.104",
+        "hono": "catalog:",
+        "svix": "^1.76.1",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@dotenvx/dotenvx": "^1.50.1",
+        "@edge-runtime/vm": "^5.0.0",
+        "@plateful/types": "workspace:*",
+        "convex-test": "^0.0.38",
+        "vite": "^7.1.7"
+    }
 }
