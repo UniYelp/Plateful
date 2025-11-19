@@ -8,9 +8,9 @@ const {
 	},
 } = tsConfig;
 
-// biome-ignore lint/style/noDefaultExport: external config
+// biome-ignore lint/style/noDefaultExport: external
 export default defineConfig({
-	entry: ["./src/client/index.ts"],
+	entry: ["./src/exports/index.ts"],
 	platform: "browser",
 	dts: {
 		build: true,

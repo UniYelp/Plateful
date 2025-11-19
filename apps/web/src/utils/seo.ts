@@ -6,13 +6,13 @@ export const seo = ({
 	keywords,
 	image,
 }: {
-	title: string;
+	title?: string;
 	description?: string;
 	image?: string;
 	keywords?: string;
 }): NonNullable<AnyRouteMatch["meta"]> => {
 	const tags = [
-		{ title },
+		{ title: `Plateful ${title ? `| ${title}` : ""}`.trim() },
 		{ name: "description", content: description },
 		{ name: "keywords", content: keywords },
 		{ name: "twitter:title", content: title },

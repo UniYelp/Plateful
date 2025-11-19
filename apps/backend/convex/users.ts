@@ -4,8 +4,8 @@ import type { Validator } from "convex/values";
 import { query } from "./_generated/server";
 import { internalMutation } from "./functions";
 import { createUserHousehold } from "./households";
-import { v } from "./variables";
-import { getCurrentUser, userByExternalId } from "./with-auth";
+import { SYSTEM_ID, vv } from "./schema";
+import { getCurrentUser, userByExternalId } from "./with_auth";
 
 // #region Queries
 export const current = query({
@@ -17,7 +17,7 @@ export const current = query({
 
 // #region Mutations
 export const upsertFromClerk = internalMutation({
-	args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
+	args: { data: vv.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
 	async handler(ctx, { data }) {
 		const userAttributes = {
 			externalId: data.id,
@@ -27,8 +27,13 @@ export const upsertFromClerk = internalMutation({
 
 		if (user === null) {
 			const userId = await ctx.db.insert("users", userAttributes);
-			await createUserHousehold(ctx, userId, {
-				name: "My Household",
+			await createUserHousehold({
+				ctx,
+				userId,
+				household: {
+					name: "My Household",
+				},
+				createdBy: SYSTEM_ID,
 			});
 		} else {
 			await ctx.db.patch(user._id, userAttributes);
@@ -37,7 +42,7 @@ export const upsertFromClerk = internalMutation({
 });
 
 export const deleteFromClerk = internalMutation({
-	args: { clerkUserId: v.string() },
+	args: { clerkUserId: vv.string() },
 	async handler(ctx, { clerkUserId }) {
 		const user = await userByExternalId(ctx, clerkUserId);
 

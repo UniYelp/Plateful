@@ -96,6 +96,7 @@ declare module "@tanstack/react-router" {
 	}
 
 	interface StaticDataRouteOption {
+		// backLink: //TODO: add backLink logic
 		links?: (LinkComponentProps & {
 			label: string;
 		})[];

@@ -15,14 +15,14 @@
                                     "*/_generated/server"
                                 ],
                                 "importNamePattern": "mutation|internalMutation",
-                                "message": "Use functions.ts for mutation"
+                                "message": "Use functions.ts for mutation instead"
                             },
                             {
                                 "group": [
                                     "convex/values"
                                 ],
                                 "importNamePattern": "v",
-                                "message": "Use variables.ts for mutation"
+                                "message": "Use `vv` from schema.ts instead"
                             }
                         ]
                     }

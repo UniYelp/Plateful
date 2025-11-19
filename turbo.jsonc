@@ -1,40 +1,86 @@
 {
-	"$schema": "https://turborepo.com/schema.json",
-	"ui": "tui",
-	"globalDependencies": [".env*"],
-	"tasks": {
-		"_transit": {
-			"dependsOn": ["^_transit"]
-		},
-		"dev": {
-			"cache": false,
-			"persistent": true,
-			"dependsOn": ["^build"]
-		},
-		"build": {
-			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": ["dist/**"]
-		},
-		"test": {
-			"with": ["test:types"],
-			"dependsOn": ["_transit"]
-		},
-		"test:types": {
-			"dependsOn": ["_transit"]
-		},
-		"@plateful/backend#dev": {
-			// "with": ["clerk:webhook"],
-			"cache": false,
-			"persistent": true,
-			"interactive": true
-		},
-		"@plateful/web#dev": {
-			"with": ["@plateful/backend#dev", "@plateful/barcode-service#dev"],
-			"inputs": ["$TURBO_DEFAULT$", "convex/**/*"],
-			"dependsOn": ["^build"],
-			"cache": false,
-			"persistent": true
-		}
-	}
+    "$schema": "https://turborepo.com/schema.json",
+    "ui": "tui",
+    "globalDependencies": [
+        ".env*"
+    ],
+    "tasks": {
+        "_transit": {
+            "dependsOn": [
+                "^_transit"
+            ]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "dev:p": {
+            "cache": false,
+            "persistent": true
+        },
+        "build": {
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                ".env*"
+            ],
+            "outputs": [
+                "dist/**"
+            ]
+        },
+        "test": {
+            "with": [
+                "test:types"
+            ],
+            "dependsOn": [
+                "_transit"
+            ]
+        },
+        "test:types": {
+            "dependsOn": [
+                "_transit"
+            ]
+        },
+        "shadcn:add": {
+            "cache": false,
+            "interactive": true
+        },
+        "@plateful/backend#dev": {
+            // "with": ["clerk:webhook"],
+            "cache": false,
+            "persistent": true,
+            "interactive": true
+        },
+        "@plateful/api-gateway#dev": {
+            "with": [
+                "@plateful/barcode-service#dev"
+            ],
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                "convex/**/*"
+            ],
+            "cache": false,
+            "persistent": true
+        },
+        "@plateful/web#dev": {
+            "with": [
+                "@plateful/backend#dev",
+                "@plateful/api-gateway#dev"
+            ],
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                "convex/**/*"
+            ],
+            "cache": false,
+            "persistent": true
+        }
+    }
 }

@@ -1,3 +1,4 @@
+// biome-ignore lint/style/noDefaultExport: external
 export default {
 	providers: [
 		{

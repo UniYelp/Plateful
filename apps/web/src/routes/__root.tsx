@@ -27,7 +27,6 @@ export const Route = createRootRouteWithContext<{
 				content: "width=device-width, initial-scale=1",
 			},
 			...seo({
-				title: "Plateful",
 				description: "🍳 Making Cooking Fun & Easy",
 			}),
 		],
@@ -39,17 +38,29 @@ export const Route = createRootRouteWithContext<{
 			{
 				rel: "apple-touch-icon",
 				sizes: "180x180",
-				href: "/logo192.png",
+				href: "/apple-touch-icon.png",
 			},
-			{ rel: "manifest", href: "/manifest.json", color: "#fffff" },
+			{
+				rel: "icon",
+				type: "image/png",
+				sizes: "16x16",
+				href: "/favicon-16x16.png",
+			},
+			{
+				rel: "icon",
+				type: "image/png",
+				sizes: "32x32",
+				href: "/favicon-32x32.png",
+			},
 			{ rel: "icon", href: "/favicon.ico" },
+			{ rel: "manifest", href: "/manifest.json", color: "#fffff" },
 		],
 	}),
 	component: RootComponent,
 });
 
 function RootComponent() {
-    usePosthogUserSetup();
+	usePosthogUserSetup();
 
 	return (
 		<>

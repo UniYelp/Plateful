@@ -4,7 +4,7 @@ stack:
   - "[[TanStack Router]]"
   - "[[Architecture/Stack/TypeScript]]"
   - "[[TailwindCSS]]"
-  - "[[Convex]]"
+  - "[[Architecture/Services/Convex]]"
   - "[[Clerk]]"
   - "[[Hono]]"
 deployed_to: "[[Vercel]]"

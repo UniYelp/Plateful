@@ -66,8 +66,8 @@ export function Footer() {
 
 				<div className="mt-8 border-border border-t pt-8 text-center text-muted-foreground">
 					<p>
-						&copy; 2025 {APP.name}. All rights reserved. Made with ❤️
-						for home cooks everywhere.
+						&copy; 2025 {APP.name}. All rights reserved. Made with ❤️ for home
+						cooks everywhere.
 					</p>
 				</div>
 			</div>

@@ -20,26 +20,27 @@
         "test:types": "turbo run test:types",
         "test:v": "vitest --typecheck --passWithNoTests",
         "test:v:ui": "pnpm run test:v -- --ui",
+        "shadcn:add": "turbo run shadcn:add",
         "vercel": "vercel",
         "knip": "knip"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.2.4",
+        "@biomejs/biome": "2.3.2",
         "@tanstack/eslint-plugin-query": "^5.91.0",
         "@tanstack/eslint-plugin-router": "^1.132.31",
         "@types/node": "^22.13.1",
-        "@vitest/ui": "^3.2.4",
+        "@vitest/ui": "catalog:test",
         "@ylfjuk/md": "^0.0.3",
         "eslint": "^9.37.0",
         "eslint-plugin-react-hooks": "^7.0.0",
         "eslint-plugin-react-refresh": "^0.4.23",
         "knip": "^5.63.1",
-        "tsdown": "^0.15.6",
-        "turbo": "^2.5.6",
-        "typescript": "5.9.2",
+        "tsdown": "^0.15.12",
+        "turbo": "^2.6.0",
+        "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.0",
         "vercel": "^48.2.0",
-        "vitest": "^3.2.4"
+        "vitest": "catalog:test"
     },
     "packageManager": "pnpm@10.18.0",
     "engines": {

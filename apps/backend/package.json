@@ -30,7 +30,9 @@
 		"@dotenvx/dotenvx": "^1.50.1",
 		"@edge-runtime/vm": "^5.0.0",
 		"@plateful/types": "workspace:*",
+        "@vitest/ui": "catalog:test",
 		"convex-test": "^0.0.38",
-		"vite": "^7.1.7"
+		"vite": "^7.1.7",
+        "vitest": "catalog:test"
 	}
 }

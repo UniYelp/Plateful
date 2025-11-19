@@ -1,61 +1,65 @@
 {
-	"name": "@plateful/utils",
-	"version": "0.0.0",
-	"type": "module",
-	"sideEffects": false,
-	"files": [
-		"dist"
-	],
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"@plateful/dev-src": "./src/index.ts",
-			"default": "./dist/index.js"
-		},
-		"./array": {
-			"@plateful/dev-src": "./src/arr/index.ts",
-			"default": "./dist/array.js"
-		},
-		"./enum": {
-			"@plateful/dev-src": "./src/enum/index.ts",
-			"default": "./dist/enum.js"
-		},
-		"./json": {
-			"@plateful/dev-src": "./src/json/index.ts",
-			"default": "./dist/json.js"
-		},
-		"./object": {
-			"@plateful/dev-src": "./src/obj/index.ts",
-			"default": "./dist/object.js"
-		},
-		"./string": {
-			"@plateful/dev-src": "./src/str/index.ts",
-			"default": "./dist/string.js"
-		},
-		"./package.json": "./package.json"
-	},
-	"publishConfig": {
-		"exports": {
-			".": "./dist/index.js",
-			"./array": "./dist/array.js",
-			"./enum": "./dist/enum.js",
-			"./json": "./dist/json.js",
-			"./object": "./dist/object.js",
-			"./string": "./dist/string.js",
-			"./package.json": "./package.json"
-		}
-	},
-	"scripts": {
-		"build": "tsdown",
-		"dev": "tsdown watch",
-		"test": "vitest run --typecheck",
-		"test:w": "vitest --typecheck",
-		"test:types": "tsc --noEmit"
-	},
-	"dependencies": {},
-	"devDependencies": {
-		"@plateful/types": "workspace:*"
-	}
+  "name": "@plateful/utils",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "@plateful/dev-src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./array": {
+      "@plateful/dev-src": "./src/arr/index.ts",
+      "default": "./dist/array.js"
+    },
+    "./enum": {
+      "@plateful/dev-src": "./src/enum/index.ts",
+      "default": "./dist/enum.js"
+    },
+    "./json": {
+      "@plateful/dev-src": "./src/json/index.ts",
+      "default": "./dist/json.js"
+    },
+    "./object": {
+      "@plateful/dev-src": "./src/obj/index.ts",
+      "default": "./dist/object.js"
+    },
+    "./string": {
+      "@plateful/dev-src": "./src/str/index.ts",
+      "default": "./dist/string.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./array": "./dist/array.js",
+      "./enum": "./dist/enum.js",
+      "./json": "./dist/json.js",
+      "./object": "./dist/object.js",
+      "./string": "./dist/string.js",
+      "./package.json": "./package.json"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run --typecheck",
+    "test:w": "vitest --typecheck",
+    "test:types": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@plateful/types": "workspace:*",
+    "@vitest/ui": "catalog:test",
+    "tsdown": "catalog:build",
+    "vitest": "catalog:test"
+  }
 }
