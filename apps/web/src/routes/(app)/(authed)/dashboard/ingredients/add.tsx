@@ -56,7 +56,7 @@ function AddIngredientPage() {
 		amount: "",
 		category: "",
 		expiryDate: "",
-		image: null as File | null,
+		image: null,
 	});
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,12 +81,6 @@ function AddIngredientPage() {
 		}
 	};
 
-	const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			setFormData((prev) => ({ ...prev, image: file }));
-		}
-	};
 
 	const validateForm = () => {
 		const newErrors: Record<string, string> = {};
@@ -116,10 +110,6 @@ function AddIngredientPage() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-
-		if (!validateForm()) {
-			return;
-		}
 
 		setIsSubmitting(true);
 
@@ -205,44 +195,62 @@ function AddIngredientPage() {
 					<CardContent>
 						<form onSubmit={handleSubmit} className="space-y-6">
 							{/* Image Upload */}
-							<div className="space-y-2">
-								<Label>Ingredient Photo</Label>
-								<div className="flex items-center gap-4">
-									<div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed bg-muted/50">
-										{formData.image ? (
-											<img
-												src={
-													URL.createObjectURL(formData.image) ||
-													"/placeholder.svg"
-												}
-												alt="Preview"
-												className="h-full w-full rounded-lg object-cover"
-											/>
-										) : (
-											<Upload className="h-6 w-6 text-muted-foreground" />
-										)}
+							<form.Field name="image">
+								{(field) => (
+									<div className="space-y-2">
+										<Label>Ingredient Photo</Label>
+										<div className="flex items-center gap-4">
+											<div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed bg-muted/50">
+												{field.state.value ? (
+													<img
+														src={
+															URL.createObjectURL(field.state.value) ||
+															"/placeholder.svg"
+														}
+														alt="Preview"
+														className="h-full w-full rounded-lg object-cover"
+													/>
+												) : (
+													<Upload className="h-6 w-6 text-muted-foreground" />
+												)}
+											</div>
+											<div>
+												<Input
+													type="file"
+													accept="image/*"
+													name={field.name}
+													onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+														console.log(e.target.files?.[0]);
+														const file = e.target.files?.[0] || null;
+														field.handleChange(file)}
+													}
+													// className="hidden"
+												/>
+												{/* <Label
+													htmlFor="image-upload"
+													className="cursor-pointer"
+												>
+													<Button
+														type="button"
+														variant="outline"
+														size="sm"
+														asChild
+													>
+														<span>
+															<Upload className="mr-2 h-4 w-4" />
+															Upload Photo
+														</span>
+													</Button>
+												</Label> */}
+												<p className="mt-1 text-muted-foreground text-xs">
+													Optional: Add a photo to easily identify your
+													ingredient
+												</p>
+											</div>
+										</div>
 									</div>
-									<div>
-										<Input
-											type="file"
-											accept="image/*"
-											onChange={handleImageUpload}
-											className="hidden"
-										/>
-										<Label htmlFor="image-upload" className="cursor-pointer">
-											<Button type="button" variant="outline" size="sm" asChild>
-												<span>
-													<Upload className="mr-2 h-4 w-4" />
-													Upload Photo
-												</span>
-											</Button>
-										</Label>
-										<p className="mt-1 text-muted-foreground text-xs">
-											Optional: Add a photo to easily identify your ingredient
-										</p>
-									</div>
-								</div>
-							</div>
+								)}
+							</form.Field>
 
 							{/* Title */}
 							<form.Field name="name">
@@ -253,10 +261,10 @@ function AddIngredientPage() {
 											placeholder="e.g., Fresh Basil"
 											value={field.state.value}
 											onChange={(e) => field.handleChange(e.target.value)}
-											className={errors.title ? "border-destructive" : ""}
+											className={!field.state.meta.isValid ? "border-destructive" : ""}
 										/>
-										{errors.title && (
-											<p className="text-destructive text-sm">{errors.title}</p>
+										{!field.state.meta.isValid && (
+											<p className="text-destructive text-sm">{field.state.meta.errors.join(', ')}</p>
 										)}
 									</div>
 								)}
@@ -278,67 +286,80 @@ function AddIngredientPage() {
 							</form.Field>
 							{/* Amount and Category */}
 							<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="amount">Amount *</Label>
-									<Input
-										placeholder="e.g., 50g, 1L, 3 pieces"
-										value={formData.amount}
-										onChange={(e) =>
-											handleInputChange("amount", e.target.value)
-										}
-										className={errors.amount ? "border-destructive" : ""}
-									/>
-									{errors.amount && (
-										<p className="text-destructive text-sm">{errors.amount}</p>
+								<form.Field name="amount">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor="amount">Amount *</Label>
+											<Input
+												placeholder="e.g., 50g, 1L, 3 pieces"
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												className={!field.state.meta.isValid ? "border-destructive" : ""}
+											/>
+											{!field.state.meta.isValid && (
+												<p className="text-destructive text-sm">
+													{field.state.meta.errors.join(', ')}
+												</p>
+											)}
+										</div>
 									)}
-								</div>
+								</form.Field>
 
-								<div className="space-y-2">
-									<Label htmlFor="category">Category *</Label>
-									<Select
-										value={formData.category}
-										onValueChange={(value) =>
-											handleInputChange("category", value)
-										}
-									>
-										<SelectTrigger
-											className={errors.category ? "border-destructive" : ""}
-										>
-											<SelectValue placeholder="Select category" />
-										</SelectTrigger>
-										<SelectContent>
-											{ingredientsCategories.map((category) => (
-												<SelectItem key={category.value} value={category.value}>
-													{category.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									{errors.category && (
-										<p className="text-destructive text-sm">
-											{errors.category}
-										</p>
+								<form.Field name="category">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor="category">Category *</Label>
+											<Select
+												value={field.state.value}
+												onValueChange={(value) => field.handleChange(value)}
+											>
+												<SelectTrigger
+													className={
+														!field.state.meta.isValid ? "border-destructive" : ""
+													}
+												>
+													<SelectValue placeholder="Select category" />
+												</SelectTrigger>
+												<SelectContent>
+													{ingredientsCategories.map((category) => (
+														<SelectItem
+															key={category.value}
+															value={category.value}
+														>
+															{category.label}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+											{!field.state.meta.isValid && (
+												<p className="text-destructive text-sm">
+													{field.state.meta.errors.join(', ')}
+												</p>
+											)}
+										</div>
 									)}
-								</div>
+								</form.Field>
 							</div>
 
 							{/* Expiry Date */}
-							<div className="space-y-2">
-								<Label htmlFor="expiryDate">Expiry Date *</Label>
-								<Input
-									type="date"
-									value={formData.expiryDate}
-									onChange={(e) =>
-										handleInputChange("expiryDate", e.target.value)
-									}
-									className={errors.expiryDate ? "border-destructive" : ""}
-								/>
-								{errors.expiryDate && (
-									<p className="text-destructive text-sm">
-										{errors.expiryDate}
-									</p>
+							<form.Field name="expiryDate">
+								{(field) => (
+									<div className="space-y-2">
+										<Label htmlFor="expiryDate">Expiry Date *</Label>
+										<Input
+											type="date"
+											value={field.state.value}
+											onChange={(e) => field.handleChange(e.target.value)}
+											className={!field.state.meta.isValid ? "border-destructive" : ""}
+										/>
+										{!field.state.meta.isValid && (
+											<p className="text-destructive text-sm">
+												{field.state.meta.errors.join(', ')}
+											</p>
+										)}
+									</div>
 								)}
-							</div>
+							</form.Field>
 
 							{/* Submit Buttons */}
 							<div className="flex gap-3 pt-4">
