@@ -7,6 +7,7 @@ stack:
   - "[[Architecture/Services/Convex]]"
   - "[[Clerk]]"
   - "[[Hono]]"
+  - "[[Effect]]"
 deployed_to: "[[Vercel]]"
 monitored_by: "[[PostHog]]"
 ---

@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiLayers",
+      "🌴",
       "SiProbot",
       "LiTestTubes",
-      "LiDatabaseZap",
-      "SiReacthookform",
-      "SiReactquery"
+      "LiDatabaseZap"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -79,5 +79,8 @@
   "Architecture/Stack/TanStack/TanStack.md": "🏝",
   "Style Guide/Convex.md": "LiDatabaseZap",
   "Architecture/Stack/Evalite.md": "LiTestTubes",
-  "Architecture/Stack/AI SDK.md": "SiProbot"
+  "Architecture/Stack/AI SDK.md": "SiProbot",
+  "Architecture/Stack/TanStack/Tanstack.md": "🌴",
+  "Architecture/Stack/Effect": "LiLayers",
+  "Architecture/Stack/Effect/Effect.md": "LiLayers"
 }

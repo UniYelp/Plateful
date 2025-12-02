@@ -3,6 +3,7 @@ website: https://www.evalite.dev/
 tags:
   - tests
   - ai
+using:
 ---
 > [!quote] Evalite runs your evals locally. Evals are like tests, but for AI-powered apps.
 

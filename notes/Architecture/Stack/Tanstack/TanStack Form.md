@@ -5,6 +5,7 @@ tags:
   - react
   - web
   - form
+using: true
 ---
 A modern, type-safe form library for [[Architecture/Stack/React]] that emphasizes type inference, composability, and minimal boilerplate. It provides a predictable way to manage input state, validation, and submission while leveraging [[Architecture/Stack/TypeScript]] for end-to-end type safety.
 

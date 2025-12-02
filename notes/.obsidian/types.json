@@ -4,6 +4,8 @@
     "cssclasses": "multitext",
     "tags": "tags",
     "stack": "multitext",
-    "website": "text"
+    "website": "text",
+    "setup": "multitext",
+    "using": "checkbox"
   }
 }

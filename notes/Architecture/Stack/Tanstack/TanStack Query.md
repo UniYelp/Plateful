@@ -5,6 +5,7 @@ tags:
   - react
   - web
   - api
+using: true
 ---
 A powerful data-fetching and caching library for [[Architecture/Stack/React]] that simplifies server-state management. It provides declarative APIs for managing loading states, error handling, caching, and background refetching, all without having to manually write boilerplate `useEffect` + `fetch` code.
 
