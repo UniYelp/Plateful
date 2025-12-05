@@ -56,6 +56,13 @@
             ],
             "icon": "server",
             "format": "svg"
+        },
+        {
+            "extensions": [
+                "db-sys"
+            ],
+            "icon": "db",
+            "format": "svg"
         }
     ],
     "[typescript]": {
@@ -64,5 +71,8 @@
     "[typescriptreact]": {
         "editor.defaultFormatter": "biomejs.biome"
     },
-    "typescript.experimental.useTsgo": true
+    "typescript.experimental.useTsgo": true,
+    "[prisma]": {
+        "editor.defaultFormatter": "Prisma.prisma"
+    }
 }

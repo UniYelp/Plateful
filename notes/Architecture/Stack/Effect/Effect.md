@@ -3,7 +3,7 @@ website: https://effect.website/
 tags:
   - framework
   - library
-setup:
+guides:
   - https://effect.website/docs/getting-started/devtools/
 using: true
 ---

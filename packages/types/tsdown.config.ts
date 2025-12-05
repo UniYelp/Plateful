@@ -19,6 +19,7 @@ export default defineConfig({
 	dts: {
 		build: true,
 	},
+	unused: true,
 	exports: {
 		devExports,
 	},

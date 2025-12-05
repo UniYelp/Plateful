@@ -1,8 +1,8 @@
 {
     "name": "@plateful/backend",
-    "type": "module",
     "version": "0.0.0",
     "private": "true",
+    "type": "module",
     "files": [],
     "scripts": {
         "predev": "convex dev --until-success && convex dashboard",
@@ -20,6 +20,7 @@
         "@clerk/backend": "catalog:",
         "@convex-dev/migrations": "^0.2.9",
         "@hono/zod-validator": "catalog:",
+        "@plateful/units": "workspace:*",
         "convex": "catalog:",
         "convex-helpers": "^0.1.104",
         "hono": "catalog:",

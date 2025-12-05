@@ -4,6 +4,7 @@ import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { api } from "@backend/api";
+import {  } from "@backend/schema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

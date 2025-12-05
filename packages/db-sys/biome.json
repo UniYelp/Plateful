@@ -1,0 +1,31 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
+    "extends": "//",
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "style": {
+                "noRestrictedImports": {
+                    "level": "error",
+                    "options": {
+                        "patterns": [
+                            {
+                                "group": [
+                                    "*/__generated__/prisma/client"
+                                ],
+                                "message": "Do not import the client runtime code in client/browser environments"
+                            },
+                            {
+                                "group": [
+                                    "*/server"
+                                ],
+                                "message": "Do not use the server code in the client code"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
