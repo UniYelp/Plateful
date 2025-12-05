@@ -5,14 +5,14 @@ import { z } from "zod";
 export const ENV = createEnv({
 	extends: [vercel() /**upstashRedis() */],
 	server: {
-        //? Client
+		//? Client
 		ALLOWED_ORIGINS: z.codec(z.string(), z.url().array(), {
 			decode: (val) => val.split(",").map((origin) => origin.trim()),
 			encode: (val) => val.join(","),
 		}),
-        //? Barcode-Service
-        BARCODE_SERVICE_URL: z.url(),
-        BARCODE_SERVICE_API_KEY: z.string(),
+		//? Barcode-Service
+		BARCODE_SERVICE_URL: z.url(),
+		BARCODE_SERVICE_API_KEY: z.string(),
 	},
 
 	/**

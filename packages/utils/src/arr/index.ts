@@ -5,4 +5,4 @@
  * @modified 0.0.10
  */
 export * as Arr from "./Arr";
-export { includes as arrIncludes } from "./Arr";
+export { concat as arrConcat, includes as arrIncludes } from "./Arr";

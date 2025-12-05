@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiDatabase",
+      "SiPrisma",
       "LiLayers",
       "🌴",
-      "SiProbot",
-      "LiTestTubes",
-      "LiDatabaseZap"
+      "SiProbot"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -35,7 +35,6 @@
     "useInternalPlugins": false
   },
   "Architecture/Backend": "LiServer",
-  "Architecture/Databases": "LiDatabase",
   "Architecture": "LiGitGraph",
   "Architecture/Services": "LiStore",
   "Architecture/Services/Vercel.md": "SiVercel",
@@ -59,7 +58,6 @@
   "Architecture/Stack/Turborepo.md": "SiTurborepo",
   "Architecture/Stack/Expo.md": "SiExpo",
   "Architecture/Stack/Elixir.md": "SiElixir",
-  "Architecture/Stack/Drizzle.md": "SiDrizzle",
   "Architecture/Stack/Hono.md": "SiHono",
   "Architecture/Stack/React Native.md": "SiReact",
   "Architecture/Stack/NativeWind.md": "SiTailwindcss",
@@ -82,5 +80,9 @@
   "Architecture/Stack/AI SDK.md": "SiProbot",
   "Architecture/Stack/TanStack/Tanstack.md": "🌴",
   "Architecture/Stack/Effect": "LiLayers",
-  "Architecture/Stack/Effect/Effect.md": "LiLayers"
+  "Architecture/Stack/Effect/Effect.md": "LiLayers",
+  "Architecture/Stack/DrizzleORM.md": "SiDrizzle",
+  "Architecture/Stack/PrismaORM.md": "SiPrisma",
+  "Architecture/Stack/MikroORM.md": "LiDatabase",
+  "Architecture/Comparisons/Databases & ORMs.md": "LiDatabase"
 }

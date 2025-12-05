@@ -1,15 +1,13 @@
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalMutation } from "./functions";
-import {
-	type HouseholdFields,
-	householdFields,
-	type UserStampId,
-	vv,
-} from "./schema";
+import { type EntityShape, type UserStampId, vv } from "./schema";
 import { authedMutation, authedQuery } from "./with_auth";
 
 // #region Validators
+
+const vHousehold = vv.doc("households");
+const vHouseholdFields = vHousehold.pick("name", "description");
 
 // #region Queries
 export const getUserHouseholds = authedQuery({
@@ -63,7 +61,7 @@ export const getHouseholdMembers = authedQuery({
 
 // #region Mutations
 export const createHousehold = authedMutation({
-	args: householdFields,
+	args: vHouseholdFields,
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
 		const householdId = await createUserHousehold({
@@ -134,7 +132,7 @@ export async function createUserHousehold({
 }: {
 	ctx: MutationCtx;
 	userId: Id<"users">;
-	household: HouseholdFields;
+	household: EntityShape<"households">;
 	createdBy?: UserStampId;
 }) {
 	const now = Date.now();

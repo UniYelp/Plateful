@@ -10,14 +10,6 @@
                 "^_transit"
             ]
         },
-        "dev": {
-            "cache": false,
-            "persistent": true
-        },
-        "dev:p": {
-            "cache": false,
-            "persistent": true
-        },
         "build": {
             "dependsOn": [
                 "^build"
@@ -30,6 +22,15 @@
                 "dist/**"
             ]
         },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "dev:p": {
+            "cache": false,
+            "persistent": true
+        },
+        "db:gen": {},
         "test": {
             "with": [
                 "test:types"
@@ -81,6 +82,12 @@
             ],
             "cache": false,
             "persistent": true
+        },
+        "@plateful/db-sys#db:gen": {
+            "inputs": [
+                "prisma/**/*",
+                "prisma.config.ts"
+            ]
         }
     }
 }

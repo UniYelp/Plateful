@@ -4,7 +4,7 @@ import type { Validator } from "convex/values";
 import { query } from "./_generated/server";
 import { internalMutation } from "./functions";
 import { createUserHousehold } from "./households";
-import { SYSTEM_ID, vv } from "./schema";
+import { type DocShape, SYSTEM_ID, vv } from "./schema";
 import { getCurrentUser, userByExternalId } from "./with_auth";
 
 // #region Queries
@@ -19,14 +19,18 @@ export const current = query({
 export const upsertFromClerk = internalMutation({
 	args: { data: vv.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
 	async handler(ctx, { data }) {
+		const now = Date.now();
+
 		const userAttributes = {
 			externalId: data.id,
-		};
+			updatedAt: now,
+		} satisfies DocShape<"users">;
 
 		const user = await userByExternalId(ctx, data.id);
 
 		if (user === null) {
 			const userId = await ctx.db.insert("users", userAttributes);
+
 			await createUserHousehold({
 				ctx,
 				userId,
@@ -47,7 +51,12 @@ export const deleteFromClerk = internalMutation({
 		const user = await userByExternalId(ctx, clerkUserId);
 
 		if (user !== null) {
-			await ctx.db.delete(user._id);
+			const now = Date.now();
+
+			await ctx.db.patch(user._id, {
+				updatedAt: now,
+				deletedAt: now,
+			});
 		} else {
 			console.warn(
 				`Can't delete user, there is none for Clerk user ID: ${clerkUserId}`,

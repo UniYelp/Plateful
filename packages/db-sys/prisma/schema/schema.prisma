@@ -1,0 +1,35 @@
+generator client {
+    provider   = "prisma-client"
+    output     = "../src/__generated__/prisma"
+    engineType = "client"
+}
+
+datasource db {
+    provider = "postgresql"
+    schemas  = ["public", "recipes"]
+}
+
+/**
+ * model <Model> {
+ * // id
+ * // stamps
+ * //
+ * // columns
+ * //
+ * // relations ids columns
+ * //
+ * // relations
+ * //
+ * // array relations
+ * //
+ * // block modifiers
+ * }
+ */
+
+/**
+ * TODO: add dw_id & id
+ * dw_id String @id @default(uuid(7)) @db.Uuid
+ * id    String @default(uuid(7)) @db.Uuid
+ * ...
+ * @@unique([dw_id, id])
+ */

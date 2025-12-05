@@ -1,3 +1,4 @@
-import type { UnitConversion } from "../units/types/unit-conversion.type";
+import type { MassUnit } from "@plateful/units/mass";
+import type { VolumeUnit } from "@plateful/units/volume";
 
-export type IngredientsUnitConversion = UnitConversion<{ by: number }>;
+export type IngredientsUnit = MassUnit | VolumeUnit;
