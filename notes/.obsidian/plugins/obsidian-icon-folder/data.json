@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "SiDrizzle",
       "LiDatabase",
       "SiPrisma",
       "LiLayers",
-      "🌴",
-      "SiProbot"
+      "🌴"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -82,7 +82,5 @@
   "Architecture/Stack/Effect": "LiLayers",
   "Architecture/Stack/Effect/Effect.md": "LiLayers",
   "Architecture/Stack/DrizzleORM.md": "SiDrizzle",
-  "Architecture/Stack/PrismaORM.md": "SiPrisma",
-  "Architecture/Stack/MikroORM.md": "LiDatabase",
-  "Architecture/Comparisons/Databases & ORMs.md": "LiDatabase"
+  "Architecture/Stack/MikroORM.md": "LiDatabase"
 }
