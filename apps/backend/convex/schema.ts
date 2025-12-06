@@ -15,7 +15,7 @@ import {
 import { typedV } from "convex-helpers/validators";
 
 import { temperatureUnits } from "@plateful/units/temperature";
-import type { Doc, Id, TableNames } from "./_generated/dataModel";
+import type { Doc, TableNames } from "./_generated/dataModel";
 
 // #region constants
 
@@ -25,9 +25,8 @@ export type SystemId = typeof SYSTEM_ID;
 // #endregion
 
 // #region types
-export type FullTableNames = TableNames | SystemTableNames;
 
-export type vID<TableName extends FullTableNames> = VId<Id<TableName>>;
+export type FullTableNames = TableNames | SystemTableNames;
 
 // #endregion
 
@@ -37,10 +36,7 @@ export const vSysId = <const SysTableName extends SystemTableNames>(
 	tableName: SysTableName,
 ) => v.id(tableName);
 
-const vUserStampId = v.union(
-	v.id("users") satisfies vID<"users">,
-	v.literal(SYSTEM_ID),
-);
+const vUserStampId = v.union(v.id("users"), v.literal(SYSTEM_ID));
 export type UserStampId = Infer<typeof vUserStampId>;
 
 /**
@@ -90,12 +86,12 @@ const stampsFields = {
 export type Stamps = ObjectType<typeof stampsFields>;
 
 export const userPreferencesFields = {
-	userId: v.id("users") satisfies vID<"users">,
+	userId: v.id("users"),
 };
 
 export const householdMemberFields = {
-	householdId: v.id("households") satisfies vID<"households">,
-	userId: v.id("users") satisfies vID<"users">,
+	householdId: v.id("households"),
+	userId: v.id("users"),
 	role: v.union(v.literal("manager"), v.literal("member")),
 	joinedAt: vTimestamp,
 };
@@ -122,7 +118,7 @@ export const ingredientFields = {
 
 	images: v.array(vImage),
 
-	householdId: v.id("households") satisfies vID<"households">,
+	householdId: v.id("households"),
 	// variantId: v.optional(v.id("ingredients")), // TODO: might have to split to headless ing & variants tables
 };
 
@@ -140,7 +136,7 @@ export const recipeFields = {
 	generated: v.optional(v.boolean()),
 	images: v.array(vImage),
 
-	householdId: v.id("households") satisfies vID<"households">,
+	householdId: v.id("households"),
 };
 
 export const ingredientMetadataFields = v
@@ -158,21 +154,19 @@ export const recipeGenMetadataFields = {
 	ingredients: v.array(
 		v.object({
 			...ingredientMetadataFields,
-			ingredientId: v.nullable(
-				v.id("ingredients") satisfies vID<"ingredients">,
-			),
+			ingredientId: v.nullable(v.id("ingredients")),
 		}),
 	),
 
-	householdId: v.id("households") satisfies vID<"households">,
-	recipeId: v.nullable(v.id("recipes") satisfies vID<"recipes">),
+	householdId: v.id("households"),
+	recipeId: v.nullable(v.id("recipes")),
 };
 
 export const recipeIngredientFields = {
 	quantities: v.array(v.object(ingredientQuantityFields)),
 
-	recipeId: v.id("recipes") satisfies vID<"recipes">,
-	ingredientId: v.id("ingredients") satisfies vID<"ingredients">,
+	recipeId: v.id("recipes"),
+	ingredientId: v.id("ingredients"),
 };
 
 export const recipeInstructionPart = v.union(
@@ -202,7 +196,7 @@ export const recipeInstructionPart = v.union(
 	v.object({
 		type: v.literal("ingredient"),
 		...ingredientMetadataFields,
-		ingredientId: v.nullable(v.id("ingredients") satisfies vID<"ingredients">), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
+		ingredientId: v.nullable(v.id("ingredients")), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
 		quantity: v.union(
 			v.object(ingredientQuantityFields),
 			v.literal("remaining"),
@@ -211,7 +205,7 @@ export const recipeInstructionPart = v.union(
 	v.object({
 		type: v.literal("yield"),
 		...ingredientMetadataFields,
-		ingredientId: v.nullable(v.id("ingredients") satisfies vID<"ingredients">),
+		ingredientId: v.nullable(v.id("ingredients")),
 		quantity: v.object(ingredientQuantityFields),
 	}),
 );
@@ -221,7 +215,7 @@ export const recipeInstructionFields = {
 	parts: v.array(recipeInstructionPart),
 	notes: v.optional(v.string()),
 
-	recipeId: v.id("recipes") satisfies vID<"recipes">,
+	recipeId: v.id("recipes"),
 };
 
 // #endregion
