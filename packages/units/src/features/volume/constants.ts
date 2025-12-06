@@ -7,6 +7,8 @@ export const aliasesByVolumeUnit = {
 
 /**
  * ? Prefer conversions from a "lower" unit to an "upper" unit (>=1)
+ *
+ * TODO: US_{UNIT} and METRIC_{UNIT} w/ extra field?
  */
 export const volumeUnitConversions: ScalarUnitConversion<VolumeUnit>[] = [
 	{ from: VolumeUnit.Milliliter, to: VolumeUnit.Liter, by: 1000 },
