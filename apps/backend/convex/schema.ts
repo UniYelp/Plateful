@@ -22,6 +22,9 @@ import type { Doc, TableNames } from "./_generated/dataModel";
 export const SYSTEM_ID = "sys";
 export type SystemId = typeof SYSTEM_ID;
 
+export const REMAINING_QUANTITY = "remaining";
+export type RemainingQuantity = typeof REMAINING_QUANTITY;
+
 // #endregion
 
 // #region types
@@ -83,7 +86,7 @@ const stampsFields = {
 	...timestampsFields,
 };
 
-export type Stamps = ObjectType<typeof stampsFields>;
+export type EntityStamps = ObjectType<typeof stampsFields>;
 
 export const userPreferencesFields = {
 	userId: v.id("users"),
@@ -109,6 +112,7 @@ export const ingredientFields = {
 	quantities: v.array(
 		v.object({
 			...ingredientQuantityFields,
+			state: v.optional(v.string()), //? has no actual usage
 			expiresAt: v.optional(vTimestamp),
 		}),
 	),
@@ -199,7 +203,7 @@ export const recipeInstructionPart = v.union(
 		ingredientId: v.nullable(v.id("ingredients")), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
 		quantity: v.union(
 			v.object(ingredientQuantityFields),
-			v.literal("remaining"),
+			v.literal(REMAINING_QUANTITY),
 		),
 	}),
 	v.object({
@@ -331,7 +335,7 @@ export type DocShape<TableName extends TableNames> = WithoutSystemFields<
  */
 export type EntityShape<TableName extends TableNames> = Omit<
 	DocShape<TableName>,
-	keyof Stamps
+	keyof EntityStamps
 >;
 
 // #endregion
