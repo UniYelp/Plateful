@@ -33,9 +33,9 @@ export const addIngredient = authedMutation({
 		ctx.db.insert("ingredients", {
 			name: args.name,
 			description: args.description,
-            images: args.images,
-            quantities: args.quantities,
-            tags: args.tags,
+			images: args.images,
+			quantities: args.quantities,
+			tags: args.tags,
 			householdId: args.householdId,
 			createdBy: userId,
 			updatedBy: userId,

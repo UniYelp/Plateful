@@ -33,3 +33,18 @@ datasource db {
  * ...
  * @@unique([dw_id, id])
  */
+
+model Ingredient {
+    id        String    @id @default(uuid(7)) @db.Uuid
+    createdAt DateTime  @default(now()) @db.Timestamptz(3)
+    updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+    deletedAt DateTime? @db.Timestamptz(3)
+
+    name        String @unique
+    description String
+
+    tags   String[]
+    images String[]
+
+    @@schema("recipes")
+}
