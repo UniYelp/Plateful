@@ -39,20 +39,13 @@ export const getHouseholdMembers = authedQuery({
 		const { _id: userId } = ctx.user;
 
 		// Check if user is member of this household
-		const membership = await ctx.db
-			.query("householdMembers")
-			.withIndex("by_household_and_user", (q) =>
-				q.eq("householdId", args.householdId).eq("userId", userId),
-			)
-			.unique();
-
-		if (!membership) {
-			throw new Error("Not a member of this household");
-		}
+		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		const members = await ctx.db
 			.query("householdMembers")
-			.withIndex("by_household", (q) => q.eq("householdId", args.householdId))
+			.withIndex("by_household_and_user", (q) =>
+				q.eq("householdId", args.householdId),
+			)
 			.collect();
 
 		return members;
@@ -117,6 +110,7 @@ export async function validateUserInHouseholdOrThrow(
 			q.eq("householdId", householdId).eq("userId", userId),
 		)
 		.unique();
+
 	if (!membership) {
 		throw new Error(
 			`User with ID ${userId} is not a member of household with ID ${householdId}.`,

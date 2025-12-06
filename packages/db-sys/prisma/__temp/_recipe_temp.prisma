@@ -102,12 +102,13 @@ model RecipeInstruction {
 }
 
 enum RecipeInstructionPartType {
-    Ingredient
-    Temperature
-    Duration
+    Text
     Action
     Tool
-    Text
+    Temperature
+    Duration
+    Ingredient
+    Yield
 
     @@schema("recipes")
 }

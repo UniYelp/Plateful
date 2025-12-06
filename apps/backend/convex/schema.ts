@@ -101,7 +101,7 @@ export const ingredientFields = {
 	),
 
 	tags: v.array(v.string()), //? system searchable
-	notes: v.array(v.string()), //? user non-searchable
+	notes: v.optional(v.string()), //? user non-searchable
 
 	householdId: v.id("households"),
 	// variantId: v.optional(v.id("ingredients")), // TODO: might have to split to headless ing & variants tables
@@ -117,7 +117,7 @@ export const recipeFields = {
 
 	tags: v.array(v.string()), //? system searchable
 	keywords: v.array(v.string()), //? user searchable
-	notes: v.array(v.string()), //? user non-searchable
+	notes: v.optional(v.string()), //? user non-searchable
 
 	householdId: v.id("households"),
 };
@@ -137,10 +137,12 @@ export const recipeInstructionPart = v.union(
 	v.object({
 		type: v.literal("action"),
 		value: v.string(),
+		description: v.optional(v.string()),
 	}),
 	v.object({
 		type: v.literal("tool"),
 		value: v.string(),
+		description: v.optional(v.string()),
 	}),
 	v.object({
 		type: v.literal("duration"),
@@ -153,7 +155,21 @@ export const recipeInstructionPart = v.union(
 	}),
 	v.object({
 		type: v.literal("ingredient"),
-		ingredientId: v.id("ingredients"),
+		ingredientId: v.id("ingredients"), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
+		quantity: v.optional(v.object(ingredientQuantityFields)),
+	}),
+	v.object({
+		type: v.literal("yield"),
+		value: v.union(
+			v.object({
+				ingredientId: v.id("ingredients"),
+			}),
+			v.object({
+				name: v.string(),
+				description: v.string(),
+				tags: v.array(v.string()),
+			}),
+		),
 		quantity: v.optional(v.object(ingredientQuantityFields)),
 	}),
 );
@@ -161,6 +177,7 @@ export const recipeInstructionPart = v.union(
 export const recipeInstructionFields = {
 	step: v.number(),
 	parts: v.array(recipeInstructionPart),
+	notes: v.optional(v.string()),
 
 	recipeId: v.id("recipes"),
 };
@@ -189,7 +206,9 @@ const schema = defineSchema({
 	householdMembers: defineTable({
 		...householdMemberFields,
 		...stampsFields,
-	}).index("by_household_and_user", ["householdId", "userId"]),
+	})
+		.index("by_user", ["userId"])
+		.index("by_household_and_user", ["householdId", "userId"]),
 	ingredients: defineTable({
 		...ingredientFields,
 		...stampsFields,
