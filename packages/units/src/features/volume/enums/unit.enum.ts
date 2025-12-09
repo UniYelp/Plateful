@@ -2,12 +2,12 @@ import type { ValueOf } from "@plateful/types";
 import { Enum } from "@plateful/utils";
 
 export const VolumeUnit = {
-	Milliliter: "Milliliter",
-	Liter: "Liter",
-	Teaspoon: "Teaspoon",
-	Dessertspoon: "Dessertspoon",
-	Tablespoon: "Tablespoon",
-	Cup: "Cup",
+	Milliliter: "milliliter",
+	Liter: "liter",
+	Teaspoon: "teaspoon",
+	Dessertspoon: "dessertspoon",
+	Tablespoon: "tablespoon",
+	Cup: "cup",
 } as const;
 
 export type VolumeUnit = ValueOf<typeof VolumeUnit>;
