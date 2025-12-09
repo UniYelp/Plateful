@@ -1,7 +1,7 @@
 import type { StrictOmit, SuggestStr } from "@plateful/types";
 import { type Unit, UnitSymbol } from "@plateful/units";
 
-// TODO: m
+// TODO: make this work properly
 
 type Args<TUnit extends SuggestStr<Unit>> = {
 	locale?: Intl.LocalesArgument;
