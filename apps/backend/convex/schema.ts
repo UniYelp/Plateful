@@ -152,6 +152,7 @@ export const recipeGenMetadataFields = {
 		v.literal("pending"),
 		v.literal("generating"),
 		v.literal("completed"),
+		v.literal("failed"),
 	),
 
 	tags: v.array(v.string()),
