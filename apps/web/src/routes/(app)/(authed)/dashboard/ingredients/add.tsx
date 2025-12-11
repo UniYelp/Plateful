@@ -1,9 +1,11 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, ArrowLeft, Package, Upload } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 
+import { api } from "@backend/api";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -41,6 +43,7 @@ function AddIngredientPage() {
 			name: "",
 			description: "",
 			amount: "",
+			unit: "",
 			category: "",
 			expiryDate: "",
 			image: null as File | null,
@@ -50,79 +53,48 @@ function AddIngredientPage() {
 		},
 	});
 
-	const [formData, setFormData] = useState({
-		title: "",
-		description: "",
-		amount: "",
-		category: "",
-		expiryDate: "",
-		image: null,
-	});
-	const [errors, setErrors] = useState<Record<string, string>>({});
-	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [showSimilarWarning, setShowSimilarWarning] = useState(false);
-
-	const handleInputChange = (field: string, value: string) => {
-		setFormData((prev) => ({ ...prev, [field]: value }));
-		if (errors[field]) {
-			setErrors((prev) => ({ ...prev, [field]: "" }));
-		}
-
-		// Check for similar ingredients when title changes
-		if (field === "title" && value.length > 2) {
-			// Mock similar ingredient check
-			const similarIngredients = ["Fresh Basil", "Basil Leaves", "Sweet Basil"];
-			const hasSimilar = similarIngredients.some(
-				(ingredient) =>
-					ingredient.toLowerCase().includes(value.toLowerCase()) &&
-					ingredient.toLowerCase() !== value.toLowerCase(),
-			);
-			setShowSimilarWarning(hasSimilar);
-		}
-	};
-
-
-	const validateForm = () => {
-		const newErrors: Record<string, string> = {};
-
-		if (!formData.title.trim()) {
-			newErrors.title = "Title is required";
-		}
-		if (!formData.amount.trim()) {
-			newErrors.amount = "Amount is required";
-		}
-		if (!formData.category) {
-			newErrors.category = "Category is required";
-		}
-		if (!formData.expiryDate) {
-			newErrors.expiryDate = "Expiry date is required";
-		} else {
-			const expiryDate = new Date(formData.expiryDate);
-			const today = new Date();
-			if (expiryDate < today) {
-				newErrors.expiryDate = "Expiry date cannot be in the past";
-			}
-		}
-
-		setErrors(newErrors);
-		return Object.keys(newErrors).length === 0;
-	};
+	const addIngredient = useMutation(api.ingredients.addIngredient);
+	const currentHousehold = useQuery(api.households.getUserHouseholds);
+	const householdId = currentHousehold?.[0]?._id;
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		setIsSubmitting(true);
-
 		try {
+			if (!householdId) {
+				throw new Error("No household found for the user.");
+			}
+
+			const expiryDate = form.state.values.expiryDate
+				? new Date(form.state.values.expiryDate).getTime()
+				: undefined;
+
+			const amountNumber = Number(form.state.values.amount);
+			if (!amountNumber || amountNumber <= 0) {
+				throw new Error("Amount must be a positive number.");
+			}
+
 			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const submitting = addIngredient({
+				name: form.state.values.name,
+				description: form.state.values.description,
+				quantities: [{
+					unit: form.state.values.unit,
+					expiresAt: expiryDate,
+					amount: amountNumber,
+				},],
+				// images: form.state.values.image,
+				householdId: householdId,
+				tags: [],
+				images: []
+			});
+			await submitting;
 
 			// Redirect to ingredients page
 			router.navigate({ to: "/dashboard/ingredients" });
 		} catch (error) {
 			console.error("Failed to add ingredient:", error);
-		} finally {
-			setIsSubmitting(false);
 		}
 	};
 
@@ -219,11 +191,13 @@ function AddIngredientPage() {
 													type="file"
 													accept="image/*"
 													name={field.name}
-													onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+													onChange={(
+														e: React.ChangeEvent<HTMLInputElement>,
+													) => {
 														console.log(e.target.files?.[0]);
 														const file = e.target.files?.[0] || null;
-														field.handleChange(file)}
-													}
+														field.handleChange(file);
+													}}
 													// className="hidden"
 												/>
 												{/* <Label
@@ -261,10 +235,14 @@ function AddIngredientPage() {
 											placeholder="e.g., Fresh Basil"
 											value={field.state.value}
 											onChange={(e) => field.handleChange(e.target.value)}
-											className={!field.state.meta.isValid ? "border-destructive" : ""}
+											className={
+												!field.state.meta.isValid ? "border-destructive" : ""
+											}
 										/>
 										{!field.state.meta.isValid && (
-											<p className="text-destructive text-sm">{field.state.meta.errors.join(', ')}</p>
+											<p className="text-destructive text-sm">
+												{field.state.meta.errors.join(", ")}
+											</p>
 										)}
 									</div>
 								)}
@@ -294,11 +272,33 @@ function AddIngredientPage() {
 												placeholder="e.g., 50g, 1L, 3 pieces"
 												value={field.state.value}
 												onChange={(e) => field.handleChange(e.target.value)}
-												className={!field.state.meta.isValid ? "border-destructive" : ""}
+												className={
+													!field.state.meta.isValid ? "border-destructive" : ""
+												}
 											/>
 											{!field.state.meta.isValid && (
 												<p className="text-destructive text-sm">
-													{field.state.meta.errors.join(', ')}
+													{field.state.meta.errors.join(", ")}
+												</p>
+											)}
+										</div>
+									)}
+								</form.Field>
+								<form.Field name="unit">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor="unit">Unit *</Label>
+											<Input
+												placeholder="e.g., gram, liter, oz"
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												className={
+													!field.state.meta.isValid ? "border-destructive" : ""
+												}
+											/>
+											{!field.state.meta.isValid && (
+												<p className="text-destructive text-sm">
+													{field.state.meta.errors.join(", ")}
 												</p>
 											)}
 										</div>
@@ -315,7 +315,9 @@ function AddIngredientPage() {
 											>
 												<SelectTrigger
 													className={
-														!field.state.meta.isValid ? "border-destructive" : ""
+														!field.state.meta.isValid
+															? "border-destructive"
+															: ""
 													}
 												>
 													<SelectValue placeholder="Select category" />
@@ -333,7 +335,7 @@ function AddIngredientPage() {
 											</Select>
 											{!field.state.meta.isValid && (
 												<p className="text-destructive text-sm">
-													{field.state.meta.errors.join(', ')}
+													{field.state.meta.errors.join(", ")}
 												</p>
 											)}
 										</div>
@@ -350,11 +352,13 @@ function AddIngredientPage() {
 											type="date"
 											value={field.state.value}
 											onChange={(e) => field.handleChange(e.target.value)}
-											className={!field.state.meta.isValid ? "border-destructive" : ""}
+											className={
+												!field.state.meta.isValid ? "border-destructive" : ""
+											}
 										/>
 										{!field.state.meta.isValid && (
 											<p className="text-destructive text-sm">
-												{field.state.meta.errors.join(', ')}
+												{field.state.meta.errors.join(", ")}
 											</p>
 										)}
 									</div>
@@ -365,10 +369,10 @@ function AddIngredientPage() {
 							<div className="flex gap-3 pt-4">
 								<Button
 									type="submit"
-									disabled={isSubmitting}
+									disabled={form.state.isSubmitting}
 									className="flex-1"
 								>
-									{isSubmitting ? "Adding..." : "Add Ingredient"}
+									{form.state.isSubmitting ? "Adding..." : "Add Ingredient"}
 								</Button>
 								<Button type="button" variant="outline" asChild>
 									<Link to="/dashboard/ingredients">Cancel</Link>

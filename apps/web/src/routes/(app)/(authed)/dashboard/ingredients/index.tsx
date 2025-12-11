@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { categories, mockIngredients } from "@/pages/dashboard/ingredients";
+import { categories } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
 	component: RouteComponent,
@@ -23,30 +23,41 @@ function RouteComponent() {
 function IngredientsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
-	const [ingredients] = useState(mockIngredients);
 
 	const households = useQuery(api.households.getUserHouseholds);
 	const household = households?.[0];
 
-	const ingredients2 = useQuery(
+	const ingredients = useQuery(
 		api.ingredients.householdIngredients,
 		household ? { householdId: household._id } : "skip",
 	);
 
-	const filteredIngredients = ingredients.filter((ingredient) => {
+	const filteredIngredients = ingredients?.filter((ingredient) => {
 		const matchesSearch =
-			ingredient.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			ingredient.description.toLowerCase().includes(searchTerm.toLowerCase());
+			ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			ingredient.description?.toLowerCase().includes(searchTerm.toLowerCase());
 		const matchesCategory =
 			selectedCategory === "all" || ingredient.category === selectedCategory;
 		return matchesSearch && matchesCategory;
 	});
 
-	const getExpiryStatus = (expiryDate: string) => {
+	type ExpiryStatus = {
+		status: "expired" | "expiring" | "warning" | "good";
+		color: "default" | "destructive" | "secondary" | "outline" | null | undefined;
+		text: string;
+	}
+
+	const getExpiryStatus : (expiryDate: string | number) => ExpiryStatus = (expiryDate) => {
+		const second = 1000;
+		const minute = second * 60;
+		const hour = minute * 60;
+		const day = hour * 24;
+		const daysInWeek = 7;
+
 		const today = new Date();
 		const expiry = new Date(expiryDate);
 		const diffTime = expiry.getTime() - today.getTime();
-		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+		const diffDays = Math.ceil(diffTime / (day));
 
 		if (diffDays < 0)
 			return { status: "expired", color: "destructive", text: "Expired" };
@@ -56,7 +67,7 @@ function IngredientsPage() {
 				color: "destructive",
 				text: `${diffDays} days`,
 			};
-		if (diffDays <= 7)
+		if (diffDays <= daysInWeek)
 			return {
 				status: "warning",
 				color: "secondary",
@@ -83,8 +94,6 @@ function IngredientsPage() {
 						</Link>
 					</Button>
 				</div>
-
-				{ingredients2 ? ingredients2.map((ing) => ing.name) : "Loading..."}
 
 				{/* Search and Filter */}
 				<div className="mb-6 flex flex-col gap-4 sm:flex-row">
@@ -114,29 +123,30 @@ function IngredientsPage() {
 
 				{/* Ingredients Grid */}
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-					{filteredIngredients.map((ingredient) => {
-						const expiryStatus = getExpiryStatus(ingredient.expiryDate);
+					{filteredIngredients?.map((ingredient) => {
+						const expiryStatus = getExpiryStatus(ingredient.quantities[0].expiresAt || 0); // TODO: fix
 						return (
 							<Card
-								key={ingredient.id}
+								key={ingredient._id}
 								className="transition-shadow hover:shadow-md"
 							>
 								<CardContent className="p-4">
 									<div className="mb-3 flex items-start gap-3">
 										<img
-											src={ingredient.image || "/placeholder.svg"}
-											alt={ingredient.title}
+											src={ingredient.images || "/placeholder.svg"} // TODO: fix
+											alt={ingredient.name}
 											className="h-16 w-16 rounded-lg bg-muted object-cover"
 										/>
 										<div className="min-w-0 flex-1">
 											<h3 className="truncate font-semibold">
-												{ingredient.title}
+												{ingredient.name}
 											</h3>
 											<p className="truncate text-muted-foreground text-sm">
 												{ingredient.description}
 											</p>
 											<p className="mt-1 font-medium text-sm">
-												{ingredient.amount}
+												{/* TODO: do sum instead */}
+												{ingredient.quantities[0].amount} {ingredient.quantities[0].unit}
 											</p>
 										</div>
 									</div>
@@ -145,13 +155,13 @@ function IngredientsPage() {
 										<div className="flex items-center justify-between text-sm">
 											<span className="text-muted-foreground">Added:</span>
 											<span>
-												{new Date(ingredient.addedDate).toLocaleDateString()}
+												{new Date(ingredient._creationTime).toLocaleDateString()}
 											</span>
 										</div>
 										<div className="flex items-center justify-between text-sm">
 											<span className="text-muted-foreground">Expires:</span>
 											<Badge
-												variant={expiryStatus.color as any}
+												variant={expiryStatus.color}
 												className="text-xs"
 											>
 												{expiryStatus.status === "expired"
@@ -184,7 +194,7 @@ function IngredientsPage() {
 					})}
 				</div>
 
-				{filteredIngredients.length === 0 && (
+				{!filteredIngredients || filteredIngredients.length === 0 && (
 					<div className="py-12 text-center">
 						<Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 						<h3 className="mb-2 font-semibold text-lg">No ingredients found</h3>
