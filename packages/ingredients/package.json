@@ -1,5 +1,5 @@
 {
-    "name": "@plateful/units",
+    "name": "@plateful/ingredients",
     "version": "0.0.0",
     "private": true,
     "type": "module",
@@ -15,36 +15,11 @@
             "@plateful/dev-src": "./src/index.ts",
             "default": "./dist/index.js"
         },
-        "./food": {
-            "@plateful/dev-src": "./src/features/food/index.ts",
-            "default": "./dist/food.js"
-        },
-        "./mass": {
-            "@plateful/dev-src": "./src/features/mass/index.ts",
-            "default": "./dist/mass.js"
-        },
-        "./scalar": {
-            "@plateful/dev-src": "./src/features/scalar/index.ts",
-            "default": "./dist/scalar.js"
-        },
-        "./temperature": {
-            "@plateful/dev-src": "./src/features/temperature/index.ts",
-            "default": "./dist/temperature.js"
-        },
-        "./volume": {
-            "@plateful/dev-src": "./src/features/volume/index.ts",
-            "default": "./dist/volume.js"
-        },
         "./package.json": "./package.json"
     },
     "publishConfig": {
         "exports": {
             ".": "./dist/index.js",
-            "./food": "./dist/food.js",
-            "./mass": "./dist/mass.js",
-            "./scalar": "./dist/scalar.js",
-            "./temperature": "./dist/temperature.js",
-            "./volume": "./dist/volume.js",
             "./package.json": "./package.json"
         }
     },
@@ -56,6 +31,7 @@
         "test:types": "tsc --noEmit"
     },
     "dependencies": {
+        "@plateful/units": "workspace:*",
         "@plateful/utils": "workspace:*",
         "effect": "catalog:"
     },

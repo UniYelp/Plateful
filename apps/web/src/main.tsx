@@ -4,6 +4,7 @@ import { PostHogProvider } from "posthog-js/react";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
+import { temperatureUnitConversion } from "@plateful/units/temperature";
 import { APP } from "@/configs/app.config";
 import { ENV } from "@/configs/env.config";
 import reportWebVitals from "./reportWebVitals";
@@ -15,6 +16,16 @@ posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 	person_profiles: "always",
 	defaults: "2025-05-24",
 });
+
+const { convertUnits: convertTemperatureUnits } = temperatureUnitConversion();
+console.log(
+	"convertTemperatureUnits",
+	convertTemperatureUnits("fahrenheit", "celsius", 350),
+);
+console.log(
+	"convertTemperatureUnits",
+	convertTemperatureUnits("celsius", "fahrenheit", -40),
+);
 
 // Create a new router instance
 const router = getRouter();

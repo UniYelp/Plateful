@@ -10,19 +10,13 @@ const {
 
 // biome-ignore lint/style/noDefaultExport: external
 export default defineConfig({
-	format: "esm",
-	platform: "neutral",
-	entry: {
-		index: "./src/index.ts",
-		scalar: "./src/features/scalar/index.ts",
-		food: "./src/features/food/index.ts",
-		mass: "./src/features/mass/index.ts",
-		volume: "./src/features/volume/index.ts",
-		temperature: "./src/features/temperature/index.ts",
-	},
+	entry: ["./src/exports/index.ts"],
+	platform: "browser",
+	outDir: "lib",
 	dts: {
 		build: true,
 	},
+	attw: true,
 	unused: true,
 	exports: {
 		devExports,
