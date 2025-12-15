@@ -11,7 +11,7 @@
         "test:w": "vitest --typecheck --passWithNoTests",
         "test:eval": "evalite",
         "test:eval:dev": "evalite watch",
-        "test:types": "tsc --noEmit"
+        "test:types": "tsc --noEmit --project tsconfig.app.json"
     },
     "dependencies": {
         "@ai-sdk/google": "2.0.46",
