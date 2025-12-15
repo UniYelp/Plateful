@@ -86,6 +86,7 @@ function AddIngredientPage() {
 				},],
 				// images: form.state.values.image,
 				householdId: householdId,
+				category: form.state.values.category,
 				tags: [],
 				images: []
 			});

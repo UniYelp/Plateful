@@ -116,7 +116,7 @@ export const ingredientFields = {
 			expiresAt: v.optional(vTimestamp),
 		}),
 	),
-
+	category: v.string(),
 	tags: v.array(v.string()), //? system searchable
 	notes: v.optional(v.string()), //? user non-searchable
 

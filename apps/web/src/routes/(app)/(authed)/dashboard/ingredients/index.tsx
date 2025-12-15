@@ -1,14 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { api } from "@backend/api";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { categories } from "@/pages/dashboard/ingredients";
+import { categories, ingredientImgByCategory } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
 	component: RouteComponent,
@@ -31,6 +42,7 @@ function IngredientsPage() {
 		api.ingredients.householdIngredients,
 		household ? { householdId: household._id } : "skip",
 	);
+	const deleteIngredient = useMutation(api.ingredients.deleteIngredient);
 
 	const filteredIngredients = ingredients?.filter((ingredient) => {
 		const matchesSearch =
@@ -43,11 +55,19 @@ function IngredientsPage() {
 
 	type ExpiryStatus = {
 		status: "expired" | "expiring" | "warning" | "good";
-		color: "default" | "destructive" | "secondary" | "outline" | null | undefined;
+		color:
+			| "default"
+			| "destructive"
+			| "secondary"
+			| "outline"
+			| null
+			| undefined;
 		text: string;
-	}
+	};
 
-	const getExpiryStatus : (expiryDate: string | number) => ExpiryStatus = (expiryDate) => {
+	const getExpiryStatus: (expiryDate: string | number) => ExpiryStatus = (
+		expiryDate,
+	) => {
 		const second = 1000;
 		const minute = second * 60;
 		const hour = minute * 60;
@@ -57,7 +77,7 @@ function IngredientsPage() {
 		const today = new Date();
 		const expiry = new Date(expiryDate);
 		const diffTime = expiry.getTime() - today.getTime();
-		const diffDays = Math.ceil(diffTime / (day));
+		const diffDays = Math.ceil(diffTime / day);
 
 		if (diffDays < 0)
 			return { status: "expired", color: "destructive", text: "Expired" };
@@ -124,7 +144,13 @@ function IngredientsPage() {
 				{/* Ingredients Grid */}
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{filteredIngredients?.map((ingredient) => {
-						const expiryStatus = getExpiryStatus(ingredient.quantities[0].expiresAt || 0); // TODO: fix
+						const expirations = ingredient.quantities.flatMap(
+											(q) => q.expiresAt ?? [],
+										);
+						const soonestExpiry = Math.min(...expirations);
+						const expiryStatus = getExpiryStatus(
+							soonestExpiry	
+						);
 						return (
 							<Card
 								key={ingredient._id}
@@ -133,7 +159,7 @@ function IngredientsPage() {
 								<CardContent className="p-4">
 									<div className="mb-3 flex items-start gap-3">
 										<img
-											src={ingredient.images || "/placeholder.svg"} // TODO: fix
+											src={ingredientImgByCategory[ingredient.category as keyof typeof ingredientImgByCategory]}
 											alt={ingredient.name}
 											className="h-16 w-16 rounded-lg bg-muted object-cover"
 										/>
@@ -146,7 +172,8 @@ function IngredientsPage() {
 											</p>
 											<p className="mt-1 font-medium text-sm">
 												{/* TODO: do sum instead */}
-												{ingredient.quantities[0].amount} {ingredient.quantities[0].unit}
+												{ingredient.quantities[0].amount}{" "}
+												{ingredient.quantities[0].unit}
 											</p>
 										</div>
 									</div>
@@ -155,15 +182,14 @@ function IngredientsPage() {
 										<div className="flex items-center justify-between text-sm">
 											<span className="text-muted-foreground">Added:</span>
 											<span>
-												{new Date(ingredient._creationTime).toLocaleDateString()}
+												{new Date(
+													ingredient._creationTime,
+												).toLocaleDateString()}
 											</span>
 										</div>
 										<div className="flex items-center justify-between text-sm">
 											<span className="text-muted-foreground">Expires:</span>
-											<Badge
-												variant={expiryStatus.color}
-												className="text-xs"
-											>
+											<Badge variant={expiryStatus.color} className="text-xs">
 												{expiryStatus.status === "expired"
 													? "Expired"
 													: expiryStatus.text}
@@ -180,13 +206,38 @@ function IngredientsPage() {
 											<Edit className="mr-1 h-3 w-3" />
 											Edit
 										</Button>
-										<Button
-											variant="outline"
-											size="sm"
-											className="bg-transparent text-destructive hover:text-destructive"
-										>
-											<Trash2 className="h-3 w-3" />
-										</Button>
+										<AlertDialog>
+											<AlertDialogTrigger asChild>
+												<Button
+													variant="outline"
+													size="sm"
+													className="bg-transparent text-destructive hover:text-destructive"
+												>
+													<Trash2 className="h-3 w-3" />
+												</Button>
+											</AlertDialogTrigger>
+											<AlertDialogContent>
+												<AlertDialogHeader>
+													<AlertDialogTitle>
+														Are you absolutely sure?
+													</AlertDialogTitle>
+													<AlertDialogDescription>
+														This action cannot be undone. You won't be able to
+														restore the ingredient data after deletion.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter>
+													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<AlertDialogAction
+														onClick={() =>
+															deleteIngredient({ ingredientId: ingredient._id })
+														}
+													>
+														Continue
+													</AlertDialogAction>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+										</AlertDialog>
 									</div>
 								</CardContent>
 							</Card>
@@ -194,23 +245,26 @@ function IngredientsPage() {
 					})}
 				</div>
 
-				{!filteredIngredients || filteredIngredients.length === 0 && (
-					<div className="py-12 text-center">
-						<Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-						<h3 className="mb-2 font-semibold text-lg">No ingredients found</h3>
-						<p className="mb-4 text-muted-foreground">
-							{searchTerm || selectedCategory !== "all"
-								? "Try adjusting your search or filter"
-								: "Start by adding your first ingredient"}
-						</p>
-						<Button asChild>
-							<Link to="/dashboard/ingredients/add">
-								<Plus className="mr-2 h-4 w-4" />
-								Add Ingredient
-							</Link>
-						</Button>
-					</div>
-				)}
+				{!filteredIngredients ||
+					(filteredIngredients.length === 0 && (
+						<div className="py-12 text-center">
+							<Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+							<h3 className="mb-2 font-semibold text-lg">
+								No ingredients found
+							</h3>
+							<p className="mb-4 text-muted-foreground">
+								{searchTerm || selectedCategory !== "all"
+									? "Try adjusting your search or filter"
+									: "Start by adding your first ingredient"}
+							</p>
+							<Button asChild>
+								<Link to="/dashboard/ingredients/add">
+									<Plus className="mr-2 h-4 w-4" />
+									Add Ingredient
+								</Link>
+							</Button>
+						</div>
+					))}
 			</div>
 		</div>
 	);

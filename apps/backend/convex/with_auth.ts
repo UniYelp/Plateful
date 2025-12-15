@@ -4,7 +4,8 @@ import {
 	customQuery,
 } from "convex-helpers/server/customFunctions";
 
-import { type QueryCtx, query } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
+import { type MutationCtx, type QueryCtx, query } from "./_generated/server";
 import { mutation } from "./functions";
 // import { internalQuery } from "./_generated/server";
 // import {mutation, internalMutation} from './functions'
@@ -24,6 +25,8 @@ export const authedQuery = customQuery(
 	}),
 );
 
+export type AuthedQueryCtx = QueryCtx & { user: Doc<"users"> };
+
 // #region Mutations
 
 export const authedMutation = customMutation(
@@ -33,6 +36,8 @@ export const authedMutation = customMutation(
 		return { user };
 	}),
 );
+
+export type AuthedMutationCtx = MutationCtx & { user: Doc<"users"> };
 
 // #region Helpers
 

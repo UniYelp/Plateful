@@ -1,7 +1,7 @@
 import type { UserJSON } from "@clerk/backend";
 import type { Validator } from "convex/values";
 
-import { query } from "./_generated/server";
+import { internalQuery, query } from "./_generated/server";
 import { internalMutation } from "./functions";
 import { createUserHousehold } from "./households";
 import { type DocShape, SYSTEM_ID, vv } from "./schema";
@@ -12,6 +12,17 @@ export const current = query({
 	args: {},
 	handler: async (ctx) => {
 		return await getCurrentUser(ctx);
+	},
+});
+
+export const getExternalUserIdByUserId = internalQuery({
+	args: {
+		userId: vv.id("users"),
+	},
+	handler: async (ctx, args) => {
+		const user = await ctx.db.get(args.userId);
+
+		return user?.externalId
 	},
 });
 

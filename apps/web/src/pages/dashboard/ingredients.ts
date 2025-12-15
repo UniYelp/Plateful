@@ -74,3 +74,15 @@ export const ingredientsCategories = [
 	{ value: "grains", label: "Grains & Cereals" },
 	{ value: "other", label: "Other" },
 ];
+
+
+export const ingredientImgByCategory = {
+	vegetables: "/ingredientsCategories/vegetable.png",
+  fruits: "/ingredientsCategories/fresh-produce.png",
+  meat: "/ingredientsCategories/chicken.png",
+  dairy: "/ingredientsCategories/milk.png",
+  herbs: "/ingredientsCategories/tea.png",
+  oils: "/ingredientsCategories/oil.png",
+  grains: "/ingredientsCategories/cereals.png",
+  other: "/ingredientsCategories/salad.png"
+} as const

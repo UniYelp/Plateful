@@ -1,5 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
 import {
 	AlertTriangle,
 	BookOpen,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { api } from "@backend/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,9 +35,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { HouseholdMember } from "@/components/users/HouseholdMember";
 import {
-	mockExpiringSoon,
-	mockHousehold,
 	mockRecentActivity,
 	mockStats,
 } from "@/pages/dashboard/dashboard-page";
@@ -50,9 +51,25 @@ function RouteComponent() {
 
 function DashboardPage() {
 	const { user, isLoaded } = useUser();
-	const [household] = useState(mockHousehold);
 	const [isQuickInviteOpen, setIsQuickInviteOpen] = useState(false);
 	const [quickInviteEmail, setQuickInviteEmail] = useState("");
+
+	const households = useQuery(api.households.getUserHouseholds);
+	const household = households?.[0];
+	const householdMembers = useQuery(
+		api.households.getHouseholdMembers,
+		household ? { householdId: household._id } : "skip",
+	);
+
+	const ingredientsCount = useQuery(
+		api.ingredients.getIngredientsCount,
+		household ? { householdId: household._id } : "skip",
+	);
+
+	const expiringSoonIngredients = useQuery(
+		api.ingredients.getExpiringSoonIngredients,
+		household ? { householdId: household._id } : "skip",
+	);
 
 	if (!isLoaded || !user) {
 		return <div>Loading...</div>;
@@ -64,56 +81,11 @@ function DashboardPage() {
 		setIsQuickInviteOpen(false);
 	};
 
+	// eslint-disable-next-line react-hooks/purity
+	const now = Date.now();
+
 	return (
 		<div className="min-h-screen bg-background">
-			{/* Header */}
-			{/* <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 h-auto p-2">
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback>
-                      <AvatarInitials name={user.fullName || user.firstName || "User"} />
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="hidden sm:block text-sm font-medium">{user.fullName || user.firstName}</span>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/profile">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/household">
-                    <Users className="mr-2 h-4 w-4" />
-                    <span>Manage Household</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header> */}
-
 			<div className="container mx-auto px-4 py-8">
 				{/* Welcome Section */}
 				<div className="mb-8">
@@ -134,7 +106,7 @@ function DashboardPage() {
 									<Package className="h-5 w-5 text-primary" />
 								</div>
 								<div>
-									<p className="font-bold text-2xl">{mockStats.ingredients}</p>
+									<p className="font-bold text-2xl">{ingredientsCount}</p>
 									<p className="text-muted-foreground text-sm">Ingredients</p>
 								</div>
 							</div>
@@ -177,7 +149,7 @@ function DashboardPage() {
 								</div>
 								<div>
 									<p className="font-bold text-2xl text-destructive">
-										{mockStats.expiringItems}
+										{expiringSoonIngredients?.length}
 									</p>
 									<p className="text-muted-foreground text-sm">Expiring Soon</p>
 								</div>
@@ -286,105 +258,94 @@ function DashboardPage() {
 
 					{/* Household Management */}
 					<div>
-						<Card>
-							<CardHeader>
-								<CardTitle className="flex items-center gap-2">
-									<Users className="h-5 w-5" />
-									{household.name}
-								</CardTitle>
-								<CardDescription>Manage your household members</CardDescription>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-3">
-									{household.members.map((member) => (
-										<div key={member.id} className="flex items-center gap-3">
-											{/* <Avatar className="h-8 w-8">
-												<AvatarFallback>
-													<AvatarInitials name={member.name} />
-												</AvatarFallback>
-											</Avatar> */}
-											<div className="flex-1">
-												<p className="font-medium text-sm">{member.name}</p>
-												<p className="text-muted-foreground text-xs">
-													{member.email}
-												</p>
-											</div>
-											<Badge
-												variant={
-													member.role === "admin" ? "default" : "secondary"
-												}
-												className="text-xs"
-											>
-												{member.role}
-											</Badge>
-										</div>
-									))}
-								</div>
+						{household && householdMembers && (
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<Users className="h-5 w-5" />
+										{household.name}
+									</CardTitle>
+									<CardDescription>
+										Manage your household members
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<div className="space-y-3">
+										{householdMembers.map((member) => (
+											<HouseholdMember key={member._id} {...member} />
+										))}
+									</div>
 
-								<div className="mt-4 space-y-2 border-border border-t pt-4">
-									<Dialog
-										open={isQuickInviteOpen}
-										onOpenChange={setIsQuickInviteOpen}
-									>
-										<DialogTrigger asChild>
-											<Button
-												variant="outline"
-												size="sm"
-												className="w-full bg-transparent"
-											>
-												<Plus className="mr-2 h-4 w-4" />
-												Invite Member
-											</Button>
-										</DialogTrigger>
-										<DialogContent>
-											<DialogHeader>
-												<DialogTitle>Quick Invite</DialogTitle>
-												<DialogDescription>
-													Send a quick invitation to join your household as a
-													member.
-												</DialogDescription>
-											</DialogHeader>
-											<div className="space-y-4">
-												<div>
-													<Label htmlFor="quick-email">Email Address</Label>
-													<Input
-														// id="quick-email"
-														type="email"
-														placeholder="Enter email address"
-														value={quickInviteEmail}
-														onChange={(e) =>
-															setQuickInviteEmail(e.target.value)
-														}
-													/>
+									<div className="mt-4 space-y-2 border-border border-t pt-4">
+										<Dialog
+											open={isQuickInviteOpen}
+											onOpenChange={setIsQuickInviteOpen}
+										>
+											<DialogTrigger asChild>
+												<Button
+													variant="outline"
+													size="sm"
+													className="w-full bg-transparent"
+												>
+													<Plus className="mr-2 h-4 w-4" />
+													Invite Member
+												</Button>
+											</DialogTrigger>
+											<DialogContent>
+												<DialogHeader>
+													<DialogTitle>Quick Invite</DialogTitle>
+													<DialogDescription>
+														Send a quick invitation to join your household as a
+														member.
+													</DialogDescription>
+												</DialogHeader>
+												<div className="space-y-4">
+													<div>
+														<Label htmlFor="quick-email">Email Address</Label>
+														<Input
+															// id="quick-email"
+															type="email"
+															placeholder="Enter email address"
+															value={quickInviteEmail}
+															onChange={(e) =>
+																setQuickInviteEmail(e.target.value)
+															}
+														/>
+													</div>
+													<div className="flex justify-end gap-2">
+														<Button
+															variant="outline"
+															onClick={() => setIsQuickInviteOpen(false)}
+														>
+															Cancel
+														</Button>
+														<Button
+															onClick={handleQuickInvite}
+															disabled={!quickInviteEmail}
+														>
+															<Mail className="mr-2 h-4 w-4" />
+															Send Invite
+														</Button>
+													</div>
 												</div>
-												<div className="flex justify-end gap-2">
-													<Button
-														variant="outline"
-														onClick={() => setIsQuickInviteOpen(false)}
-													>
-														Cancel
-													</Button>
-													<Button
-														onClick={handleQuickInvite}
-														disabled={!quickInviteEmail}
-													>
-														<Mail className="mr-2 h-4 w-4" />
-														Send Invite
-													</Button>
-												</div>
-											</div>
-										</DialogContent>
-									</Dialog>
+											</DialogContent>
+										</Dialog>
 
-									<Button variant="ghost" size="sm" className="w-full" asChild>
-										{/* <Link to="/household">
+										<Button
+											variant="ghost"
+											size="sm"
+											className="w-full"
+											asChild
+										>
+											{/* <Link to="/household">
                       <Users className="w-4 h-4 mr-2" />
                       Manage Household
                     </Link> */}
-									</Button>
-								</div>
-							</CardContent>
-						</Card>
+										</Button>
+									</div>
+								</CardContent>
+							</Card>
+						)}
 
 						{/* Expiring Items Alert */}
 						<Card className="mt-6 border-destructive/50">
@@ -399,17 +360,27 @@ function DashboardPage() {
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-2">
-									{mockExpiringSoon.map(({ name, daysTillExpiry }) => (
-										<div
-											key={`expiring-ingredient-${name}`}
-											className="flex items-center justify-between text-sm"
-										>
-											<span>{name}</span>
-											<Badge variant="destructive" className="text-xs">
-												{daysTillExpiry} days
-											</Badge>
-										</div>
-									))}
+									{expiringSoonIngredients?.map(({ name, quantities }) => {
+										const expirations = quantities.flatMap(
+											(q) => q.expiresAt ?? [],
+										);
+										const soonestExpiry = Math.min(...expirations);
+										const daysUntilExpiry = Math.ceil(
+											(soonestExpiry - now) / (1000 * 60 * 60 * 24),
+										);
+
+										return (
+											<div
+												key={`expiring-ingredient-${name}`}
+												className="flex items-center justify-between text-sm"
+											>
+												<span>{name}</span>
+												<Badge variant="destructive" className="text-xs">
+													{daysUntilExpiry} days
+												</Badge>
+											</div>
+										);
+									})}
 								</div>
 
 								<Button

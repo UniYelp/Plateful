@@ -18,6 +18,7 @@ import type * as migrations_index from "../migrations/index.js";
 import type * as routes_webhooks from "../routes/webhooks.js";
 import type * as triggers from "../triggers.js";
 import type * as triggers_index from "../triggers/index.js";
+import type * as userData from "../userData.js";
 import type * as users from "../users.js";
 import type * as with_auth from "../with_auth.js";
 
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   "routes/webhooks": typeof routes_webhooks;
   triggers: typeof triggers;
   "triggers/index": typeof triggers_index;
+  userData: typeof userData;
   users: typeof users;
   with_auth: typeof with_auth;
 }>;
