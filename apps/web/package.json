@@ -7,8 +7,8 @@
         "start": "vite",
         "build": "vite build && tsc",
         "serve": "vite preview",
-        "test": "vitest run --typecheck",
-        "test:w": "vitest --typecheck",
+        "test": "vitest run --typecheck --passWithNoTests",
+        "test:w": "vitest --typecheck --passWithNoTests",
         "shadcn:add": "pnpm dlx shadcn@latest add"
     },
     "dependencies": {

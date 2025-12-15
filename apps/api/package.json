@@ -3,30 +3,12 @@
     "version": "0.0.0",
     "type": "module",
     "private": true,
-    "main": "./lib/index.js",
-    "module": "./lib/index.js",
-    "types": "./lib/index.d.ts",
-    "exports": {
-        ".": {
-            "@plateful/dev-src": "./src/exports/index.ts",
-            "default": "./lib/index.js"
-        },
-        "./package.json": "./package.json"
-    },
-    "publishConfig": {
-        "exports": {
-            ".": "./lib/index.js",
-            "./package.json": "./package.json"
-        }
-    },
     "scripts": {
         "dev": "dotenvx run -- tsx watch src/dev.ts",
-        "dev:p": "tsdown --watch",
-        "build": "tsdown",
-        "build:prod": "tsc src/index.ts --outDir dist",
+        "build": "tsc src/index.ts --outDir dist",
         "start": "NODE_ENV=production node dist/index.js",
-        "test": "vitest run --typecheck",
-        "test:w": "vitest --typecheck",
+        "test": "vitest run --typecheck --passWithNoTests",
+        "test:w": "vitest --typecheck --passWithNoTests",
         "test:eval": "evalite",
         "test:eval:dev": "evalite watch",
         "test:types": "tsc --noEmit"

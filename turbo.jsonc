@@ -23,18 +23,6 @@
                 "dist/**"
             ]
         },
-        "build:p": {
-            "dependsOn": [
-                "^build"
-            ],
-            "inputs": [
-                "$TURBO_DEFAULT$",
-                ".env*"
-            ],
-            "outputs": [
-                "dist/**"
-            ]
-        },
         "dev": {
             "cache": false,
             "persistent": true,
@@ -71,20 +59,6 @@
             "cache": false,
             "interactive": true
         },
-        "@plateful/api-gateway#dev": {
-            "with": [
-                "@plateful/barcode-service#dev"
-            ],
-            "dependsOn": [
-                "^build"
-            ],
-            "inputs": [
-                "$TURBO_DEFAULT$",
-                "convex/**/*"
-            ],
-            "cache": false,
-            "persistent": true
-        },
         "@plateful/web#dev": {
             "with": [
                 "@plateful/backend#dev",
@@ -95,7 +69,8 @@
             ],
             "inputs": [
                 "$TURBO_DEFAULT$",
-                "convex/**/*"
+                "../backend/convex/**/*",
+                "../api/src/**/*"
             ],
             "cache": false,
             "persistent": true
