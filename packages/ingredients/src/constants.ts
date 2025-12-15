@@ -1,8 +1,7 @@
 import { massUnitConversions } from "@plateful/units/mass";
 import type { ScalarUnitConversion } from "@plateful/units/scalar";
 import { volumeUnitConversions } from "@plateful/units/volume";
-import { Arr } from "@plateful/utils";
-import type { IngredientsUnit } from "./types";
+import type { IngredientUnit } from "./enums";
 
-export const ingredientsUnitConversions: ScalarUnitConversion<IngredientsUnit>[] =
-	Arr.flatten(massUnitConversions, volumeUnitConversions);
+export const ingredientsUnitConversions: ScalarUnitConversion<IngredientUnit>[] =
+	[massUnitConversions, volumeUnitConversions].flat();

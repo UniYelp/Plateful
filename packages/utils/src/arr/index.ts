@@ -7,6 +7,5 @@
 export * as Arr from "./Arr";
 export {
 	concat as arrConcat,
-	flatten as arrFlatten,
 	includes as arrIncludes,
 } from "./Arr";

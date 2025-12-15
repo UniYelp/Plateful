@@ -15,7 +15,6 @@ export default defineConfig({
 	entry: {
 		index: "./src/index.ts",
 		scalar: "./src/features/scalar/index.ts",
-		food: "./src/features/food/index.ts",
 		mass: "./src/features/mass/index.ts",
 		volume: "./src/features/volume/index.ts",
 		temperature: "./src/features/temperature/index.ts",

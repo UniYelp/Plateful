@@ -1,8 +1,8 @@
 import { scalarUnitConversion } from "@plateful/units/scalar";
 import { ingredientsUnitConversions } from "../constants";
-import { foodUnits } from "../enums";
+import { ingredientUnits } from "../enums";
 
 export const {
-	convertUnits: convertFoodUnits,
-	getConversions: getFoodUnitConversions,
-} = scalarUnitConversion(foodUnits, ingredientsUnitConversions);
+	convertUnits: convertIngredientUnits,
+	getConversions: getIngredientUnitConversions,
+} = scalarUnitConversion(ingredientUnits, ingredientsUnitConversions);

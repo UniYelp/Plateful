@@ -3,14 +3,14 @@ import { Experimental_Agent as Agent, Output, stepCountIs } from "ai";
 import dedent from "dedent";
 import z from "zod";
 
-import { foodUnits } from "@plateful/ingredients";
+import { ingredientUnits } from "@plateful/ingredients";
 import { TemperatureUnit, temperatureUnits } from "@plateful/units/temperature";
 
 const TemperatureUnitSchema = z
 	.enum(temperatureUnits)
 	.describe("Temperature Unit");
 
-const FoodUnitSchema = z.enum(foodUnits).describe("Food Unit");
+const FoodUnitSchema = z.enum(ingredientUnits).describe("Food Unit");
 
 const AnyFoodUnitSchema = z.union([
 	FoodUnitSchema,

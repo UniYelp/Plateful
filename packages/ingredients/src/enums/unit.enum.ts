@@ -3,7 +3,7 @@ import { MassUnit } from "@plateful/units/mass";
 import { VolumeUnit } from "@plateful/units/volume";
 import { Enum } from "@plateful/utils";
 
-export const FoodUnit = {
+export const IngredientUnit = {
 	Slice: "slice",
 	Clove: "clove",
 	Leaf: "leaf",
@@ -11,6 +11,6 @@ export const FoodUnit = {
 	...VolumeUnit,
 } as const;
 
-export type FoodUnit = ValueOf<typeof FoodUnit>;
+export type IngredientUnit = ValueOf<typeof IngredientUnit>;
 
-export const foodUnits = Enum.toTuple(FoodUnit);
+export const ingredientUnits = Enum.toTuple(IngredientUnit);
