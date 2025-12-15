@@ -1,8 +1,8 @@
 import { google } from "@ai-sdk/google";
 import { Experimental_Agent as Agent, Output, stepCountIs } from "ai";
-import { systemPrompt } from "./prompt";
-import { RecipeOutputSchema } from "./schemas";
 
+import { systemPrompt } from "./prompt";
+import { type RecipeInput, RecipeOutputSchema } from "./schemas";
 
 export const recipeAgent = new Agent({
 	model: google("gemini-2.5-flash"),

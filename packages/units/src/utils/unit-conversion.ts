@@ -1,6 +1,6 @@
 import { Graph, Option } from "effect";
 
-import type { Suggest, SuggestStr } from "@plateful/types";
+import type { SuggestStr } from "@plateful/types";
 import { isDefined } from "@plateful/utils";
 import type { UnitConversion } from "../types";
 
@@ -25,10 +25,10 @@ type UnitConversionParams<
 type UnitConversionRes<Unit extends string, InitialValue, CalculationResult> = {
 	convertUnits: (
 		from: SuggestStr<Unit>,
-		to: Suggest<Unit>,
+		to: SuggestStr<Unit>,
 		initialValue: InitialValue,
 	) => CalculationResult | null;
-	getConversions: (from: Suggest<Unit>) => Unit[];
+	getConversions: (from: SuggestStr<Unit>) => Unit[];
 };
 
 export const unitConversion = <
@@ -90,8 +90,8 @@ export const unitConversion = <
 	});
 
 	const convertUnits = (
-		from: Suggest<Unit>,
-		to: Suggest<Unit>,
+		from: SuggestStr<Unit>,
+		to: SuggestStr<Unit>,
 		initialValue?: InitialValue,
 	) => {
 		const source = nodeByUnit[from as Unit];
@@ -117,7 +117,7 @@ export const unitConversion = <
 		});
 	};
 
-	const getConversions = (from: Suggest<Unit>) => {
+	const getConversions = (from: SuggestStr<Unit>) => {
 		const start = nodeByUnit[from as Unit];
 
 		if (!isDefined(start)) return [];
