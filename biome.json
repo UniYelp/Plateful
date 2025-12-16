@@ -75,11 +75,15 @@
                                 ":PACKAGE:",
                                 ":PACKAGE_WITH_PROTOCOL:",
                                 "!@plateful/**",
-                                "!@backend/**"
+                                "!@backend/**",
+                                "!@api/**"
                             ],
                             ":BLANK_LINE:",
                             "@plateful/**",
-                            "@backend/**",
+                            [
+                                "@backend/**",
+                                "@api/**"
+                            ],
                             [
                                 ":ALIAS:",
                                 "&/**",

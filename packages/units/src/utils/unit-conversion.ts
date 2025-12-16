@@ -1,5 +1,7 @@
 import { Graph, Option } from "effect";
 
+import type { SuggestStr } from "@plateful/types";
+import { isDefined } from "@plateful/utils";
 import type { UnitConversion } from "../types";
 
 type UnitConversionParams<
@@ -22,11 +24,11 @@ type UnitConversionParams<
 
 type UnitConversionRes<Unit extends string, InitialValue, CalculationResult> = {
 	convertUnits: (
-		from: Unit,
-		to: Unit,
+		from: SuggestStr<Unit>,
+		to: SuggestStr<Unit>,
 		initialValue: InitialValue,
 	) => CalculationResult | null;
-	getConversions: (from: Unit) => Unit[];
+	getConversions: (from: SuggestStr<Unit>) => Unit[];
 };
 
 export const unitConversion = <
@@ -87,11 +89,15 @@ export const unitConversion = <
 		}
 	});
 
-	const convertUnits = (from: Unit, to: Unit, initialValue?: InitialValue) => {
-		const source = nodeByUnit[from];
-		const target = nodeByUnit[to];
+	const convertUnits = (
+		from: SuggestStr<Unit>,
+		to: SuggestStr<Unit>,
+		initialValue?: InitialValue,
+	) => {
+		const source = nodeByUnit[from as Unit];
+		const target = nodeByUnit[to as Unit];
 
-		if (!source || !target) return null;
+		if (!isDefined(source) || !isDefined(target)) return null;
 
 		const res = Graph.dijkstra(graph, {
 			source,
@@ -111,8 +117,11 @@ export const unitConversion = <
 		});
 	};
 
-	const getConversions = (from: Unit) => {
-		const start = nodeByUnit[from];
+	const getConversions = (from: SuggestStr<Unit>) => {
+		const start = nodeByUnit[from as Unit];
+
+		if (!isDefined(start)) return [];
+
 		const walker = Graph.bfs(graph, { start: [start] });
 		return Array.from(Graph.indices(walker)).flatMap(
 			(node) => graph.nodes.get(node) ?? [],

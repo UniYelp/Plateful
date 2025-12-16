@@ -5,7 +5,6 @@ packages:
 
 catalog:
   '@clerk/backend': ^2.15.0
-  '@hono/clerk-auth': ^3.0.3
   '@hono/zod-validator': ^0.7.3
   convex: ^1.29.3
   effect: ^3.19.4

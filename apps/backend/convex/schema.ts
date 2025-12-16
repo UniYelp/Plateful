@@ -127,7 +127,7 @@ export const ingredientFields = {
 };
 
 export const recipeFields = {
-	name: v.string(),
+	title: v.string(),
 	description: v.optional(v.string()),
 
 	prepTime: v.nullable(vDuration),
@@ -136,9 +136,6 @@ export const recipeFields = {
 	tags: v.array(v.string()), //? system searchable
 	keywords: v.array(v.string()), //? user searchable
 	notes: v.optional(v.string()), //? user non-searchable
-
-	generated: v.optional(v.boolean()),
-	images: v.array(vImage),
 
 	householdId: v.id("households"),
 };
@@ -175,23 +172,11 @@ export const recipeIngredientFields = {
 };
 
 export const recipeInstructionPart = v.union(
-	v.object({
-		type: v.literal("text"),
-		value: v.string(),
-	}),
-	v.object({
-		type: v.literal("action"),
-		value: v.string(),
-		description: v.optional(v.string()),
-	}),
-	v.object({
-		type: v.literal("tool"),
-		value: v.string(),
-		description: v.optional(v.string()),
-	}),
+	v.string(),
 	v.object({
 		type: v.literal("duration"),
 		value: vDuration,
+		kind: v.union(v.literal("prep"), v.literal("cook")),
 	}),
 	v.object({
 		type: v.literal("temperature"),
@@ -199,7 +184,7 @@ export const recipeInstructionPart = v.union(
 		unit: v.union(...temperatureUnits.map((unit) => v.literal(unit))),
 	}),
 	v.object({
-		type: v.literal("ingredient"),
+		type: v.literal("material"),
 		...ingredientMetadataFields,
 		ingredientId: v.nullable(v.id("ingredients")), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
 		quantity: v.union(
@@ -265,9 +250,9 @@ const schema = defineSchema({
 		...stampsFields,
 	})
 		.index("by_household", ["householdId"])
-		.index("by_household_and_title", ["householdId", "name"])
+		.index("by_household_and_title", ["householdId", "title"])
 		.searchIndex("search_recipes", {
-			searchField: "name",
+			searchField: "title",
 			filterFields: ["householdId", "description", "tags", "keywords"],
 		}),
 	recipeIngredients: defineTable({

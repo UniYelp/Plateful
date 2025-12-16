@@ -12,7 +12,8 @@
         },
         "build": {
             "dependsOn": [
-                "^build"
+                "^build",
+                // "test"
             ],
             "inputs": [
                 "$TURBO_DEFAULT$",
@@ -24,7 +25,11 @@
         },
         "dev": {
             "cache": false,
-            "persistent": true
+            "persistent": true,
+            "interactive": true,
+            "dependsOn": [
+                "^build"
+            ]
         },
         "dev:p": {
             "cache": false,
@@ -33,6 +38,7 @@
         "db:gen": {},
         "test": {
             "with": [
+                "test:eval",
                 "test:types"
             ],
             "dependsOn": [
@@ -44,41 +50,27 @@
                 "_transit"
             ]
         },
+        "test:eval": {
+            "dependsOn": [
+                "_transit"
+            ]
+        },
         "shadcn:add": {
             "cache": false,
             "interactive": true
         },
-        "@plateful/backend#dev": {
-            // "with": ["clerk:webhook"],
-            "cache": false,
-            "persistent": true,
-            "interactive": true
-        },
-        "@plateful/api-gateway#dev": {
-            "with": [
-                "@plateful/barcode-service#dev"
-            ],
-            "dependsOn": [
-                "^build"
-            ],
-            "inputs": [
-                "$TURBO_DEFAULT$",
-                "convex/**/*"
-            ],
-            "cache": false,
-            "persistent": true
-        },
         "@plateful/web#dev": {
             "with": [
                 "@plateful/backend#dev",
-                "@plateful/api-gateway#dev"
+                "@plateful/api#dev"
             ],
             "dependsOn": [
                 "^build"
             ],
             "inputs": [
                 "$TURBO_DEFAULT$",
-                "convex/**/*"
+                "../backend/convex/**/*",
+                "../api/src/**/*"
             ],
             "cache": false,
             "persistent": true

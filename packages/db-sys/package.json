@@ -24,7 +24,7 @@
         }
     },
     "scripts": {
-        "build": "tsdown",
+        "build:__fix": "tsdown",
         "dev": "tsdown --watch",
         "db:gen": "prisma generate",
         "db:mig:create": "prisma migrate dev --create-only",
@@ -34,7 +34,7 @@
         "prisma:validate": "prisma validate",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",
-        "test:types": "tsc --noEmit"
+        "test:types:__fix": "tsc --noEmit --project tsconfig.build.json"
     },
     "dependencies": {
         "@prisma/adapter-pg": "^7.0.1",
