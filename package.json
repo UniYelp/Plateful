@@ -32,6 +32,7 @@
         "@arethetypeswrong/core": "^0.18.2",
         "@arktype/attest": "^0.56.0",
         "@biomejs/biome": "2.3.2",
+        "@convex-dev/eslint-plugin": "^1.1.1",
         "@effect/language-service": "^0.62.3",
         "@effect/vitest": "^0.27.0",
         "@tanstack/eslint-plugin-query": "^5.91.2",

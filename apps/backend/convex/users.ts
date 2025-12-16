@@ -40,7 +40,7 @@ export const upsertFromClerk = internalMutation({
 				createdBy: SYSTEM_ID,
 			});
 		} else {
-			await ctx.db.patch(user._id, userAttributes);
+			await ctx.db.patch("users", user._id, userAttributes);
 		}
 	},
 });
@@ -53,7 +53,7 @@ export const deleteFromClerk = internalMutation({
 		if (user !== null) {
 			const now = Date.now();
 
-			await ctx.db.patch(user._id, {
+			await ctx.db.patch("users", user._id, {
 				updatedAt: now,
 				deletedAt: now,
 			});
