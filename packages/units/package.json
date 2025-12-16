@@ -15,10 +15,6 @@
             "@plateful/dev-src": "./src/index.ts",
             "default": "./dist/index.js"
         },
-        "./food": {
-            "@plateful/dev-src": "./src/features/food/index.ts",
-            "default": "./dist/food.js"
-        },
         "./mass": {
             "@plateful/dev-src": "./src/features/mass/index.ts",
             "default": "./dist/mass.js"
@@ -40,7 +36,6 @@
     "publishConfig": {
         "exports": {
             ".": "./dist/index.js",
-            "./food": "./dist/food.js",
             "./mass": "./dist/mass.js",
             "./scalar": "./dist/scalar.js",
             "./temperature": "./dist/temperature.js",

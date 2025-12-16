@@ -16,7 +16,6 @@
         "@clerk/clerk-react": "^5.56.0",
         "@convex-dev/react-query": "0.0.0-alpha.11",
         "@elysiajs/eden": "^1.4.5",
-        "@plateful/api": "workspace:*",
         "@plateful/ingredients": "workspace:*",
         "@plateful/units": "workspace:*",
         "@plateful/utils": "workspace:*",
