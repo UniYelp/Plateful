@@ -1,5 +1,5 @@
 {
-    "name": "@plateful/ingredients",
+    "name": "@plateful/agents",
     "version": "0.0.0",
     "private": true,
     "type": "module",
@@ -28,10 +28,14 @@
         "dev": "tsdown --watch",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",
+        "test:eval": "evalite",
+        "test:eval:dev": "evalite watch",
         "test:types": "tsc --noEmit --project tsconfig.build.json"
     },
     "dependencies": {
         "@plateful/units": "workspace:*",
+        "@plateful/ingredients": "workspace:*",
+        "@plateful/recipes": "workspace:*",
         "@plateful/utils": "workspace:*"
     },
     "devDependencies": {
