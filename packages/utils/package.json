@@ -53,7 +53,7 @@
         "dev": "tsdown --watch",
         "test": "vitest run --typecheck",
         "test:w": "vitest --typecheck",
-        "test:types": "tsc --noEmit"
+        "test:types": "tsc --noEmit --project tsconfig.build.json"
     },
     "dependencies": {},
     "devDependencies": {

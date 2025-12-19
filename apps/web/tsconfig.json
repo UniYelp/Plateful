@@ -35,6 +35,9 @@
             "@backend/*": [
                 "../backend/convex/_generated/*",
                 "../backend/convex/*.exports.ts",
+            ],
+            "@api/*": [
+                "../api/src/exports/*"
             ]
         }
     },

@@ -1,3 +1,4 @@
+import convexPlugin from "@convex-dev/eslint-plugin";
 import tanstackQueryPlugin from "@tanstack/eslint-plugin-query";
 import tanstackRouterPlugin from "@tanstack/eslint-plugin-router";
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -36,5 +37,12 @@ export default defineConfig(
 			"@tanstack/router/create-route-property-order": "warn",
 			"react-refresh/only-export-components": "warn",
 		},
+	},
+	{
+		files: ["**/convex/**/*.ts"],
+		plugins: {
+			"@convex-dev": convexPlugin,
+		},
+		rules: convexPlugin.configs.recommended[0].rules,
 	},
 );

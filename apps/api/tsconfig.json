@@ -1,0 +1,34 @@
+{
+    "extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"composite": true,
+		"target": "ESNext",
+		"module": "esnext",
+        "moduleResolution": "bundler",
+        "isolatedDeclarations": false,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "verbatimModuleSyntax": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"types": ["node"],
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "useUnknownInCatchVariables": true,
+        "noUncheckedIndexedAccess": true,
+        "allowUnreachableCode": false,
+        "noImplicitOverride": true,
+        "noImplicitAny": true,
+	},
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.test.json"
+		}
+	],
+	"include": ["**/*"],
+	"exclude": ["node_modules"]
+}

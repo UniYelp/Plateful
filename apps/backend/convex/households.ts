@@ -18,7 +18,11 @@ export const getUserHouseholds = authedQuery({
 
 		const households = await Promise.all(
 			memberships.map(async (membership) => {
-				const household = await ctx.db.get(membership.householdId);
+				const household = await ctx.db.get(
+					"households",
+					membership.householdId,
+				);
+
 				if (!household) return;
 
 				return {
@@ -75,12 +79,13 @@ export const deleteHouseholds = internalMutation({
 		const memberships = await getUserMemberships(ctx, args.userId);
 
 		for (const membership of memberships) {
-			await ctx.db.delete(membership.householdId);
+			await ctx.db.delete("households", membership.householdId);
 		}
 	},
 });
 
 export const deleteVacantHouseholds = internalMutation({
+	args: {},
 	handler: async (_ctx) => {
 		// for (const membership of await ctx.db.query()) {
 		// 	await ctx.db.delete(membership.householdId);
