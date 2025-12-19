@@ -1,13 +1,13 @@
 import z from "zod";
 
-import { ingredientUnits } from "@plateful/ingredients";
-import { TemperatureUnit, temperatureUnits } from "@plateful/units/temperature";
+import { IngredientUnit } from "@plateful/ingredients";
+import { TemperatureUnit } from "@plateful/units/temperature";
 
 export const TemperatureUnitSchema = z
-	.enum(temperatureUnits)
+	.enum(TemperatureUnit)
 	.describe("Temperature Unit");
 
-export const FoodUnitSchema = z.enum(ingredientUnits).describe("Food Unit");
+export const FoodUnitSchema = z.enum(IngredientUnit).describe("Food Unit");
 
 export const AnyFoodUnitSchema = z.union([
 	FoodUnitSchema,
