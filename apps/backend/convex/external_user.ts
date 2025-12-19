@@ -4,7 +4,6 @@ import { internal } from "./_generated/api";
 import { action } from "./_generated/server";
 import { vv } from "./schema";
 
-// The key is loaded securely from environment variables
 const clerk = createClerkClient({
 	secretKey: process.env.CLERK_SECRET_KEY,
 });

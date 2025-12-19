@@ -62,12 +62,12 @@ function DashboardPage() {
 	);
 
 	const ingredientsCount = useQuery(
-		api.ingredients.getIngredientsCount,
+		api.ingredients.ingredientsCount,
 		household ? { householdId: household._id } : "skip",
 	);
 
 	const expiringSoonIngredients = useQuery(
-		api.ingredients.getExpiringSoonIngredients,
+		api.ingredients.expiringSoonIngredients,
 		household ? { householdId: household._id } : "skip",
 	);
 

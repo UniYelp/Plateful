@@ -27,7 +27,7 @@ type MemberData = {
 } | null;
 
 export const HouseholdMember = ({ userId, role }: HouseholdMemberProps) => {
-	const fetchUserDataAction = useAction(api.userData.getUserData);
+	const fetchUserDataAction = useAction(api.external_user.getUserData);
 
 	const {
 		data: userData,

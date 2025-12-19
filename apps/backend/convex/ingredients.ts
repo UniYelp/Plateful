@@ -1,4 +1,6 @@
 import { EXPIRING_SOON_TIME_WINDOW_MS } from "@plateful/ingredients";
+import type { Doc } from "./_generated/dataModel";
+import type { QueryCtx } from "./_generated/server";
 import {
 	getUserMemberships,
 	validateUserInHouseholdOrThrow,
@@ -9,6 +11,7 @@ import { authedMutation, authedQuery } from "./with_auth";
 // #region Validators
 
 // #region Queries
+
 export const householdIngredients = authedQuery({
 	args: {
 		householdId: vv.id("households"),
@@ -17,14 +20,11 @@ export const householdIngredients = authedQuery({
 		const { _id: userId } = ctx.user;
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
-		return await ctx.db
-			.query("ingredients")
-			.withIndex("by_household", (q) => q.eq("householdId", args.householdId))
-			.collect();
+		return await getHouseholdIngredients(ctx, args.householdId);
 	},
 });
 
-export const getIngredientsCount = authedQuery({
+export const ingredientsCount = authedQuery({
 	args: {
 		householdId: vv.id("households"),
 	},
@@ -33,16 +33,13 @@ export const getIngredientsCount = authedQuery({
 
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
-		const ingredients = await ctx.db
-			.query("ingredients")
-			.withIndex("by_household", (q) => q.eq("householdId", args.householdId))
-			.collect();
+		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
 
 		return ingredients.length;
 	},
 });
 
-export const getExpiringSoonIngredients = authedQuery({
+export const expiringSoonIngredients = authedQuery({
 	args: {
 		householdId: vv.id("households"),
 	},
@@ -51,10 +48,7 @@ export const getExpiringSoonIngredients = authedQuery({
 
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
-		const ingredients = await ctx.db
-			.query("ingredients")
-			.withIndex("by_household", (q) => q.eq("householdId", args.householdId))
-			.collect();
+		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
 
 		const expiryWindow = Date.now() + EXPIRING_SOON_TIME_WINDOW_MS;
 
@@ -120,3 +114,15 @@ export const deleteIngredient = authedMutation({
 });
 
 // #endregion
+
+// #region helpers
+const getHouseholdIngredients = async (
+	ctx: QueryCtx,
+	householdId: Doc<"households">["_id"],
+) => {
+	return await ctx.db
+		.query("ingredients")
+		.withIndex("by_household", (q) => q.eq("householdId", householdId))
+		.collect();
+};
+// #engregion
