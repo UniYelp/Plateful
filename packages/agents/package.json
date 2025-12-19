@@ -15,11 +15,16 @@
             "@plateful/dev-src": "./src/index.ts",
             "default": "./dist/index.js"
         },
+        "./recipes": {
+            "@plateful/dev-src": "./src/features/recipes/index.ts",
+            "default": "./dist/recipes/index.js"
+        },
         "./package.json": "./package.json"
     },
     "publishConfig": {
         "exports": {
             ".": "./dist/index.js",
+            "./recipes": "./dist/recipes/index.js",
             "./package.json": "./package.json"
         }
     },
@@ -39,7 +44,8 @@
         "@plateful/recipes": "workspace:*",
         "@plateful/utils": "workspace:*",
         "ai": "5.0.113",
-        "dedent": "^1.7.1"
+        "dedent": "^1.7.1",
+        "zod": "catalog:"
     },
     "devDependencies": {
         "@plateful/types": "workspace:*"

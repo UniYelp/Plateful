@@ -7,9 +7,9 @@ import z from "zod";
 
 import { appConfig } from "./configs/app.config";
 import { ENV } from "./configs/env.config";
+import { recipes } from "./modules/recipes";
 import { logger } from "./plugins/logger";
 import { requestId } from "./plugins/request-id";
-import { v1Routes } from "./routes/v1";
 
 export const app = new Elysia({ adapter: node() })
 	.use(
@@ -55,6 +55,6 @@ export const app = new Elysia({ adapter: node() })
 	// 		// auth: true,
 	// 	},
 	// )
-	.use(v1Routes);
+	.use(recipes);
 
 export type App = typeof app;

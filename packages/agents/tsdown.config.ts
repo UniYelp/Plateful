@@ -13,8 +13,9 @@ export default defineConfig({
 	format: "esm",
 	platform: "neutral",
 	entry: {
-		index: "./src/index.ts",
-	},
+        index: "./src/index.ts",
+        "*": "./src/features/*/index.ts"
+    },
 	dts: {
 		build: true,
 	},

@@ -14,10 +14,7 @@ export default defineConfig({
 	platform: "neutral",
 	entry: {
 		index: "./src/index.ts",
-		scalar: "./src/features/scalar/index.ts",
-		mass: "./src/features/mass/index.ts",
-		volume: "./src/features/volume/index.ts",
-		temperature: "./src/features/temperature/index.ts",
+		"*": "./src/features/*/index.ts",
 	},
 	dts: {
 		build: true,

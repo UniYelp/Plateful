@@ -19,6 +19,7 @@
         "@elysiajs/node": "^1.4.2",
         "@elysiajs/openapi": "^1.4.11",
         "@elysiajs/server-timing": "^1.4.0",
+        "@plateful/agents": "workspace:*",
         "@plateful/http": "workspace:*",
         "@plateful/ingredients": "workspace:*",
         "@plateful/units": "workspace:*",
