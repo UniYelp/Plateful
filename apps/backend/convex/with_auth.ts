@@ -42,9 +42,9 @@ export type AuthedMutationCtx = MutationCtx & { user: Doc<"users"> };
 // #region Helpers
 
 export async function getCurrentUserOrThrow(ctx: QueryCtx) {
-	const userRecord = await getCurrentUser(ctx);
-	if (!userRecord) throw new Error("Not authenticated");
-	return userRecord;
+	const user = await getCurrentUser(ctx);
+	if (!user) throw new Error("Not authenticated");
+	return user;
 }
 
 export async function getCurrentUser(ctx: QueryCtx) {

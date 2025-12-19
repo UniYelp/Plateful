@@ -9,6 +9,7 @@
  */
 
 import type * as crons from "../crons.js";
+import type * as external_user from "../external_user.js";
 import type * as functions from "../functions.js";
 import type * as households from "../households.js";
 import type * as http from "../http.js";
@@ -18,9 +19,9 @@ import type * as migrations_index from "../migrations/index.js";
 import type * as routes_webhooks from "../routes/webhooks.js";
 import type * as triggers from "../triggers.js";
 import type * as triggers_index from "../triggers/index.js";
-import type * as userData from "../userData.js";
 import type * as users from "../users.js";
 import type * as with_auth from "../with_auth.js";
+import type * as with_auth_action from "../with_auth_action.js";
 
 import type {
   ApiFromModules,
@@ -30,6 +31,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   crons: typeof crons;
+  external_user: typeof external_user;
   functions: typeof functions;
   households: typeof households;
   http: typeof http;
@@ -39,9 +41,9 @@ declare const fullApi: ApiFromModules<{
   "routes/webhooks": typeof routes_webhooks;
   triggers: typeof triggers;
   "triggers/index": typeof triggers_index;
-  userData: typeof userData;
   users: typeof users;
   with_auth: typeof with_auth;
+  with_auth_action: typeof with_auth_action;
 }>;
 
 /**
@@ -140,6 +142,7 @@ export declare const components: {
           fnHandle: string;
           name: string;
           next?: Array<{ fnHandle: string; name: string }>;
+          oneBatchOnly?: boolean;
         },
         {
           batchSize?: number;

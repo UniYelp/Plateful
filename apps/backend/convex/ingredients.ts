@@ -96,20 +96,28 @@ export const deleteIngredient = authedMutation({
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
 
-		const ingredient = await ctx.db.get(args.ingredientId);
+		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
+		
+		if (!ingredient) {
+			throw new Error("Ingredient Not Found")
+		}
+
 		const userHouseholds = await getUserMemberships(ctx, userId);
 
 		const isIngredientInUsersHouseholds = userHouseholds.some(
-			({ householdId }) => householdId === ingredient?.householdId,
+			({ householdId }) => householdId === ingredient.householdId,
 		);
 
-		if (isIngredientInUsersHouseholds) {
-			ctx.db.delete(args.ingredientId);
-		} else {
+		if (!isIngredientInUsersHouseholds) {
 			throw new Error(
 				`Permission Denied: user ${userId} cannot delete ingredient ${args.ingredientId}`,
 			);
 		}
+
+		const now = Date.now();
+		await ctx.db.patch("ingredients", args.ingredientId, {
+			deletedAt: now,
+		});
 	},
 });
 
@@ -123,6 +131,7 @@ const getHouseholdIngredients = async (
 	return await ctx.db
 		.query("ingredients")
 		.withIndex("by_household", (q) => q.eq("householdId", householdId))
+		.filter((q) => q.eq(q.field("deletedAt"), undefined))
 		.collect();
 };
 // #engregion

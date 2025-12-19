@@ -42,7 +42,6 @@ export const getHouseholdMembers = authedQuery({
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
 
-		// Check if user is member of this household
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		const members = await ctx.db

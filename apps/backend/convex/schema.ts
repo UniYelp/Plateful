@@ -25,6 +25,9 @@ export type SystemId = typeof SYSTEM_ID;
 export const REMAINING_QUANTITY = "remaining";
 export type RemainingQuantity = typeof REMAINING_QUANTITY;
 
+export const memberRoles = ["manager", "member"] as const;
+export type MemberRole = (typeof memberRoles)[number];
+
 // #endregion
 
 // #region types
@@ -95,7 +98,7 @@ export const userPreferencesFields = {
 export const householdMemberFields = {
 	householdId: v.id("households"),
 	userId: v.id("users"),
-	role: v.union(v.literal("manager"), v.literal("member")),
+	role: v.union(...memberRoles.map((role) => v.literal(role))),
 	joinedAt: vTimestamp,
 };
 

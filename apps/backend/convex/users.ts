@@ -20,9 +20,11 @@ export const getExternalUserIdByUserId = internalQuery({
 		userId: vv.id("users"),
 	},
 	handler: async (ctx, args) => {
-		const user = await ctx.db.get(args.userId);
+		const user = await ctx.db.get("users", args.userId);
 
-		return user?.externalId
+		if (!user) throw new Error("user not found");
+
+		return user.externalId;
 	},
 });
 

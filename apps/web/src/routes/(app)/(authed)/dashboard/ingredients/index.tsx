@@ -229,7 +229,7 @@ function IngredientsPage() {
 												<AlertDialogFooter>
 													<AlertDialogCancel>Cancel</AlertDialogCancel>
 													<AlertDialogAction
-														onClick={() =>
+														onClick={() => 
 															deleteIngredient({ ingredientId: ingredient._id })
 														}
 													>

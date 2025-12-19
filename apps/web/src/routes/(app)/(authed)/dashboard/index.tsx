@@ -7,13 +7,10 @@ import {
 	Calendar,
 	ChefHat,
 	Clock,
-	Mail,
 	Package,
 	Plus,
 	ShoppingCart,
-	Users,
 } from "lucide-react";
-import { useState } from "react";
 
 import { api } from "@backend/api";
 import { Badge } from "@/components/ui/badge";
@@ -25,17 +22,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { HouseholdMember } from "@/components/users/HouseholdMember";
+import { ManageHousehold } from "@/components/users/ManageHousehold";
 import {
 	mockRecentActivity,
 	mockStats,
@@ -51,15 +38,9 @@ function RouteComponent() {
 
 function DashboardPage() {
 	const { user, isLoaded } = useUser();
-	const [isQuickInviteOpen, setIsQuickInviteOpen] = useState(false);
-	const [quickInviteEmail, setQuickInviteEmail] = useState("");
 
 	const households = useQuery(api.households.getUserHouseholds);
 	const household = households?.[0];
-	const householdMembers = useQuery(
-		api.households.getHouseholdMembers,
-		household ? { householdId: household._id } : "skip",
-	);
 
 	const ingredientsCount = useQuery(
 		api.ingredients.ingredientsCount,
@@ -75,11 +56,6 @@ function DashboardPage() {
 		return <div>Loading...</div>;
 	}
 
-	const handleQuickInvite = () => {
-		console.log("Quick inviting:", quickInviteEmail);
-		setQuickInviteEmail("");
-		setIsQuickInviteOpen(false);
-	};
 
 	// eslint-disable-next-line react-hooks/purity
 	const now = Date.now();
@@ -255,97 +231,8 @@ function DashboardPage() {
 							</CardContent>
 						</Card>
 					</div>
-
-					{/* Household Management */}
 					<div>
-						{household && householdMembers && (
-							<Card>
-								<CardHeader>
-									<CardTitle className="flex items-center gap-2">
-										<Users className="h-5 w-5" />
-										{household.name}
-									</CardTitle>
-									<CardDescription>
-										Manage your household members
-									</CardDescription>
-								</CardHeader>
-								<CardContent>
-									<div className="space-y-3">
-										{householdMembers.map((member) => (
-											<HouseholdMember key={member._id} {...member} />
-										))}
-									</div>
-
-									<div className="mt-4 space-y-2 border-border border-t pt-4">
-										<Dialog
-											open={isQuickInviteOpen}
-											onOpenChange={setIsQuickInviteOpen}
-										>
-											<DialogTrigger asChild>
-												<Button
-													variant="outline"
-													size="sm"
-													className="w-full bg-transparent"
-												>
-													<Plus className="mr-2 h-4 w-4" />
-													Invite Member
-												</Button>
-											</DialogTrigger>
-											<DialogContent>
-												<DialogHeader>
-													<DialogTitle>Quick Invite</DialogTitle>
-													<DialogDescription>
-														Send a quick invitation to join your household as a
-														member.
-													</DialogDescription>
-												</DialogHeader>
-												<div className="space-y-4">
-													<div>
-														<Label htmlFor="quick-email">Email Address</Label>
-														<Input
-															// id="quick-email"
-															type="email"
-															placeholder="Enter email address"
-															value={quickInviteEmail}
-															onChange={(e) =>
-																setQuickInviteEmail(e.target.value)
-															}
-														/>
-													</div>
-													<div className="flex justify-end gap-2">
-														<Button
-															variant="outline"
-															onClick={() => setIsQuickInviteOpen(false)}
-														>
-															Cancel
-														</Button>
-														<Button
-															onClick={handleQuickInvite}
-															disabled={!quickInviteEmail}
-														>
-															<Mail className="mr-2 h-4 w-4" />
-															Send Invite
-														</Button>
-													</div>
-												</div>
-											</DialogContent>
-										</Dialog>
-
-										<Button
-											variant="ghost"
-											size="sm"
-											className="w-full"
-											asChild
-										>
-											{/* <Link to="/household">
-                      <Users className="w-4 h-4 mr-2" />
-                      Manage Household
-                    </Link> */}
-										</Button>
-									</div>
-								</CardContent>
-							</Card>
-						)}
+						{household && <ManageHousehold household={household} />}
 
 						{/* Expiring Items Alert */}
 						<Card className="mt-6 border-destructive/50">
