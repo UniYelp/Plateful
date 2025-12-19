@@ -374,6 +374,9 @@ importers:
 
   packages/agents:
     dependencies:
+      '@ai-sdk/google':
+        specifier: 2.0.46
+        version: 2.0.46(zod@4.2.1)
       '@plateful/ingredients':
         specifier: workspace:*
         version: link:../ingredients
@@ -386,6 +389,12 @@ importers:
       '@plateful/utils':
         specifier: workspace:*
         version: link:../utils
+      ai:
+        specifier: 5.0.113
+        version: 5.0.113(zod@4.2.1)
+      dedent:
+        specifier: ^1.7.1
+        version: 1.7.1
     devDependencies:
       '@plateful/types':
         specifier: workspace:*
@@ -4028,6 +4037,14 @@ packages:
 
   dedent@1.7.0:
     resolution: {integrity: sha512-HGFtf8yhuhGhqO07SV79tRp+br4MnbdjeVxotpn1QBl30pcLLCQjX5b2295ll0fv8RKDKsmWYrl05usHM9CewQ==}
+    peerDependencies:
+      babel-plugin-macros: ^3.1.0
+    peerDependenciesMeta:
+      babel-plugin-macros:
+        optional: true
+
+  dedent@1.7.1:
+    resolution: {integrity: sha512-9JmrhGZpOlEgOLdQgSm0zxFaYoQon408V1v49aqTWuXENVlnCuY9JBZcXZiCsZQWDjTm5Qf/nIvAy77mXDAjEg==}
     peerDependencies:
       babel-plugin-macros: ^3.1.0
     peerDependenciesMeta:
@@ -10032,6 +10049,8 @@ snapshots:
     optional: true
 
   dedent@1.7.0: {}
+
+  dedent@1.7.1: {}
 
   deep-extend@0.6.0:
     optional: true

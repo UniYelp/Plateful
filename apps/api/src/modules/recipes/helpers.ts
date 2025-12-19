@@ -1,30 +1,14 @@
-import dedent from "dedent";
-
 import { recipeAgent } from "./agent";
+import { generateRecipePrompt } from "./prompt";
 import type { RecipeInput } from "./schemas";
 
-export const generateRecipe = async (data: RecipeInput) => {
+export const generateRecipe = async (input: RecipeInput) => {
 	const {
 		experimental_output: output,
 		text,
 		steps,
 	} = await recipeAgent.generate({
-		prompt: dedent`
-                Ingredients:
-                ${JSON.stringify(data.ingredients, null, 2)}
-
-                Tools:
-                ${JSON.stringify(data.tools, null, 2)}
-
-                Tags:
-                ${JSON.stringify(data.tags, null, 2)}
-
-                Temperature unit:
-                ${data.temperatureUnit}
-
-                Spice level:
-                ${data.toleratedSpiceLevel}
-            `,
+		prompt: generateRecipePrompt(input),
 	});
 
 	return {

@@ -33,10 +33,13 @@
         "test:types": "tsc --noEmit --project tsconfig.build.json"
     },
     "dependencies": {
+        "@ai-sdk/google": "2.0.46",
         "@plateful/units": "workspace:*",
         "@plateful/ingredients": "workspace:*",
         "@plateful/recipes": "workspace:*",
-        "@plateful/utils": "workspace:*"
+        "@plateful/utils": "workspace:*",
+        "ai": "5.0.113",
+        "dedent": "^1.7.1"
     },
     "devDependencies": {
         "@plateful/types": "workspace:*"

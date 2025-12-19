@@ -8,9 +8,9 @@ export const v1Routes = new Elysia({
 	"generate-recipe",
 	async ({ body }) => {
 		const result = await RecipeAgent.generateRecipe(body);
-		const { output } = result;
+		const { text, output } = result;
 
-		return output;
+		return { output, text };
 	},
 	{
 		body: RecipeInputSchema,

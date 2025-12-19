@@ -27,6 +27,7 @@ export const IngredientQuantitySchema = z.union([
 
 export const IngredientInputSchema = z.object({
 	name: z.string(),
+	state: z.nullish(z.string()).default(null),
 	quantity: IngredientQuantitySchema,
 });
 
@@ -41,30 +42,32 @@ export const RecipeInputSchema = z.object({
 	tags: z.array(z.string()).default([]),
 	temperatureUnit: TemperatureUnitSchema.default(TemperatureUnit.Celsius),
 	toleratedSpiceLevel: z
-		.enum(["none", "mild", "medium", "hot"])
-		.default("none"),
+		.enum(["none", "mild", "medium", "hot", "no-preference"])
+		.default("no-preference"),
 });
 
 export type RecipeInput = z.infer<typeof RecipeInputSchema>;
 
-export const IngredientBlockSchema = z.object({
-	type: z.literal("ingredient"),
+export const MaterialBlockSchema = z.object({
+	type: z.literal("material"),
 	name: z.string(),
 	quantity: z.union([
 		z.object({
 			value: z.number(),
-			unit: z.nullable(AnyFoodUnitSchema),
+			unit: z.optional(AnyFoodUnitSchema),
 		}),
 		z.object({
 			value: z.literal("remaining"),
 			expectedRemainder: z.number(),
-			unit: z.nullable(AnyFoodUnitSchema),
+			unit: z.optional(AnyFoodUnitSchema),
 		}),
 	]),
+	state: z.optional(z.string()),
+	kind: z.enum(["input", "derived-input", "derived-output", "output"]),
 });
 
 export const DurationBlockSchema = z.object({
-	type: z.literal("duration"),
+	type: z.literal("time"),
 	kind: z.enum(["prep", "cook"]),
 	duration: z.iso.duration(),
 });
@@ -75,11 +78,17 @@ export const TemperatureBlockSchema = z.object({
 	unit: TemperatureUnitSchema,
 });
 
+export const ToolBlockSchema = z.object({
+	type: z.literal("tool"),
+	name: z.string(),
+});
+
 export const StepBlockSchema = z.union([
 	z.string(),
 	TemperatureBlockSchema,
 	DurationBlockSchema,
-	IngredientBlockSchema,
+	ToolBlockSchema,
+	MaterialBlockSchema,
 ]);
 
 export const RecipeOutputSchema = z.object({
