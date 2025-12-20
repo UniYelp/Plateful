@@ -17,29 +17,29 @@
         },
         "./mass": {
             "@plateful/dev-src": "./src/features/mass/index.ts",
-            "default": "./dist/mass.js"
+            "default": "./dist/mass/index.js"
         },
         "./scalar": {
             "@plateful/dev-src": "./src/features/scalar/index.ts",
-            "default": "./dist/scalar.js"
+            "default": "./dist/scalar/index.js"
         },
         "./temperature": {
             "@plateful/dev-src": "./src/features/temperature/index.ts",
-            "default": "./dist/temperature.js"
+            "default": "./dist/temperature/index.js"
         },
         "./volume": {
             "@plateful/dev-src": "./src/features/volume/index.ts",
-            "default": "./dist/volume.js"
+            "default": "./dist/volume/index.js"
         },
         "./package.json": "./package.json"
     },
     "publishConfig": {
         "exports": {
             ".": "./dist/index.js",
-            "./mass": "./dist/mass.js",
-            "./scalar": "./dist/scalar.js",
-            "./temperature": "./dist/temperature.js",
-            "./volume": "./dist/volume.js",
+            "./mass": "./dist/mass/index.js",
+            "./scalar": "./dist/scalar/index.js",
+            "./temperature": "./dist/temperature/index.js",
+            "./volume": "./dist/volume/index.js",
             "./package.json": "./package.json"
         }
     },

@@ -14,7 +14,6 @@ export default defineConfig({
 	platform: "neutral",
 	entry: {
 		index: "./src/index.ts",
-		"*": "./src/features/*/index.ts",
 	},
 	dts: {
 		build: true,

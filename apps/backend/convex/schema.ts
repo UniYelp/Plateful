@@ -25,6 +25,9 @@ export type SystemId = typeof SYSTEM_ID;
 export const REMAINING_QUANTITY = "remaining";
 export type RemainingQuantity = typeof REMAINING_QUANTITY;
 
+export const ALL_QUANTITY = "all";
+export type AllQuantity = typeof ALL_QUANTITY;
+
 // #endregion
 
 // #region types
@@ -62,10 +65,7 @@ const vDuration = v.string();
  */
 export type Duration = Infer<typeof vDuration>;
 
-const vImage = v.object({
-	src: vSysId("_storage"),
-	generated: v.optional(v.boolean()),
-});
+const vImage = vSysId("_storage");
 
 // #endregion
 
@@ -93,16 +93,16 @@ export const userPreferencesFields = {
 };
 
 export const householdMemberFields = {
-	householdId: v.id("households"),
-	userId: v.id("users"),
 	role: v.union(v.literal("manager"), v.literal("member")),
 	joinedAt: vTimestamp,
+
+	householdId: v.id("households"),
+	userId: v.id("users"),
 };
 
 export const ingredientQuantityFields = {
 	amount: v.number(),
 	unit: v.optional(v.string()),
-	// state: v.optional(v.string()), // TODO: figure out how to add the state in
 };
 
 export const ingredientFields = {
@@ -112,7 +112,7 @@ export const ingredientFields = {
 	quantities: v.array(
 		v.object({
 			...ingredientQuantityFields,
-			state: v.optional(v.string()), //? has no actual usage
+			state: v.optional(v.string()),
 			expiresAt: v.optional(vTimestamp),
 		}),
 	),
@@ -130,6 +130,8 @@ export const recipeFields = {
 	title: v.string(),
 	description: v.optional(v.string()),
 
+	type: v.union(v.literal("simple"), v.literal("advanced")),
+
 	prepTime: v.nullable(vDuration),
 	cookTime: v.nullable(vDuration),
 
@@ -142,7 +144,58 @@ export const recipeFields = {
 
 export const ingredientMetadataFields = v
 	.object(ingredientFields)
-	.pick("name", "description", "tags").fields;
+	.pick("name").fields;
+
+export const recipeIngredientFields = {
+	quantity: v.object(ingredientQuantityFields),
+	state: v.optional(v.string()),
+
+	recipeId: v.id("recipes"),
+	ingredientId: v.id("ingredients"),
+};
+
+export const recipeStepBlock = v.union(
+	v.string(),
+	v.object({
+		type: v.literal("tool"),
+		name: v.string(),
+	}),
+	v.object({
+		type: v.literal("duration"),
+		value: vDuration,
+		kind: v.union(v.literal("prep"), v.literal("cook")),
+	}),
+	v.object({
+		type: v.literal("temperature"),
+		value: v.number(),
+		unit: v.union(...temperatureUnits.map((unit) => v.literal(unit))),
+	}),
+	v.object({
+		type: v.literal("material"),
+		...ingredientMetadataFields,
+		quantity: v.union(
+			v.object(ingredientQuantityFields),
+			v.literal(REMAINING_QUANTITY),
+			v.literal(ALL_QUANTITY),
+		),
+		state: v.optional(v.string()),
+		kind: v.union(
+			v.literal("input"),
+			v.literal("derived-input"),
+			v.literal("derived-output"),
+			v.literal("output"),
+		),
+
+		ingredientId: v.nullable(v.id("ingredients")), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
+	}),
+);
+
+export const recipeStepFields = {
+	index: v.number(),
+	blocks: v.array(recipeStepBlock),
+
+	recipeId: v.id("recipes"),
+};
 
 export const recipeGenMetadataFields = {
 	state: v.union(
@@ -162,50 +215,6 @@ export const recipeGenMetadataFields = {
 
 	householdId: v.id("households"),
 	recipeId: v.nullable(v.id("recipes")),
-};
-
-export const recipeIngredientFields = {
-	quantities: v.array(v.object(ingredientQuantityFields)),
-
-	recipeId: v.id("recipes"),
-	ingredientId: v.id("ingredients"),
-};
-
-export const recipeInstructionPart = v.union(
-	v.string(),
-	v.object({
-		type: v.literal("duration"),
-		value: vDuration,
-		kind: v.union(v.literal("prep"), v.literal("cook")),
-	}),
-	v.object({
-		type: v.literal("temperature"),
-		value: v.number(),
-		unit: v.union(...temperatureUnits.map((unit) => v.literal(unit))),
-	}),
-	v.object({
-		type: v.literal("material"),
-		...ingredientMetadataFields,
-		ingredientId: v.nullable(v.id("ingredients")), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
-		quantity: v.union(
-			v.object(ingredientQuantityFields),
-			v.literal(REMAINING_QUANTITY),
-		),
-	}),
-	v.object({
-		type: v.literal("yield"),
-		...ingredientMetadataFields,
-		ingredientId: v.nullable(v.id("ingredients")),
-		quantity: v.object(ingredientQuantityFields),
-	}),
-);
-
-export const recipeInstructionFields = {
-	step: v.number(),
-	parts: v.array(recipeInstructionPart),
-	notes: v.optional(v.string()),
-
-	recipeId: v.id("recipes"),
 };
 
 // #endregion
@@ -259,10 +268,10 @@ const schema = defineSchema({
 		...recipeIngredientFields,
 		...stampsFields,
 	}).index("by_recipe_and_ingredient", ["recipeId", "ingredientId"]),
-	recipeInstructions: defineTable({
-		...recipeInstructionFields,
+	recipeSteps: defineTable({
+		...recipeStepFields,
 		...stampsFields,
-	}).index("by_recipe_and_step", ["recipeId", "step"]),
+	}).index("by_recipe_and_index", ["recipeId", "index"]),
 	recipeGenMetadata: defineTable({
 		...recipeGenMetadataFields,
 		...stampsFields,
