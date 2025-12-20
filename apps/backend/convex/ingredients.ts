@@ -1,9 +1,7 @@
 import { EXPIRING_SOON_TIME_WINDOW_MS } from "@plateful/ingredients";
 import type { Doc } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
-import {
-	validateUserInHouseholdOrThrow,
-} from "./households";
+import { validateUserInHouseholdOrThrow } from "./households";
 import { ingredientFields, vv } from "./schema";
 import { authedMutation, authedQuery } from "./with_auth";
 
@@ -126,8 +124,9 @@ const getHouseholdIngredients = async (
 ) => {
 	return await ctx.db
 		.query("ingredients")
-		.withIndex("by_household", (q) => q.eq("householdId", householdId))
-		.filter((q) => q.eq(q.field("deletedAt"), undefined))
+		.withIndex("by_household_deletedAt_name", (q) =>
+			q.eq("householdId", householdId).eq("deletedAt", undefined),
+		)
 		.collect();
 };
 // #engregion

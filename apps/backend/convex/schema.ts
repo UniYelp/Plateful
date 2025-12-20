@@ -250,8 +250,7 @@ const schema = defineSchema({
 		...ingredientFields,
 		...stampsFields,
 	})
-		.index("by_household", ["householdId"])
-		.index("by_household_and_title", ["householdId", "name"])
+		.index("by_household_deletedAt_name", ["householdId", "deletedAt", "name"])
 		.searchIndex("search_ingredients", {
 			searchField: "name",
 			filterFields: ["householdId", "description", "tags"],
