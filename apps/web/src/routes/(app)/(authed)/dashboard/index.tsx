@@ -12,6 +12,7 @@ import {
 	ShoppingCart,
 } from "lucide-react";
 
+import { getExpiryStatusDetailsFromExpiryDate } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { ManageHousehold } from "@/components/users/ManageHousehold";
+import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
 import {
 	mockRecentActivity,
 	mockStats,
@@ -39,8 +41,7 @@ function RouteComponent() {
 function DashboardPage() {
 	const { user, isLoaded } = useUser();
 
-	const households = useQuery(api.households.getUserHouseholds);
-	const household = households?.[0];
+	const household = useCurrentHousehold();
 
 	const ingredientsCount = useQuery(
 		api.ingredients.ingredientsCount,
@@ -55,10 +56,6 @@ function DashboardPage() {
 	if (!isLoaded || !user) {
 		return <div>Loading...</div>;
 	}
-
-
-	// eslint-disable-next-line react-hooks/purity
-	const now = Date.now();
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -252,9 +249,8 @@ function DashboardPage() {
 											(q) => q.expiresAt ?? [],
 										);
 										const soonestExpiry = Math.min(...expirations);
-										const daysUntilExpiry = Math.ceil(
-											(soonestExpiry - now) / (1000 * 60 * 60 * 24),
-										);
+										const statusDetails =
+											getExpiryStatusDetailsFromExpiryDate(soonestExpiry);
 
 										return (
 											<div
@@ -263,7 +259,7 @@ function DashboardPage() {
 											>
 												<span>{name}</span>
 												<Badge variant="destructive" className="text-xs">
-													{daysUntilExpiry} days
+													{statusDetails.text}
 												</Badge>
 											</div>
 										);

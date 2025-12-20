@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { AlertCircle, ArrowLeft, Package, Upload } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
@@ -24,6 +24,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { TextArea } from "@/components/ui/textarea";
+import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
 import { ingredientsCategories } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(
@@ -55,8 +56,8 @@ function AddIngredientPage() {
 
 	const [showSimilarWarning, setShowSimilarWarning] = useState(false);
 	const addIngredient = useMutation(api.ingredients.addIngredient);
-	const currentHousehold = useQuery(api.households.getUserHouseholds);
-	const householdId = currentHousehold?.[0]?._id;
+
+	const householdId = useCurrentHousehold()?._id;
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -79,16 +80,18 @@ function AddIngredientPage() {
 			const submitting = addIngredient({
 				name: form.state.values.name,
 				description: form.state.values.description,
-				quantities: [{
-					unit: form.state.values.unit,
-					expiresAt: expiryDate,
-					amount: amountNumber,
-				},],
+				quantities: [
+					{
+						unit: form.state.values.unit,
+						expiresAt: expiryDate,
+						amount: amountNumber,
+					},
+				],
 				// images: form.state.values.image,
 				householdId: householdId,
 				category: form.state.values.category,
 				tags: [],
-				images: []
+				images: [],
 			});
 			await submitting;
 

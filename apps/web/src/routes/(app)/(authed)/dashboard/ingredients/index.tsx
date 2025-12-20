@@ -3,6 +3,10 @@ import { useMutation, useQuery } from "convex/react";
 import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
+import {
+	type expiryStatus,
+	getExpiryStatusDetailsFromExpiryDate,
+} from "@plateful/ingredients";
 import { api } from "@backend/api";
 import {
 	AlertDialog,
@@ -15,11 +19,15 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { categories, ingredientImgByCategory } from "@/pages/dashboard/ingredients";
+import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
+import {
+	categories,
+	ingredientImgByCategory,
+} from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
 	component: RouteComponent,
@@ -29,14 +37,24 @@ function RouteComponent() {
 	return <IngredientsPage />;
 }
 
-// TODO: refactor
+type ExpiryStatusDetails = {
+	status: (typeof expiryStatus)[number];
+	color: BadgeProps["variant"];
+	text: string;
+};
+
+const colorByStatus: { [key: string]: BadgeProps["variant"] } = {
+	expired: "destructive",
+	expiring: "destructive",
+	warning: "secondary",
+	good: "outline",
+} as const;
 
 function IngredientsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
 
-	const households = useQuery(api.households.getUserHouseholds);
-	const household = households?.[0];
+	const household = useCurrentHousehold();
 
 	const ingredients = useQuery(
 		api.ingredients.householdIngredients,
@@ -53,47 +71,15 @@ function IngredientsPage() {
 		return matchesSearch && matchesCategory;
 	});
 
-	type ExpiryStatus = {
-		status: "expired" | "expiring" | "warning" | "good";
-		color:
-			| "default"
-			| "destructive"
-			| "secondary"
-			| "outline"
-			| null
-			| undefined;
-		text: string;
-	};
-
-	const getExpiryStatus: (expiryDate: string | number) => ExpiryStatus = (
+	const getExpiryStatus: (expiryDate: number) => ExpiryStatusDetails = (
 		expiryDate,
 	) => {
-		const second = 1000;
-		const minute = second * 60;
-		const hour = minute * 60;
-		const day = hour * 24;
-		const daysInWeek = 7;
-
-		const today = new Date();
-		const expiry = new Date(expiryDate);
-		const diffTime = expiry.getTime() - today.getTime();
-		const diffDays = Math.ceil(diffTime / day);
-
-		if (diffDays < 0)
-			return { status: "expired", color: "destructive", text: "Expired" };
-		if (diffDays <= 3)
-			return {
-				status: "expiring",
-				color: "destructive",
-				text: `${diffDays} days`,
-			};
-		if (diffDays <= daysInWeek)
-			return {
-				status: "warning",
-				color: "secondary",
-				text: `${diffDays} days`,
-			};
-		return { status: "good", color: "outline", text: `${diffDays} days` };
+		const statusData = getExpiryStatusDetailsFromExpiryDate(expiryDate);
+		return {
+			status: statusData.status,
+			color: colorByStatus[statusData.status],
+			text: statusData.text,
+		};
 	};
 
 	return (
@@ -145,12 +131,10 @@ function IngredientsPage() {
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{filteredIngredients?.map((ingredient) => {
 						const expirations = ingredient.quantities.flatMap(
-											(q) => q.expiresAt ?? [],
-										);
-						const soonestExpiry = Math.min(...expirations);
-						const expiryStatus = getExpiryStatus(
-							soonestExpiry	
+							(q) => q.expiresAt ?? [],
 						);
+						const soonestExpiry = Math.min(...expirations);
+						const expiryStatus = getExpiryStatus(soonestExpiry);
 						return (
 							<Card
 								key={ingredient._id}
@@ -159,7 +143,11 @@ function IngredientsPage() {
 								<CardContent className="p-4">
 									<div className="mb-3 flex items-start gap-3">
 										<img
-											src={ingredientImgByCategory[ingredient.category as keyof typeof ingredientImgByCategory]}
+											src={
+												ingredientImgByCategory[
+													ingredient.category as keyof typeof ingredientImgByCategory
+												]
+											}
 											alt={ingredient.name}
 											className="h-16 w-16 rounded-lg bg-muted object-cover"
 										/>
@@ -229,7 +217,7 @@ function IngredientsPage() {
 												<AlertDialogFooter>
 													<AlertDialogCancel>Cancel</AlertDialogCancel>
 													<AlertDialogAction
-														onClick={() => 
+														onClick={() =>
 															deleteIngredient({ ingredientId: ingredient._id })
 														}
 													>
