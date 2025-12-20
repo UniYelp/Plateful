@@ -28,6 +28,9 @@ export type RemainingQuantity = typeof REMAINING_QUANTITY;
 export const ALL_QUANTITY = "all";
 export type AllQuantity = typeof ALL_QUANTITY;
 
+export const memberRoles = ["manager", "member"] as const;
+export type MemberRole = (typeof memberRoles)[number];
+
 // #endregion
 
 // #region types
@@ -93,11 +96,10 @@ export const userPreferencesFields = {
 };
 
 export const householdMemberFields = {
-	role: v.union(v.literal("manager"), v.literal("member")),
-	joinedAt: vTimestamp,
-
 	householdId: v.id("households"),
 	userId: v.id("users"),
+	role: v.union(...memberRoles.map((role) => v.literal(role))),
+	joinedAt: vTimestamp,
 };
 
 export const ingredientQuantityFields = {
@@ -116,7 +118,7 @@ export const ingredientFields = {
 			expiresAt: v.optional(vTimestamp),
 		}),
 	),
-
+	category: v.string(),
 	tags: v.array(v.string()), //? system searchable
 	notes: v.optional(v.string()), //? user non-searchable
 
@@ -248,8 +250,7 @@ const schema = defineSchema({
 		...ingredientFields,
 		...stampsFields,
 	})
-		.index("by_household", ["householdId"])
-		.index("by_household_and_title", ["householdId", "name"])
+		.index("by_household_deletedAt_name", ["householdId", "deletedAt", "name"])
 		.searchIndex("search_ingredients", {
 			searchField: "name",
 			filterFields: ["householdId", "description", "tags"],

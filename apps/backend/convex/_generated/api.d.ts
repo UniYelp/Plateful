@@ -9,6 +9,7 @@
  */
 
 import type * as crons from "../crons.js";
+import type * as external_user from "../external_user.js";
 import type * as functions from "../functions.js";
 import type * as households from "../households.js";
 import type * as http from "../http.js";
@@ -29,6 +30,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   crons: typeof crons;
+  external_user: typeof external_user;
   functions: typeof functions;
   households: typeof households;
   http: typeof http;
@@ -138,6 +140,7 @@ export declare const components: {
           fnHandle: string;
           name: string;
           next?: Array<{ fnHandle: string; name: string }>;
+          oneBatchOnly?: boolean;
         },
         {
           batchSize?: number;
