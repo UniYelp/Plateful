@@ -1,9 +1,8 @@
 {
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "outDir": "./dist",
         "composite": true,
-        "target": "ESNext",
+        "target": "es2024",
         "module": "esnext",
         "moduleResolution": "bundler",
         "isolatedDeclarations": false,
@@ -11,28 +10,25 @@
         "isolatedModules": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
         "strict": true,
-        "types": [
-            "node"
-        ],
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "useUnknownInCatchVariables": true,
         "noUncheckedIndexedAccess": true,
         "allowUnreachableCode": false,
         "noImplicitOverride": true,
-        "noImplicitAny": true,
+        "noImplicitAny": true
     },
     "references": [
         {
-            "path": "./tsconfig.app.json"
+            "path": "./tsconfig.build.json"
         },
         {
             "path": "./tsconfig.test.json"
         }
-    ],
-    "include": [
-        "src"
     ],
     "exclude": [
         "node_modules"

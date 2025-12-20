@@ -7,10 +7,13 @@ import z from "zod";
 
 import { appConfig } from "./configs/app.config";
 import { ENV } from "./configs/env.config";
+import { recipes } from "./modules/recipes";
 import { logger } from "./plugins/logger";
 import { requestId } from "./plugins/request-id";
-import { v1Routes } from "./routes/v1";
 
+/**
+ * @see {@link https://elysiajs.com/essential/best-practice}
+ */
 export const app = new Elysia({ adapter: node() })
 	.use(
 		cors({
@@ -55,6 +58,6 @@ export const app = new Elysia({ adapter: node() })
 	// 		// auth: true,
 	// 	},
 	// )
-	.use(v1Routes);
+	.use(recipes);
 
 export type App = typeof app;

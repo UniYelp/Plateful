@@ -1,3 +1,5 @@
+import { file } from "elysia";
+
 import { appConfig } from "./configs/app.config";
 import { app } from "./server";
 
@@ -6,6 +8,8 @@ const {
 	dev: { port },
 } = appConfig;
 
-app.listen(port, ({ hostname, port }) => {
-	console.log(`${name} is running at ${hostname}:${port}`);
-});
+app
+	.get("/favicon.ico", file("public/api_logo_bg.png"))
+	.listen(port, ({ hostname, port }) => {
+		console.log(`${name} is running at ${hostname}:${port}`);
+	});

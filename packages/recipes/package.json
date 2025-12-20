@@ -1,5 +1,5 @@
 {
-    "name": "@plateful/ingredients",
+    "name": "@plateful/recipes",
     "version": "0.0.0",
     "private": true,
     "type": "module",
@@ -32,7 +32,9 @@
     },
     "dependencies": {
         "@plateful/units": "workspace:*",
-        "@plateful/utils": "workspace:*"
+        "@plateful/ingredients": "workspace:*",
+        "@plateful/utils": "workspace:*",
+        "zod": "catalog:"
     },
     "devDependencies": {
         "@plateful/types": "workspace:*"

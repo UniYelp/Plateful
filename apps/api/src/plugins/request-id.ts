@@ -6,7 +6,7 @@ type Options = {
 	header?: string;
 };
 
-export const RequestIdPluginName = "requestId";
+export const RequestIdPluginName = "requestId.Plugin";
 
 export const requestId = ({
 	uuid = randomUUID,
