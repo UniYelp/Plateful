@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import { clerkPlugin } from "elysia-clerk";
 
-export const AuthPluginName = "auth";
+export const AuthPluginName = "auth.Plugin";
 
 export const auth = () =>
 	new Elysia({ name: AuthPluginName }).use(clerkPlugin()).macro({

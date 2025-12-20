@@ -4,7 +4,7 @@ type Options = {
 	name?: string;
 };
 
-export const LoggerPluginName = "logger";
+export const LoggerPluginName = "logger.Plugin";
 
 type LogLevel = "info" | "error" | "warn" | "debug" | "log";
 

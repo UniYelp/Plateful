@@ -11,6 +11,9 @@ import { recipes } from "./modules/recipes";
 import { logger } from "./plugins/logger";
 import { requestId } from "./plugins/request-id";
 
+/**
+ * @see {@link https://elysiajs.com/essential/best-practice}
+ */
 export const app = new Elysia({ adapter: node() })
 	.use(
 		cors({
