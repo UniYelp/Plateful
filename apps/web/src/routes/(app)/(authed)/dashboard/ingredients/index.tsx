@@ -82,6 +82,8 @@ function IngredientsPage() {
 		};
 	};
 
+	if (!household) return "Loading..."
+
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8">
@@ -218,7 +220,7 @@ function IngredientsPage() {
 													<AlertDialogCancel>Cancel</AlertDialogCancel>
 													<AlertDialogAction
 														onClick={() =>
-															deleteIngredient({ ingredientId: ingredient._id })
+															deleteIngredient({ ingredientId: ingredient._id, householdId: household?._id })
 														}
 													>
 														Continue

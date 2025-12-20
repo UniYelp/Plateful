@@ -2,7 +2,6 @@ import { EXPIRING_SOON_TIME_WINDOW_MS } from "@plateful/ingredients";
 import type { Doc } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import {
-	getUserMemberships,
 	validateUserInHouseholdOrThrow,
 } from "./households";
 import { ingredientFields, vv } from "./schema";
@@ -92,25 +91,22 @@ export const addIngredient = authedMutation({
 export const deleteIngredient = authedMutation({
 	args: {
 		ingredientId: vv.id("ingredients"),
+		householdId: vv.id("households"),
 	},
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
 
+		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
+
 		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
-		
+
 		if (!ingredient) {
-			throw new Error("Ingredient Not Found")
+			throw new Error("Ingredient Not Found");
 		}
 
-		const userHouseholds = await getUserMemberships(ctx, userId);
-
-		const isIngredientInUsersHouseholds = userHouseholds.some(
-			({ householdId }) => householdId === ingredient.householdId,
-		);
-
-		if (!isIngredientInUsersHouseholds) {
+		if (ingredient.householdId !== args.householdId) {
 			throw new Error(
-				`Permission Denied: user ${userId} cannot delete ingredient ${args.ingredientId}`,
+				`Ingredient ${args.ingredientId} not in household ${args.householdId}`,
 			);
 		}
 

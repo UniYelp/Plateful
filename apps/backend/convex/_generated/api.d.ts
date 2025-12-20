@@ -21,7 +21,6 @@ import type * as triggers from "../triggers.js";
 import type * as triggers_index from "../triggers/index.js";
 import type * as users from "../users.js";
 import type * as with_auth from "../with_auth.js";
-import type * as with_auth_action from "../with_auth_action.js";
 
 import type {
   ApiFromModules,
@@ -43,7 +42,6 @@ declare const fullApi: ApiFromModules<{
   "triggers/index": typeof triggers_index;
   users: typeof users;
   with_auth: typeof with_auth;
-  with_auth_action: typeof with_auth_action;
 }>;
 
 /**

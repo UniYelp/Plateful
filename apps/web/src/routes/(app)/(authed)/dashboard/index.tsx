@@ -23,7 +23,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { ManageHousehold } from "@/components/users/ManageHousehold";
 import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
 import {
 	mockRecentActivity,
@@ -37,6 +36,8 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard/")({
 function RouteComponent() {
 	return <DashboardPage />;
 }
+
+// TODO: skeletons
 
 function DashboardPage() {
 	const { user, isLoaded } = useUser();
@@ -229,10 +230,10 @@ function DashboardPage() {
 						</Card>
 					</div>
 					<div>
-						{household && <ManageHousehold household={household} />}
+						{/* {household && <ManageHousehold household={household} />} */}
 
 						{/* Expiring Items Alert */}
-						<Card className="mt-6 border-destructive/50">
+						<Card className="border-destructive/50">
 							<CardHeader>
 								<CardTitle className="flex items-center gap-2 text-destructive">
 									<AlertTriangle className="h-5 w-5" />
