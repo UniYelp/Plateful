@@ -28,6 +28,9 @@ export type RemainingQuantity = typeof REMAINING_QUANTITY;
 export const ALL_QUANTITY = "all";
 export type AllQuantity = typeof ALL_QUANTITY;
 
+export const memberRoles = ["manager", "member"] as const;
+export type MemberRole = (typeof memberRoles)[number];
+
 // #endregion
 
 // #region types
@@ -44,6 +47,9 @@ const vSysId = <const SysTableName extends SystemTableNames>(
 
 export const vUserStampId = v.union(v.id("users"), v.literal(SYSTEM_ID));
 export type UserStampId = Infer<typeof vUserStampId>;
+
+export const vEnum = <const T extends string>(e: readonly T[]) =>
+	v.union(...e.map((val) => v.literal(val)));
 
 /**
  * @example
@@ -95,8 +101,7 @@ export const userPreferencesFields = {
 export const householdMemberFields = {
 	householdId: v.id("households"),
 	userId: v.id("users"),
-
-	role: v.union(v.literal("manager"), v.literal("member")),
+	role: vEnum(memberRoles),
 	joinedAt: vTimestamp,
 };
 
@@ -118,7 +123,7 @@ export const ingredientFields = {
 			expiresAt: v.optional(vTimestamp),
 		}),
 	),
-
+	category: v.string(),
 	tags: v.array(v.string()), //? system searchable
 	notes: v.optional(v.string()), //? user non-searchable
 
@@ -151,8 +156,6 @@ export const recipeIngredientFields = {
 	state: v.optional(v.string()),
 };
 
-const vTemperatureUnit = v.union(...temperatureUnits.map((unit) => v.literal(unit)))
-
 export const recipeStepBlock = v.union(
 	v.string(),
 	v.object({
@@ -167,7 +170,7 @@ export const recipeStepBlock = v.union(
 	v.object({
 		type: v.literal("temperature"),
 		value: v.number(),
-		unit: vTemperatureUnit,
+		unit: vEnum(temperatureUnits),
 	}),
 	v.object({
 		type: v.literal("material"),
@@ -257,8 +260,7 @@ const schema = defineSchema({
 		...ingredientFields,
 		...stampsFields,
 	})
-		.index("by_household", ["householdId"])
-		.index("by_household_and_title", ["householdId", "name"])
+		.index("by_household_deletedAt_name", ["householdId", "deletedAt", "name"])
 		.searchIndex("search_ingredients", {
 			searchField: "name",
 			filterFields: ["householdId", "description", "tags"],

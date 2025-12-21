@@ -18,12 +18,13 @@
     },
     "dependencies": {
         "@clerk/backend": "catalog:",
-        "@convex-dev/migrations": "^0.2.9",
+        "@convex-dev/migrations": "^0.3.1",
         "@elysiajs/eden": "^1.4.5",
         "@hono/zod-validator": "catalog:",
+        "@plateful/ingredients": "workspace:*",
         "@plateful/units": "workspace:*",
         "convex": "catalog:",
-        "convex-helpers": "^0.1.104",
+        "convex-helpers": "^0.1.108",
         "hono": "catalog:",
         "svix": "^1.76.1",
         "zod": "catalog:"
@@ -32,7 +33,7 @@
         "@dotenvx/dotenvx": "^1.50.1",
         "@edge-runtime/vm": "^5.0.0",
         "@plateful/types": "workspace:*",
-        "convex-test": "^0.0.38",
+        "convex-test": "^0.0.41",
         "vite": "^7.1.7"
     }
 }

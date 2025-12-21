@@ -65,7 +65,13 @@ export function getRouter() {
 		defaultPreloadStaleTime: 0,
 		Wrap: ({ children }) => (
 			<>
-				<ClerkProvider publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}>
+				<ClerkProvider
+					publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}
+					signInFallbackRedirectUrl="/dashboard"
+					signInUrl="/dashboard"
+					signUpFallbackRedirectUrl='/dashboard'
+					signUpUrl="/dashboard"
+				>
 					<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
 						{children}
 					</ConvexProviderWithClerk>
