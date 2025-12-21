@@ -150,7 +150,7 @@ export const generateRecipe = internalAction({
 		// const { parameters: { tags, ingredients } } = args;
 
 		try {
-			const res = await apiClient.get();
+			const res = await apiClient.get(); // TODO: setup ngrok
 
 			const { data, error } = res;
 
