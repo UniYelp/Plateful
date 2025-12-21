@@ -4,10 +4,21 @@ import {
 	customQuery,
 } from "convex-helpers/server/customFunctions";
 
-import { type QueryCtx, query } from "./_generated/server";
-import { mutation } from "./functions";
-// import { internalQuery } from "./_generated/server";
-// import {mutation, internalMutation} from './functions'
+import type { Doc } from "./_generated/dataModel";
+import {
+	internalQuery,
+	type MutationCtx,
+	type QueryCtx,
+	query,
+} from "./_generated/server";
+import { unauthorized } from "./errors";
+import { internalMutation, mutation } from "./functions";
+
+type CtxWithDB = QueryCtx | MutationCtx;
+
+type AuthedCtx<Ctx> = Ctx & {
+	user: Doc<"users">;
+};
 
 /**
  * @file
@@ -24,6 +35,18 @@ export const authedQuery = customQuery(
 	}),
 );
 
+export const internalAuthedQuery = customQuery(
+	internalQuery,
+	customCtx(async (ctx) => {
+		const user = await getCurrentUserOrThrow(ctx);
+		return { user };
+	}),
+);
+
+export type AuthedQueryCtx = AuthedCtx<QueryCtx>;
+
+// #endregion
+
 // #region Mutations
 
 export const authedMutation = customMutation(
@@ -34,15 +57,27 @@ export const authedMutation = customMutation(
 	}),
 );
 
+export const internalAuthedMutation = customMutation(
+	internalMutation,
+	customCtx(async (ctx) => {
+		const user = await getCurrentUserOrThrow(ctx);
+		return { user };
+	}),
+);
+
+export type AuthedMutationCtx = AuthedCtx<MutationCtx>;
+
+// #endregion
+
 // #region Helpers
 
-export async function getCurrentUserOrThrow(ctx: QueryCtx) {
-	const userRecord = await getCurrentUser(ctx);
-	if (!userRecord) throw new Error("Not authenticated");
-	return userRecord;
+export async function getCurrentUserOrThrow(ctx: CtxWithDB) {
+	const user = await getCurrentUser(ctx);
+	if (!user) throw unauthorized();
+	return user;
 }
 
-export async function getCurrentUser(ctx: QueryCtx) {
+export async function getCurrentUser(ctx: CtxWithDB) {
 	const identity = await ctx.auth.getUserIdentity();
 
 	if (identity === null) {
@@ -52,9 +87,11 @@ export async function getCurrentUser(ctx: QueryCtx) {
 	return await userByExternalId(ctx, identity.subject);
 }
 
-export async function userByExternalId(ctx: QueryCtx, externalId: string) {
+export async function userByExternalId(ctx: CtxWithDB, externalId: string) {
 	return await ctx.db
 		.query("users")
 		.withIndex("byExternalId", (q) => q.eq("externalId", externalId))
 		.unique();
 }
+
+// #endregion
