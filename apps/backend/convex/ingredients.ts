@@ -9,7 +9,7 @@ import { authedMutation, authedQuery } from "./with_auth";
 
 // #region Queries
 
-export const householdIngredients = authedQuery({
+export const byHousehold = authedQuery({
 	args: {
 		householdId: vv.id("households"),
 	},

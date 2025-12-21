@@ -10,6 +10,7 @@ import {
 	Package,
 	Plus,
 	ShoppingCart,
+	Sparkles,
 } from "lucide-react";
 
 import { getExpiryStatusDetailsFromExpiryDate } from "@plateful/ingredients";
@@ -169,6 +170,17 @@ function DashboardPage() {
 										variant="outline"
 										asChild
 									>
+										<Link to="/dashboard/recipes/gen/new">
+											<Sparkles className="h-6 w-6" />
+											<span>Generate Recipe</span>
+										</Link>
+									</Button>
+
+									<Button
+										className="h-auto flex-col gap-2 bg-transparent p-4"
+										variant="outline"
+										asChild
+									>
 										<Link to="/dashboard/meal-plans/create">
 											<Calendar className="h-6 w-6" />
 											<span>Plan Meals</span>
@@ -250,8 +262,11 @@ function DashboardPage() {
 											(q) => q.expiresAt ?? [],
 										);
 										const soonestExpiry = Math.min(...expirations);
-										const statusDetails =
-											getExpiryStatusDetailsFromExpiryDate(soonestExpiry);
+										const statusDetails = Number.isFinite(soonestExpiry)
+											? getExpiryStatusDetailsFromExpiryDate(soonestExpiry)
+											: null;
+
+										if (!statusDetails) return null;
 
 										return (
 											<div

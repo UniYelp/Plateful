@@ -8,7 +8,6 @@
  * @module
  */
 
-import type * as api_client from "../api/client.js";
 import type * as crons from "../crons.js";
 import type * as errors_auth from "../errors/auth.js";
 import type * as errors_helpers from "../errors/helpers.js";
@@ -28,6 +27,7 @@ import type * as triggers from "../triggers.js";
 import type * as triggers_index from "../triggers/index.js";
 import type * as users from "../users.js";
 import type * as utils_soft_delete from "../utils/soft_delete.js";
+import type * as values from "../values.js";
 import type * as with_auth from "../with_auth.js";
 
 import type {
@@ -37,7 +37,6 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  "api/client": typeof api_client;
   crons: typeof crons;
   "errors/auth": typeof errors_auth;
   "errors/helpers": typeof errors_helpers;
@@ -57,6 +56,7 @@ declare const fullApi: ApiFromModules<{
   "triggers/index": typeof triggers_index;
   users: typeof users;
   "utils/soft_delete": typeof utils_soft_delete;
+  values: typeof values;
   with_auth: typeof with_auth;
 }>;
 

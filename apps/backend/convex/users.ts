@@ -4,7 +4,8 @@ import type { Validator } from "convex/values";
 import { internalQuery, query } from "./_generated/server";
 import { internalMutation } from "./functions";
 import { createUserHousehold } from "./households";
-import { type DocShape, SYSTEM_ID, vv } from "./schema";
+import { type DocShape, vv } from "./schema";
+import { SYSTEM_ID } from "./values";
 import { getCurrentUser, userByExternalId } from "./with_auth";
 
 // #region Queries

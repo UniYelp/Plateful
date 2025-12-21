@@ -16,22 +16,12 @@ import { typedV } from "convex-helpers/validators";
 
 import { temperatureUnits } from "@plateful/units/temperature";
 import type { Doc, TableNames } from "./_generated/dataModel";
-
-// #region constants
-
-export const SYSTEM_ID = "sys";
-export type SystemId = typeof SYSTEM_ID;
-
-export const REMAINING_QUANTITY = "remaining";
-export type RemainingQuantity = typeof REMAINING_QUANTITY;
-
-export const ALL_QUANTITY = "all";
-export type AllQuantity = typeof ALL_QUANTITY;
-
-export const memberRoles = ["manager", "member"] as const;
-export type MemberRole = (typeof memberRoles)[number];
-
-// #endregion
+import {
+	ALL_QUANTITY,
+	memberRoles,
+	REMAINING_QUANTITY,
+	SYSTEM_ID,
+} from "./values";
 
 // #region types
 
@@ -45,10 +35,10 @@ const vSysId = <const SysTableName extends SystemTableNames>(
 	tableName: SysTableName,
 ) => v.id(tableName);
 
-export const vUserStampId = v.union(v.id("users"), v.literal(SYSTEM_ID));
+const vUserStampId = v.union(v.id("users"), v.literal(SYSTEM_ID));
 export type UserStampId = Infer<typeof vUserStampId>;
 
-export const vEnum = <const T extends string>(e: readonly T[]) =>
+const vEnum = <const T extends string>(e: readonly T[]) =>
 	v.union(...e.map((val) => v.literal(val)));
 
 /**
@@ -71,7 +61,7 @@ const vDuration = v.string();
  */
 export type Duration = Infer<typeof vDuration>;
 
-const vImage = vSysId("_storage");
+const vAsset = vSysId("_storage");
 
 // #endregion
 
@@ -127,7 +117,7 @@ export const ingredientFields = {
 	tags: v.array(v.string()), //? system searchable
 	notes: v.optional(v.string()), //? user non-searchable
 
-	images: v.array(vImage),
+	images: v.array(vAsset),
 
 	// variantId: v.optional(v.id("ingredients")), // TODO: might have to split to headless ing & variants tables
 };
@@ -204,7 +194,7 @@ export const recipeStepFields = {
 	blocks: v.array(recipeStepBlock),
 };
 
-export const recipeGenV0ParametersFields = {
+export const recipeGenV0MetadataFields = {
 	version: v.literal("v0"),
 	tags: v.array(v.string()),
 	ingredients: v.array(v.id("ingredients")),
@@ -213,20 +203,21 @@ export const recipeGenV0ParametersFields = {
 export const recipeGensFields = {
 	householdId: v.id("households"),
 
-	metadata: v.union(
+	state: v.union(
 		v.object({
-			status: v.union(
-				v.literal("pending"),
-				v.literal("generating"),
-				v.literal("failed"),
-			),
+			status: v.union(v.literal("pending"), v.literal("generating")),
 		}),
 		v.object({
 			status: v.literal("completed"),
 			recipeId: v.id("recipes"),
 		}),
+		v.object({
+			status: v.literal("failed"),
+			reason: v.nullable(v.string()),
+		}),
 	),
-	parameters: v.union(v.object(recipeGenV0ParametersFields)),
+
+	metadata: v.union(v.object(recipeGenV0MetadataFields)),
 };
 
 // #endregion
@@ -320,8 +311,16 @@ export const vId: <const TableName extends FullTableNames>(
  */
 export const vv = typedV(schema);
 
-export const vDocShape = <TableName extends TableNames>(tableName: TableName) =>
-	schema.tables[tableName].validator;
+export const vvv = {
+	timestamp: () => vTimestamp,
+	duration: () => vDuration,
+	userStamp: () => vUserStampId,
+	asset: () => vAsset,
+	enum: vEnum,
+	docShape: <TableName extends TableNames>(tableName: TableName) =>
+		schema.tables[tableName].validator,
+	sysId: vSysId,
+} as const;
 
 // export const vDocFields = <TableName extends TableNames>(tableName: TableName) => vv.
 

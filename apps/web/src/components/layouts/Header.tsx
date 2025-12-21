@@ -15,7 +15,7 @@ export function Header() {
 				<Navbar />
 				<div className="flex min-w-7 items-center gap-3">
 					<Unauthenticated>
-						<SignInButton />
+						<SignInButton  />
 					</Unauthenticated>
 					<Authenticated>
 						<UserButton />

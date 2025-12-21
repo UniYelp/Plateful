@@ -69,7 +69,7 @@ export function getRouter() {
 					publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}
 					signInFallbackRedirectUrl="/dashboard"
 					signInUrl="/dashboard"
-					signUpFallbackRedirectUrl='/dashboard'
+					signUpFallbackRedirectUrl="/dashboard"
 					signUpUrl="/dashboard"
 				>
 					<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
