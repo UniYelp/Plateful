@@ -99,7 +99,7 @@ export const start = householdMutation({
 	},
 });
 
-export const update = internalMutation({
+export const updateState = internalMutation({
 	args: {
 		genId: vv.id("recipeGens"),
 		user: vvv.userStamp(),
@@ -131,7 +131,7 @@ export const generateRecipe = internalAction({
 	handler: async (ctx, args) => {
 		const { genId } = args;
 
-		await ctx.runMutation(internal.recipeGens.update, {
+		await ctx.runMutation(internal.recipeGens.updateState, {
 			genId,
 			user: SYSTEM_ID,
 			state: {
@@ -145,6 +145,8 @@ export const generateRecipe = internalAction({
 
 		const _ingredients = Object.keys(ingredientIdByName);
 
+		// TODO: add default (incl. Unlimited Water)
+
 		// TODO: map the parameters, fetch response and map back
 
 		// const { parameters: { tags, ingredients } } = args;
@@ -155,7 +157,7 @@ export const generateRecipe = internalAction({
 			const { data, error } = res;
 
 			if (data) {
-				await ctx.runMutation(internal.recipeGens.update, {
+				await ctx.runMutation(internal.recipeGens.updateState, {
 					genId,
 					user: SYSTEM_ID,
 					state: {
@@ -164,7 +166,7 @@ export const generateRecipe = internalAction({
 					},
 				});
 			} else {
-				await ctx.runMutation(internal.recipeGens.update, {
+				await ctx.runMutation(internal.recipeGens.updateState, {
 					genId,
 					user: SYSTEM_ID,
 					state: {
@@ -179,7 +181,7 @@ export const generateRecipe = internalAction({
 			// 	ingredients: [],
 			// });
 		} catch (err) {
-			await ctx.runMutation(internal.recipeGens.update, {
+			await ctx.runMutation(internal.recipeGens.updateState, {
 				genId,
 				user: SYSTEM_ID,
 				state: {

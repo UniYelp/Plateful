@@ -3,12 +3,8 @@ import type { PropsWithChildren } from "react";
 import { useFormContext } from "@/lib/form/context";
 import { Button } from "../ui/button";
 
-type Props = {
-    disabled?: boolean;
-}
-
-export function SubmitButton(props: PropsWithChildren<Props>) {
-	const { disabled, children = "Submit" } = props;
+export function SubmitButton(props: PropsWithChildren<unknown>) {
+	const { children = "Submit" } = props;
 
 	const form = useFormContext();
 
@@ -23,7 +19,7 @@ export function SubmitButton(props: PropsWithChildren<Props>) {
 			{([canSubmit, isPristine, isSubmitting]) => (
 				<Button
 					type="submit"
-					disabled={disabled || !canSubmit || isPristine || isSubmitting}
+					disabled={!canSubmit || isPristine || isSubmitting}
 				>
 					{isSubmitting ? "..." : children}
 				</Button>

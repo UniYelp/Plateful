@@ -54,9 +54,9 @@ export const GenerateRecipeForm = (props: Props) => {
 								</CardHeader>
 								<CardContent>
 									<ToggleGroup
-										disabled={isSubmitting}
 										type="multiple"
 										variant="outline"
+										disabled={isSubmitting}
 										onValueChange={field.handleChange}
 										aria-invalid={isInvalidTouched(field)}
 										className="flex flex-wrap gap-2.5"
@@ -102,6 +102,7 @@ export const GenerateRecipeForm = (props: Props) => {
 											<ToggleGroupItem
 												key={ing.id}
 												value={ing.id}
+												disabled={isSubmitting}
 												aria-label={`Toggle ${ing.name}`}
 												className="flex items-center gap-3 rounded-lg border-2 px-2 py-3 font-medium text-sm transition-all duration-200 data-[state=on]:scale-105 data-[state=off]:border-border data-[state=on]:border-primary data-[state=off]:bg-background data-[state=on]:bg-primary/10 data-[state=on]:text-primary data-[state=on]:shadow-sm data-[state=off]:hover:border-primary/50 data-[state=off]:hover:bg-muted data-[state=off]:hover:text-black"
 											>
