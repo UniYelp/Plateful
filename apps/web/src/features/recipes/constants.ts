@@ -1,5 +1,3 @@
-import {} from 'lucide-react'
-
 import type { QuickTag } from "./types";
 
 export const quickTags: QuickTag[] = [

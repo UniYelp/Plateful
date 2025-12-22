@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { generatingRecipeLoader } from "@/features/recipes/components/loaders";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/recipes/gen/$id",
@@ -30,6 +31,13 @@ function RecipeGenerationPage() {
 		return "Loading...";
 	}
 
+	const isGenerating =
+		recipeGen.state.status === "pending" ||
+		recipeGen.state.status === "generating";
+
+	if (!isGenerating) return generatingRecipeLoader;
+
+    // TODO: 
 	return (
 		<div>
 			Status: {recipeGen.state.status} |{" "}
