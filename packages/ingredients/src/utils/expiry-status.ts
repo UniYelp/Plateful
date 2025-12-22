@@ -1,6 +1,11 @@
 export const expiryStatus = ["expired", "expiring", "warning", "good"] as const;
 export type ExpiryStatus = (typeof expiryStatus)[number];
 
+export type ExpiryDetails = {
+	status: ExpiryStatus;
+	text: string;
+};
+
 export const SECOND = 1000;
 export const MINUTE = SECOND * 60;
 export const HOUR = MINUTE * 60;
@@ -22,7 +27,9 @@ export const getExpiryStatusByDiffTime = (diffTime: number): ExpiryStatus => {
 	return "expired";
 };
 
-export const getExpiryStatusDetailsFromExpiryDate = (expiryDate: number) => {
+export const getExpiryDetailsFromExpiryDate = (
+	expiryDate: number,
+): ExpiryDetails => {
 	const today = Date.now();
 	const diffTime = expiryDate - today;
 	const diffDays = Math.ceil(diffTime / DAY);
@@ -35,13 +42,13 @@ export const getExpiryStatusDetailsFromExpiryDate = (expiryDate: number) => {
 	};
 };
 
-export const getExpiryStatusDetailsFromExpiryDates = (
+export const getExpiryDetailsFromExpiryDates = (
 	expiryDates: number[],
-) => {
+): ExpiryDetails | null => {
 	if (!expiryDates.length) return null;
 
 	const soonestExpiry = Math.min(...expiryDates);
-	const expiryDetails = getExpiryStatusDetailsFromExpiryDate(soonestExpiry);
+	const expiryDetails = getExpiryDetailsFromExpiryDate(soonestExpiry);
 
 	return expiryDetails;
 };

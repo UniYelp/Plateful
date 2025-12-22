@@ -13,7 +13,7 @@ import {
 	Sparkles,
 } from "lucide-react";
 
-import { getExpiryStatusDetailsFromExpiryDate } from "@plateful/ingredients";
+import { getExpiryDetailsFromExpiryDate } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -263,7 +263,7 @@ function DashboardPage() {
 										);
 										const soonestExpiry = Math.min(...expirations);
 										const statusDetails = Number.isFinite(soonestExpiry)
-											? getExpiryStatusDetailsFromExpiryDate(soonestExpiry)
+											? getExpiryDetailsFromExpiryDate(soonestExpiry)
 											: null;
 
 										if (!statusDetails) return null;

@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "convex/react";
 import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { getExpiryStatusDetailsFromExpiryDates } from "@plateful/ingredients";
+import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import {
@@ -112,7 +112,7 @@ function IngredientsPage() {
 						);
 
 						const expiryStatusDetails =
-							getExpiryStatusDetailsFromExpiryDates(expirations);
+							getExpiryDetailsFromExpiryDates(expirations);
 
 						return (
 							<Card

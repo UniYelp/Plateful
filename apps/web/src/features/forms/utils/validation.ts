@@ -1,6 +1,6 @@
 import type { AnyFieldApi } from "@tanstack/react-form";
 
-export const ariaInvalid = (field: AnyFieldApi) =>
+export const isInvalidTouched = (field: AnyFieldApi) =>
 	!field.state.meta.isValid && field.state.meta.isTouched;
 
 export const focusInvalid = () => {
