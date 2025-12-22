@@ -13,7 +13,7 @@ import {
 	Sparkles,
 } from "lucide-react";
 
-import { getExpiryDetailsFromExpiryDate } from "@plateful/ingredients";
+import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -261,10 +261,9 @@ function DashboardPage() {
 										const expirations = quantities.flatMap(
 											(q) => q.expiresAt ?? [],
 										);
-										const soonestExpiry = Math.min(...expirations);
-										const statusDetails = Number.isFinite(soonestExpiry)
-											? getExpiryDetailsFromExpiryDate(soonestExpiry)
-											: null;
+
+										const statusDetails =
+											getExpiryDetailsFromExpiryDates(expirations);
 
 										if (!statusDetails) return null;
 

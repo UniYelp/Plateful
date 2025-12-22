@@ -1,50 +1,32 @@
 import { EXPIRING_SOON_TIME_WINDOW_MS } from "@plateful/ingredients";
 import type { Doc } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
-import { validateUserInHouseholdOrThrow } from "./households";
+import { householdMutation, householdQuery } from "./households";
 import { ingredientFields, vv } from "./schema";
-import { authedMutation, authedQuery } from "./with_auth";
-
+import { authedMutation } from "./with_auth";
 // #region Validators
 
 // #region Queries
 
-export const byHousehold = authedQuery({
-	args: {
-		householdId: vv.id("households"),
-	},
+export const byHousehold = householdQuery({
+	args: {},
 	handler: async (ctx, args) => {
-		const { _id: userId } = ctx.user;
-		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
-
-		return await getHouseholdIngredients(ctx, args.householdId);
+		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
+		return ingredients;
 	},
 });
 
-export const ingredientsCount = authedQuery({
-	args: {
-		householdId: vv.id("households"),
-	},
+export const ingredientsCount = householdQuery({
+	args: {},
 	handler: async (ctx, args) => {
-		const { _id: userId } = ctx.user;
-
-		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
-
 		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
-
 		return ingredients.length;
 	},
 });
 
-export const expiringSoonIngredients = authedQuery({
-	args: {
-		householdId: vv.id("households"),
-	},
+export const expiringSoonIngredients = householdQuery({
+	args: {},
 	handler: async (ctx, args) => {
-		const { _id: userId } = ctx.user;
-
-		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
-
 		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
 
 		const expiryWindow = Date.now() + EXPIRING_SOON_TIME_WINDOW_MS;
@@ -62,12 +44,10 @@ export const expiringSoonIngredients = authedQuery({
 // #endregion
 
 // #region Mutations
-export const addIngredient = authedMutation({
+export const addIngredient = householdMutation({
 	args: ingredientFields,
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
-
-		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		const now = Date.now();
 
@@ -86,15 +66,12 @@ export const addIngredient = authedMutation({
 	},
 });
 
-export const deleteIngredient = authedMutation({
+export const deleteIngredient = householdMutation({
 	args: {
 		ingredientId: vv.id("ingredients"),
-		householdId: vv.id("households"),
 	},
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
-
-		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
 
@@ -110,6 +87,7 @@ export const deleteIngredient = authedMutation({
 
 		const now = Date.now();
 		await ctx.db.patch("ingredients", args.ingredientId, {
+			updatedBy: userId,
 			deletedAt: now,
 		});
 	},
@@ -129,4 +107,4 @@ const getHouseholdIngredients = async (
 		)
 		.collect();
 };
-// #engregion
+// #endregion

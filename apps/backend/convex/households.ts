@@ -30,13 +30,13 @@ export const householdQuery = customQuery(authedQuery, {
 		householdId: vv.id("households"),
 	},
 	input: async (ctx, args) => {
-		const { user } = ctx as AuthedQueryCtx;
+		const { user } = ctx as AuthedQueryCtx; //? Convex don't propagate the extensions by other extended custom functions
 		const { _id: userId } = user;
 
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		return {
-			ctx: { user },
+			ctx: { user }, //? Convex don't propagate the extensions by other extended custom functions
 			args,
 		};
 	},
@@ -47,13 +47,13 @@ export const householdMutation = customMutation(authedMutation, {
 		householdId: vv.id("households"),
 	},
 	input: async (ctx, args) => {
-		const { user } = ctx as AuthedMutationCtx;
+		const { user } = ctx as AuthedMutationCtx; //? Convex don't propagate the extensions by other extended custom functions
 		const { _id: userId } = user;
 
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		return {
-			ctx: { user },
+			ctx: { user }, //? Convex don't propagate the extensions by other extended custom functions
 			args,
 		};
 	},
@@ -66,13 +66,13 @@ export const internalHouseholdMutation = customMutation(
 			householdId: vv.id("households"),
 		},
 		input: async (ctx, args) => {
-			const { user } = ctx as AuthedMutationCtx;
+			const { user } = ctx as AuthedMutationCtx; //? Convex don't propagate the extensions by other extended custom functions
 			const { _id: userId } = user;
 
 			await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 			return {
-				ctx: { user },
+				ctx: { user }, //? Convex don't propagate the extensions by other extended custom functions
 				args,
 			};
 		},
