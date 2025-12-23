@@ -59,8 +59,6 @@ function DashboardPage() {
 		return <div>Loading...</div>;
 	}
 
-	const disableRecipeGenQuickAction = !ingredientsCount;
-
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8">
@@ -167,18 +165,16 @@ function DashboardPage() {
 										</Link>
 									</Button>
 
-									{!disableRecipeGenQuickAction && (
-										<Button
-											className="h-auto flex-col gap-2 bg-transparent p-4"
-											variant="outline"
-											asChild
-										>
-											<Link to="/dashboard/recipes/gen/new">
-												<Sparkles className="h-6 w-6" />
-												<span>Generate Recipe</span>
-											</Link>
-										</Button>
-									)}
+									<Button
+										className="h-auto flex-col gap-2 bg-transparent p-4"
+										variant="outline"
+										asChild
+									>
+										<Link to="/dashboard/recipes/gen/new">
+											<Sparkles className="h-6 w-6" />
+											<span>Generate Recipe</span>
+										</Link>
+									</Button>
 
 									<Button
 										className="h-auto flex-col gap-2 bg-transparent p-4"
