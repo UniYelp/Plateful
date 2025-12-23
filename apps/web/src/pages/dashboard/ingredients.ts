@@ -73,8 +73,10 @@ export const ingredientsCategories = [
 	{ value: "oils", label: "Oils & Condiments" },
 	{ value: "grains", label: "Grains & Cereals" },
 	{ value: "other", label: "Other" },
-];
+] as const;
 
+export const ingredientCategoriesMap = ingredientsCategories.flatMap((category) => category.value);
+export type IngredientsCategoriesMap = typeof ingredientCategoriesMap[number];
 
 export const ingredientImgByCategory = {
 	vegetables: "/ingredientsCategories/vegetable.png",

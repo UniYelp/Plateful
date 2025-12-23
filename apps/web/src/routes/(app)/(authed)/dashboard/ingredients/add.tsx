@@ -1,10 +1,10 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
-import { AlertCircle, ArrowLeft, Package, Upload } from "lucide-react";
-import type React from "react";
+import { AlertCircle, ArrowLeft, Package } from "lucide-react";
 import { useState } from "react";
 
+import { type IngredientUnit, ingredientUnits } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,12 @@ import {
 } from "@/components/ui/select";
 import { TextArea } from "@/components/ui/textarea";
 import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
-import { ingredientsCategories } from "@/pages/dashboard/ingredients";
+import { addIngredientFormDefaultValues } from "@/features/ingredients/forms/constants";
+import { AddIngredientFormSchema } from "@/features/ingredients/forms/schemas";
+import {
+	type IngredientsCategoriesMap,
+	ingredientsCategories,
+} from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/ingredients/add",
@@ -40,17 +45,55 @@ function RouteComponent() {
 function AddIngredientPage() {
 	const router = useRouter();
 	const form = useForm({
-		defaultValues: {
-			name: "",
-			description: "",
-			amount: "",
-			unit: "",
-			category: "",
-			expiryDate: "",
-			image: null as File | null,
+		defaultValues: addIngredientFormDefaultValues,
+		validators: {
+			onChange: AddIngredientFormSchema,
+			onSubmit: ({ value }) => {
+				if (!value.name) {
+					return {
+						fields: {
+							name: "Name must be set.",
+						},
+					};
+				}
+
+				// TODO create similar ingredient warning
+			},
 		},
-		onSubmit: ({ value }) => {
-			console.log(value);
+		onSubmit: async ({ value }) => {
+			try {
+				if (!householdId) {
+					throw new Error("No household found for the user.");
+				}
+
+				const expiryDate = value.expiryDate
+					? new Date(value.expiryDate).getTime()
+					: undefined;
+
+				// Simulate API call
+				const submitting = addIngredient({
+					name: value.name,
+					description: value.description,
+					quantities: [
+						{
+							unit: value.unit,
+							expiresAt: expiryDate,
+							amount: value.amount,
+						},
+					],
+					// images: value.image,
+					householdId: householdId,
+					category: value.category,
+					tags: [],
+					images: [],
+				});
+				await submitting;
+
+				// Redirect to ingredients page
+				router.navigate({ to: "/dashboard/ingredients" });
+			} catch (error) {
+				console.error("Failed to add ingredient:", error);
+			}
 		},
 	});
 
@@ -58,49 +101,6 @@ function AddIngredientPage() {
 	const addIngredient = useMutation(api.ingredients.addIngredient);
 
 	const householdId = useCurrentHousehold()?._id;
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-
-		try {
-			if (!householdId) {
-				throw new Error("No household found for the user.");
-			}
-
-			const expiryDate = form.state.values.expiryDate
-				? new Date(form.state.values.expiryDate).getTime()
-				: undefined;
-
-			const amountNumber = Number(form.state.values.amount);
-			if (!amountNumber || amountNumber <= 0) {
-				throw new Error("Amount must be a positive number.");
-			}
-
-			// Simulate API call
-			const submitting = addIngredient({
-				name: form.state.values.name,
-				description: form.state.values.description,
-				quantities: [
-					{
-						unit: form.state.values.unit,
-						expiresAt: expiryDate,
-						amount: amountNumber,
-					},
-				],
-				// images: form.state.values.image,
-				householdId: householdId,
-				category: form.state.values.category,
-				tags: [],
-				images: [],
-			});
-			await submitting;
-
-			// Redirect to ingredients page
-			router.navigate({ to: "/dashboard/ingredients" });
-		} catch (error) {
-			console.error("Failed to add ingredient:", error);
-		}
-	};
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -169,67 +169,13 @@ function AddIngredientPage() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<form onSubmit={handleSubmit} className="space-y-6">
-							{/* Image Upload */}
-							<form.Field name="image">
-								{(field) => (
-									<div className="space-y-2">
-										<Label>Ingredient Photo</Label>
-										<div className="flex items-center gap-4">
-											<div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed bg-muted/50">
-												{field.state.value ? (
-													<img
-														src={
-															URL.createObjectURL(field.state.value) ||
-															"/placeholder.svg"
-														}
-														alt="Preview"
-														className="h-full w-full rounded-lg object-cover"
-													/>
-												) : (
-													<Upload className="h-6 w-6 text-muted-foreground" />
-												)}
-											</div>
-											<div>
-												<Input
-													type="file"
-													accept="image/*"
-													name={field.name}
-													onChange={(
-														e: React.ChangeEvent<HTMLInputElement>,
-													) => {
-														console.log(e.target.files?.[0]);
-														const file = e.target.files?.[0] || null;
-														field.handleChange(file);
-													}}
-													// className="hidden"
-												/>
-												{/* <Label
-													htmlFor="image-upload"
-													className="cursor-pointer"
-												>
-													<Button
-														type="button"
-														variant="outline"
-														size="sm"
-														asChild
-													>
-														<span>
-															<Upload className="mr-2 h-4 w-4" />
-															Upload Photo
-														</span>
-													</Button>
-												</Label> */}
-												<p className="mt-1 text-muted-foreground text-xs">
-													Optional: Add a photo to easily identify your
-													ingredient
-												</p>
-											</div>
-										</div>
-									</div>
-								)}
-							</form.Field>
-
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								form.handleSubmit();
+							}}
+							className="space-y-6"
+						>
 							{/* Title */}
 							<form.Field name="name">
 								{(field) => (
@@ -273,16 +219,19 @@ function AddIngredientPage() {
 										<div className="space-y-2">
 											<Label htmlFor="amount">Amount *</Label>
 											<Input
-												placeholder="e.g., 50g, 1L, 3 pieces"
+												placeholder="e.g., 50, 1, 0.5"
 												value={field.state.value}
-												onChange={(e) => field.handleChange(e.target.value)}
+												type="number"
+												onChange={(e) =>
+													field.handleChange(e.target.valueAsNumber)
+												}
 												className={
 													!field.state.meta.isValid ? "border-destructive" : ""
 												}
 											/>
 											{!field.state.meta.isValid && (
 												<p className="text-destructive text-sm">
-													{field.state.meta.errors.join(", ")}
+													{field.state.meta.errors[0]?.message}
 												</p>
 											)}
 										</div>
@@ -292,17 +241,32 @@ function AddIngredientPage() {
 									{(field) => (
 										<div className="space-y-2">
 											<Label htmlFor="unit">Unit *</Label>
-											<Input
-												placeholder="e.g., gram, liter, oz"
+											<Select
 												value={field.state.value}
-												onChange={(e) => field.handleChange(e.target.value)}
-												className={
-													!field.state.meta.isValid ? "border-destructive" : ""
+												onValueChange={(value) =>
+													field.handleChange(value as IngredientUnit)
 												}
-											/>
+											>
+												<SelectTrigger
+													className={
+														!field.state.meta.isValid
+															? "border-destructive"
+															: ""
+													}
+												>
+													<SelectValue placeholder="Select Unit" />
+												</SelectTrigger>
+												<SelectContent>
+													{ingredientUnits.map((unit) => (
+														<SelectItem key={unit} value={unit}>
+															{unit}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
 											{!field.state.meta.isValid && (
 												<p className="text-destructive text-sm">
-													{field.state.meta.errors.join(", ")}
+													{field.state.meta.errors[0]?.message}
 												</p>
 											)}
 										</div>
@@ -315,7 +279,9 @@ function AddIngredientPage() {
 											<Label htmlFor="category">Category *</Label>
 											<Select
 												value={field.state.value}
-												onValueChange={(value) => field.handleChange(value)}
+												onValueChange={(value) =>
+													field.handleChange(value as IngredientsCategoriesMap)
+												}
 											>
 												<SelectTrigger
 													className={
@@ -373,7 +339,7 @@ function AddIngredientPage() {
 							<div className="flex gap-3 pt-4">
 								<Button
 									type="submit"
-									disabled={form.state.isSubmitting}
+									disabled={form.state.isSubmitting || !form.state.isValid}
 									className="flex-1"
 								>
 									{form.state.isSubmitting ? "Adding..." : "Add Ingredient"}
