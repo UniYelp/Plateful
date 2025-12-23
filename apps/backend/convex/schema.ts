@@ -118,8 +118,6 @@ export const ingredientFields = {
 	notes: v.optional(v.string()), //? user non-searchable
 
 	images: v.array(vAsset),
-
-	// variantId: v.optional(v.id("ingredients")), // TODO: might have to split to headless ing & variants tables
 };
 
 export const recipeFields = {

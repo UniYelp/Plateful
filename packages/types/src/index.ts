@@ -39,6 +39,7 @@ export type * from "./stringifiable";
 export type * from "./suggest";
 export type * from "./suggest-str";
 export type * from "./to-str";
+export type * from "./un-nest";
 export type * from "./union-to-intersection";
 export type * from "./union-to-tuple";
 export type * from "./unknown-array";

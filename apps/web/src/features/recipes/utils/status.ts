@@ -1,20 +1,5 @@
-import type { ValueOf } from "@plateful/types";
 import type { RecipeGenShape } from "@backend/recipeGens";
-
-// TODO: move to @plateful/types
-type UnNest<T, K extends keyof T> = ValueOf<{
-	[U in K & PropertyKey]: ValueOf<{
-		[V in T[U] as string]: Omit<T, U> & { [P in U]: V };
-	}>;
-}>;
-
-export type RecipeGenState<
-	Status extends RecipeGenShape["state"]["status"],
-	Gen extends RecipeGenShape = RecipeGenShape,
-> = Extract<
-	UnNest<Gen, "state">,
-	{ state: Extract<Gen["state"], { status: Status }> }
->;
+import type { RecipeGenState } from "../types";
 
 export const isGeneratingRecipe = (
 	recipeGen: RecipeGenShape,

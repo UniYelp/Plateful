@@ -77,33 +77,12 @@ export const RecipeGenState = (props: Props) => {
 									</p>
 								</div>
 							</div>
-
-							{/* <Button
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => handleRetry(item.id)}
-                                                className="gap-2"
-                                            >
-                                                <RotateCcw className="w-3 h-3" />
-                                                Retry Generation
-                                            </Button> */}
 						</div>
 					</>
 				)}
 
 				{isCompletedRecipeGen(gen) && (
 					<div className="min-w-0 flex-1">
-						{/* <div className="mb-2 flex items-start justify-between gap-4">
-                                            <div className="min-w-0 flex-1">
-                                                <h3 className="mb-1 truncate font-semibold text-base">
-                                                    {item.resultRecipe.title}
-                                                </h3>
-                                                <p className="line-clamp-1 text-muted-foreground text-sm">
-                                                    {item.description}
-                                                </p>
-                                            </div>
-                                        </div> */}
-
 						<Button size="sm" asChild>
 							<Link
 								to={`/dashboard/recipes/$id`}
