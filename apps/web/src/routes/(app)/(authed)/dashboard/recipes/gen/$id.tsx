@@ -1,11 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { History } from "lucide-react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
-import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { isGeneratingRecipe } from "&/recipes/utils/status";
 import { generatingRecipeLoader } from "@/features/recipes/components/loaders/recipe-gen";
 
@@ -45,9 +44,5 @@ function RecipeGenerationPage() {
 
 	if (isGeneratingRecipe(recipeGen)) return generatingRecipeLoader;
 
-	return (
-		<div className="container mx-auto max-w-4xl px-4 py-8">
-			<RecipeGenState gen={recipeGen} />
-		</div>
-	);
+	return <Navigate to="/dashboard/recipes/gen" />;
 }
