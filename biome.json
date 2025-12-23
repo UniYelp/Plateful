@@ -25,7 +25,8 @@
                 "useConsistentCurlyBraces": "error"
             },
             "suspicious": {
-                "noDuplicateTestHooks": "error"
+                "noDuplicateTestHooks": "error",
+                "noArrayIndexKey": "warn"
             },
             "correctness": {
                 "noRenderReturnValue": "on"

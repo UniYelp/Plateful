@@ -19,6 +19,7 @@
     "dependencies": {
         "@clerk/backend": "catalog:",
         "@convex-dev/migrations": "^0.3.1",
+        "@elysiajs/eden": "^1.4.5",
         "@hono/zod-validator": "catalog:",
         "@plateful/ingredients": "workspace:*",
         "@plateful/units": "workspace:*",

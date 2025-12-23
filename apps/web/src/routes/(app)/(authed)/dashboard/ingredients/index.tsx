@@ -3,11 +3,14 @@ import { useMutation, useQuery } from "convex/react";
 import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import {
-	type expiryStatus,
-	getExpiryStatusDetailsFromExpiryDate,
-} from "@plateful/ingredients";
+import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
+import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import {
+	categories,
+	colorByExpiryStatus,
+	ingredientImgByCategory,
+} from "&/ingredients/constants";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -19,15 +22,11 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
-import {
-	categories,
-	ingredientImgByCategory,
-} from "@/pages/dashboard/ingredients";
+import { ingredientSymbolToDisplay } from "@/features/ingredients/utils/ingredient-symbol-to-display";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
 	component: RouteComponent,
@@ -37,19 +36,6 @@ function RouteComponent() {
 	return <IngredientsPage />;
 }
 
-type ExpiryStatusDetails = {
-	status: (typeof expiryStatus)[number];
-	color: BadgeProps["variant"];
-	text: string;
-};
-
-const colorByStatus: { [key: string]: BadgeProps["variant"] } = {
-	expired: "destructive",
-	expiring: "destructive",
-	warning: "secondary",
-	good: "outline",
-} as const;
-
 function IngredientsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
@@ -57,7 +43,7 @@ function IngredientsPage() {
 	const household = useCurrentHousehold();
 
 	const ingredients = useQuery(
-		api.ingredients.householdIngredients,
+		api.ingredients.byHousehold,
 		household ? { householdId: household._id } : "skip",
 	);
 	const deleteIngredient = useMutation(api.ingredients.deleteIngredient);
@@ -71,18 +57,7 @@ function IngredientsPage() {
 		return matchesSearch && matchesCategory;
 	});
 
-	const getExpiryStatus: (expiryDate: number) => ExpiryStatusDetails = (
-		expiryDate,
-	) => {
-		const statusData = getExpiryStatusDetailsFromExpiryDate(expiryDate);
-		return {
-			status: statusData.status,
-			color: colorByStatus[statusData.status],
-			text: statusData.text,
-		};
-	};
-
-	if (!household) return "Loading..."
+	if (!household) return "Loading...";
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -135,8 +110,10 @@ function IngredientsPage() {
 						const expirations = ingredient.quantities.flatMap(
 							(q) => q.expiresAt ?? [],
 						);
-						const soonestExpiry = Math.min(...expirations);
-						const expiryStatus = getExpiryStatus(soonestExpiry);
+
+						const expiryStatusDetails =
+							getExpiryDetailsFromExpiryDates(expirations);
+
 						return (
 							<Card
 								key={ingredient._id}
@@ -163,7 +140,9 @@ function IngredientsPage() {
 											<p className="mt-1 font-medium text-sm">
 												{/* TODO: do sum instead */}
 												{ingredient.quantities[0].amount}{" "}
-												{ingredient.quantities[0].unit}
+												{ingredientSymbolToDisplay(
+													ingredient.quantities[0].unit,
+												)}
 											</p>
 										</div>
 									</div>
@@ -177,14 +156,19 @@ function IngredientsPage() {
 												).toLocaleDateString()}
 											</span>
 										</div>
-										<div className="flex items-center justify-between text-sm">
-											<span className="text-muted-foreground">Expires:</span>
-											<Badge variant={expiryStatus.color} className="text-xs">
-												{expiryStatus.status === "expired"
-													? "Expired"
-													: expiryStatus.text}
-											</Badge>
-										</div>
+										{expiryStatusDetails && (
+											<div className="flex items-center justify-between text-sm">
+												<span className="text-muted-foreground">Expires:</span>
+												<Badge
+													variant={
+														colorByExpiryStatus[expiryStatusDetails.status]
+													}
+													className="text-xs"
+												>
+													{expiryStatusDetails.text}
+												</Badge>
+											</div>
+										)}
 									</div>
 
 									<div className="mt-4 flex gap-2">
@@ -220,7 +204,10 @@ function IngredientsPage() {
 													<AlertDialogCancel>Cancel</AlertDialogCancel>
 													<AlertDialogAction
 														onClick={() =>
-															deleteIngredient({ ingredientId: ingredient._id, householdId: household?._id })
+															deleteIngredient({
+																ingredientId: ingredient._id,
+																householdId: household?._id,
+															})
 														}
 													>
 														Continue

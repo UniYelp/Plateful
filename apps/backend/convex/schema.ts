@@ -16,22 +16,12 @@ import { typedV } from "convex-helpers/validators";
 
 import { temperatureUnits } from "@plateful/units/temperature";
 import type { Doc, TableNames } from "./_generated/dataModel";
-
-// #region constants
-
-export const SYSTEM_ID = "sys";
-export type SystemId = typeof SYSTEM_ID;
-
-export const REMAINING_QUANTITY = "remaining";
-export type RemainingQuantity = typeof REMAINING_QUANTITY;
-
-export const ALL_QUANTITY = "all";
-export type AllQuantity = typeof ALL_QUANTITY;
-
-export const memberRoles = ["manager", "member"] as const;
-export type MemberRole = (typeof memberRoles)[number];
-
-// #endregion
+import {
+	ALL_QUANTITY,
+	memberRoles,
+	REMAINING_QUANTITY,
+	SYSTEM_ID,
+} from "./values";
 
 // #region types
 
@@ -41,12 +31,15 @@ export type FullTableNames = TableNames | SystemTableNames;
 
 // #region validators
 
-export const vSysId = <const SysTableName extends SystemTableNames>(
+const vSysId = <const SysTableName extends SystemTableNames>(
 	tableName: SysTableName,
 ) => v.id(tableName);
 
 const vUserStampId = v.union(v.id("users"), v.literal(SYSTEM_ID));
 export type UserStampId = Infer<typeof vUserStampId>;
+
+const vEnum = <const T extends string>(e: readonly T[]) =>
+	v.union(...e.map((val) => v.literal(val)));
 
 /**
  * @example
@@ -68,7 +61,7 @@ const vDuration = v.string();
  */
 export type Duration = Infer<typeof vDuration>;
 
-const vImage = vSysId("_storage");
+const vAsset = vSysId("_storage");
 
 // #endregion
 
@@ -98,7 +91,7 @@ export const userPreferencesFields = {
 export const householdMemberFields = {
 	householdId: v.id("households"),
 	userId: v.id("users"),
-	role: v.union(...memberRoles.map((role) => v.literal(role))),
+	role: vEnum(memberRoles),
 	joinedAt: vTimestamp,
 };
 
@@ -108,6 +101,8 @@ export const ingredientQuantityFields = {
 };
 
 export const ingredientFields = {
+	householdId: v.id("households"),
+
 	name: v.string(),
 	description: v.optional(v.string()),
 
@@ -122,13 +117,14 @@ export const ingredientFields = {
 	tags: v.array(v.string()), //? system searchable
 	notes: v.optional(v.string()), //? user non-searchable
 
-	images: v.array(vImage),
+	images: v.array(vAsset),
 
-	householdId: v.id("households"),
 	// variantId: v.optional(v.id("ingredients")), // TODO: might have to split to headless ing & variants tables
 };
 
 export const recipeFields = {
+	householdId: v.id("households"),
+
 	title: v.string(),
 	description: v.optional(v.string()),
 
@@ -140,20 +136,14 @@ export const recipeFields = {
 	tags: v.array(v.string()), //? system searchable
 	keywords: v.array(v.string()), //? user searchable
 	notes: v.optional(v.string()), //? user non-searchable
-
-	householdId: v.id("households"),
 };
 
-export const ingredientMetadataFields = v
-	.object(ingredientFields)
-	.pick("name").fields;
-
 export const recipeIngredientFields = {
-	quantity: v.object(ingredientQuantityFields),
-	state: v.optional(v.string()),
-
 	recipeId: v.id("recipes"),
 	ingredientId: v.id("ingredients"),
+
+	quantity: v.object(ingredientQuantityFields),
+	state: v.optional(v.string()),
 };
 
 export const recipeStepBlock = v.union(
@@ -170,11 +160,18 @@ export const recipeStepBlock = v.union(
 	v.object({
 		type: v.literal("temperature"),
 		value: v.number(),
-		unit: v.union(...temperatureUnits.map((unit) => v.literal(unit))),
+		unit: vEnum(temperatureUnits),
 	}),
 	v.object({
 		type: v.literal("material"),
-		...ingredientMetadataFields,
+		ingredient: v.union(
+			v.object({
+				id: v.id("ingredients"), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
+			}),
+			v.object({
+				name: v.string(),
+			}),
+		),
 		quantity: v.union(
 			v.object(ingredientQuantityFields),
 			v.literal(REMAINING_QUANTITY),
@@ -187,36 +184,40 @@ export const recipeStepBlock = v.union(
 			v.literal("derived-output"),
 			v.literal("output"),
 		),
-
-		ingredientId: v.nullable(v.id("ingredients")), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
 	}),
 );
 
 export const recipeStepFields = {
+	recipeId: v.id("recipes"),
+
 	index: v.number(),
 	blocks: v.array(recipeStepBlock),
-
-	recipeId: v.id("recipes"),
 };
 
-export const recipeGenMetadataFields = {
-	state: v.union(
-		v.literal("pending"),
-		v.literal("generating"),
-		v.literal("completed"),
-		v.literal("failed"),
-	),
-
+export const recipeGenV0MetadataFields = {
+	version: v.literal("v0"),
 	tags: v.array(v.string()),
-	ingredients: v.array(
+	ingredients: v.array(v.id("ingredients")),
+};
+
+export const recipeGensFields = {
+	householdId: v.id("households"),
+
+	state: v.union(
 		v.object({
-			...ingredientMetadataFields,
-			ingredientId: v.nullable(v.id("ingredients")),
+			status: v.union(v.literal("pending"), v.literal("generating")),
+		}),
+		v.object({
+			status: v.literal("completed"),
+			recipeId: v.id("recipes"),
+		}),
+		v.object({
+			status: v.literal("failed"),
+			reason: v.nullable(v.string()),
 		}),
 	),
 
-	householdId: v.id("households"),
-	recipeId: v.nullable(v.id("recipes")),
+	metadata: v.union(v.object(recipeGenV0MetadataFields)),
 };
 
 // #endregion
@@ -226,7 +227,6 @@ export const recipeGenMetadataFields = {
  * @see {@link https://stack.convex.dev/relationship-structures-let-s-talk-about-schemas}
  * @see {@link https://stack.convex.dev/functional-relationships-helpers}
  */
-
 const schema = defineSchema({
 	// #region systemland
 	users: defineTable({
@@ -234,6 +234,7 @@ const schema = defineSchema({
 		externalId: v.string(),
 		...timestampsFields,
 	}).index("byExternalId", ["externalId"]),
+	// #endregion
 	// #region userland
 	households: defineTable({
 		name: v.string(),
@@ -259,8 +260,11 @@ const schema = defineSchema({
 		...recipeFields,
 		...stampsFields,
 	})
-		.index("by_household", ["householdId"])
-		.index("by_household_and_title", ["householdId", "title"])
+		.index("by_household_deletedAt_title", [
+			"householdId",
+			"deletedAt",
+			"title",
+		])
 		.searchIndex("search_recipes", {
 			searchField: "title",
 			filterFields: ["householdId", "description", "tags", "keywords"],
@@ -268,15 +272,20 @@ const schema = defineSchema({
 	recipeIngredients: defineTable({
 		...recipeIngredientFields,
 		...stampsFields,
-	}).index("by_recipe_and_ingredient", ["recipeId", "ingredientId"]),
+	}).index("by_recipe_deletedAt_ingredient", [
+		"recipeId",
+		"deletedAt",
+		"ingredientId",
+	]),
 	recipeSteps: defineTable({
 		...recipeStepFields,
 		...stampsFields,
 	}).index("by_recipe_and_index", ["recipeId", "index"]),
-	recipeGenMetadata: defineTable({
-		...recipeGenMetadataFields,
+	recipeGens: defineTable({
+		...recipeGensFields,
 		...stampsFields,
-	}).index("by_household", ["householdId"]),
+	}).index("by_household_deletedAt", ["householdId", "deletedAt"]),
+	// #endregion
 });
 
 // #endregion
@@ -302,16 +311,16 @@ export const vId: <const TableName extends FullTableNames>(
  */
 export const vv = typedV(schema);
 
-// TODO: make this work
-// export const vvv = {
-// 	...vv,
-// 	entity<TableName extends TableNames>(tableName: TableName) {
-// 		return schema.tables[tableName].validator
-//         // .omit(
-// 		// 	...(Object.keys(stampsFields) as (keyof typeof stampsFields)[]),
-// 		// );
-// 	},
-// };
+export const vvv = {
+	timestamp: () => vTimestamp,
+	duration: () => vDuration,
+	userStamp: () => vUserStampId,
+	asset: () => vAsset,
+	enum: vEnum,
+	docShape: <TableName extends TableNames>(tableName: TableName) =>
+		schema.tables[tableName].validator,
+	sysId: vSysId,
+} as const;
 
 // export const vDocFields = <TableName extends TableNames>(tableName: TableName) => vv.
 
@@ -333,6 +342,9 @@ export type EntityShape<TableName extends TableNames> = Omit<
 	DocShape<TableName>,
 	keyof EntityStamps
 >;
+
+export type StampedEntity = Extract<Doc<TableNames>, EntityStamps>;
+export type StampedTableNames = StampedEntity["_id"]["__tableName"];
 
 // #endregion
 

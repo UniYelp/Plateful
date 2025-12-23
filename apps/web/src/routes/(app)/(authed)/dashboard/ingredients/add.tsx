@@ -6,6 +6,8 @@ import type React from "react";
 import { useState } from "react";
 
 import { api } from "@backend/api";
+import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { ingredientsCategories } from "&/ingredients/constants";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -24,8 +26,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { TextArea } from "@/components/ui/textarea";
-import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
-import { ingredientsCategories } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/ingredients/add",
