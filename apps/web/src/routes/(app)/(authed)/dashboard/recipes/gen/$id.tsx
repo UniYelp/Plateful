@@ -37,7 +37,8 @@ function RecipeGenerationPage() {
 
 	if (!isGenerating) return generatingRecipeLoader;
 
-    // TODO: 
+	// TODO: design
+
 	return (
 		<div>
 			Status: {recipeGen.state.status} |{" "}
