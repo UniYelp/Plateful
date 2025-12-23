@@ -6,6 +6,8 @@ import { useState } from "react";
 
 import { type IngredientUnit, ingredientUnits } from "@plateful/ingredients";
 import { api } from "@backend/api";
+import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { ingredientsCategories } from "&/ingredients/constants";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -24,13 +26,9 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { TextArea } from "@/components/ui/textarea";
-import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
 import { addIngredientFormDefaultValues } from "@/features/ingredients/forms/constants";
 import { AddIngredientFormSchema } from "@/features/ingredients/forms/schemas";
-import {
-	type IngredientsCategoriesMap,
-	ingredientsCategories,
-} from "@/pages/dashboard/ingredients";
+import type { IngredientsCategoriesMap } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/ingredients/add",

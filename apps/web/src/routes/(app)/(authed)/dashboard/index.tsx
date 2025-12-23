@@ -10,9 +10,10 @@ import {
 	Package,
 	Plus,
 	ShoppingCart,
+	Sparkles,
 } from "lucide-react";
 
-import { getExpiryStatusDetailsFromExpiryDate } from "@plateful/ingredients";
+import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -169,6 +170,17 @@ function DashboardPage() {
 										variant="outline"
 										asChild
 									>
+										<Link to="/dashboard/recipes/gen/new">
+											<Sparkles className="h-6 w-6" />
+											<span>Generate Recipe</span>
+										</Link>
+									</Button>
+
+									<Button
+										className="h-auto flex-col gap-2 bg-transparent p-4"
+										variant="outline"
+										asChild
+									>
 										<Link to="/dashboard/meal-plans/create">
 											<Calendar className="h-6 w-6" />
 											<span>Plan Meals</span>
@@ -249,9 +261,11 @@ function DashboardPage() {
 										const expirations = quantities.flatMap(
 											(q) => q.expiresAt ?? [],
 										);
-										const soonestExpiry = Math.min(...expirations);
+
 										const statusDetails =
-											getExpiryStatusDetailsFromExpiryDate(soonestExpiry);
+											getExpiryDetailsFromExpiryDates(expirations);
+
+										if (!statusDetails) return null;
 
 										return (
 											<div
