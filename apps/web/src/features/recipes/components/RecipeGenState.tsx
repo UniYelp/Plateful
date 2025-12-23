@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
+import { AlertCircle, ChefHat, ExternalLink, Loader2 } from "lucide-react";
 
 import type { RecipeGenDoc } from "@backend/recipeGens";
 import {
@@ -20,15 +20,15 @@ export const RecipeGenState = (props: Props) => {
 
 	return (
 		<Card className="overflow-hidden">
-			<CardContent className="relative flex items-center gap-4 p-6">
+			<CardContent className="relative flex items-center gap-4 px-6">
 				<span className="absolute top-0 right-6 whitespace-nowrap text-muted-foreground text-xs">
 					{new Date(gen._creationTime).toLocaleDateString()}
 				</span>
 				{isGeneratingRecipe(gen) && (
 					<>
 						<div className="relative shrink-0">
-							<div className="flex h-20 w-20 items-center justify-center rounded-lg bg-primary/10">
-								<Loader2 className="h-8 w-8 animate-spin text-primary" />
+							<div className="flex h-15 w-15 items-center justify-center rounded-lg bg-primary/10">
+								<Loader2 className="h-5 w-5 animate-spin text-primary" />
 							</div>
 							<div className="absolute inset-0 animate-pulse rounded-lg border-2 border-primary/20" />
 						</div>
@@ -57,8 +57,8 @@ export const RecipeGenState = (props: Props) => {
 
 				{isFailedRecipeGen(gen) && (
 					<>
-						<div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
-							<AlertCircle className="h-8 w-8 text-destructive" />
+						<div className="flex h-15 w-15 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
+							<AlertCircle className="h-5 w-5 text-destructive" />
 						</div>
 
 						<div className="min-w-0 flex-1">
@@ -82,17 +82,23 @@ export const RecipeGenState = (props: Props) => {
 				)}
 
 				{isCompletedRecipeGen(gen) && (
-					<div className="min-w-0 flex-1">
-						<Button size="sm" asChild>
-							<Link
-								to={`/dashboard/recipes/$id`}
-								params={{ id: gen.state.recipeId }}
-							>
-								<ExternalLink className="mr-2 h-3 w-3" />
-								View Recipe
-							</Link>
-						</Button>
-					</div>
+					<>
+						<div className="flex h-15 w-15 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
+							<ChefHat className="h-5 w-5" />
+						</div>
+
+						<div className="min-w-0 flex-1">
+							<Button size="sm" asChild>
+								<Link
+									to={`/dashboard/recipes/$id`}
+									params={{ id: gen.state.recipeId }}
+								>
+									<ExternalLink className="mr-2 h-3 w-3" />
+									View Recipe
+								</Link>
+							</Button>
+						</div>
+					</>
 				)}
 			</CardContent>
 		</Card>
