@@ -103,7 +103,9 @@ declare module "@tanstack/react-router" {
 
 	interface StaticDataRouteOption {
 		// backLink: //TODO: add backLink logic
+        // TODO: add links merging logic
 		links?: (LinkComponentProps & {
+			icon?: React.JSX.Element;
 			label: string;
 		})[];
 		loader?: React.ReactElement;

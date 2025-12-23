@@ -26,11 +26,11 @@
         "noUncheckedSideEffectImports": true,
         "baseUrl": ".",
         "paths": {
-            "@/*": [
-                "./src/*"
-            ],
             "&/*": [
                 "./src/features/*"
+            ],
+            "@/*": [
+                "./src/*"
             ],
             "@backend/*": [
                 "../backend/convex/_generated/*",

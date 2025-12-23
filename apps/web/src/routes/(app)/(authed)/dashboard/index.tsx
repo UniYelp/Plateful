@@ -15,6 +15,7 @@ import {
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
+import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
 import {
 	mockRecentActivity,
 	mockStats,
@@ -58,6 +58,8 @@ function DashboardPage() {
 	if (!isLoaded || !user) {
 		return <div>Loading...</div>;
 	}
+
+	const disableRecipeGenQuickAction = !ingredientsCount;
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -165,16 +167,18 @@ function DashboardPage() {
 										</Link>
 									</Button>
 
-									<Button
-										className="h-auto flex-col gap-2 bg-transparent p-4"
-										variant="outline"
-										asChild
-									>
-										<Link to="/dashboard/recipes/gen/new">
-											<Sparkles className="h-6 w-6" />
-											<span>Generate Recipe</span>
-										</Link>
-									</Button>
+									{!disableRecipeGenQuickAction && (
+										<Button
+											className="h-auto flex-col gap-2 bg-transparent p-4"
+											variant="outline"
+											asChild
+										>
+											<Link to="/dashboard/recipes/gen/new">
+												<Sparkles className="h-6 w-6" />
+												<span>Generate Recipe</span>
+											</Link>
+										</Button>
+									)}
 
 									<Button
 										className="h-auto flex-col gap-2 bg-transparent p-4"

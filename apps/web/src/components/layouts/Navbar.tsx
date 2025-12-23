@@ -7,13 +7,13 @@ export function Navbar() {
 		<nav className="hidden items-center gap-6 md:flex">
 			{matches.flatMap(
 				(match) =>
-					match.staticData.links?.map(({ label, ...linkProps }) => (
+					match.staticData.links?.map(({ icon, label, ...linkProps }) => (
 						<Link
 							{...linkProps}
 							key={label}
 							className="text-muted-foreground transition-colors hover:text-foreground"
 						>
-							{label}
+							{icon} {label}
 						</Link>
 					)) ?? [],
 			)}

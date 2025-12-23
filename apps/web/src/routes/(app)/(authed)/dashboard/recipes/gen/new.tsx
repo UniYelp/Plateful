@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, History, Package } from "lucide-react";
 
 import {
 	getExpiryDetailsFromExpiryDate,
@@ -10,14 +10,25 @@ import { isDefined } from "@plateful/utils";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { recipesLoader } from "&/recipes/components/loaders/recipes";
+import { GenerateRecipeForm } from "&/recipes/form/components/GenerateRecipeForm";
 import type { RecipeGenForm } from "&/recipes/form/schemas";
 import type { IngredientDetails } from "&/recipes/form/types";
 import { Button } from "@/components/ui/button";
-import { GenerateRecipeForm } from "@/features/recipes/form/components/GenerateRecipeForm";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/recipes/gen/new",
 )({
+	staticData: {
+		links: [
+			{
+				to: "/dashboard/recipes/gen",
+				label: "History",
+				icon: <History className="mr-2 h-4 w-4" />,
+			},
+		],
+	},
 	component: RouteComponent,
 });
 
@@ -34,7 +45,7 @@ function GenerateNewRecipePage() {
 	);
 
 	const startGeneratingRecipe = useMutation(api.recipeGens.start);
-    
+
 	const navigate = Route.useNavigate();
 
 	const ingredientsDetails = ingredients?.map<IngredientDetails>((ing) => {
@@ -66,8 +77,11 @@ function GenerateNewRecipePage() {
 		};
 	});
 
+	const hasAvailableIngredients = !!ingredientsDetails?.length;
+
 	const onSubmit = async (value: RecipeGenForm) => {
-		if (!household || !ingredientsDetails || !value.ingredients.length) return;
+		if (!household || !hasAvailableIngredients || !value.ingredients.length)
+			return;
 
 		const selectedIngredients = new Set(
 			value.ingredients as Id<"ingredients">[],
@@ -124,9 +138,31 @@ function GenerateNewRecipePage() {
 				</div>
 			</div>
 			{!ingredientsDetails ? (
-				"Loading..."
-			) : !ingredientsDetails?.length ? (
-				"No Available Ingredients..."
+				recipesLoader
+			) : !ingredientsDetails.length ? (
+				<Card className="py-12 text-center">
+					<CardContent className="space-y-6">
+						<div className="flex justify-center">
+							<div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+								<Package className="h-10 w-10 text-muted-foreground" />
+							</div>
+						</div>
+						<div className="space-y-2">
+							<h3 className="font-bold text-2xl">No Ingredients Yet</h3>
+							<p className="mx-auto max-w-md text-muted-foreground">
+								To start generating recipes, you need to add ingredients to your
+								household first. Add your available ingredients so we can create
+								personalized recipes for you.
+							</p>
+						</div>
+						<Button size="lg" asChild>
+							<Link to="/dashboard/ingredients">
+								<Package className="mr-2 h-4 w-4" />
+								Add Ingredients
+							</Link>
+						</Button>
+					</CardContent>
+				</Card>
 			) : (
 				<GenerateRecipeForm
 					ingredients={ingredientsDetails}
