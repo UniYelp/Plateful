@@ -5,7 +5,7 @@ import { ingredientCategoriesMap } from "@/pages/dashboard/ingredients";
 export const addIngredientFormDefaultValues: AddIngredientFormValues = {
 	name: "",
 	description: "",
-	amount: 0,
+	amount: 1,
 	unit: ingredientUnits[0],
 	category: ingredientCategoriesMap[0],
 	expiryDate: "",

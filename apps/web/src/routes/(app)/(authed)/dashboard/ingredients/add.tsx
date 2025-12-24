@@ -1,4 +1,4 @@
-import { useForm } from "@tanstack/react-form";
+import type { StandardSchemaV1Issue } from "@tanstack/react-form";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { AlertCircle, ArrowLeft, Package } from "lucide-react";
@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/select";
 import { TextArea } from "@/components/ui/textarea";
 import { addIngredientFormDefaultValues } from "@/features/ingredients/forms/constants";
-import { AddIngredientFormSchema } from "@/features/ingredients/forms/schemas";
+import { AddIngredientFormSchema, INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH } from "@/features/ingredients/forms/schemas";
+import { useAppForm } from "@/lib/form";
 import type { IngredientsCategoriesMap } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(
@@ -40,9 +41,21 @@ function RouteComponent() {
 	return <AddIngredientPage />;
 }
 
+const mapErrors = (errors: (string | StandardSchemaV1Issue | undefined)[]) =>
+	errors
+		.map((err) => {
+			if (typeof err === "string") {
+				return err;
+			} else if (err && "message" in err) {
+				return err.message;
+			}
+			return "";
+		})
+		.join(", ");
+
 function AddIngredientPage() {
 	const router = useRouter();
-	const form = useForm({
+	const form = useAppForm({
 		defaultValues: addIngredientFormDefaultValues,
 		validators: {
 			onChange: AddIngredientFormSchema,
@@ -174,178 +187,186 @@ function AddIngredientPage() {
 							}}
 							className="space-y-6"
 						>
-							{/* Title */}
-							<form.Field name="name">
-								{(field) => (
-									<div className="space-y-2">
-										<Label htmlFor="title">Title *</Label>
-										<Input
-											placeholder="e.g., Fresh Basil"
-											value={field.state.value}
-											onChange={(e) => field.handleChange(e.target.value)}
-											className={
-												!field.state.meta.isValid ? "border-destructive" : ""
-											}
-										/>
-										{!field.state.meta.isValid && (
-											<p className="text-destructive text-sm">
-												{field.state.meta.errors.join(", ")}
-											</p>
-										)}
-									</div>
-								)}
-							</form.Field>
-
-							{/* Description */}
-							<form.Field name="description">
-								{(field) => (
-									<div className="space-y-2">
-										<Label htmlFor="description">Description</Label>
-										<TextArea
-											placeholder="e.g., Organic fresh basil leaves from local farm"
-											value={field.state.value}
-											onChange={(e) => field.handleChange(e.target.value)}
-											rows={3}
-										/>
-									</div>
-								)}
-							</form.Field>
-							{/* Amount and Category */}
-							<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-								<form.Field name="amount">
+							<form.AppForm>
+								{/* Title */}
+								<form.Field name="name">
 									{(field) => (
 										<div className="space-y-2">
-											<Label htmlFor="amount">Amount *</Label>
+											<Label htmlFor="title">Title *</Label>
 											<Input
-												placeholder="e.g., 50, 1, 0.5"
+												placeholder="e.g., Fresh Basil"
 												value={field.state.value}
-												type="number"
-												onChange={(e) =>
-													field.handleChange(e.target.valueAsNumber)
-												}
+												onChange={(e) => field.handleChange(e.target.value)}
 												className={
 													!field.state.meta.isValid ? "border-destructive" : ""
 												}
 											/>
 											{!field.state.meta.isValid && (
 												<p className="text-destructive text-sm">
-													{field.state.meta.errors[0]?.message}
-												</p>
-											)}
-										</div>
-									)}
-								</form.Field>
-								<form.Field name="unit">
-									{(field) => (
-										<div className="space-y-2">
-											<Label htmlFor="unit">Unit *</Label>
-											<Select
-												value={field.state.value}
-												onValueChange={(value) =>
-													field.handleChange(value as IngredientUnit)
-												}
-											>
-												<SelectTrigger
-													className={
-														!field.state.meta.isValid
-															? "border-destructive"
-															: ""
-													}
-												>
-													<SelectValue placeholder="Select Unit" />
-												</SelectTrigger>
-												<SelectContent>
-													{ingredientUnits.map((unit) => (
-														<SelectItem key={unit} value={unit}>
-															{unit}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-											{!field.state.meta.isValid && (
-												<p className="text-destructive text-sm">
-													{field.state.meta.errors[0]?.message}
+													{mapErrors(field.state.meta.errors)}
 												</p>
 											)}
 										</div>
 									)}
 								</form.Field>
 
-								<form.Field name="category">
+								{/* Description */}
+								<form.Field name="description">
 									{(field) => (
 										<div className="space-y-2">
-											<Label htmlFor="category">Category *</Label>
-											<Select
+											<Label htmlFor="description">Description</Label>
+											<TextArea
+												placeholder="e.g., Organic fresh basil leaves from local farm"
 												value={field.state.value}
-												onValueChange={(value) =>
-													field.handleChange(value as IngredientsCategoriesMap)
-												}
-											>
-												<SelectTrigger
-													className={
-														!field.state.meta.isValid
-															? "border-destructive"
-															: ""
-													}
-												>
-													<SelectValue placeholder="Select category" />
-												</SelectTrigger>
-												<SelectContent>
-													{ingredientsCategories.map((category) => (
-														<SelectItem
-															key={category.value}
-															value={category.value}
-														>
-															{category.label}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
+												onChange={(e) => field.handleChange(e.target.value)}
+												rows={3}
+												maxLength={INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH}
+											/>
 											{!field.state.meta.isValid && (
 												<p className="text-destructive text-sm">
-													{field.state.meta.errors.join(", ")}
+													{mapErrors(field.state.meta.errors)}
 												</p>
 											)}
 										</div>
 									)}
 								</form.Field>
-							</div>
-
-							{/* Expiry Date */}
-							<form.Field name="expiryDate">
-								{(field) => (
-									<div className="space-y-2">
-										<Label htmlFor="expiryDate">Expiry Date *</Label>
-										<Input
-											type="date"
-											value={field.state.value}
-											onChange={(e) => field.handleChange(e.target.value)}
-											className={
-												!field.state.meta.isValid ? "border-destructive" : ""
-											}
-										/>
-										{!field.state.meta.isValid && (
-											<p className="text-destructive text-sm">
-												{field.state.meta.errors.join(", ")}
-											</p>
+								{/* Amount and Category */}
+								<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+									<form.AppField name="amount">
+										{(field) => (
+											<div className="space-y-2">
+												<Label htmlFor="amount">Amount *</Label>
+												<Input
+													placeholder="e.g., 50, 1, 0.5"
+													value={field.state.value}
+													type="number"
+													onChange={(e) =>
+														field.handleChange(e.target.valueAsNumber)
+													}
+													className={
+														!field.state.meta.isValid
+															? "border-destructive"
+															: ""
+													}
+												/>
+												{!field.state.meta.isValid && (
+													<p className="text-destructive text-sm">
+														{mapErrors(field.state.meta.errors)}
+													</p>
+												)}
+											</div>
 										)}
-									</div>
-								)}
-							</form.Field>
+									</form.AppField>
+									<form.AppField name="unit">
+										{(field) => (
+											<div className="space-y-2">
+												<Label htmlFor="unit">Unit *</Label>
+												<Select
+													value={field.state.value}
+													onValueChange={(value) =>
+														field.handleChange(value as IngredientUnit)
+													}
+												>
+													<SelectTrigger
+														className={
+															!field.state.meta.isValid
+																? "border-destructive"
+																: ""
+														}
+													>
+														<SelectValue placeholder="Select Unit" />
+													</SelectTrigger>
+													<SelectContent>
+														{ingredientUnits.map((unit) => (
+															<SelectItem key={unit} value={unit}>
+																{unit}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+												{!field.state.meta.isValid && (
+													<p className="text-destructive text-sm">
+														{mapErrors(field.state.meta.errors)}
+													</p>
+												)}
+											</div>
+										)}
+									</form.AppField>
 
-							{/* Submit Buttons */}
-							<div className="flex gap-3 pt-4">
-								<Button
-									type="submit"
-									disabled={form.state.isSubmitting || !form.state.isValid}
-									className="flex-1"
-								>
-									{form.state.isSubmitting ? "Adding..." : "Add Ingredient"}
-								</Button>
-								<Button type="button" variant="outline" asChild>
-									<Link to="/dashboard/ingredients">Cancel</Link>
-								</Button>
-							</div>
+									<form.AppField name="category">
+										{(field) => (
+											<div className="space-y-2">
+												<Label htmlFor="category">Category *</Label>
+												<Select
+													value={field.state.value}
+													onValueChange={(value) =>
+														field.handleChange(
+															value as IngredientsCategoriesMap,
+														)
+													}
+												>
+													<SelectTrigger
+														className={
+															!field.state.meta.isValid
+																? "border-destructive"
+																: ""
+														}
+													>
+														<SelectValue placeholder="Select category" />
+													</SelectTrigger>
+													<SelectContent>
+														{ingredientsCategories.map((category) => (
+															<SelectItem
+																key={category.value}
+																value={category.value}
+															>
+																{category.label}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+												{!field.state.meta.isValid && (
+													<p className="text-destructive text-sm">
+														{mapErrors(field.state.meta.errors)}
+													</p>
+												)}
+											</div>
+										)}
+									</form.AppField>
+								</div>
+
+								{/* Expiry Date */}
+								<form.AppField name="expiryDate">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor="expiryDate">Expiry Date</Label>
+											<Input
+												type="date"
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												className={
+													!field.state.meta.isValid ? "border-destructive" : ""
+												}
+											/>
+											{!field.state.meta.isValid && (
+												<p className="text-destructive text-sm">
+													{mapErrors(field.state.meta.errors)}
+												</p>
+											)}
+										</div>
+									)}
+								</form.AppField>
+
+								{/* Submit Buttons */}
+								<div className="flex gap-3 pt-4">
+									<form.SubmitButton className="flex-1">
+										{form.state.isSubmitting ? "Adding..." : "Add Ingredient"}
+									</form.SubmitButton>
+									<Button type="button" variant="outline" asChild>
+										<Link to="/dashboard/ingredients">Cancel</Link>
+									</Button>
+								</div>
+							</form.AppForm>
 						</form>
 					</CardContent>
 				</Card>
