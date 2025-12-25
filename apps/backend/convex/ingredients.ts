@@ -44,14 +44,14 @@ export const expiringSoonIngredients = householdQuery({
 // #endregion
 
 // #region Mutations
-export const addIngredient = householdMutation({
+export const add = householdMutation({
 	args: ingredientFields,
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
 
 		const now = Date.now();
 
-		ctx.db.insert("ingredients", {
+		const ingredientId = await ctx.db.insert("ingredients", {
 			name: args.name,
 			description: args.description,
 			images: args.images,
@@ -63,6 +63,8 @@ export const addIngredient = householdMutation({
 			updatedBy: userId,
 			updatedAt: now,
 		});
+
+		return ingredientId;
 	},
 });
 

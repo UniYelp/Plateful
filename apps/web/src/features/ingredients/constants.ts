@@ -21,9 +21,9 @@ export const categories = [
 
 export type Category = (typeof categories)[number];
 
-type IngredientCategory = Exclude<Category, "all"> | "other";
+export type IngredientCategory = Exclude<Category, "all"> | "other";
 
-export const ingredientsCategories = [
+export const ingredientsCategoriesOptions = [
 	{ value: "vegetables", label: "Vegetables" },
 	{ value: "fruits", label: "Fruits" },
 	{ value: "meat", label: "Meat & Poultry" },

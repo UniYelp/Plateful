@@ -1,5 +1,5 @@
 import type { StandardSchemaV1Issue } from "@tanstack/react-form";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { AlertCircle, ArrowLeft, Package } from "lucide-react";
 import { useState } from "react";
@@ -7,7 +7,10 @@ import { useState } from "react";
 import { type IngredientUnit, ingredientUnits } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
-import { ingredientsCategories } from "&/ingredients/constants";
+import {
+	type IngredientCategory,
+	ingredientsCategoriesOptions,
+} from "&/ingredients/constants";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -26,10 +29,13 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { TextArea } from "@/components/ui/textarea";
-import { addIngredientFormDefaultValues } from "@/features/ingredients/forms/constants";
-import { AddIngredientFormSchema, INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH } from "@/features/ingredients/forms/schemas";
+import { submitFormHandler } from "@/features/forms/utils/submission";
+import {
+	addIngredientFormDefaultValues,
+	INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH,
+} from "@/features/ingredients/forms/constants";
+import { IngredientFormSchema } from "@/features/ingredients/forms/schemas";
 import { useAppForm } from "@/lib/form";
-import type { IngredientsCategoriesMap } from "@/pages/dashboard/ingredients";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/ingredients/add",
@@ -41,7 +47,9 @@ function RouteComponent() {
 	return <AddIngredientPage />;
 }
 
-const mapErrors = (errors: (string | StandardSchemaV1Issue | undefined)[]) =>
+const mapErrors = (
+	errors: (string | StandardSchemaV1Issue | undefined | void)[],
+) =>
 	errors
 		.map((err) => {
 			if (typeof err === "string") {
@@ -54,22 +62,12 @@ const mapErrors = (errors: (string | StandardSchemaV1Issue | undefined)[]) =>
 		.join(", ");
 
 function AddIngredientPage() {
-	const router = useRouter();
+	const navigate = Route.useNavigate();
+
 	const form = useAppForm({
 		defaultValues: addIngredientFormDefaultValues,
 		validators: {
-			onChange: AddIngredientFormSchema,
-			onSubmit: ({ value }) => {
-				if (!value.name) {
-					return {
-						fields: {
-							name: "Name must be set.",
-						},
-					};
-				}
-
-				// TODO create similar ingredient warning
-			},
+			onChange: IngredientFormSchema,
 		},
 		onSubmit: async ({ value }) => {
 			try {
@@ -81,8 +79,7 @@ function AddIngredientPage() {
 					? new Date(value.expiryDate).getTime()
 					: undefined;
 
-				// Simulate API call
-				const submitting = addIngredient({
+				const _ingredientId = await addIngredient({
 					name: value.name,
 					description: value.description,
 					quantities: [
@@ -92,24 +89,23 @@ function AddIngredientPage() {
 							amount: value.amount,
 						},
 					],
-					// images: value.image,
 					householdId: householdId,
 					category: value.category,
 					tags: [],
 					images: [],
 				});
-				await submitting;
 
-				// Redirect to ingredients page
-				router.navigate({ to: "/dashboard/ingredients" });
+				// TODO: navigate to the newly created ingredient detail page
+				navigate({ to: "/dashboard/ingredients" });
 			} catch (error) {
+				// TODO: handle error properly
 				console.error("Failed to add ingredient:", error);
 			}
 		},
 	});
 
 	const [showSimilarWarning, setShowSimilarWarning] = useState(false);
-	const addIngredient = useMutation(api.ingredients.addIngredient);
+	const addIngredient = useMutation(api.ingredients.add);
 
 	const householdId = useCurrentHousehold()?._id;
 
@@ -180,16 +176,18 @@ function AddIngredientPage() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<form
-							onSubmit={(e) => {
-								e.preventDefault();
-								form.handleSubmit();
-							}}
-							className="space-y-6"
-						>
+						<form onSubmit={submitFormHandler(form)} className="space-y-6">
 							<form.AppForm>
 								{/* Title */}
-								<form.Field name="name">
+								<form.Field
+									name="name"
+									validators={{
+										onChangeAsyncDebounceMs: 800,
+										onChangeAsync: async () => {
+											// TODO create similar ingredient warning
+										},
+									}}
+								>
 									{(field) => (
 										<div className="space-y-2">
 											<Label htmlFor="title">Title *</Label>
@@ -300,9 +298,7 @@ function AddIngredientPage() {
 												<Select
 													value={field.state.value}
 													onValueChange={(value) =>
-														field.handleChange(
-															value as IngredientsCategoriesMap,
-														)
+														field.handleChange(value as IngredientCategory)
 													}
 												>
 													<SelectTrigger
@@ -315,7 +311,7 @@ function AddIngredientPage() {
 														<SelectValue placeholder="Select category" />
 													</SelectTrigger>
 													<SelectContent>
-														{ingredientsCategories.map((category) => (
+														{ingredientsCategoriesOptions.map((category) => (
 															<SelectItem
 																key={category.value}
 																value={category.value}

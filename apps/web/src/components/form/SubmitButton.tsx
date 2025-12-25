@@ -3,8 +3,12 @@ import type { PropsWithChildren } from "react";
 import { useFormContext } from "@/lib/form/context";
 import { Button } from "../ui/button";
 
-export function SubmitButton(props: PropsWithChildren<unknown> & { className?: string }) {
-	const { children = "Submit", className } = props;
+type Props = {
+	className?: string;
+};
+
+export function SubmitButton(props: PropsWithChildren<Props>) {
+	const { className, children = "Submit" } = props;
 
 	const form = useFormContext();
 
