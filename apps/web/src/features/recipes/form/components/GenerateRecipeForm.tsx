@@ -21,7 +21,7 @@ import type { IngredientDetails } from "../types";
 
 type Props = {
 	ingredients: IngredientDetails[];
-	onSubmit: (value: RecipeGenForm) => void;
+	onSubmit: (value: RecipeGenForm) => Promise<void>;
 };
 export const GenerateRecipeForm = (props: Props) => {
 	const { ingredients, onSubmit } = props;
@@ -32,8 +32,8 @@ export const GenerateRecipeForm = (props: Props) => {
 			onChange: RecipeGenFormSchema,
 		},
 		onSubmitInvalid: focusInvalid,
-		onSubmit: ({ value }) => {
-			onSubmit(value);
+		onSubmit: async ({ value }) => {
+			await onSubmit(value);
 		},
 	});
 

@@ -2,7 +2,8 @@ import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { action } from "./_generated/server";
 import { clerk } from "./configs/clerk.config";
-import { type MemberRole, vv } from "./schema";
+import { vv } from "./schema";
+import type { MemberRole } from "./values";
 
 // TODO: optimize
 export const getHouseholdMembersData = action({

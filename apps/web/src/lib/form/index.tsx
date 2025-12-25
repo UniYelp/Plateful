@@ -1,6 +1,6 @@
 import { createFormHook } from "@tanstack/react-form";
 
-import { SubmitButton } from "&/forms/components";
+import { SubmitButton } from "./components";
 import { fieldContext, formContext } from "./context";
 
 /**

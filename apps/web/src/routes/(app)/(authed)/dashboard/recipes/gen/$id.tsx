@@ -1,14 +1,25 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { History } from "lucide-react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
-import { generatingRecipeLoader } from "@/features/recipes/components/loaders";
+import { isGeneratingRecipe } from "&/recipes/utils/status";
+import { generatingRecipeLoader } from "@/features/recipes/components/loaders/recipe-gen";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/recipes/gen/$id",
 )({
+	staticData: {
+		links: [
+			{
+				to: "/dashboard/recipes/gen",
+				label: "History",
+				icon: <History className="mr-2 h-4 w-4" />,
+			},
+		],
+	},
 	component: RouteComponent,
 });
 
@@ -31,18 +42,7 @@ function RecipeGenerationPage() {
 		return "Loading...";
 	}
 
-	const isGenerating =
-		recipeGen.state.status === "pending" ||
-		recipeGen.state.status === "generating";
+	if (isGeneratingRecipe(recipeGen)) return generatingRecipeLoader;
 
-	if (!isGenerating) return generatingRecipeLoader;
-
-	// TODO: design
-
-	return (
-		<div>
-			Status: {recipeGen.state.status} |{" "}
-			{recipeGen.state.status === "failed" && recipeGen.state.reason}
-		</div>
-	);
+	return <Navigate to="/dashboard/recipes/gen" />;
 }
