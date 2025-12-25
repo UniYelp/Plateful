@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { api } from "@backend/api";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { Button } from "@/components/ui/button";
 
@@ -22,7 +23,7 @@ function RecipeGenerationsPage() {
 		household ? { householdId: household._id } : "skip",
 	);
 
-	if (!recipeGens) return "Loading...";
+	if (!recipeGens) return recipesLoader;
 
 	// TODO: add a no-gens view
 
@@ -38,7 +39,7 @@ function RecipeGenerationsPage() {
 				<div>
 					<h1 className="font-bold text-3xl">Recipe Generation History</h1>
 					<p className="text-muted-foreground">
-						View your recipe generations and results
+						View your latest recipe generations' results
 					</p>
 				</div>
 			</div>
