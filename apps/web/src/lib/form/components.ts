@@ -1,5 +1,5 @@
 import { lazy } from "react";
 
 export const SubmitButton = lazy(async () => ({
-	default: (await import("@/components/form/SubmitButton")).SubmitButton,
+	default: (await import("@/components/forms/SubmitButton")).SubmitButton,
 }));

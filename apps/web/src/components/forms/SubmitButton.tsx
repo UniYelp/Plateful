@@ -2,9 +2,14 @@ import type { PropsWithChildren } from "react";
 
 import { useFormContext } from "@/lib/form/context";
 import { Button } from "../ui/button";
+import { Spinner } from "../ui/spinner";
 
-export function SubmitButton(props: PropsWithChildren<unknown>) {
-	const { children = "Submit" } = props;
+type Props = {
+	icon?: React.JSX.Element;
+};
+
+export function SubmitButton(props: PropsWithChildren<Props>) {
+	const { icon, children = "Submit" } = props;
 
 	const form = useFormContext();
 
@@ -21,7 +26,8 @@ export function SubmitButton(props: PropsWithChildren<unknown>) {
 					type="submit"
 					disabled={!canSubmit || isPristine || isSubmitting}
 				>
-					{isSubmitting ? "..." : children}
+					{isSubmitting ? <Spinner /> : icon}
+					{children}
 				</Button>
 			)}
 		</form.Subscribe>

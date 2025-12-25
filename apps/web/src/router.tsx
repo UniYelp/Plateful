@@ -35,7 +35,6 @@ export function getRouter() {
 	const convexClient = new ConvexReactClient(ENV.VITE_CONVEX_URL);
 
 	/**
-	 * TODO: fix
 	 * {@link https://github.com/get-convex/convex-backend/tree/main/npm-packages/%40convex-dev/react-query}
 	 */
 	const convexQueryClient = new ConvexQueryClient(convexClient);
@@ -103,7 +102,9 @@ declare module "@tanstack/react-router" {
 
 	interface StaticDataRouteOption {
 		// backLink: //TODO: add backLink logic
+        // TODO: add links merging logic
 		links?: (LinkComponentProps & {
+			icon?: React.JSX.Element;
 			label: string;
 		})[];
 		loader?: React.ReactElement;

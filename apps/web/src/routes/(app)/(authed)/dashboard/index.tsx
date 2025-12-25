@@ -15,6 +15,7 @@ import {
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
+import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { useCurrentHousehold } from "@/features/households/hooks/useCurrentHouseholds";
 import {
 	mockRecentActivity,
 	mockStats,
