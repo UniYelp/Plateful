@@ -7,7 +7,7 @@ import { execSync } from "node:child_process";
 import { appConfig } from "../src/configs/app.config.ts";
 
 /**
- * {@link https://clerk.com/docs/guides/development/webhooks/syncing#set-up-ngrok}
+ * {@link [setup](../README.md)}
  */
 const ngrokUrl = process.env.NGROK_URL;
 
