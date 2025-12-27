@@ -195,6 +195,9 @@ importers:
       '@plateful/units':
         specifier: workspace:*
         version: link:../../packages/units
+      '@t3-oss/env-core':
+        specifier: ^0.13.10
+        version: 0.13.10(arktype@2.1.28)(typescript@5.9.3)(valibot@1.1.0(typescript@5.9.3))(zod@4.2.1)
       convex:
         specifier: 'catalog:'
         version: 1.31.2(@clerk/clerk-react@5.56.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react@19.2.1)
@@ -2802,6 +2805,23 @@ packages:
 
   '@stricli/core@1.2.4':
     resolution: {integrity: sha512-ujvJDQpC2FINWvlTjkFz+Qzw/vsB8p/LyZEW18idisqIyjXR6yb+sF3WTUPksl+5ZON5r4fHQnCqQWnJxeqSzg==}
+
+  '@t3-oss/env-core@0.13.10':
+    resolution: {integrity: sha512-NNFfdlJ+HmPHkLi2HKy7nwuat9SIYOxei9K10lO2YlcSObDILY7mHZNSHsieIM3A0/5OOzw/P/b+yLvPdaG52g==}
+    peerDependencies:
+      arktype: ^2.1.0
+      typescript: '>=5.0.0'
+      valibot: ^1.0.0-beta.7 || ^1.0.0
+      zod: ^3.24.0 || ^4.0.0
+    peerDependenciesMeta:
+      arktype:
+        optional: true
+      typescript:
+        optional: true
+      valibot:
+        optional: true
+      zod:
+        optional: true
 
   '@t3-oss/env-core@0.13.8':
     resolution: {integrity: sha512-L1inmpzLQyYu4+Q1DyrXsGJYCXbtXjC4cICw1uAKv0ppYPQv656lhZPU91Qd1VS6SO/bou1/q5ufVzBGbNsUpw==}
@@ -8372,6 +8392,13 @@ snapshots:
       '@stricli/core': 1.2.4
 
   '@stricli/core@1.2.4': {}
+
+  '@t3-oss/env-core@0.13.10(arktype@2.1.28)(typescript@5.9.3)(valibot@1.1.0(typescript@5.9.3))(zod@4.2.1)':
+    optionalDependencies:
+      arktype: 2.1.28
+      typescript: 5.9.3
+      valibot: 1.1.0(typescript@5.9.3)
+      zod: 4.2.1
 
   '@t3-oss/env-core@0.13.8(arktype@2.1.28)(typescript@5.9.3)(valibot@1.1.0(typescript@5.9.3))(zod@4.2.1)':
     optionalDependencies:

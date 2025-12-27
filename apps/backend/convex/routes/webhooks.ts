@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { internal } from "../_generated/api";
 import type { ActionCtx } from "../_generated/server";
+import { ENV } from "../configs/env.config";
 
 export const webhooksRoute: HonoWithConvex<ActionCtx> = new Hono();
 
@@ -36,7 +37,7 @@ webhooksRoute.post(
 			"svix-signature": headers["svix-signature"],
 		} satisfies WebhookRequiredHeaders;
 
-		const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!);
+		const wh = new Webhook(ENV.CLERK_WEBHOOK_SECRET);
 		const event = await verifyWebhookEvent(wh, payloadString, svixHeaders);
 
 		if (!event) {

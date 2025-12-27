@@ -6,6 +6,16 @@
 
 ## Setup
 
+### ngrok
+
+Follow the guides in [ngrok](../../notes/Architecture/Services/ngrok.md)
+
+### AI
+
+#### Gemini
+
+- [Create your own API key here](https://aistudio.google.com/api-keys)
+
 ### Redis
 
 #### Via Upstash

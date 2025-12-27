@@ -12,7 +12,7 @@
         },
         "build": {
             "dependsOn": [
-                "^build",
+                "^build"
                 // "test"
             ],
             "inputs": [
@@ -31,11 +31,6 @@
                 "^build"
             ]
         },
-        "dev:p": {
-            "cache": false,
-            "persistent": true
-        },
-        "db:gen": {},
         "test": {
             "with": [
                 "test:eval",
@@ -53,32 +48,6 @@
         "test:eval": {
             "dependsOn": [
                 "_transit"
-            ]
-        },
-        "shadcn:add": {
-            "cache": false,
-            "interactive": true
-        },
-        "@plateful/web#dev": {
-            "with": [
-                "@plateful/backend#dev",
-                "@plateful/api#dev"
-            ],
-            "dependsOn": [
-                "^build"
-            ],
-            "inputs": [
-                "$TURBO_DEFAULT$",
-                "../backend/convex/**/*",
-                "../api/src/**/*"
-            ],
-            "cache": false,
-            "persistent": true
-        },
-        "@plateful/db-sys#db:gen": {
-            "inputs": [
-                "prisma/**/*",
-                "prisma.config.ts"
             ]
         }
     }
