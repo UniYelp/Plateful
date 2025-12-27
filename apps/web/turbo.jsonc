@@ -1,0 +1,22 @@
+{
+    "extends": [
+        "//"
+    ],
+    "tasks": {
+        "dev": {
+            "with": [
+                "@plateful/backend#dev",
+                "@plateful/api#dev"
+            ],
+            "inputs": [
+                "$TURBO_EXTENDS$",
+                "../backend/convex",
+                "../api/src"
+            ]
+        },
+        "shadcn:add": {
+            "cache": false,
+            "interactive": true
+        }
+    }
+}

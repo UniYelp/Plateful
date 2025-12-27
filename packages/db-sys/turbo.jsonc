@@ -1,0 +1,14 @@
+{
+    "extends": [
+        "//"
+    ],
+    "tasks": {
+        "db:gen": {
+            "inputs": [
+                "prisma/**/*",
+                "prisma.config.ts",
+                "package.json"
+            ]
+        }
+    }
+}

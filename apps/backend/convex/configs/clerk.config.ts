@@ -1,5 +1,7 @@
 import { createClerkClient } from "@clerk/backend";
 
+import { ENV } from "./env.config";
+
 export const clerk = createClerkClient({
-    secretKey: process.env.CLERK_SECRET_KEY,
+	secretKey: ENV.CLERK_SECRET_KEY,
 });

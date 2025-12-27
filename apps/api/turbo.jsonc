@@ -1,0 +1,20 @@
+{
+    "extends": [
+        "//"
+    ],
+    "tasks": {
+        "dev": {
+            "with": [
+                "@plateful/api#dev:proxy"
+            ]
+        },
+        "dev:proxy": {
+            "cache": false,
+            "persistent": true,
+            "interactive": true,
+            "dependsOn": [
+                "^build"
+            ]
+        }
+    }
+}
