@@ -1,16 +1,12 @@
-import type { StandardSchemaV1Issue } from "@tanstack/react-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { AlertCircle, ArrowLeft, Package } from "lucide-react";
 import { useState } from "react";
 
-import { type IngredientUnit, ingredientUnits } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
-import {
-	type IngredientCategory,
-	ingredientsCategoriesOptions,
-} from "&/ingredients/constants";
+import { IngredientForm } from "&/ingredients/forms/IngredientForm";
+import type { IngredientFormValues } from "&/ingredients/forms/schemas";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -19,23 +15,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import { TextArea } from "@/components/ui/textarea";
-import { submitFormHandler } from "@/features/forms/utils/submission";
-import {
-	addIngredientFormDefaultValues,
-	INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH,
-} from "@/features/ingredients/forms/constants";
-import { IngredientFormSchema } from "@/features/ingredients/forms/schemas";
-import { useAppForm } from "@/lib/form";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/ingredients/add",
@@ -47,67 +26,47 @@ function RouteComponent() {
 	return <AddIngredientPage />;
 }
 
-const mapErrors = (
-	errors: (string | StandardSchemaV1Issue | undefined | void)[],
-) =>
-	errors
-		.map((err) => {
-			if (typeof err === "string") {
-				return err;
-			} else if (err && "message" in err) {
-				return err.message;
-			}
-			return "";
-		})
-		.join(", ");
-
 function AddIngredientPage() {
 	const navigate = Route.useNavigate();
-
-	const form = useAppForm({
-		defaultValues: addIngredientFormDefaultValues,
-		validators: {
-			onChange: IngredientFormSchema,
-		},
-		onSubmit: async ({ value }) => {
-			try {
-				if (!householdId) {
-					throw new Error("No household found for the user.");
-				}
-
-				const expiryDate = value.expiryDate
-					? new Date(value.expiryDate).getTime()
-					: undefined;
-
-				const _ingredientId = await addIngredient({
-					name: value.name,
-					description: value.description,
-					quantities: [
-						{
-							unit: value.unit,
-							expiresAt: expiryDate,
-							amount: value.amount,
-						},
-					],
-					householdId: householdId,
-					category: value.category,
-					tags: [],
-					images: [],
-				});
-
-				// TODO: navigate to the newly created ingredient detail page
-				navigate({ to: "/dashboard/ingredients" });
-			} catch (error) {
-				// TODO: handle error properly
-				console.error("Failed to add ingredient:", error);
-			}
-		},
-	});
 
 	const [showSimilarWarning, setShowSimilarWarning] = useState(false);
 	const addIngredient = useMutation(api.ingredients.add);
 
 	const householdId = useCurrentHousehold()?._id;
+
+	const onSubmit = async (value: IngredientFormValues) => {
+		try {
+			if (!householdId) {
+				throw new Error("No household found for the user.");
+			}
+
+			const expiryDate = value.expiryDate
+				? new Date(value.expiryDate).getTime()
+				: undefined;
+
+			const _ingredientId = await addIngredient({
+				name: value.name,
+				description: value.description,
+				quantities: [
+					{
+						unit: value.unit,
+						expiresAt: expiryDate,
+						amount: value.amount,
+					},
+				],
+				householdId: householdId,
+				category: value.category,
+				tags: [],
+				images: [],
+			});
+
+			// TODO: navigate to the newly created ingredient detail page
+			navigate({ to: "/dashboard/ingredients" });
+		} catch (error) {
+			// TODO: handle error properly
+			console.error("Failed to add ingredient:", error);
+		}
+	};
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -176,194 +135,7 @@ function AddIngredientPage() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<form onSubmit={submitFormHandler(form)} className="space-y-6">
-							<form.AppForm>
-								{/* Title */}
-								<form.Field
-									name="name"
-									validators={{
-										onChangeAsyncDebounceMs: 800,
-										onChangeAsync: async () => {
-											// TODO create similar ingredient warning
-										},
-									}}
-								>
-									{(field) => (
-										<div className="space-y-2">
-											<Label htmlFor="title">Title *</Label>
-											<Input
-												placeholder="e.g., Fresh Basil"
-												value={field.state.value}
-												onChange={(e) => field.handleChange(e.target.value)}
-												className={
-													!field.state.meta.isValid ? "border-destructive" : ""
-												}
-											/>
-											{!field.state.meta.isValid && (
-												<p className="text-destructive text-sm">
-													{mapErrors(field.state.meta.errors)}
-												</p>
-											)}
-										</div>
-									)}
-								</form.Field>
-
-								{/* Description */}
-								<form.Field name="description">
-									{(field) => (
-										<div className="space-y-2">
-											<Label htmlFor="description">Description</Label>
-											<TextArea
-												placeholder="e.g., Organic fresh basil leaves from local farm"
-												value={field.state.value}
-												onChange={(e) => field.handleChange(e.target.value)}
-												rows={3}
-												maxLength={INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH}
-											/>
-											{!field.state.meta.isValid && (
-												<p className="text-destructive text-sm">
-													{mapErrors(field.state.meta.errors)}
-												</p>
-											)}
-										</div>
-									)}
-								</form.Field>
-								{/* Amount and Category */}
-								<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-									<form.AppField name="amount">
-										{(field) => (
-											<div className="space-y-2">
-												<Label htmlFor="amount">Amount *</Label>
-												<Input
-													placeholder="e.g., 50, 1, 0.5"
-													value={field.state.value}
-													type="number"
-													onChange={(e) =>
-														field.handleChange(e.target.valueAsNumber)
-													}
-													className={
-														!field.state.meta.isValid
-															? "border-destructive"
-															: ""
-													}
-												/>
-												{!field.state.meta.isValid && (
-													<p className="text-destructive text-sm">
-														{mapErrors(field.state.meta.errors)}
-													</p>
-												)}
-											</div>
-										)}
-									</form.AppField>
-									<form.AppField name="unit">
-										{(field) => (
-											<div className="space-y-2">
-												<Label htmlFor="unit">Unit *</Label>
-												<Select
-													value={field.state.value}
-													onValueChange={(value) =>
-														field.handleChange(value as IngredientUnit)
-													}
-												>
-													<SelectTrigger
-														className={
-															!field.state.meta.isValid
-																? "border-destructive"
-																: ""
-														}
-													>
-														<SelectValue placeholder="Select Unit" />
-													</SelectTrigger>
-													<SelectContent>
-														{ingredientUnits.map((unit) => (
-															<SelectItem key={unit} value={unit}>
-																{unit}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-												{!field.state.meta.isValid && (
-													<p className="text-destructive text-sm">
-														{mapErrors(field.state.meta.errors)}
-													</p>
-												)}
-											</div>
-										)}
-									</form.AppField>
-
-									<form.AppField name="category">
-										{(field) => (
-											<div className="space-y-2">
-												<Label htmlFor="category">Category *</Label>
-												<Select
-													value={field.state.value}
-													onValueChange={(value) =>
-														field.handleChange(value as IngredientCategory)
-													}
-												>
-													<SelectTrigger
-														className={
-															!field.state.meta.isValid
-																? "border-destructive"
-																: ""
-														}
-													>
-														<SelectValue placeholder="Select category" />
-													</SelectTrigger>
-													<SelectContent>
-														{ingredientsCategoriesOptions.map((category) => (
-															<SelectItem
-																key={category.value}
-																value={category.value}
-															>
-																{category.label}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-												{!field.state.meta.isValid && (
-													<p className="text-destructive text-sm">
-														{mapErrors(field.state.meta.errors)}
-													</p>
-												)}
-											</div>
-										)}
-									</form.AppField>
-								</div>
-
-								{/* Expiry Date */}
-								<form.AppField name="expiryDate">
-									{(field) => (
-										<div className="space-y-2">
-											<Label htmlFor="expiryDate">Expiry Date</Label>
-											<Input
-												type="date"
-												value={field.state.value}
-												onChange={(e) => field.handleChange(e.target.value)}
-												className={
-													!field.state.meta.isValid ? "border-destructive" : ""
-												}
-											/>
-											{!field.state.meta.isValid && (
-												<p className="text-destructive text-sm">
-													{mapErrors(field.state.meta.errors)}
-												</p>
-											)}
-										</div>
-									)}
-								</form.AppField>
-
-								{/* Submit Buttons */}
-								<div className="flex gap-3 pt-4">
-									<form.SubmitButton className="flex-1">
-										{form.state.isSubmitting ? "Adding..." : "Add Ingredient"}
-									</form.SubmitButton>
-									<Button type="button" variant="outline" asChild>
-										<Link to="/dashboard/ingredients">Cancel</Link>
-									</Button>
-								</div>
-							</form.AppForm>
-						</form>
+						<IngredientForm onSubmit={onSubmit} />
 					</CardContent>
 				</Card>
 			</div>

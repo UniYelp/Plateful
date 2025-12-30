@@ -6,9 +6,6 @@ export const INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH = 200;
 
 export const addIngredientFormDefaultValues: IngredientFormValues = {
 	name: "",
-	description: "",
-	amount: 1,
-	unit: "",
+	amount: NaN,
 	category: "",
-	expiryDate: "",
 };

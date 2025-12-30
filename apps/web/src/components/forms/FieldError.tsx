@@ -1,5 +1,6 @@
 import type { StandardSchemaV1Issue } from "@tanstack/react-form";
 
+import { isInvalidTouched } from "&/forms/utils/validation";
 import { useFieldContext } from "@/lib/form/context";
 
 const mapErrors = (
@@ -19,7 +20,7 @@ const mapErrors = (
 export const FieldError = () => {
 	const field = useFieldContext();
 
-	if (field.state.meta.isValid) {
+	if (!isInvalidTouched(field)) {
 		return null;
 	}
 
