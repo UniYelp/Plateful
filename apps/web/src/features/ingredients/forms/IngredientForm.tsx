@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 import { IngredientSymbol, ingredientUnits } from "@plateful/ingredients";
 import { submitFormHandler } from "&/forms/utils/submission";
-import { isInvalidTouched } from "&/forms/utils/validation";
+import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
 import { ingredientsCategoriesOptions } from "&/ingredients/constants";
 import {
 	addIngredientFormDefaultValues,
@@ -37,6 +37,7 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 		validators: {
 			onChange: IngredientFormSchema,
 		},
+		onSubmitInvalid: focusInvalid,
 		onSubmit: async ({ value }) => await onSubmit(value),
 	});
 
