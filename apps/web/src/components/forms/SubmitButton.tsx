@@ -6,25 +6,23 @@ import { Spinner } from "../ui/spinner";
 
 type Props = {
 	icon?: React.JSX.Element;
+	className?: string;
 };
 
 export function SubmitButton(props: PropsWithChildren<Props>) {
-	const { icon, children = "Submit" } = props;
+	const { icon, className, children = "Submit" } = props;
 
 	const form = useFormContext();
 
 	return (
 		<form.Subscribe
-			selector={(state) => [
-				state.canSubmit,
-				state.isPristine,
-				state.isSubmitting,
-			]}
+			selector={(state) => [state.isPristine, state.isSubmitting]}
 		>
-			{([canSubmit, isPristine, isSubmitting]) => (
+			{([isPristine, isSubmitting]) => (
 				<Button
 					type="submit"
-					disabled={!canSubmit || isPristine || isSubmitting}
+					disabled={isPristine || isSubmitting}
+					className={className}
 				>
 					{isSubmitting ? <Spinner /> : icon}
 					{children}
