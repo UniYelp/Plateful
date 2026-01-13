@@ -15,7 +15,6 @@ import {
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
-import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +30,10 @@ import {
 } from "@/pages/dashboard/dashboard-page";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/")({
+	loader: async ({ context }) => {
+		const { household } = context;
+		return { household };
+	},
 	component: RouteComponent,
 });
 
@@ -41,18 +44,17 @@ function RouteComponent() {
 // TODO: skeletons
 
 function DashboardPage() {
+	const { household } = Route.useLoaderData();
+
 	const { user, isLoaded } = useUser();
 
-	const household = useCurrentHousehold();
-
-	const ingredientsCount = useQuery(
-		api.ingredients.ingredientsCount,
-		household ? { householdId: household._id } : "skip",
-	);
+	const ingredientsCount = useQuery(api.ingredients.ingredientsCount, {
+		householdId: household._id,
+	});
 
 	const expiringSoonIngredients = useQuery(
 		api.ingredients.expiringSoonIngredients,
-		household ? { householdId: household._id } : "skip",
+		{ householdId: household._id },
 	);
 
 	if (!isLoaded || !user) {

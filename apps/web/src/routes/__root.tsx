@@ -13,9 +13,14 @@ import { seo } from "@/utils/seo";
 import globalsCss from "@/styles/globals.css?url";
 import "@/styles/globals.css";
 
-export const Route = createRootRouteWithContext<{
+import type { useAuth } from "@clerk/clerk-react";
+
+type RouterContext = {
 	queryClient: QueryClient;
-}>()({
+	auth: ReturnType<typeof useAuth>;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
 	wrapInSuspense: true,
 	head: () => ({
 		meta: [

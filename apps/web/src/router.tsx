@@ -1,4 +1,4 @@
-import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/clerk-react";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import {
 	MutationCache,
@@ -57,25 +57,19 @@ export function getRouter() {
 
 	const router = createRouter({
 		routeTree,
-		context: { queryClient },
+		context: {
+			queryClient,
+			// biome-ignore lint/style/noNonNullAssertion: This will be set after we wrap the app in an AuthProvider
+			auth: undefined!,
+		},
 		scrollRestoration: true,
 		defaultPreload: "intent",
 		defaultStructuralSharing: true,
 		defaultPreloadStaleTime: 0,
 		Wrap: ({ children }) => (
-			<>
-				<ClerkProvider
-					publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}
-					signInFallbackRedirectUrl="/dashboard"
-					signInUrl="/dashboard"
-					signUpFallbackRedirectUrl="/dashboard"
-					signUpUrl="/dashboard"
-				>
-					<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
-						{children}
-					</ConvexProviderWithClerk>
-				</ClerkProvider>
-			</>
+			<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
+				{children}
+			</ConvexProviderWithClerk>
 		),
 		InnerWrap: ({ children }) => (
 			<>
@@ -102,7 +96,7 @@ declare module "@tanstack/react-router" {
 
 	interface StaticDataRouteOption {
 		// backLink: //TODO: add backLink logic
-        // TODO: add links merging logic
+		// TODO: add links merging logic
 		links?: (LinkComponentProps & {
 			icon?: React.JSX.Element;
 			label: string;

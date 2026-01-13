@@ -3,11 +3,13 @@ import {
 	customQuery,
 } from "convex-helpers/server/customFunctions";
 
+import { bool } from "@plateful/utils";
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
-import { forbidden } from "./errors";
+import { forbidden, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { type EntityShape, type UserStampId, vv } from "./schema";
+import { isSoftDeleted } from "./utils/soft_delete";
 import {
 	type AuthedMutationCtx,
 	type AuthedQueryCtx,
@@ -105,7 +107,41 @@ export const getUserHouseholds = authedQuery({
 			}),
 		);
 
-		return households.filter(Boolean);
+		return households.filter(bool);
+	},
+});
+export const currentUserHousehold = authedQuery({
+	args: {},
+	handler: async (ctx) => {
+		const { _id: userId } = ctx.user;
+
+		const memberships = await ctx.db
+			.query("householdMembers")
+			.withIndex("by_user", (q) => q.eq("userId", userId))
+			.take(1);
+
+		const currentMembership = memberships.at(0);
+
+		if (!currentMembership || isSoftDeleted(currentMembership)) {
+			throw notFound({
+				entity: "Membership",
+				of: "User",
+			});
+		}
+
+		const currentHousehold = await ctx.db.get(
+			"households",
+			currentMembership.householdId,
+		);
+
+		if (!currentHousehold || isSoftDeleted(currentHousehold)) {
+			throw notFound({
+				entity: "Household",
+				of: "User",
+			});
+		}
+
+		return currentHousehold;
 	},
 });
 

@@ -1,15 +1,15 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	notFound,
+	Outlet,
+	redirect,
+} from "@tanstack/react-router";
 
+import { isConvexError, isCustomConvexError } from "@backend/errors";
+import { userCurrentHouseholdQuery } from "&/households/api";
 import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard")({
-	head: () => ({
-		meta: [
-			...seo({
-				title: "dashboard",
-			}),
-		],
-	}),
 	staticData: {
 		links: [
 			{
@@ -30,6 +30,40 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 			},
 		],
 	},
+	beforeLoad: async ({ context }) => {
+		const household = await context.queryClient.ensureQueryData(
+			userCurrentHouseholdQuery,
+		);
+
+		return { household };
+	},
+	onError: (err: unknown) => {
+		if (isConvexError(err)) {
+			if (isCustomConvexError(err)) {
+				switch (err.data.at(0)) {
+					case "Forbidden":
+					case "Not_Found": {
+						throw notFound();
+					}
+					case "Unauthorized": {
+						throw redirect({
+							to: "/sign-in",
+							search: {
+								redirect: Route.path,
+							},
+						});
+					}
+				}
+			}
+		}
+	},
+	head: () => ({
+		meta: [
+			...seo({
+				title: "dashboard",
+			}),
+		],
+	}),
 	component: RouteComponent,
 });
 
