@@ -1,20 +1,18 @@
 {
-    "extends": [
-        "//"
-    ],
-    "tasks": {
-        "dev": {
-            "with": [
-                "@plateful/api#dev:proxy"
-            ]
-        },
-        "dev:proxy": {
-            "cache": false,
-            "persistent": true,
-            "interactive": true,
-            "dependsOn": [
-                "^build"
-            ]
-        }
-    }
+	"extends": ["//"],
+	"tasks": {
+		"dev": {
+			"cache": false,
+			"persistent": true,
+			"interactive": true,
+			"with": ["@plateful/api#dev:proxy"],
+			"dependsOn": ["^build"]
+		},
+		"dev:proxy": {
+			"cache": false,
+			"persistent": true,
+			"interactive": true,
+			"dependsOn": ["^build"]
+		}
+	}
 }
