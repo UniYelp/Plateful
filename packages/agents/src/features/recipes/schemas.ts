@@ -36,7 +36,7 @@ export const ToolsInputSchema = z.union([
 	z.array(z.string()),
 ]);
 
-export const RecipeInputSchema = z.object({
+export const RecipeGenInputSchema = z.object({
 	ingredients: z.array(IngredientInputSchema),
 	tools: ToolsInputSchema.default("unlimited"),
 	tags: z.array(z.string()).default([]),
@@ -46,7 +46,7 @@ export const RecipeInputSchema = z.object({
 		.default("no-preference"),
 });
 
-export type RecipeInput = z.infer<typeof RecipeInputSchema>;
+export type RecipeGenInput = z.infer<typeof RecipeGenInputSchema>;
 
 export const MaterialBlockSchema = z.object({
 	type: z.literal("material"),
@@ -91,7 +91,7 @@ export const StepBlockSchema = z.union([
 	MaterialBlockSchema,
 ]);
 
-export const RecipeOutputSchema = z.object({
+export const RecipeGenOutputSchema = z.object({
 	title: z.string(),
 	description: z.string(),
 	tags: z.array(z.string()),
@@ -99,4 +99,4 @@ export const RecipeOutputSchema = z.object({
 	notes: z.nullable(z.string()),
 });
 
-export type RecipeOutput = z.infer<typeof RecipeOutputSchema>;
+export type RecipeGenOutput = z.infer<typeof RecipeGenOutputSchema>;

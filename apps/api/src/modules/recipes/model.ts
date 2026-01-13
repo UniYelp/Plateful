@@ -1,16 +1,17 @@
-import type z from "zod";
+import z from "zod";
 
 import {
-	type RecipeInput,
-	RecipeInputSchema,
-	RecipeOutputSchema,
+	RecipeGenInputSchema,
+	RecipeGenOutputSchema,
 } from "@plateful/agents/recipes";
 
 export namespace RecipesModel {
-	export const generateRecipeBody = RecipeInputSchema;
-	export type GenerateRecipeBody = RecipeInput;
+	export const generateRecipeBody = RecipeGenInputSchema.extend({
+		userId: z.string(),
+	});
+	export type GenerateRecipeBody = z.infer<typeof generateRecipeBody>;
 
-	export const generateRecipeResponse = RecipeOutputSchema;
+	export const generateRecipeResponse = RecipeGenOutputSchema;
 	// .omit({
 	// 	notes: true,
 	// });

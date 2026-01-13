@@ -1,7 +1,9 @@
+import type { RecipeGenInput } from "@plateful/agents/recipes";
+import { TemperatureUnit } from "@plateful/units/temperature";
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
 import { apiClient } from "./configs/api.config";
-import { notFound } from "./errors";
+import { InternalError, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { householdMutation, householdQuery } from "./households";
 import { ingredientQuantityFields, vv, vvv } from "./schema";
@@ -122,6 +124,7 @@ export const updateState = internalMutation({
 
 // #region Actions
 
+// TODO: convert to a workflow | https://www.convex.dev/components/workflow
 export const generateRecipe = internalAction({
 	args: {
 		genId: vv.id("recipeGens"),
@@ -139,20 +142,56 @@ export const generateRecipe = internalAction({
 			},
 		});
 
+		const { tags, ingredients: ingredientsIn } = args;
+
 		const ingredientIdByName = Object.fromEntries(
-			args.ingredients.map((ing) => [ing.name, ing.id] as const),
+			ingredientsIn.map((ing) => [ing.name, ing.id] as const),
 		);
 
-		const _ingredients = Object.keys(ingredientIdByName);
+		const collator = new Intl.Collator("und", { sensitivity: "base" });
 
-		// TODO: add default (incl. Unlimited Water)
+		const hasWater = Object.keys(ingredientIdByName).some(
+			(ing) => collator.compare(ing, "water") === 0,
+		);
 
-		// TODO: map the parameters, fetch response and map back
+		const ingredients = ingredientsIn.flatMap<
+			RecipeGenInput["ingredients"][number]
+		>(({ name, quantities }) =>
+			Array.isArray(quantities)
+				? quantities.map(({ state, amount, unit }) => ({
+						name,
+						state: state || null,
+						quantity: {
+							value: amount,
+							unit: unit || null,
+						},
+					}))
+				: {
+						name,
+						state: null,
+						quantity: "unlimited",
+					},
+		);
 
-		// const { parameters: { tags, ingredients } } = args;
+		if (!hasWater) {
+			ingredients.push({
+				name: "water",
+				state: null,
+				quantity: "unlimited",
+			});
+		}
 
 		try {
-			const res = await apiClient.get(); // TODO: setup ngrok
+			const user = await ctx.auth.getUserIdentity();
+
+			const res = await apiClient.recipes.generate.post({
+				userId: user?.subject || "unknown",
+				ingredients,
+				tags,
+				temperatureUnit: TemperatureUnit.Celsius,
+				toleratedSpiceLevel: "no-preference",
+				tools: "unlimited",
+			});
 
 			const { data, error } = res;
 
@@ -162,31 +201,28 @@ export const generateRecipe = internalAction({
 					user: SYSTEM_ID,
 					state: {
 						status: "failed",
-						reason: "worked",
+						reason: JSON.stringify(data, null, 2),
 					},
 				});
-			} else {
-				await ctx.runMutation(internal.recipeGens.updateState, {
-					genId,
-					user: SYSTEM_ID,
-					state: {
-						status: "failed",
-						reason: error && JSON.stringify(error, null, 2),
-					},
-				});
+
+				return;
 			}
 
-			// const _res = apiClient.recipes.generate.post({
-			// 	tags,
-			// 	ingredients: [],
-			// });
+			switch (error.status) {
+				case 423: {
+					throw new InternalError(error.value, { cause: error });
+				}
+				default: {
+					throw new InternalError("Internal Error", { cause: error });
+				}
+			}
 		} catch (err) {
 			await ctx.runMutation(internal.recipeGens.updateState, {
 				genId,
 				user: SYSTEM_ID,
 				state: {
 					status: "failed",
-					reason: JSON.stringify(err, null, 2), // TODO: only in dev
+					reason: err instanceof InternalError ? err.message : "Internal Error",
 				},
 			});
 
