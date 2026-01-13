@@ -91,7 +91,6 @@ export function IngredientDetailPage() {
 			householdId: household?._id,
 		});
 
-		// Navigate back to ingredients list after deletion
 		navigate({ to: "/dashboard/ingredients" });
 	};
 
@@ -144,116 +143,6 @@ export function IngredientDetailPage() {
 								<h3 className="font-semibold">
 									Quantities ({ingredient.quantities.length})
 								</h3>
-								<div className="flex gap-2">
-									{/* <Dialog open={showSubtract} onOpenChange={setShowSubtract}>
-										<DialogTrigger asChild>
-											<Button variant="outline" size="sm">
-												<Minus className="mr-1 h-4 w-4" />
-												Subtract
-											</Button>
-										</DialogTrigger>
-										<DialogContent>
-											<DialogHeader>
-												<DialogTitle>Mark as Used</DialogTitle>
-												<DialogDescription>
-													Subtract an amount from this ingredient to mark it as
-													used
-												</DialogDescription>
-											</DialogHeader>
-											<div className="space-y-4 pt-4">
-												<div className="space-y-2">
-													<Label>Amount to subtract</Label>
-													<Input
-														placeholder="e.g., 20g"
-														value={subtractAmount}
-														onChange={(e) => setSubtractAmount(e.target.value)}
-													/>
-												</div>
-												<Button onClick={handleSubtract} className="w-full">
-													Subtract Amount
-												</Button>
-											</div>
-										</DialogContent>
-									</Dialog> */}
-
-									{/* <Button variant="outline" size="sm" disabled>
-										<GitMerge className="mr-1 h-4 w-4" />
-										Merge
-									</Button> */}
-
-									{/* <Dialog
-										open={showAddQuantity}
-										onOpenChange={setShowAddQuantity}
-									>
-										<DialogTrigger asChild>
-											<Button size="sm">
-												<Plus className="mr-1 h-4 w-4" />
-												Add
-											</Button>
-										</DialogTrigger>
-										<DialogContent>
-											<DialogHeader>
-												<DialogTitle>Add Quantity</DialogTitle>
-												<DialogDescription>
-													Add a new quantity for {ingredient.name}
-												</DialogDescription>
-											</DialogHeader>
-											<div className="space-y-4 pt-4">
-												<div className="grid grid-cols-2 gap-3">
-													<div className="space-y-2">
-														<Label>Amount</Label>
-														<Input
-															placeholder="e.g., 50"
-															value={newQuantity.amount}
-															onChange={(e) =>
-																setNewQuantity({
-																	...newQuantity,
-																	amount: e.target.value,
-																})
-															}
-														/>
-													</div>
-													<div className="space-y-2">
-														<Label>Unit</Label>
-														<Select
-															value={newQuantity.unit}
-															onValueChange={(value) =>
-																setNewQuantity({ ...newQuantity, unit: value })
-															}
-														>
-															<SelectTrigger>
-																<SelectValue />
-															</SelectTrigger>
-															<SelectContent>
-																{measurementUnits.map((unit) => (
-																	<SelectItem key={unit} value={unit}>
-																		{unit || "None"}
-																	</SelectItem>
-																))}
-															</SelectContent>
-														</Select>
-													</div>
-												</div>
-												<div className="space-y-2">
-													<Label>Expiry Date</Label>
-													<Input
-														type="date"
-														value={newQuantity.expiryDate}
-														onChange={(e) =>
-															setNewQuantity({
-																...newQuantity,
-																expiryDate: e.target.value,
-															})
-														}
-													/>
-												</div>
-												<Button onClick={addQuantity} className="w-full">
-													Add Quantity
-												</Button>
-											</div>
-										</DialogContent>
-									</Dialog> */}
-								</div>
 							</div>
 
 							<div className="space-y-2">
@@ -267,7 +156,6 @@ export function IngredientDetailPage() {
 										<button
 											key={`quantity-${index}-${q.amount}-${q.unit}-${q.expiresAt}`}
 											type="button"
-											// onClick={() => setEditingQuantity(q._id)}
 											className="flex w-full items-center justify-between rounded-lg border p-3 text-left transition-colors hover:bg-muted/50"
 										>
 											<div className="flex-1">
@@ -285,17 +173,6 @@ export function IngredientDetailPage() {
 														{status.text}
 													</Badge>
 												)}
-
-												{/* <Button
-													variant="ghost"
-													size="sm"
-													onClick={(e) => {
-														e.stopPropagation();
-														// deleteQuantity(q.id);
-													}}
-												>
-													<Trash2 className="h-4 w-4 text-destructive" />
-												</Button> */}
 											</div>
 										</button>
 									);
@@ -333,9 +210,6 @@ export function IngredientDetailPage() {
 														>
 															<span className="font-medium text-sm">
 																{recipe.title}
-															</span>
-															<span className="text-muted-foreground text-xs">
-																{/* {recipe.amountNeeded} */}
 															</span>
 														</Link>
 													),

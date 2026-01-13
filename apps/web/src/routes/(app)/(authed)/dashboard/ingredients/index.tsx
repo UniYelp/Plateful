@@ -159,21 +159,6 @@ function IngredientsPage() {
 										</div>
 									</div>
 
-									{/* <div className="space-y-2">
-										{expiryStatusDetails && (
-											<div className="flex items-center justify-between text-sm">
-												<span className="text-muted-foreground">Expires:</span>
-												<Badge
-													variant={
-														colorByExpiryStatus[expiryStatusDetails.status]
-													}
-													className="text-xs"
-												>
-													{expiryStatusDetails.text}
-												</Badge>
-											</div>
-										)}
-									</div> */}
 
 									<div className="mt-4 flex gap-2">
 										<Button
