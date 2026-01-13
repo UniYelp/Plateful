@@ -18,4 +18,5 @@ export const IngredientFormSchema = z.object({
 	expiryDate: z.string().nonempty().optional(),
 });
 
-export type IngredientFormValues = z.infer<typeof IngredientFormSchema>;
+export type IngredientFormInput = z.input<typeof IngredientFormSchema>;
+export type IngredientFormOutput = z.infer<typeof IngredientFormSchema>;

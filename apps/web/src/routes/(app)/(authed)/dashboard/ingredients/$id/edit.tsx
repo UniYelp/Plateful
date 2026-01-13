@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, ArrowLeft, Package } from "lucide-react";
 import { useState } from "react";
 
 import { api } from "@backend/api";
+import type { Id } from "@backend/dataModel";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import { IngredientForm } from "&/ingredients/forms/IngredientForm";
 import type { IngredientFormOutput } from "&/ingredients/forms/schemas";
@@ -17,26 +18,38 @@ import {
 } from "@/components/ui/card";
 
 export const Route = createFileRoute(
-	"/(app)/(authed)/dashboard/ingredients/add",
+	"/(app)/(authed)/dashboard/ingredients/$id/edit",
 )({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	return <AddIngredientPage />;
+	return <EditIngredientPage />;
 }
 
-function AddIngredientPage() {
+function EditIngredientPage() {
 	const navigate = Route.useNavigate();
 
 	const [showSimilarWarning, setShowSimilarWarning] = useState(false);
-	const addIngredient = useMutation(api.ingredients.add);
+	const editIngredient = useMutation(api.ingredients.edit);
 
-	const householdId = useCurrentHousehold()?._id;
+	const household = useCurrentHousehold();
+
+	const { id: ingredientId } = Route.useParams();
+
+	const ingredient = useQuery(
+		api.ingredients.byId,
+		household
+			? {
+					householdId: household._id,
+					ingredientId: ingredientId as Id<"ingredients">,
+				}
+			: "skip",
+	);
 
 	const onSubmit = async (value: IngredientFormOutput) => {
 		try {
-			if (!householdId) {
+			if (!household) {
 				throw new Error("No household found for the user.");
 			}
 
@@ -44,7 +57,8 @@ function AddIngredientPage() {
 				? new Date(value.expiryDate).getTime()
 				: undefined;
 
-			const _ingredientId = await addIngredient({
+			const _ingredientId = await editIngredient({
+				ingredientId: ingredientId as Id<"ingredients">,
 				name: value.name,
 				description: value.description,
 				quantities: [
@@ -54,7 +68,7 @@ function AddIngredientPage() {
 						amount: value.amount,
 					},
 				],
-				householdId: householdId,
+				householdId: household._id,
 				category: value.category,
 				tags: [],
 				images: [],
@@ -76,15 +90,15 @@ function AddIngredientPage() {
 				{/* Page Header */}
 				<div className="mb-8 flex items-center gap-4">
 					<Button variant="ghost" size="sm" asChild>
-						<Link to="/dashboard/ingredients">
+						<Link to="/dashboard/ingredients/$id" params={{ id: ingredientId }}>
 							<ArrowLeft className="mr-2 h-4 w-4" />
 							Back
 						</Link>
 					</Button>
 					<div>
-						<h1 className="font-bold text-3xl">Add Ingredient</h1>
+						<h1 className="font-bold text-3xl">Edit Ingredient</h1>
 						<p className="text-muted-foreground">
-							Add a new ingredient to your kitchen inventory
+							Update your ingredient details
 						</p>
 					</div>
 				</div>
@@ -100,25 +114,9 @@ function AddIngredientPage() {
 										Similar ingredient found
 									</h4>
 									<p className="mt-1 text-amber-700 text-sm">
-										We found similar ingredients in your inventory. Would you
-										like to update the existing amount instead?
+										We found similar ingredients in your inventory. We cannot
+										patch the ingredient. Would you like to choose another name?
 									</p>
-									<div className="mt-3 flex gap-2">
-										<Button
-											size="sm"
-											variant="outline"
-											className="border-amber-300 bg-transparent text-amber-700"
-										>
-											Update Existing
-										</Button>
-										<Button
-											size="sm"
-											variant="ghost"
-											onClick={() => setShowSimilarWarning(false)}
-										>
-											Add New
-										</Button>
-									</div>
 								</div>
 							</div>
 						</CardContent>
@@ -137,7 +135,21 @@ function AddIngredientPage() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<IngredientForm onSubmit={onSubmit} />
+						<IngredientForm
+							onSubmit={onSubmit}
+							defaultValues={{
+								name: ingredient?.name,
+								description: ingredient?.description,
+								category: ingredient?.category,
+								amount: ingredient?.quantities[0]?.amount,
+								unit: ingredient?.quantities[0]?.unit,
+								expiryDate: ingredient?.quantities[0]?.expiresAt
+									? new Date(ingredient?.quantities[0]?.expiresAt)
+											.toISOString()
+											.split("T")[0]
+									: undefined,
+							}}
+						/>
 					</CardContent>
 				</Card>
 			</div>

@@ -1,9 +1,10 @@
 import { EXPIRING_SOON_TIME_WINDOW_MS } from "@plateful/ingredients";
 import type { Doc } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
+import { notFound } from "./errors";
 import { householdMutation, householdQuery } from "./households";
 import { ingredientFields, vv } from "./schema";
-import { authedMutation } from "./with_auth";
+import { isSoftDeleted } from "./utils/soft_delete";
 // #region Validators
 
 // #region Queries
@@ -13,6 +14,25 @@ export const byHousehold = householdQuery({
 	handler: async (ctx, args) => {
 		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
 		return ingredients;
+	},
+});
+
+export const byId = householdQuery({
+	args: {
+		ingredientId: vv.id("ingredients"),
+	},
+	handler: async (ctx, args) => {
+		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
+
+		if (!ingredient || isSoftDeleted(ingredient)) {
+			throw notFound({
+				entity: "Ingredient",
+				in: "Household",
+				args,
+			});
+		}
+
+		return ingredient;
 	},
 });
 
@@ -53,9 +73,12 @@ export const add = householdMutation({
 
 		const ingredientId = await ctx.db.insert("ingredients", {
 			name: args.name,
-			description: args.description,
+			description: args.description || undefined,
 			images: args.images,
-			quantities: args.quantities,
+			quantities: args.quantities.map((q) => ({
+				...q,
+				unit: q.unit || undefined,
+			})),	
 			category: args.category,
 			tags: args.tags,
 			householdId: args.householdId,
@@ -65,6 +88,41 @@ export const add = householdMutation({
 		});
 
 		return ingredientId;
+	},
+});
+
+export const edit = householdMutation({
+	args: {
+		ingredientId: vv.id("ingredients"),
+		...ingredientFields,
+	},
+	handler: async (ctx, args) => {
+		const { _id: userId } = ctx.user;
+		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
+
+		if (!ingredient || isSoftDeleted(ingredient) || ingredient.householdId !== args.householdId) {
+			throw notFound({
+				entity: "Ingredient",
+				in: "Household",
+				args,
+			});
+		}
+		
+		const now = Date.now();
+		await ctx.db.patch("ingredients", args.ingredientId, {
+			name: args.name,
+			description: args.description || undefined,
+			images: args.images,
+			quantities: args.quantities.map((q) => ({
+				...q,
+				unit: q.unit || undefined,
+			})),		
+			category: args.category,
+			tags: args.tags,
+			updatedBy: userId,
+			updatedAt: now,
+		});
+		return args.ingredientId;
 	},
 });
 

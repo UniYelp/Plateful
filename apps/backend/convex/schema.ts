@@ -274,6 +274,10 @@ const schema = defineSchema({
 		"recipeId",
 		"deletedAt",
 		"ingredientId",
+	]).index("by_ingredient_deletedAt_recipe", [
+		"ingredientId",
+		"deletedAt",
+		"recipeId",
 	]),
 	recipeSteps: defineTable({
 		...recipeStepFields,

@@ -30,8 +30,13 @@ export const byIdAndHousehold = householdQuery({
 	handler: async (ctx, args) => {
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		if (recipe?.householdId !== args.householdId || isSoftDeleted(recipe))
-			throw notFound({ entity: "Recipe", in: "Household" });
+		if (recipe?.householdId !== args.householdId || isSoftDeleted(recipe)) {
+			throw notFound({
+				entity: "Recipe",
+				in: "Household",
+				args,
+			});
+		}
 
 		return recipe;
 	},

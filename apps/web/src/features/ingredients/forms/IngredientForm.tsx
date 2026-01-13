@@ -9,8 +9,9 @@ import {
 	INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH,
 } from "&/ingredients/forms/constants";
 import {
+	type IngredientFormInput,
+	type IngredientFormOutput,
 	IngredientFormSchema,
-	type IngredientFormValues,
 } from "&/ingredients/forms/schemas";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
@@ -27,8 +28,8 @@ import { TextArea } from "@/components/ui/textarea";
 import { useAppForm } from "@/lib/form";
 
 type Props = {
-	defaultValues?: Partial<IngredientFormValues>;
-	onSubmit: (value: IngredientFormValues) => Promise<void>;
+	defaultValues?: Partial<IngredientFormInput>;
+	onSubmit: (value: IngredientFormOutput) => Promise<void>;
 };
 
 export function IngredientForm({ defaultValues, onSubmit }: Props) {
@@ -94,7 +95,7 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 							<Label htmlFor="name">Name *</Label>
 							<Input
 								placeholder="e.g., Fresh Basil"
-								value={field.state.value}
+								value={field.state.value ?? ""}
 								aria-invalid={isInvalidTouched(field)}
 								onChange={(e) => field.handleChange(e.target.value)}
 							/>
@@ -110,7 +111,7 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 								placeholder="e.g., Organic fresh basil leaves from local farm"
 								rows={3}
 								maxLength={INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH}
-								value={field.state.value}
+								value={field.state.value ?? ""}
 								aria-invalid={isInvalidTouched(field)}
 								onChange={(e) => field.handleChange(e.target.value)}
 							/>
@@ -126,7 +127,7 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 								<Input
 									type="number"
 									placeholder="e.g., 50, 1, 0.5"
-									value={field.state.value}
+									value={field.state.value ?? NaN}
 									aria-invalid={isInvalidTouched(field)}
 									onChange={(e) => field.handleChange(e.target.valueAsNumber)}
 								/>
@@ -139,7 +140,8 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 							<div className="space-y-2">
 								<Label htmlFor="unit">Unit</Label>
 								<Combobox
-									value={field.state.value}
+									value={field.state.value ?? ""}
+									unsetValue=""
 									onChange={(value) => field.handleChange(value || undefined)}
 									options={ingredientUnits.map((unit) => {
 										const symbol = IngredientSymbol[unit];
@@ -161,11 +163,9 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 							<div className="space-y-2">
 								<Label htmlFor="category">Category *</Label>
 								<Select
-									value={field.state.value || ""}
+									value={field.state.value ?? ""}
 									aria-invalid={isInvalidTouched(field)}
-									onValueChange={(value) =>
-										field.handleChange(value ?? undefined)
-									}
+									onValueChange={(value) => field.handleChange(value)}
 								>
 									<SelectTrigger
 										aria-invalid={isInvalidTouched(field)}
@@ -194,7 +194,7 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 							<Label htmlFor="expiryDate">Expiry Date</Label>
 							<Input
 								type="date"
-								value={field.state.value || ""}
+								value={field.state.value ?? ""}
 								aria-invalid={isInvalidTouched(field)}
 								onChange={(e) =>
 									field.handleChange(e.target.value || undefined)

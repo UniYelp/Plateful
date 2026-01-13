@@ -21,6 +21,7 @@ import type * as ingredients from "../ingredients.js";
 import type * as migrations from "../migrations.js";
 import type * as migrations_index from "../migrations/index.js";
 import type * as recipeGens from "../recipeGens.js";
+import type * as recipeIngredients from "../recipeIngredients.js";
 import type * as recipes from "../recipes.js";
 import type * as routes_webhooks from "../routes/webhooks.js";
 import type * as triggers from "../triggers.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   migrations: typeof migrations;
   "migrations/index": typeof migrations_index;
   recipeGens: typeof recipeGens;
+  recipeIngredients: typeof recipeIngredients;
   recipes: typeof recipes;
   "routes/webhooks": typeof routes_webhooks;
   triggers: typeof triggers;

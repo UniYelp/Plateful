@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
-import { Edit, Package, Plus, Search, Trash2 } from "lucide-react";
+import { Eye, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
@@ -131,9 +131,21 @@ function IngredientsPage() {
 											className="h-16 w-16 rounded-lg bg-muted object-cover"
 										/>
 										<div className="min-w-0 flex-1">
-											<h3 className="truncate font-semibold">
-												{ingredient.name}
-											</h3>
+											<div className="flex items-start justify-between">
+												<h3 className="truncate font-semibold">
+													{ingredient.name}
+												</h3>
+												{expiryStatusDetails && (
+													<Badge
+														variant={
+															colorByExpiryStatus[expiryStatusDetails.status]
+														}
+														className="text-nowrap text-xs"
+													>
+														{expiryStatusDetails.text}
+													</Badge>
+												)}
+											</div>
 											<p className="truncate text-muted-foreground text-sm">
 												{ingredient.description}
 											</p>
@@ -147,15 +159,7 @@ function IngredientsPage() {
 										</div>
 									</div>
 
-									<div className="space-y-2">
-										<div className="flex items-center justify-between text-sm">
-											<span className="text-muted-foreground">Added:</span>
-											<span>
-												{new Date(
-													ingredient._creationTime,
-												).toLocaleDateString()}
-											</span>
-										</div>
+									{/* <div className="space-y-2">
 										{expiryStatusDetails && (
 											<div className="flex items-center justify-between text-sm">
 												<span className="text-muted-foreground">Expires:</span>
@@ -169,16 +173,22 @@ function IngredientsPage() {
 												</Badge>
 											</div>
 										)}
-									</div>
+									</div> */}
 
 									<div className="mt-4 flex gap-2">
 										<Button
+											asChild
 											variant="outline"
 											size="sm"
 											className="flex-1 bg-transparent"
 										>
-											<Edit className="mr-1 h-3 w-3" />
-											Edit
+											<Link
+												to="/dashboard/ingredients/$id"
+												params={{ id: ingredient._id }}
+											>
+												<Eye className="mr-1 h-3 w-3" />
+												View
+											</Link>
 										</Button>
 										<AlertDialog>
 											<AlertDialogTrigger asChild>
