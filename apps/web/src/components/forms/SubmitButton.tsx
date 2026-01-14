@@ -16,12 +16,16 @@ export function SubmitButton(props: PropsWithChildren<Props>) {
 
 	return (
 		<form.Subscribe
-			selector={(state) => [state.isPristine, state.isSubmitting]}
+			selector={(state) => [
+				state.isPristine,
+				state.isSubmitting,
+				state.isValidating,
+			]}
 		>
-			{([isPristine, isSubmitting]) => (
+			{([isPristine, isSubmitting, isValidating]) => (
 				<Button
 					type="submit"
-					disabled={isPristine || isSubmitting}
+					disabled={isPristine || isSubmitting || isValidating}
 					className={className}
 				>
 					{isSubmitting ? <Spinner /> : icon}

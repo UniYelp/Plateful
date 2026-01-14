@@ -1,14 +1,11 @@
-import {
-	type TanStackDevtoolsReactPlugin,
-	TanstackDevtools,
-} from "@tanstack/react-devtools";
-import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 export function Devtools() {
 	return (
-		<TanstackDevtools
+		<TanStackDevtools
 			config={{
 				position: "bottom-left",
 				hideUntilHover: true,
@@ -22,7 +19,7 @@ export function Devtools() {
 					name: "TanStack Query",
 					render: <ReactQueryDevtoolsPanel />,
 				},
-				FormDevtoolsPlugin() as TanStackDevtoolsReactPlugin,
+				formDevtoolsPlugin(),
 			]}
 		/>
 	);

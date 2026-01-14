@@ -17,14 +17,14 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/utils/ui";
 
-type ComboboxProps<T = unknown> = {
+type ComboboxProps<T extends string> = {
 	value?: NoInfer<T> | undefined;
 	options: { value: T; label: string }[];
 	className?: string;
 	onChange?: (value: NoInfer<T> | undefined) => void;
 };
 
-export function Combobox<T = unknown>({
+export function Combobox<T extends string = string>({
 	value,
 	options,
 	className,
@@ -50,7 +50,7 @@ export function Combobox<T = unknown>({
 					<ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-[200px] p-0">
+			<PopoverContent className="w-50 p-0">
 				<Command>
 					<CommandInput placeholder="Search Option..." />
 					<CommandList>
@@ -60,10 +60,11 @@ export function Combobox<T = unknown>({
 								<CommandItem
 									key={option.value}
 									value={option.value}
-									onSelect={(currentValue: T) => {
+									onSelect={(currentValue) => {
 										onChange?.(
-											currentValue === value ? undefined : currentValue,
+											currentValue === value ? undefined : (currentValue as T),
 										);
+
 										setOpen(false);
 									}}
 								>

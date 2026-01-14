@@ -258,7 +258,7 @@ const schema = defineSchema({
 		.index("by_household_deletedAt_name", ["householdId", "deletedAt", "name"])
 		.searchIndex("search_ingredients", {
 			searchField: "name",
-			filterFields: ["householdId", "description", "tags"],
+			filterFields: ["householdId", "description", "tags", "deletedAt"],
 		}),
 	recipes: defineTable({
 		...recipeFields,
@@ -276,11 +276,17 @@ const schema = defineSchema({
 	recipeIngredients: defineTable({
 		...recipeIngredientFields,
 		...stampsFields,
-	}).index("by_recipe_deletedAt_ingredient", [
-		"recipeId",
-		"deletedAt",
-		"ingredientId",
-	]),
+	})
+		.index("by_recipe_deletedAt_ingredient", [
+			"recipeId",
+			"deletedAt",
+			"ingredientId",
+		])
+		.index("by_ingredient_deletedAt_recipe", [
+			"ingredientId",
+			"deletedAt",
+			"recipeId",
+		]),
 	recipeSteps: defineTable({
 		...recipeStepFields,
 		...stampsFields,

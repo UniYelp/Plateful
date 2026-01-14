@@ -139,3 +139,7 @@ code {
     font-family:
         source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+html {
+    scrollbar-gutter: stable both-edges;
+}
