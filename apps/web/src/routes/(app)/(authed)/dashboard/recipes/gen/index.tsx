@@ -1,5 +1,6 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
 import { ArrowLeft } from "lucide-react";
 
 import { api } from "@backend/api";
@@ -8,11 +9,19 @@ import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/gen/")({
-	loader: ({ context }) => {
-		const { household } = context;
+	loader: async ({ context }) => {
+		const { household, queryClient } = context;
+
+		queryClient.ensureQueryData(
+			convexQuery(api.recipeGens.byHousehold, {
+				householdId: household._id,
+			}),
+		);
+
 		return { household };
 	},
 	component: RouteComponent,
+	pendingComponent: () => recipesLoader,
 });
 
 function RouteComponent() {
@@ -22,11 +31,11 @@ function RouteComponent() {
 function RecipeGenerationsPage() {
 	const { household } = Route.useLoaderData();
 
-	const recipeGens = useQuery(api.recipeGens.byHousehold, {
-		householdId: household._id,
-	});
-
-	if (!recipeGens) return recipesLoader;
+	const { data: recipeGens } = useSuspenseQuery(
+		convexQuery(api.recipeGens.byHousehold, {
+			householdId: household._id,
+		}),
+	);
 
 	// TODO: add a no-gens view
 
