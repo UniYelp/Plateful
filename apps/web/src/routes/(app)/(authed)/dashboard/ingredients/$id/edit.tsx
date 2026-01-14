@@ -35,14 +35,14 @@ function EditIngredientPage() {
 
 	const household = useCurrentHousehold();
 
-	const { id: ingredientId } = Route.useParams();
+	const { id: paramIngredientId } = Route.useParams();
 
 	const ingredient = useQuery(
 		api.ingredients.byId,
 		household
 			? {
 					householdId: household._id,
-					ingredientId: ingredientId as Id<"ingredients">,
+					ingredientId: paramIngredientId as Id<"ingredients">,
 				}
 			: "skip",
 	);
@@ -57,8 +57,8 @@ function EditIngredientPage() {
 				? new Date(value.expiryDate).getTime()
 				: undefined;
 
-			const _ingredientId = await editIngredient({
-				ingredientId: ingredientId as Id<"ingredients">,
+			const ingredientId = await editIngredient({
+				ingredientId: paramIngredientId as Id<"ingredients">,
 				name: value.name,
 				description: value.description,
 				quantities: [
@@ -76,7 +76,7 @@ function EditIngredientPage() {
 
 			navigate({
 				to: "/dashboard/ingredients/$id",
-				params: { id: _ingredientId },
+				params: { id: ingredientId },
 			});
 		} catch (error) {
 			// TODO: handle error properly
@@ -90,7 +90,10 @@ function EditIngredientPage() {
 				{/* Page Header */}
 				<div className="mb-8 flex items-center gap-4">
 					<Button variant="ghost" size="sm" asChild>
-						<Link to="/dashboard/ingredients/$id" params={{ id: ingredientId }}>
+						<Link
+							to="/dashboard/ingredients/$id"
+							params={{ id: paramIngredientId }}
+						>
 							<ArrowLeft className="mr-2 h-4 w-4" />
 							Back
 						</Link>

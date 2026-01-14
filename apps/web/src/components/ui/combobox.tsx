@@ -1,7 +1,6 @@
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import * as React from "react";
 
-import type { SuggestStr } from "@plateful/types";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -22,7 +21,6 @@ type ComboboxProps<T extends string> = {
 	value?: NoInfer<T> | undefined;
 	options: { value: T; label: string }[];
 	className?: string;
-	unsetValue?: T;
 	onChange?: (value: NoInfer<T> | undefined) => void;
 };
 
@@ -30,9 +28,8 @@ export function Combobox<T extends string = string>({
 	value,
 	options,
 	className,
-	unsetValue,
 	onChange,
-}: ComboboxProps<SuggestStr<T>>) {
+}: ComboboxProps<T>) {
 	const [open, setOpen] = React.useState(false);
 
 	return (
@@ -53,7 +50,7 @@ export function Combobox<T extends string = string>({
 					<ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-[200px] p-0">
+			<PopoverContent className="w-50 p-0">
 				<Command>
 					<CommandInput placeholder="Search Option..." />
 					<CommandList>
@@ -65,7 +62,7 @@ export function Combobox<T extends string = string>({
 									value={option.value}
 									onSelect={(currentValue) => {
 										onChange?.(
-											currentValue === value ? unsetValue : currentValue,
+											currentValue === value ? undefined : (currentValue as T),
 										);
 
 										setOpen(false);

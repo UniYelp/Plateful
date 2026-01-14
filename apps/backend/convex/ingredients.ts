@@ -27,8 +27,7 @@ export const byId = householdQuery({
 		if (!ingredient || isSoftDeleted(ingredient)) {
 			throw notFound({
 				entity: "Ingredient",
-				in: "Household",
-				args,
+				in: "Household"
 			});
 		}
 
@@ -103,8 +102,7 @@ export const edit = householdMutation({
 		if (!ingredient || isSoftDeleted(ingredient) || ingredient.householdId !== args.householdId) {
 			throw notFound({
 				entity: "Ingredient",
-				in: "Household",
-				args,
+				in: "Household"
 			});
 		}
 		
@@ -135,7 +133,7 @@ export const deleteIngredient = householdMutation({
 
 		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
 
-		if (!ingredient) {
+		if (!ingredient || isSoftDeleted(ingredient)) {
 			throw new Error("Ingredient Not Found");
 		}
 

@@ -6,6 +6,7 @@ import {
 	type ExpiryDetails,
 	getExpiryDetailsFromExpiryDates,
 } from "@plateful/ingredients";
+import { entriesOf } from "@plateful/utils";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
@@ -13,6 +14,7 @@ import {
 	colorByExpiryStatus,
 	ingredientImgByCategory,
 } from "&/ingredients/constants";
+import { ScalarQuantity } from "&/units/constants";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -69,26 +71,26 @@ export function IngredientDetailPage() {
 
 	if (!household || !ingredient) return "Loading...";
 
-	const getTotalAmount = () => {
-		const grouped = ingredient.quantities.reduce(
-			(acc, q) => {
-				const unit = q.unit || "undefined";
-				if (!acc[unit]) acc[unit] = 0;
-				acc[unit] += q.amount;
-				return acc;
-			},
-			{} as Record<string, number>,
-		);
+	const quantityByUnit = ingredient.quantities.reduce(
+		(acc, q) => {
+			const unit = q.unit ?? ScalarQuantity;
+			if (!acc[unit]) acc[unit] = 0;
+			acc[unit] += q.amount;
+			return acc;
+		},
+		{} as Record<string | typeof ScalarQuantity, number>,
+	);
 
-		return Object.entries(grouped)
-			.map(([unit, amount]) => `${amount}${unit}`)
-			.join(", ");
-	};
+	const totalAmount = entriesOf(quantityByUnit)
+		.map(([unit, amount]) =>
+			unit === ScalarQuantity ? amount : `${amount}${unit}`,
+		)
+		.join(", ");
 
 	const deleteIngredientHandler = async () => {
 		await deleteIngredient({
 			ingredientId: ingredient._id,
-			householdId: household?._id,
+			householdId: household._id,
 		});
 
 		navigate({ to: "/dashboard/ingredients" });
@@ -111,6 +113,7 @@ export function IngredientDetailPage() {
 					<Card className="lg:col-span-2">
 						<CardHeader>
 							<div className="flex items-start gap-4">
+								{/* TODO: const getProperty = <T extends object>(obj: T, key: SuggestStr<keyof T>, defaultValue: ValueOf<T>) => key in obj ? obj[key] : defaultValue; */}
 								<img
 									src={
 										ingredientImgByCategory[
@@ -132,7 +135,7 @@ export function IngredientDetailPage() {
 										<Badge variant="outline">{ingredient.category}</Badge>
 										<span className="text-muted-foreground text-sm">
 											Total:{" "}
-											<span className="font-semibold">{getTotalAmount()}</span>
+											<span className="font-semibold">{totalAmount}</span>
 										</span>
 									</div>
 								</div>
@@ -193,30 +196,30 @@ export function IngredientDetailPage() {
 
 							<CardContent>
 								<div className="space-y-2">
-									{recipes ? (
-										recipes.length === 0 ? (
-											<p className="text-muted-foreground text-sm">
-												This ingredient is not used in any recipes.
-											</p>
-										) : (
-											recipes.map(
-												(recipe) =>
-													recipe && (
-														<Link
-															key={recipe._id}
-															to="/dashboard/recipes/$id"
-															params={{ id: recipe._id }}
-															className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
-														>
-															<span className="font-medium text-sm">
-																{recipe.title}
-															</span>
-														</Link>
-													),
-											)
-										)
-									) : (
-										"Loading..."
+									{!recipes && "Loading..."}
+									{recipes?.length === 0 && (
+										<p className="text-muted-foreground text-sm">
+											This ingredient is not used in any recipes.
+										</p>
+									)}
+									{recipes?.map(
+										(recipe) =>
+											recipe && (
+												<Link
+													key={recipe.recipe._id}
+													to="/dashboard/recipes/$id"
+													params={{ id: recipe.recipe._id }}
+													className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+												>
+													<span className="font-medium text-sm">
+														{recipe.recipe.title}
+													</span>
+													<span className="text-muted-foreground text-xs">
+														{recipe.quantity.amount}
+														{recipe.quantity.unit}
+													</span>
+												</Link>
+											),
 									)}
 								</div>
 							</CardContent>

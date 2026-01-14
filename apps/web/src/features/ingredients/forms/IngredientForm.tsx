@@ -34,7 +34,10 @@ type Props = {
 
 export function IngredientForm({ defaultValues, onSubmit }: Props) {
 	const form = useAppForm({
-		defaultValues: { ...addIngredientFormDefaultValues, ...defaultValues },
+		defaultValues: {
+			...addIngredientFormDefaultValues,
+			...defaultValues,
+		} satisfies IngredientFormInput,
 		validators: {
 			onChange: IngredientFormSchema,
 		},
@@ -127,7 +130,9 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 								<Input
 									type="number"
 									placeholder="e.g., 50, 1, 0.5"
-									value={field.state.value ?? NaN}
+									value={
+										Number.isFinite(field.state.value) ? field.state.value : ""
+									}
 									aria-invalid={isInvalidTouched(field)}
 									onChange={(e) => field.handleChange(e.target.valueAsNumber)}
 								/>
@@ -141,7 +146,6 @@ export function IngredientForm({ defaultValues, onSubmit }: Props) {
 								<Label htmlFor="unit">Unit</Label>
 								<Combobox
 									value={field.state.value ?? ""}
-									unsetValue=""
 									onChange={(value) => field.handleChange(value || undefined)}
 									options={ingredientUnits.map((unit) => {
 										const symbol = IngredientSymbol[unit];

@@ -34,7 +34,6 @@ export const byIdAndHousehold = householdQuery({
 			throw notFound({
 				entity: "Recipe",
 				in: "Household",
-				args,
 			});
 		}
 
