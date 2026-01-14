@@ -4,8 +4,14 @@
     ],
     "tasks": {
         "dev": {
+            "cache": false,
+            "persistent": true,
+            "interactive": true,
             "with": [
                 "@plateful/api#dev:proxy"
+            ],
+            "dependsOn": [
+                "^build"
             ]
         },
         "dev:proxy": {

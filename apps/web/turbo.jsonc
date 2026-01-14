@@ -4,6 +4,9 @@
     ],
     "tasks": {
         "dev": {
+            "cache": false,
+            "persistent": true,
+            "interactive": true,
             "with": [
                 "@plateful/backend#dev",
                 "@plateful/api#dev"
@@ -12,6 +15,9 @@
                 "$TURBO_EXTENDS$",
                 "../backend/convex",
                 "../api/src"
+            ],
+            "dependsOn": [
+                "^build"
             ]
         },
         "shadcn:add": {
