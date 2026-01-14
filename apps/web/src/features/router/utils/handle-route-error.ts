@@ -14,7 +14,6 @@ type HandleRouteErrorOptions = {
 
 export const getRouteErrorHandler =
 	(options?: HandleRouteErrorOptions) => (err: unknown) => {
-		console.log({ err });
 		const error = handleError(err);
 
 		if (!(error instanceof CustomError)) throw error;

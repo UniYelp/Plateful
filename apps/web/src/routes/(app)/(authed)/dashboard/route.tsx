@@ -2,7 +2,6 @@ import { convexQuery } from "@convex-dev/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 import { api } from "@backend/api";
-import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard")({
@@ -25,7 +24,6 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 
 		return { household };
 	},
-	onError: getRouteErrorHandler(),
 	head: () => ({
 		meta: [
 			...seo({

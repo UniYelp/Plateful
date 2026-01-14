@@ -14,6 +14,8 @@ import "@/styles/globals.css";
 
 import type { useAuth } from "@clerk/clerk-react";
 
+import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
+
 import globalsCss from "@/styles/globals.css?url";
 
 type RouterContext = {
@@ -62,6 +64,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			{ rel: "manifest", href: "/manifest.json", color: "#fffff" },
 		],
 	}),
+	onError: getRouteErrorHandler(),
 	component: RootComponent,
 });
 
