@@ -1,22 +1,17 @@
 {
-    "extends": [
-        "//"
-    ],
-    "tasks": {
-        "dev": {
-            "with": [
-                "@plateful/backend#dev",
-                "@plateful/api#dev"
-            ],
-            "inputs": [
-                "$TURBO_EXTENDS$",
-                "../backend/convex",
-                "../api/src"
-            ]
-        },
-        "shadcn:add": {
-            "cache": false,
-            "interactive": true
-        }
-    }
+	"extends": ["//"],
+	"tasks": {
+		"dev": {
+			"with": ["@plateful/backend#dev", "@plateful/api#dev"],
+			"inputs": ["$TURBO_EXTENDS$", "../backend/convex", "../api/src"],
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true,
+			"interactive": true
+		},
+		"shadcn:add": {
+			"cache": false,
+			"interactive": true
+		}
+	}
 }

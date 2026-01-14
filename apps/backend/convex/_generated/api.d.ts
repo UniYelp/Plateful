@@ -10,6 +10,7 @@
 
 import type * as crons from "../crons.js";
 import type * as errors_auth from "../errors/auth.js";
+import type * as errors_conflict from "../errors/conflict.js";
 import type * as errors_custom from "../errors/custom.js";
 import type * as errors_helpers from "../errors/helpers.js";
 import type * as errors_index from "../errors/index.js";
@@ -22,6 +23,7 @@ import type * as ingredients from "../ingredients.js";
 import type * as migrations from "../migrations.js";
 import type * as migrations_index from "../migrations/index.js";
 import type * as recipeGens from "../recipeGens.js";
+import type * as recipeIngredients from "../recipeIngredients.js";
 import type * as recipes from "../recipes.js";
 import type * as routes_webhooks from "../routes/webhooks.js";
 import type * as triggers from "../triggers.js";
@@ -40,6 +42,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   "errors/auth": typeof errors_auth;
+  "errors/conflict": typeof errors_conflict;
   "errors/custom": typeof errors_custom;
   "errors/helpers": typeof errors_helpers;
   "errors/index": typeof errors_index;
@@ -52,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   migrations: typeof migrations;
   "migrations/index": typeof migrations_index;
   recipeGens: typeof recipeGens;
+  recipeIngredients: typeof recipeIngredients;
   recipes: typeof recipes;
   "routes/webhooks": typeof routes_webhooks;
   triggers: typeof triggers;

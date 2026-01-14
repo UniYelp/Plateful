@@ -1,12 +1,17 @@
 import type { ConvexError } from "convex/values";
 
-import { isCustomConvexError, type NotFoundConvexError } from "@backend/errors";
+import {
+	type ConflictConvexError,
+	isCustomConvexError,
+	type NotFoundConvexError,
+} from "@backend/errors";
 import {
 	CustomError,
 	ForbiddenError,
 	NotFoundError,
 	UnauthorizedError,
 } from "../models";
+import { ConflictError } from "../models/conflict";
 
 export const handleConvexError = (err: ConvexError<any>) => {
 	// TODO: handle validation errors
@@ -30,6 +35,11 @@ export const handleConvexError = (err: ConvexError<any>) => {
 				data,
 				errorId,
 			});
+		}
+		case "Conflict": {
+			const error = err as ConflictConvexError;
+			const [, { data }] = error.data;
+			return new ConflictError({ data, errorId, field: data.field });
 		}
 		case "Forbidden": {
 			return new ForbiddenError({ data, errorId });

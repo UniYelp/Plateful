@@ -1,4 +1,4 @@
-type CustomErrorOptions<T> = {
+export type CustomErrorOptions<T> = {
 	message?: string;
 	data: T;
 	errorId?: string;
