@@ -100,6 +100,8 @@ export const ingredientQuantityFields = {
 	unit: v.optional(v.string()),
 };
 
+export type IngredientQuantity = ObjectType<typeof ingredientQuantityFields>;
+
 export const ingredientFields = {
 	householdId: v.id("households"),
 
@@ -140,8 +142,12 @@ export const recipeIngredientFields = {
 	recipeId: v.id("recipes"),
 	ingredientId: v.id("ingredients"),
 
-	quantity: v.object(ingredientQuantityFields),
-	state: v.optional(v.string()),
+	quantities: v.array(
+		v.object({
+			...ingredientQuantityFields,
+			state: v.optional(v.string()),
+		}),
+	),
 };
 
 export const recipeStepBlock = v.union(

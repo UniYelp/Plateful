@@ -2,7 +2,6 @@ import Elysia from "elysia";
 
 import { LockNotAcquired } from "../../errors/lock-not-acquired";
 import { redis } from "../../plugins/redis.plugin";
-import { RedisLocks } from "../../redis/locks";
 import { RecipesModel } from "./model";
 import * as RecipeService from "./service";
 
@@ -13,28 +12,32 @@ export const recipes = new Elysia({
 	.error({
 		LockNotAcquired,
 	})
-	// .onError(({ code, error, status }) => {
-	// 	switch (code) {
-	// 		case "LockNotAcquired":
-	// 			return status(error.status, error.message);
-	// 	}
-	// })
 	.post(
 		"generate",
-		async ({ body, redis }) => {
-			const lock = RedisLocks.recipes.generate.user(redis, body.userId);
+		async ({ body }) => {
+			// const lock = RedisLocks.recipes.generate.user(redis, body.userId);
 
-			const acquired = await lock.acquire();
+			// console.log("acquiring lock for user", body.userId, "...");
 
-			if (!acquired) {
-				throw new LockNotAcquired("You may only generate one recipe at a time");
-			}
+			// const acquired = await lock.acquire();
+
+			// if (!acquired) {
+			// 	throw new LockNotAcquired("You may only generate one recipe at a time");
+			// }
+
+			console.log("acquired lock for user", body.userId, "...");
 
 			try {
+				console.log("generating recipe for user", body.userId, "...");
 				const result = await RecipeService.generateRecipe(body);
+				console.log("generated recipe for user", body.userId, "...");
+				console.log({ result });
 				return result;
+			} catch (err) {
+				console.log("error for user", body.userId, "...", err);
+				throw err;
 			} finally {
-				await lock.release();
+				// await lock.release();
 			}
 		},
 		{

@@ -30,6 +30,7 @@
         "convex": "catalog:",
         "convex-helpers": "^0.1.108",
         "hono": "catalog:",
+        "luxon": "^3.7.2",
         "svix": "^1.76.1",
         "zod": "catalog:"
     },
@@ -37,6 +38,7 @@
         "@dotenvx/dotenvx": "^1.50.1",
         "@edge-runtime/vm": "^5.0.0",
         "@plateful/types": "workspace:*",
+        "@types/luxon": "^3.7.1",
         "convex-test": "^0.0.41",
         "vite": "^7.1.7"
     }
