@@ -10,6 +10,7 @@
 
 import type * as crons from "../crons.js";
 import type * as errors_auth from "../errors/auth.js";
+import type * as errors_conflict from "../errors/conflict.js";
 import type * as errors_custom from "../errors/custom.js";
 import type * as errors_helpers from "../errors/helpers.js";
 import type * as errors_index from "../errors/index.js";
@@ -41,6 +42,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   "errors/auth": typeof errors_auth;
+  "errors/conflict": typeof errors_conflict;
   "errors/custom": typeof errors_custom;
   "errors/helpers": typeof errors_helpers;
   "errors/index": typeof errors_index;

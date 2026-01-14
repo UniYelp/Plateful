@@ -2,7 +2,11 @@ import { ConvexError, type Value } from "convex/values";
 
 import type { SuggestStr } from "@plateful/types";
 
-export type BaseCustomErrorTypes = "NotFound" | "Unauthorized" | "Forbidden";
+export type BaseCustomErrorTypes =
+	| "NotFound"
+	| "Unauthorized"
+	| "Forbidden"
+	| "Conflict";
 
 export type SuggestedErrorTypes = SuggestStr<BaseCustomErrorTypes>;
 

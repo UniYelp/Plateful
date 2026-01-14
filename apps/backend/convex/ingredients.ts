@@ -1,7 +1,7 @@
 import { EXPIRING_SOON_TIME_WINDOW_MS } from "@plateful/ingredients";
 import type { Doc } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
-import { notFound } from "./errors";
+import { conflict, notFound } from "./errors";
 import { householdMutation, householdQuery } from "./households";
 import { ingredientFields, vv } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
@@ -13,7 +13,11 @@ import { isSoftDeleted } from "./utils/soft_delete";
 export const byHousehold = householdQuery({
 	args: {},
 	handler: async (ctx, args) => {
-		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
+		const ingredients = await getHouseholdIngredients(
+			ctx,
+			args.householdId,
+		).collect();
+
 		return ingredients;
 	},
 });
@@ -36,10 +40,36 @@ export const byId = householdQuery({
 	},
 });
 
+export const uniqueByName = householdQuery({
+	args: {
+		name: vv.string(),
+	},
+	handler: async (ctx, args) => {
+		const ingredient = getHouseholdIngredients(
+			ctx,
+			args.householdId,
+			args.name,
+		).unique();
+
+		if (!ingredient) {
+			throw notFound({
+				entity: "Ingredient",
+				in: "Household",
+			});
+		}
+
+		return ingredient;
+	},
+});
+
 export const ingredientsCount = householdQuery({
 	args: {},
 	handler: async (ctx, args) => {
-		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
+		const ingredients = await getHouseholdIngredients(
+			ctx,
+			args.householdId,
+		).collect();
+
 		return ingredients.length;
 	},
 });
@@ -47,7 +77,10 @@ export const ingredientsCount = householdQuery({
 export const expiringSoonIngredients = householdQuery({
 	args: {},
 	handler: async (ctx, args) => {
-		const ingredients = await getHouseholdIngredients(ctx, args.householdId);
+		const ingredients = await getHouseholdIngredients(
+			ctx,
+			args.householdId,
+		).collect();
 
 		const expiryWindow = Date.now() + EXPIRING_SOON_TIME_WINDOW_MS;
 
@@ -68,6 +101,16 @@ export const add = householdMutation({
 	args: ingredientFields,
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
+
+		const similarIngredient = await getHouseholdIngredients(
+			ctx,
+			args.householdId,
+			args.name,
+		).unique();
+
+		if (similarIngredient) {
+			throw conflict({ entity: "ingredient", field: "name" });
+		}
 
 		const now = Date.now();
 
@@ -109,6 +152,18 @@ export const edit = householdMutation({
 				entity: "Ingredient",
 				in: "Household",
 			});
+		}
+
+		if (ingredient.name !== args.name) {
+			const similarIngredient = await getHouseholdIngredients(
+				ctx,
+				args.householdId,
+				args.name,
+			).unique();
+
+			if (similarIngredient) {
+				throw conflict({ entity: "ingredient", field: "name" });
+			}
 		}
 
 		const now = Date.now();
@@ -159,15 +214,23 @@ export const deleteIngredient = householdMutation({
 // #endregion
 
 // #region helpers
-const getHouseholdIngredients = async (
+const getHouseholdIngredients = (
 	ctx: QueryCtx,
 	householdId: Doc<"households">["_id"],
+	name?: string,
 ) => {
-	return await ctx.db
+	return ctx.db
 		.query("ingredients")
-		.withIndex("by_household_deletedAt_name", (q) =>
-			q.eq("householdId", householdId).eq("deletedAt", undefined),
-		)
-		.collect();
+		.withIndex("by_household_deletedAt_name", (q) => {
+			const filter = q
+				.eq("householdId", householdId)
+				.eq("deletedAt", undefined);
+
+			if (name) {
+				return filter.eq("name", name);
+			}
+
+			return filter;
+		});
 };
 // #endregion

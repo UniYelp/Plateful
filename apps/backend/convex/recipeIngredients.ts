@@ -4,8 +4,6 @@ import type { QueryCtx } from "./_generated/server";
 import { householdQuery } from "./households";
 import { vv } from "./schema";
 
-// import {bool} from '@plateful/utils'
-
 // #region Queries
 
 export const byRecipe = householdQuery({
