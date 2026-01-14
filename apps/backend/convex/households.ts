@@ -10,7 +10,7 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { forbidden, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { type EntityShape, type UserStampId, vv } from "./schema";
-import { isSoftDeleted } from "./utils/soft_delete";
+import { isSoftDeleted, notDeletedIndex } from "./utils/soft_delete";
 import {
 	type AuthedMutationCtx,
 	type AuthedQueryCtx,
@@ -125,7 +125,7 @@ export const currentUserHousehold = authedQuery({
 		const memberships = await ctx.db
 			.query("householdMembers")
 			.withIndex("by_user_deletedAt", (q) =>
-				q.eq("userId", userId).eq("deletedAt", undefined),
+				q.eq("userId", userId).eq(...notDeletedIndex),
 			)
 			.take(1);
 
@@ -213,7 +213,7 @@ export async function getUserMemberships(
 	return await ctx.db
 		.query("householdMembers")
 		.withIndex("by_user_deletedAt", (q) =>
-			q.eq("userId", userId).eq("deletedAt", undefined),
+			q.eq("userId", userId).eq(...notDeletedIndex),
 		)
 		.collect();
 }
