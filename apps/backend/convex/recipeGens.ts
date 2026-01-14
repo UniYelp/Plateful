@@ -172,7 +172,7 @@ export const completeGen = internalMutation({
 			updatedAt: now,
 		});
 
-		const ingPromises = args.ingredients.map(
+		const ingredientPromises = args.ingredients.map(
 			async (ing) =>
 				await ctx.db.insert("recipeIngredients", {
 					recipeId,
@@ -196,7 +196,7 @@ export const completeGen = internalMutation({
 				}),
 		);
 
-		await Promise.all([...ingPromises, ...stepsPromises]);
+		await Promise.all([...ingredientPromises, ...stepsPromises]);
 
 		await ctx.db.patch("recipeGens", args.genId, {
 			state: {
