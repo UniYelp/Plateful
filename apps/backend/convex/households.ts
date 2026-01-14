@@ -113,6 +113,10 @@ export const getUserHouseholds = authedQuery({
 		return households.filter(bool);
 	},
 });
+
+/**
+ * ? Temporary
+ */
 export const currentUserHousehold = authedQuery({
 	args: {},
 	handler: async (ctx) => {
