@@ -1,3 +1,4 @@
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { RouterProvider } from "@tanstack/react-router";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
@@ -19,15 +20,34 @@ posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 // Create a new router instance
 const router = getRouter();
 
+function InnerApp() {
+	const auth = useAuth();
+	return <RouterProvider router={router} context={{ auth }} />;
+}
+
+function App() {
+	return (
+		<PostHogProvider client={posthog}>
+			<ClerkProvider
+				publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}
+				signInFallbackRedirectUrl="/dashboard"
+				signInUrl="/dashboard"
+				signUpFallbackRedirectUrl="/dashboard"
+				signUpUrl="/dashboard"
+			>
+				<InnerApp />
+			</ClerkProvider>
+		</PostHogProvider>
+	);
+}
+
 // Render the app
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 	root.render(
 		<StrictMode>
-			<PostHogProvider client={posthog}>
-				<RouterProvider router={router} />
-			</PostHogProvider>
+			<App />
 		</StrictMode>,
 	);
 }

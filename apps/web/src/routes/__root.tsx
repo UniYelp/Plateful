@@ -10,12 +10,20 @@ import { Toaster } from "sonner";
 import { usePosthogUserSetup } from "@/hooks/usePosthogUserSetup";
 import { seo } from "@/utils/seo";
 
-import globalsCss from "@/styles/globals.css?url";
 import "@/styles/globals.css";
 
-export const Route = createRootRouteWithContext<{
+import type { useAuth } from "@clerk/clerk-react";
+
+import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
+
+import globalsCss from "@/styles/globals.css?url";
+
+type RouterContext = {
 	queryClient: QueryClient;
-}>()({
+	auth: ReturnType<typeof useAuth>;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
 	wrapInSuspense: true,
 	head: () => ({
 		meta: [
@@ -56,6 +64,7 @@ export const Route = createRootRouteWithContext<{
 			{ rel: "manifest", href: "/manifest.json", color: "#fffff" },
 		],
 	}),
+	onError: getRouteErrorHandler(),
 	component: RootComponent,
 });
 

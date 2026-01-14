@@ -1,15 +1,10 @@
+import { convexQuery } from "@convex-dev/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
+import { api } from "@backend/api";
 import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard")({
-	head: () => ({
-		meta: [
-			...seo({
-				title: "dashboard",
-			}),
-		],
-	}),
 	staticData: {
 		links: [
 			{
@@ -20,19 +15,29 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 				label: "Recipes",
 				to: "/dashboard/recipes",
 			},
-			{
-				label: "Meal Plan",
-				to: "/dashboard/meal-plans",
-			},
-			{
-				label: "Shopping List",
-				to: "/dashboard/shopping-list",
-			},
 		],
 	},
+	beforeLoad: async ({ context }) => {
+		const household = await context.queryClient.ensureQueryData(
+			convexQuery(api.households.currentUserHousehold),
+		);
+
+		return { household };
+	},
+	head: () => ({
+		meta: [
+			...seo({
+				title: "dashboard",
+			}),
+		],
+	}),
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	return <Outlet />;
+	return (
+		<div className="container mx-auto max-w-4xl px-4 py-8">
+			<Outlet />
+		</div>
+	);
 }

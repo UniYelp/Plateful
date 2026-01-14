@@ -11,9 +11,10 @@ export function Navbar() {
 						<Link
 							{...linkProps}
 							key={label}
-							className="text-muted-foreground transition-colors hover:text-foreground"
+							className="flex items-center text-muted-foreground transition-colors hover:text-foreground"
 						>
-							{icon} {label}
+							{icon}
+							{label}
 						</Link>
 					)) ?? [],
 			)}

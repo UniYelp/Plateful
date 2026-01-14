@@ -42,7 +42,8 @@ export const byHousehold = householdQuery({
 			.withIndex("by_household_deletedAt", (q) =>
 				q.eq("householdId", args.householdId).eq(...notDeletedIndex),
 			)
-			.collect();
+			.order("desc")
+			.take(5);
 
 		return generations;
 	},
@@ -50,13 +51,22 @@ export const byHousehold = householdQuery({
 
 export const byIdAndHousehold = householdQuery({
 	args: {
-		genId: vv.id("recipeGens"),
+		genId: vv.string(),
 	},
 	handler: async (ctx, args) => {
-		const recipeGen = await ctx.db.get("recipeGens", args.genId);
+		const genId = ctx.db.normalizeId("recipeGens", args.genId);
 
-		if (recipeGen?.householdId !== args.householdId || isSoftDeleted(recipeGen))
-			throw notFound({ entity: "RecipeGen", in: "Household" });
+		if (!genId) {
+			throw notFound({ entity: "recipe generation", by: "household" });
+		}
+
+		const recipeGen = await ctx.db.get("recipeGens", genId);
+
+		ctx.validateHousehold(recipeGen);
+
+		if (!recipeGen || isSoftDeleted(recipeGen)) {
+			throw notFound({ entity: "recipe generation", by: "household" });
+		}
 
 		return recipeGen;
 	},

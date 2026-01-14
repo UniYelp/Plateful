@@ -3,11 +3,14 @@ import {
 	customQuery,
 } from "convex-helpers/server/customFunctions";
 
+import type { Maybe } from "@plateful/types";
+import { bool } from "@plateful/utils";
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
-import { forbidden } from "./errors";
+import { forbidden, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { type EntityShape, type UserStampId, vv } from "./schema";
+import { isSoftDeleted, notDeletedIndex } from "./utils/soft_delete";
 import {
 	type AuthedMutationCtx,
 	type AuthedQueryCtx,
@@ -35,8 +38,10 @@ export const householdQuery = customQuery(authedQuery, {
 
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
+		const validateHousehold = getHouseholdEntityValidator(args.householdId);
+
 		return {
-			ctx: { user }, //? Convex don't propagate the extensions by other extended custom functions
+			ctx: { user, validateHousehold }, //? Convex don't propagate the extensions by other extended custom functions
 			args,
 		};
 	},
@@ -105,7 +110,44 @@ export const getUserHouseholds = authedQuery({
 			}),
 		);
 
-		return households.filter(Boolean);
+		return households.filter(bool);
+	},
+});
+
+/**
+ * ? Temporary
+ */
+export const currentUserHousehold = authedQuery({
+	args: {},
+	handler: async (ctx) => {
+		const { _id: userId } = ctx.user;
+
+		const memberships = await ctx.db
+			.query("householdMembers")
+			.withIndex("by_user_deletedAt", (q) =>
+				q.eq("userId", userId).eq(...notDeletedIndex),
+			)
+			.take(1);
+
+		const membership = memberships.at(0);
+
+		if (!membership || isSoftDeleted(membership)) {
+			throw notFound({
+				entity: "membership",
+				by: "user",
+			});
+		}
+
+		const household = await ctx.db.get("households", membership.householdId);
+
+		if (!household || isSoftDeleted(household)) {
+			throw notFound({
+				entity: "household",
+				by: "user",
+			});
+		}
+
+		return household;
 	},
 });
 
@@ -170,7 +212,9 @@ export async function getUserMemberships(
 ) {
 	return await ctx.db
 		.query("householdMembers")
-		.withIndex("by_user", (q) => q.eq("userId", userId))
+		.withIndex("by_user_deletedAt", (q) =>
+			q.eq("userId", userId).eq(...notDeletedIndex),
+		)
 		.collect();
 }
 
@@ -191,6 +235,28 @@ export async function validateUserInHouseholdOrThrow(
 			`User with ID ${userId} is not a member of household with ID ${householdId}.`,
 		);
 	}
+}
+
+/**
+ * @throws
+ */
+export function validateHouseholdEntity<
+	T extends { householdId: Id<"households"> },
+>(entity: T, householdId: Id<"households">) {
+	if (entity.householdId === householdId) return;
+
+	throw forbidden();
+}
+
+function getHouseholdEntityValidator(householdId: Id<"households">) {
+	/**
+	 * @description if the entity is defined, validates that the entity's household matches
+	 * @throws
+	 */
+	return <T extends { householdId: Id<"households"> }>(entity?: Maybe<T>) => {
+		if (!entity) return;
+		validateHouseholdEntity(entity, householdId);
+	};
 }
 
 export async function createUserHousehold({

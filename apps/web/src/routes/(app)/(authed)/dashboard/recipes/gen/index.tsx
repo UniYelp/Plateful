@@ -1,15 +1,27 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
 import { ArrowLeft } from "lucide-react";
 
 import { api } from "@backend/api";
-import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/gen/")({
+	loader: async ({ context }) => {
+		const { household, queryClient } = context;
+
+		queryClient.ensureQueryData(
+			convexQuery(api.recipeGens.byHousehold, {
+				householdId: household._id,
+			}),
+		);
+
+		return { household };
+	},
 	component: RouteComponent,
+	pendingComponent: () => recipesLoader,
 });
 
 function RouteComponent() {
@@ -17,18 +29,18 @@ function RouteComponent() {
 }
 
 function RecipeGenerationsPage() {
-	const household = useCurrentHousehold();
-	const recipeGens = useQuery(
-		api.recipeGens.byHousehold,
-		household ? { householdId: household._id } : "skip",
-	);
+	const { household } = Route.useLoaderData();
 
-	if (!recipeGens) return recipesLoader;
+	const { data: recipeGens } = useSuspenseQuery(
+		convexQuery(api.recipeGens.byHousehold, {
+			householdId: household._id,
+		}),
+	);
 
 	// TODO: add a no-gens view
 
 	return (
-		<div className="container mx-auto max-w-4xl px-4 py-8">
+		<>
 			<div className="mb-8 flex items-center gap-4">
 				<Button variant="ghost" size="sm" asChild>
 					<Link to="/dashboard/recipes">
@@ -49,6 +61,6 @@ function RecipeGenerationsPage() {
 					<RecipeGenState key={item._id} gen={item} />
 				))}
 			</div>
-		</div>
+		</>
 	);
 }

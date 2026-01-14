@@ -2,6 +2,13 @@ import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 
 export const Route = createFileRoute("/(app)/(authed)")({
+	beforeLoad: async ({ context }) => {
+		const { auth } = context;
+
+		if (auth.isLoaded || auth.isSignedIn) return;
+
+		await auth.getToken();
+	},
 	component: AuthGuard,
 });
 
