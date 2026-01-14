@@ -1,8 +1,8 @@
 import { recipeAgent } from "./agent";
 import { generateRecipePrompt } from "./prompt";
-import type { RecipeInput } from "./schemas";
+import type { RecipeGenInput } from "./schemas";
 
-export const generateRecipe = async (input: RecipeInput) => {
+export const generateRecipe = async (input: RecipeGenInput) => {
 	const {
 		experimental_output: output,
 		text,

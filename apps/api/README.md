@@ -15,6 +15,16 @@ Follow the guides in [ngrok](../../notes/Architecture/Services/ngrok.md)
 #### Gemini
 
 - [Create your own API key here](https://aistudio.google.com/api-keys)
+- Make sure you have the following environment variables in your `.env`:
+  - `AGENT_PROVIDERS`
+    - The providers, separated by | (pipe)
+  - per provider:
+    - `AGENT_${PROVIDER}_KEY_${KEY_NAME}`
+      - At least one per provider
+    - `AGENT_${PROVIDER}_MODELS`
+      - At least one per provider
+      - separated by | (pipe)
+      - JSON { "model": string, "rpm": number, "rpd": number }
 
 ### Redis
 
@@ -22,9 +32,10 @@ Follow the guides in [ngrok](../../notes/Architecture/Services/ngrok.md)
 
 1. Sign up for [Upstash](../../notes/Architecture/Services/Upstash.md)
 1. Create a redis database
-1. Copy both the `REST` and `TCP` environment variables and place them in the [.env](.env) file
+1. Copy the `REST` environment variables and place them in the [.env](.env) file
 1. Make sure you have the following environment variables in your `.env`:
-    - `REDIS_URL`
+    - `UPSTASH_REDIS_REST_URL`
+    - `UPSTASH_REDIS_REST_TOKEN`
 
 #### Via Vercel
 

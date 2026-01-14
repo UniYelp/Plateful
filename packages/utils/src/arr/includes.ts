@@ -14,4 +14,4 @@ export const includes = <
 >(
 	arr: Arr,
 	el: El,
-): boolean => arr.includes(el);
+): el is Arr[number] & El => arr.includes(el);

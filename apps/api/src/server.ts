@@ -7,6 +7,7 @@ import z from "zod";
 
 import { appConfig } from "./configs/app.config";
 import { ENV } from "./configs/env.config";
+import { health } from "./modules/health";
 import { recipes } from "./modules/recipes";
 import { logger } from "./plugins/logger";
 import { requestId } from "./plugins/request-id";
@@ -58,6 +59,7 @@ export const app = new Elysia({ adapter: node() })
 	// 		// auth: true,
 	// 	},
 	// )
+	.use(health)
 	.use(recipes);
 
 export type App = typeof app;

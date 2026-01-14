@@ -1,9 +1,8 @@
 import { createEnv } from "@t3-oss/env-core";
-import { /**upstashRedis, */ vercel } from "@t3-oss/env-core/presets-zod";
-import { z } from "zod";
-
+import { upstashRedis, vercel } from "@t3-oss/env-core/presets-zod";
+import z from "zod";
 export const ENV = createEnv({
-	extends: [vercel() /**upstashRedis() */],
+	extends: [vercel(), upstashRedis()],
 	server: {
 		//? Client
 		ALLOWED_ORIGINS: z.codec(z.string(), z.url().array(), {

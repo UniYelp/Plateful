@@ -1,6 +1,6 @@
 import dedent from "dedent";
 
-import type { RecipeInput } from "./schemas";
+import type { RecipeGenInput } from "./schemas";
 
 export const generateRecipeSystemPrompt = dedent`
     You are a Recipe Composer AI.
@@ -148,7 +148,7 @@ export const generateRecipeSystemPrompt = dedent`
     Your goal is to produce a clear, consistent recipe that can be rendered as human-readable instructions while allowing reliable extraction of material usage and time information.
 `;
 
-export const generateRecipePrompt = (input: RecipeInput) => dedent`
+export const generateRecipePrompt = (input: RecipeGenInput) => dedent`
     ${generateRecipeSystemPrompt}
 
     ---
