@@ -103,5 +103,10 @@
 	});
 	```
 - [[Files & Folders#^tanstack-router-naming-conventions|Naming Conventions]]
+- Error Handling
+	- Errors can be thrown in: 
+		- beforeLoad, loader, onError -> ErrorComponent/NotFoundComponent/ErrorBoundary
+		- within components -> ErrorComponent/ErrorBoundary
+	- Errors cannot be thrown in: onCatch
 - [Routing Concepts](https://tanstack.com/router/v1/docs/framework/react/routing/routing-concepts)
 - [Create Route Property Order](https://tanstack.com/router/v1/docs/eslint/create-route-property-order)

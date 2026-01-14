@@ -3,7 +3,6 @@ import type { Doc } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import { householdMutation, householdQuery } from "./households";
 import { ingredientFields, vv } from "./schema";
-import { authedMutation } from "./with_auth";
 // #region Validators
 
 // #region Queries

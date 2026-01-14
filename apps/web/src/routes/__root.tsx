@@ -10,10 +10,11 @@ import { Toaster } from "sonner";
 import { usePosthogUserSetup } from "@/hooks/usePosthogUserSetup";
 import { seo } from "@/utils/seo";
 
-import globalsCss from "@/styles/globals.css?url";
 import "@/styles/globals.css";
 
 import type { useAuth } from "@clerk/clerk-react";
+
+import globalsCss from "@/styles/globals.css?url";
 
 type RouterContext = {
 	queryClient: QueryClient;

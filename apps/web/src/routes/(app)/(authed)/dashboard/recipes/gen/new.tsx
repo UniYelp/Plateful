@@ -122,7 +122,7 @@ function GenerateNewRecipePage() {
 	};
 
 	return (
-		<div className="container mx-auto max-w-4xl px-4 py-8">
+		<>
 			<div className="mb-8 flex items-center gap-4">
 				<Button variant="ghost" size="sm" asChild>
 					<Link to="/dashboard/recipes">
@@ -169,6 +169,6 @@ function GenerateNewRecipePage() {
 					onSubmit={onSubmit}
 				/>
 			)}
-		</div>
+		</>
 	);
 }

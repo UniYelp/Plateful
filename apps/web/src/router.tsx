@@ -5,12 +5,18 @@ import {
 	notifyManager,
 	QueryClient,
 } from "@tanstack/react-query";
-import { createRouter, type LinkComponentProps } from "@tanstack/react-router";
+import {
+	createRouter,
+	type LinkComponentProps,
+	notFound,
+	redirect,
+} from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { toast } from "sonner";
 
+import { isConvexError, isCustomConvexError } from "@backend/errors";
 import { Devtools } from "@/components/layouts/Devtools";
 import { ENV } from "@/configs/env.config";
 import { NotFound } from "./components/layouts/NotFound";
@@ -78,6 +84,30 @@ export function getRouter() {
 			</>
 		),
 		defaultNotFoundComponent: NotFound,
+		defaultErrorComponent: () => {
+			return "Error";
+		},
+		defaultOnCatch: (err, _errInfo) => {
+			console.log({ err });
+			if (isConvexError(err)) {
+				if (isCustomConvexError(err)) {
+					switch (err.data.at(0)) {
+						case "Forbidden":
+						case "Not_Found": {
+							throw notFound();
+						}
+						case "Unauthorized": {
+							throw redirect({
+								to: "/sign-in",
+								// search: {
+								// 	redirect: Route.path,
+								// },
+							});
+						}
+					}
+				}
+			}
+		},
 	});
 
 	setupRouterSsrQueryIntegration({
