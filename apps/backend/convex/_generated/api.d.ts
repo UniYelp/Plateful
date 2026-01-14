@@ -14,6 +14,7 @@ import type * as errors_conflict from "../errors/conflict.js";
 import type * as errors_custom from "../errors/custom.js";
 import type * as errors_helpers from "../errors/helpers.js";
 import type * as errors_index from "../errors/index.js";
+import type * as errors_internal from "../errors/internal.js";
 import type * as errors_not_found from "../errors/not_found.js";
 import type * as external_user from "../external_user.js";
 import type * as functions from "../functions.js";
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   "errors/custom": typeof errors_custom;
   "errors/helpers": typeof errors_helpers;
   "errors/index": typeof errors_index;
+  "errors/internal": typeof errors_internal;
   "errors/not_found": typeof errors_not_found;
   external_user: typeof external_user;
   functions: typeof functions;

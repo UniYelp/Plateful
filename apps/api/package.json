@@ -17,6 +17,7 @@
         "@clerk/backend": "catalog:",
         "@clerk/shared": "^3.39.0",
         "@elysiajs/cors": "^1.4.0",
+        "@elysiajs/cron": "^1.4.1",
         "@elysiajs/node": "^1.4.2",
         "@elysiajs/openapi": "^1.4.11",
         "@elysiajs/server-timing": "^1.4.0",
@@ -26,9 +27,14 @@
         "@plateful/units": "workspace:*",
         "@sinclair/typebox": "^0.34.41",
         "@t3-oss/env-core": "^0.13.8",
-        "@upstash/redis": "^1.35.4",
+        "@upstash/lock": "^0.2.1",
+        "@upstash/query": "^0.0.2",
+        "@upstash/realtime": "^1.0.0",
+        "@upstash/redis": "^1.36.0",
         "ai": "5.0.113",
+        "croner": "^6.0.7",
         "dedent": "^1.7.0",
+        "effect": "catalog:",
         "elysia": "^1.4.19",
         "elysia-clerk": "^0.13.2",
         "exact-mirror": "^0.2.5",
@@ -38,6 +44,7 @@
     },
     "devDependencies": {
         "@dotenvx/dotenvx": "^1.50.1",
+        "@plateful/types": "workspace:*",
         "tsx": "^4.7.1"
     }
 }

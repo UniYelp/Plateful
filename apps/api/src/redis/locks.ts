@@ -1,0 +1,18 @@
+import { Lock } from "@upstash/lock";
+import type { Redis } from "@upstash/redis";
+
+import type { DeepDict, FN } from "@plateful/types";
+import { RedisKeys } from "./keys";
+
+export const RedisLocks = {
+	recipes: {
+		generate: {
+			user: (redis: Redis, userId: string) =>
+				new Lock({
+					id: RedisKeys.locks.recipes.generate.user(userId),
+					lease: 1000 * 60,
+					redis,
+				}),
+		},
+	},
+} satisfies DeepDict<Lock | FN<Lock>>;
