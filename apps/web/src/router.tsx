@@ -27,6 +27,9 @@ import { routeTree } from "./routeTree.gen";
  *
  * Clerk:
  * - {@link https://tanstack.com/router/v1/docs/framework/react/examples/start-clerk-basic?path=examples%2Freact%2Fstart-clerk-basic%2Fsrc%2Frouter.tsx}
+ *
+ * Auth
+ * - {@link https://tanstack.com/router/v1/docs/framework/react/guide/authenticated-routes}
  */
 export function getRouter() {
 	if (typeof document !== "undefined") {
