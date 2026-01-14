@@ -23,6 +23,7 @@
         "@hono/zod-validator": "catalog:",
         "@plateful/ingredients": "workspace:*",
         "@plateful/units": "workspace:*",
+        "@plateful/utils": "workspace:*",
         "@t3-oss/env-core": "^0.13.10",
         "convex": "catalog:",
         "convex-helpers": "^0.1.108",

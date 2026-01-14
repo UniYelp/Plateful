@@ -1,16 +1,13 @@
-import { ConvexError, type Value } from "convex/values";
+import { type CustomConvexError, customError } from "./custom";
 
-import type { ConvexErrorData, CustomConvexError } from "./helpers";
+type NotFoundData = {
+	entity: string;
+	by?: string;
+};
 
-export type NotFoundConvexError<T extends Value = null> = CustomConvexError<
-	"Not Found",
-	T
->;
+export type NotFoundConvexError<T extends NotFoundData = NotFoundData> =
+	CustomConvexError<"NotFound", T>;
 
-export type NotFoundErrorData<
-	Err extends NotFoundConvexError<any> = NotFoundConvexError,
-> = ConvexErrorData<Err>;
-
-export const notFound = <T extends Value = null>(
-	data = null as T,
-): NotFoundConvexError<T> => new ConvexError(["Not Found", data] as const);
+export const notFound = <T extends NotFoundData = NotFoundData>(
+	data: T,
+): NotFoundConvexError<T> => customError("NotFound", data);
