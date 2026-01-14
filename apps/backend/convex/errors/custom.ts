@@ -8,7 +8,7 @@ export type SuggestedErrorTypes = SuggestStr<BaseCustomErrorTypes>;
 
 export type CustomErrorDetails<Data extends Value = null> = {
 	data: Data;
-	correlationId: string;
+	incidentId: string;
 };
 
 export type CustomConvexError<
@@ -29,7 +29,4 @@ export const customError = <
 	type: Type,
 	data = null as Data,
 ): CustomConvexError<Type, Data> =>
-	new ConvexError([
-		type,
-		{ data, correlationId: crypto.randomUUID() },
-	] as const);
+	new ConvexError([type, { data, incidentId: crypto.randomUUID() }] as const);

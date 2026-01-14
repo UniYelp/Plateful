@@ -18,7 +18,7 @@ export const handleConvexError = (err: ConvexError<any>) => {
 		});
 	}
 
-	const [type, { data, correlationId: errorId }] = err.data;
+	const [type, { data, incidentId: errorId }] = err.data;
 
 	switch (type) {
 		case "NotFound": {
