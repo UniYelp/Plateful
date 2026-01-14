@@ -1,11 +1,13 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMutation, useQuery } from "convex/react";
-import { Edit, Eye, Package, Plus, Search, Trash2 } from "lucide-react";
+import { useMutation } from "convex/react";
+import { Eye, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
-import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { ingredientLoader } from "&/ingredients/component/loaders/ingredient";
 import {
 	categories,
 	colorByExpiryStatus,
@@ -29,7 +31,19 @@ import { Input } from "@/components/ui/input";
 import { ingredientSymbolToDisplay } from "@/features/ingredients/utils/ingredient-symbol-to-display";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
+	loader: async ({ context }) => {
+		const { household, queryClient } = context;
+
+		const ingredients = await queryClient.ensureQueryData(
+			convexQuery(api.ingredients.byHousehold, {
+				householdId: household._id,
+			}),
+		);
+
+		return { household, ingredients };
+	},
 	component: RouteComponent,
+	pendingComponent: () => ingredientLoader,
 });
 
 function RouteComponent() {
@@ -40,12 +54,14 @@ function IngredientsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
 
-	const household = useCurrentHousehold();
+	const { household } = Route.useLoaderData();
 
-	const ingredients = useQuery(
-		api.ingredients.byHousehold,
-		household ? { householdId: household._id } : "skip",
+	const { data: ingredients } = useSuspenseQuery(
+		convexQuery(api.ingredients.byHousehold, {
+			householdId: household._id,
+		}),
 	);
+
 	const deleteIngredient = useMutation(api.ingredients.deleteIngredient);
 
 	const filteredIngredients = ingredients?.filter((ingredient) => {
@@ -56,8 +72,6 @@ function IngredientsPage() {
 			selectedCategory === "all" || ingredient.category === selectedCategory;
 		return matchesSearch && matchesCategory;
 	});
-
-	if (!household) return "Loading...";
 
 	return (
 		<>

@@ -49,6 +49,10 @@ function DashboardPage() {
 		{ householdId: household._id },
 	);
 
+	// const latestGenerations = useQuery(
+	// 	api.recipeGens.
+	// )
+
 	if (!isLoaded || !user) {
 		return <div>Loading...</div>;
 	}
@@ -146,6 +150,57 @@ function DashboardPage() {
 									</Link>
 								</Button>
 							</div>
+						</CardContent>
+					</Card>
+					{/* Recipe Generations */}
+					<Card className="mt-6">
+						<CardHeader>
+							<CardTitle>Recipe Generations</CardTitle>
+							<CardDescription>
+								Your recent AI-generated recipes
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div className="space-y-3">
+								<div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+									<div className="h-12 w-12 overflow-hidden rounded-lg bg-primary/10">
+										<img
+											src="/creamy-basil-chicken-pasta.jpg"
+											alt=""
+											className="h-full w-full object-cover"
+										/>
+									</div>
+									<div className="flex-1">
+										<p className="font-medium text-sm">Creamy Chicken Pasta</p>
+										<p className="text-muted-foreground text-xs">
+											Generated 2 days ago
+										</p>
+									</div>
+								</div>
+								<div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+									<div className="h-12 w-12 overflow-hidden rounded-lg bg-primary/10">
+										<img
+											src="/mediterranean-chicken-bowl.jpg"
+											alt=""
+											className="h-full w-full object-cover"
+										/>
+									</div>
+									<div className="flex-1">
+										<p className="font-medium text-sm">Mediterranean Bowl</p>
+										<p className="text-muted-foreground text-xs">
+											Generated 3 days ago
+										</p>
+									</div>
+								</div>
+							</div>
+							<Button
+								variant="outline"
+								size="sm"
+								className="mt-4 w-full bg-transparent"
+								asChild
+							>
+								<Link to="/dashboard/recipes/gen">View All Generations</Link>
+							</Button>
 						</CardContent>
 					</Card>
 				</div>

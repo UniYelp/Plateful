@@ -12,6 +12,8 @@ import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { toast } from "sonner";
 
+import { ErrorBoundary } from "&/errors/components/ErrorBoundary";
+import { NotFound } from "&/errors/components/NotFound";
 import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { Devtools } from "@/components/layouts/Devtools";
 import { ENV } from "@/configs/env.config";
@@ -84,6 +86,8 @@ export function getRouter() {
 				<Devtools />
 			</>
 		),
+		defaultNotFoundComponent: NotFound,
+		defaultErrorComponent: ErrorBoundary,
 	});
 
 	setupRouterSsrQueryIntegration({
