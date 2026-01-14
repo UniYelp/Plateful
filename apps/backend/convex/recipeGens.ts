@@ -232,10 +232,10 @@ export const generateRecipe = internalAction({
 			},
 		});
 
-		const { tags, ingredients: ingredientsIn } = args;
+		const { tags } = args;
 
 		const ingredientIdByName = Object.fromEntries(
-			ingredientsIn.map((ing) => [ing.name, ing.id] as const),
+			args.ingredients.map((ing) => [ing.name, ing.id] as const),
 		);
 
 		const collator = new Intl.Collator("und", { sensitivity: "base" });
@@ -244,7 +244,7 @@ export const generateRecipe = internalAction({
 			(ing) => collator.compare(ing, "water") === 0,
 		);
 
-		const ingredients = ingredientsIn.flatMap<
+		const ingredients = args.ingredients.flatMap<
 			RecipeGenInput["ingredients"][number]
 		>(({ name, quantities }) =>
 			Array.isArray(quantities)
