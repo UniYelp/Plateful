@@ -1,10 +1,10 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
 import { History } from "lucide-react";
 
 import { api } from "@backend/api";
-import type { Id } from "@backend/dataModel";
-import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { isGeneratingRecipe } from "&/recipes/utils/status";
 import { generatingRecipeLoader } from "@/features/recipes/components/loaders/recipe-gen";
 
@@ -20,7 +20,21 @@ export const Route = createFileRoute(
 			},
 		],
 	},
+	loader: async ({ context, params }) => {
+		const { household, queryClient } = context;
+		const { id } = params;
+
+		const gen = await queryClient.ensureQueryData(
+			convexQuery(api.recipeGens.byIdAndHousehold, {
+				genId: id,
+				householdId: household._id,
+			}),
+		);
+
+		return { household, genId: gen._id };
+	},
 	component: RouteComponent,
+	pendingComponent: () => recipesLoader,
 });
 
 function RouteComponent() {
@@ -28,19 +42,14 @@ function RouteComponent() {
 }
 
 function RecipeGenerationPage() {
-	const { id } = Route.useParams();
-	const genId = id as Id<"recipeGens">;
+	const { household, genId } = Route.useLoaderData();
 
-	const household = useCurrentHousehold();
-
-	const recipeGen = useQuery(
-		api.recipeGens.byIdAndHousehold,
-		household ? { genId, householdId: household._id } : "skip",
+	const { data: recipeGen } = useSuspenseQuery(
+		convexQuery(api.recipeGens.byIdAndHousehold, {
+			genId,
+			householdId: household._id,
+		}),
 	);
-
-	if (!recipeGen) {
-		return "Loading...";
-	}
 
 	if (isGeneratingRecipe(recipeGen)) return generatingRecipeLoader;
 

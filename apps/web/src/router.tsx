@@ -1,8 +1,9 @@
-import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/clerk-react";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import {
 	MutationCache,
 	notifyManager,
+	QueryCache,
 	QueryClient,
 } from "@tanstack/react-query";
 import { createRouter, type LinkComponentProps } from "@tanstack/react-router";
@@ -11,9 +12,9 @@ import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { toast } from "sonner";
 
+import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { Devtools } from "@/components/layouts/Devtools";
 import { ENV } from "@/configs/env.config";
-import { NotFound } from "./components/layouts/NotFound";
 import { routeTree } from "./routeTree.gen";
 
 /**
@@ -26,6 +27,9 @@ import { routeTree } from "./routeTree.gen";
  *
  * Clerk:
  * - {@link https://tanstack.com/router/v1/docs/framework/react/examples/start-clerk-basic?path=examples%2Freact%2Fstart-clerk-basic%2Fsrc%2Frouter.tsx}
+ *
+ * Auth
+ * - {@link https://tanstack.com/router/v1/docs/framework/react/guide/authenticated-routes}
  */
 export function getRouter() {
 	if (typeof document !== "undefined") {
@@ -46,6 +50,9 @@ export function getRouter() {
 				queryFn: convexQueryClient.queryFn(),
 			},
 		},
+		queryCache: new QueryCache({
+			onError: getRouteErrorHandler(),
+		}),
 		mutationCache: new MutationCache({
 			onError: (error) => {
 				toast.error(error.message);
@@ -57,25 +64,19 @@ export function getRouter() {
 
 	const router = createRouter({
 		routeTree,
-		context: { queryClient },
+		context: {
+			queryClient,
+			// biome-ignore lint/style/noNonNullAssertion: This will be set after we wrap the app in an AuthProvider
+			auth: undefined!,
+		},
 		scrollRestoration: true,
 		defaultPreload: "intent",
 		defaultStructuralSharing: true,
 		defaultPreloadStaleTime: 0,
 		Wrap: ({ children }) => (
-			<>
-				<ClerkProvider
-					publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}
-					signInFallbackRedirectUrl="/dashboard"
-					signInUrl="/dashboard"
-					signUpFallbackRedirectUrl="/dashboard"
-					signUpUrl="/dashboard"
-				>
-					<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
-						{children}
-					</ConvexProviderWithClerk>
-				</ClerkProvider>
-			</>
+			<ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
+				{children}
+			</ConvexProviderWithClerk>
 		),
 		InnerWrap: ({ children }) => (
 			<>
@@ -83,7 +84,6 @@ export function getRouter() {
 				<Devtools />
 			</>
 		),
-		defaultNotFoundComponent: NotFound,
 	});
 
 	setupRouterSsrQueryIntegration({
@@ -102,7 +102,7 @@ declare module "@tanstack/react-router" {
 
 	interface StaticDataRouteOption {
 		// backLink: //TODO: add backLink logic
-        // TODO: add links merging logic
+		// TODO: add links merging logic
 		links?: (LinkComponentProps & {
 			icon?: React.JSX.Element;
 			label: string;

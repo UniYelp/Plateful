@@ -1,3 +1,4 @@
+import { bool } from "@plateful/utils";
 import type { Id } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import { householdQuery } from "./households";
@@ -44,8 +45,7 @@ export const byIngredient = householdQuery({
 			}),
 		);
 
-		// TODO: change to bool function
-		return data.filter((ing) => !!ing);
+		return data.filter(bool);
 	},
 });
 

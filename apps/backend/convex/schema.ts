@@ -243,7 +243,7 @@ const schema = defineSchema({
 		...householdMemberFields,
 		...stampsFields,
 	})
-		.index("by_user", ["userId"])
+		.index("by_user_deletedAt", ["userId", "deletedAt"])
 		.index("by_household_and_user", ["householdId", "userId"]),
 	ingredients: defineTable({
 		...ingredientFields,

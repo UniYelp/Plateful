@@ -5,6 +5,7 @@ import { notFound } from "./errors";
 import { householdMutation, householdQuery } from "./households";
 import { ingredientFields, vv } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
+
 // #region Validators
 
 // #region Queries
@@ -27,7 +28,7 @@ export const byId = householdQuery({
 		if (!ingredient || isSoftDeleted(ingredient)) {
 			throw notFound({
 				entity: "Ingredient",
-				in: "Household"
+				in: "Household",
 			});
 		}
 
@@ -77,7 +78,7 @@ export const add = householdMutation({
 			quantities: args.quantities.map((q) => ({
 				...q,
 				unit: q.unit || undefined,
-			})),	
+			})),
 			category: args.category,
 			tags: args.tags,
 			householdId: args.householdId,
@@ -99,13 +100,17 @@ export const edit = householdMutation({
 		const { _id: userId } = ctx.user;
 		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
 
-		if (!ingredient || isSoftDeleted(ingredient) || ingredient.householdId !== args.householdId) {
+		if (
+			!ingredient ||
+			isSoftDeleted(ingredient) ||
+			ingredient.householdId !== args.householdId
+		) {
 			throw notFound({
 				entity: "Ingredient",
-				in: "Household"
+				in: "Household",
 			});
 		}
-		
+
 		const now = Date.now();
 		await ctx.db.patch("ingredients", args.ingredientId, {
 			name: args.name,
@@ -114,7 +119,7 @@ export const edit = householdMutation({
 			quantities: args.quantities.map((q) => ({
 				...q,
 				unit: q.unit || undefined,
-			})),		
+			})),
 			category: args.category,
 			tags: args.tags,
 			updatedBy: userId,
