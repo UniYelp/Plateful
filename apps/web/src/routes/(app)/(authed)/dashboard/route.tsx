@@ -1,6 +1,7 @@
+import { convexQuery } from "@convex-dev/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-import { userCurrentHouseholdQuery } from "&/households/api";
+import { api } from "@backend/api";
 import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { seo } from "@/utils/seo";
 
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 	},
 	beforeLoad: async ({ context }) => {
 		const household = await context.queryClient.ensureQueryData(
-			userCurrentHouseholdQuery,
+			convexQuery(api.households.currentUserHousehold),
 		);
 
 		return { household };
