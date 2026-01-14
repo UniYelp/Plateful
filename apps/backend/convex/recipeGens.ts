@@ -40,7 +40,8 @@ export const byHousehold = householdQuery({
 			.withIndex("by_household_deletedAt", (q) =>
 				q.eq("householdId", args.householdId).eq(...notDeletedIndex),
 			)
-			.collect();
+			.order("desc")
+			.take(5);
 
 		return generations;
 	},
