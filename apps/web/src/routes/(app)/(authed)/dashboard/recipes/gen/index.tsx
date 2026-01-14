@@ -3,12 +3,15 @@ import { useQuery } from "convex/react";
 import { ArrowLeft } from "lucide-react";
 
 import { api } from "@backend/api";
-import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/gen/")({
+	loader: ({ context }) => {
+		const { household } = context;
+		return { household };
+	},
 	component: RouteComponent,
 });
 
@@ -17,11 +20,11 @@ function RouteComponent() {
 }
 
 function RecipeGenerationsPage() {
-	const household = useCurrentHousehold();
-	const recipeGens = useQuery(
-		api.recipeGens.byHousehold,
-		household ? { householdId: household._id } : "skip",
-	);
+	const { household } = Route.useLoaderData();
+
+	const recipeGens = useQuery(api.recipeGens.byHousehold, {
+		householdId: household._id,
+	});
 
 	if (!recipeGens) return recipesLoader;
 

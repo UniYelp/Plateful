@@ -3,23 +3,18 @@ import { ConvexQueryClient } from "@convex-dev/react-query";
 import {
 	MutationCache,
 	notifyManager,
+	QueryCache,
 	QueryClient,
 } from "@tanstack/react-query";
-import {
-	createRouter,
-	type LinkComponentProps,
-	notFound,
-	redirect,
-} from "@tanstack/react-router";
+import { createRouter, type LinkComponentProps } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { toast } from "sonner";
 
-import { isConvexError, isCustomConvexError } from "@backend/errors";
+import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { Devtools } from "@/components/layouts/Devtools";
 import { ENV } from "@/configs/env.config";
-import { NotFound } from "./components/layouts/NotFound";
 import { routeTree } from "./routeTree.gen";
 
 /**
@@ -52,6 +47,9 @@ export function getRouter() {
 				queryFn: convexQueryClient.queryFn(),
 			},
 		},
+		queryCache: new QueryCache({
+			onError: getRouteErrorHandler(),
+		}),
 		mutationCache: new MutationCache({
 			onError: (error) => {
 				toast.error(error.message);
@@ -83,31 +81,6 @@ export function getRouter() {
 				<Devtools />
 			</>
 		),
-		defaultNotFoundComponent: NotFound,
-		defaultErrorComponent: () => {
-			return "Error";
-		},
-		defaultOnCatch: (err, _errInfo) => {
-			console.log({ err });
-			if (isConvexError(err)) {
-				if (isCustomConvexError(err)) {
-					switch (err.data.at(0)) {
-						case "Forbidden":
-						case "Not_Found": {
-							throw notFound();
-						}
-						case "Unauthorized": {
-							throw redirect({
-								to: "/sign-in",
-								// search: {
-								// 	redirect: Route.path,
-								// },
-							});
-						}
-					}
-				}
-			}
-		},
 	});
 
 	setupRouterSsrQueryIntegration({

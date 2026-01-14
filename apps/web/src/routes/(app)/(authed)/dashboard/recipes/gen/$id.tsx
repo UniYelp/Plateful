@@ -6,6 +6,7 @@ import { History } from "lucide-react";
 import { api } from "@backend/api";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { isGeneratingRecipe } from "&/recipes/utils/status";
+import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { generatingRecipeLoader } from "@/features/recipes/components/loaders/recipe-gen";
 
 export const Route = createFileRoute(
@@ -33,6 +34,7 @@ export const Route = createFileRoute(
 
 		return { household, genId: gen._id };
 	},
+	onError: getRouteErrorHandler(),
 	component: RouteComponent,
 	pendingComponent: () => recipesLoader,
 });
