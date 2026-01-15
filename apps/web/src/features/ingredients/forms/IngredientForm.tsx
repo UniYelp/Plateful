@@ -2,7 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { useConvex } from "convex/react";
 import { AlertCircle } from "lucide-react";
 
-import { IngredientSymbol, ingredientUnits } from "@plateful/ingredients";
+import {
+	IngredientSymbol,
+	type IngredientUnit,
+	ingredientUnitsByCategory,
+} from "@plateful/ingredients";
+import { entriesOf } from "@plateful/utils";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { ConflictError } from "&/errors/models/conflict";
@@ -34,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import { TextArea } from "@/components/ui/textarea";
 import { useAppForm } from "@/lib/form";
+import type { SelectGroup, SelectOption } from "@/types/ui/select";
 
 type Props = {
 	householdId: Id<"households">;
@@ -42,6 +48,21 @@ type Props = {
 };
 
 const NameConflict = "An ingredient with this name already exists";
+
+const ingredientUnitGroups = entriesOf(ingredientUnitsByCategory).map(
+	([label, units]) =>
+		({
+			label,
+			options: units.map((unit) => {
+				const symbol = IngredientSymbol[unit];
+
+				return {
+					value: unit,
+					label: `${unit} ${symbol !== unit ? `(${symbol})` : ""}`.trim(),
+				} satisfies SelectOption<IngredientUnit>;
+			}),
+		}) satisfies SelectGroup<IngredientUnit>,
+);
 
 export function IngredientForm({
 	householdId,
@@ -185,19 +206,12 @@ export function IngredientForm({
 								{(field) => (
 									<div className="space-y-2">
 										<Label htmlFor="unit">Unit</Label>
-										<Combobox
+										<Combobox<string>
 											value={field.state.value ?? ""}
 											onChange={(value) =>
 												field.handleChange(value || undefined)
 											}
-											options={ingredientUnits.map((unit) => {
-												const symbol = IngredientSymbol[unit];
-												return {
-													value: unit as string,
-													label:
-														`${unit} ${symbol !== unit ? `(${symbol})` : ""}`.trim(),
-												};
-											})}
+											groups={ingredientUnitGroups}
 										/>
 
 										<field.FieldError />

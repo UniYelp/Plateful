@@ -18,7 +18,7 @@ export const health = new Elysia({ prefix: "/health" })
 	.use(
 		cron({
 			name: "redis-ping",
-			pattern: Patterns.daily(),
+			pattern: Patterns.everyMinutes(5),
 			async run() {
 				const id = randomUUID();
 				const key = RedisKeys.health(id);

@@ -3,7 +3,7 @@ import { Duration } from "luxon";
 import type { RecipeGenInput } from "@plateful/agents/recipes";
 import type { StrictOmit } from "@plateful/types";
 import { TemperatureUnit } from "@plateful/units/temperature";
-import { entriesOf } from "@plateful/utils";
+import { Arr, bool, entriesOf } from "@plateful/utils";
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
 import { apiClient } from "./configs/api.config";
@@ -294,6 +294,17 @@ export const generateRecipe = internalAction({
 
 				console.log({ genId, notes, data });
 
+				const stepTokensToSanitize = [
+					"cookTime",
+					"prepTime",
+					"description",
+					"title",
+					"keywords",
+					"notes",
+					"tags",
+					"steps",
+				] satisfies (keyof EntityShape<"recipes"> | "steps")[];
+
 				const detailsByIngredient = Object.groupBy(
 					steps.flatMap((parts) =>
 						parts.flatMap((part) => {
@@ -385,47 +396,59 @@ export const generateRecipe = internalAction({
 					user: SYSTEM_ID,
 					recipe,
 					ingredients,
-					steps: steps.map((parts) =>
-						parts.map((part) => {
-							if (typeof part === "string") return part;
+					steps: steps
+						.map((parts) => {
+							const [firstPart] = parts;
 
-							if (part.type === "time") {
-								const { kind, duration } = part;
-								return { type: "duration" as const, kind, value: duration };
+							if (
+								typeof firstPart === "string" &&
+								Arr.includes(stepTokensToSanitize, firstPart)
+							) {
+								console.warn("sanitizing step from recipe", parts);
+								return null;
 							}
 
-							if (part.type === "material") {
-								const {
-									type,
-									kind,
-									name,
-									quantity: quantityData,
-									state,
-								} = part;
+							return parts.map((part) => {
+								if (typeof part === "string") return part;
 
-								const { value: amount, unit } = quantityData;
+								if (part.type === "time") {
+									const { kind, duration } = part;
+									return { type: "duration" as const, kind, value: duration };
+								}
 
-								const ingredientId = ingredientIdByName[name];
+								if (part.type === "material") {
+									const {
+										type,
+										kind,
+										name,
+										quantity: quantityData,
+										state,
+									} = part;
 
-								const ingredient =
-									kind === "input" && ingredientId
-										? { id: ingredientId }
-										: { name };
+									const { value: amount, unit } = quantityData;
 
-								const quantity =
-									amount === "remaining"
-										? REMAINING_QUANTITY
-										: ({
-												amount,
-												unit: typeof unit === "string" ? unit : unit?.value,
-											} satisfies IngredientQuantity);
+									const ingredientId = ingredientIdByName[name];
 
-								return { type, kind, ingredient, quantity, state } as const;
-							}
+									const ingredient =
+										kind === "input" && ingredientId
+											? { id: ingredientId }
+											: { name };
 
-							return part;
-						}),
-					),
+									const quantity =
+										amount === "remaining"
+											? REMAINING_QUANTITY
+											: ({
+													amount,
+													unit: typeof unit === "string" ? unit : unit?.value,
+												} satisfies IngredientQuantity);
+
+									return { type, kind, ingredient, quantity, state } as const;
+								}
+
+								return part;
+							});
+						})
+						.filter(bool),
 				});
 
 				return;
