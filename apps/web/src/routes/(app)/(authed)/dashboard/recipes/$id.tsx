@@ -167,7 +167,7 @@ function RecipeDetailPage() {
 					<img
 						src={imgGen?.imageUrl || undefined}
 						alt={recipe.title}
-						className="h-64 w-full rounded-lg object-cover lg:h-80"
+						className="h-66 w-full rounded-lg object-cover lg:h-66"
 					/>
 				</div>
 			</div>
