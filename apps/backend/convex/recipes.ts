@@ -1,5 +1,6 @@
 import type { Id } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
+import { nanoBanana } from "./configs/nano-banana.config";
 import { notFound } from "./errors";
 import { householdQuery } from "./households";
 import { vv } from "./schema";
@@ -32,12 +33,16 @@ export const byIdAndHousehold = householdQuery({
 
 		if (recipe?.householdId !== args.householdId || isSoftDeleted(recipe)) {
 			throw notFound({
-				entity: "Recipe",
-				in: "Household",
+				entity: "recipe",
+				in: "household",
 			});
 		}
 
-		return recipe;
+		if (!recipe.genId) return recipe;
+
+		const imgGen = await getRecipeGenImage(ctx, recipe.genId);
+
+		return Object.assign(recipe, { imgGen });
 	},
 });
 
@@ -60,7 +65,45 @@ async function getHouseholdRecipes(
 		)
 		.collect();
 
-	return recipes;
+	const recipesWithImg = await Promise.all(
+		recipes.map(async (recipe) => {
+			if (!recipe.genId) return recipe;
+
+			const imgGen = await getRecipeGenImage(ctx, recipe.genId);
+
+			return Object.assign(recipe, { imgGen });
+		}),
+	);
+
+	return recipesWithImg;
+}
+
+async function getRecipeGenImage(
+	ctx: QueryCtx,
+	genId: Id<"recipeGens">,
+	shouldThrow = false,
+) {
+	const recipeGen = await ctx.db.get("recipeGens", genId);
+
+	if (!recipeGen || isSoftDeleted(recipeGen)) {
+		if (shouldThrow) {
+			throw notFound({ entity: "recipe generation", by: "generation" });
+		}
+
+		return null;
+	}
+
+	if (recipeGen.state.status !== "completed" || !recipeGen.state.imgGenId) {
+		return null;
+	}
+
+	const imgGen = await nanoBanana.get(ctx, {
+		generationId: recipeGen.state.imgGenId,
+	});
+
+	if (!imgGen) return null;
+
+	return imgGen;
 }
 
 // #endregion

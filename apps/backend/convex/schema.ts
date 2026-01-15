@@ -136,6 +136,8 @@ export const recipeFields = {
 	tags: v.array(v.string()), //? system searchable
 	keywords: v.array(v.string()), //? user searchable
 	notes: v.optional(v.string()), //? user non-searchable
+
+	genId: v.optional(v.id("recipeGens")),
 };
 
 export const recipeIngredientFields = {
@@ -214,6 +216,7 @@ export const recipeGensFields = {
 		v.object({
 			status: v.literal("completed"),
 			recipeId: v.id("recipes"),
+			imgGenId: v.optional(v.string()),
 		}),
 		v.object({
 			status: v.literal("failed"),
