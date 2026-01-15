@@ -82,14 +82,6 @@ function RecipeDetailPage() {
 			{/* Recipe Header */}
 			<div className="mb-8 grid gap-8 lg:grid-cols-2">
 				<div>
-					<img
-						src={imgGen?.imageUrl || undefined}
-						alt={recipe.title}
-						className="h-64 w-full rounded-lg object-cover lg:h-80"
-					/>
-				</div>
-
-				<div>
 					<div className="mb-4 flex items-start justify-between">
 						<div>
 							<h1 className="mb-2 font-bold text-3xl">{recipe.title}</h1>
@@ -163,6 +155,13 @@ function RecipeDetailPage() {
 							</p>
 						</div>
 					)}
+				</div>
+				<div>
+					<img
+						src={imgGen?.imageUrl || undefined}
+						alt={recipe.title}
+						className="h-64 w-full rounded-lg object-cover lg:h-80"
+					/>
 				</div>
 			</div>
 
