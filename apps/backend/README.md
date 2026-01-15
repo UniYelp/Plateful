@@ -38,3 +38,7 @@
 1. In Message Filtering, select user for all user events (scroll down or use the search input).
 1. Click on Create.
 1. After the endpoint is saved, copy the Signing Secret (on the right side of the UI), it should start with `whsec_`. Set it as the value of the `CLERK_WEBHOOK_SECRET` environment variable in your `Convex` dashboard.
+
+### GenAi
+
+- Same setup as the api

@@ -7,6 +7,7 @@ import { Arr, bool, entriesOf } from "@plateful/utils";
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
 import { apiClient } from "./configs/api.config";
+import { nanoBanana } from "./configs/nano-banana.config";
 import { InternalError, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { householdMutation, householdQuery } from "./households";
@@ -153,12 +154,13 @@ export const completeGen = internalMutation({
 		steps: vv.array(recipeStepFields.blocks),
 	},
 	handler: async (ctx, args) => {
-		const { user, recipe } = args;
+		const { user, recipe, genId } = args;
 
 		const now = Date.now();
 
 		const recipeId = await ctx.db.insert("recipes", {
 			householdId: recipe.householdId,
+			genId,
 			type: recipe.type,
 			title: recipe.title,
 			description: recipe.description,
@@ -198,7 +200,7 @@ export const completeGen = internalMutation({
 
 		await Promise.all([...ingredientPromises, ...stepsPromises]);
 
-		await ctx.db.patch("recipeGens", args.genId, {
+		await ctx.db.patch("recipeGens", genId, {
 			state: {
 				status: "completed",
 				recipeId,
@@ -206,12 +208,48 @@ export const completeGen = internalMutation({
 			updatedBy: user,
 			updatedAt: now,
 		});
+
+		await ctx.scheduler.runAfter(0, internal.recipeGens.finalizeRecipeGen, {
+			genId,
+			recipeId,
+			imgPrompt: `Generate an image that matches the following recipe's details
+            ---
+            Title: ${recipe.title}
+            Description: ${recipe.description || "---"}
+            Tags: ${recipe.tags.join(", ")}
+            `,
+		});
 	},
 });
 
 // #endregion
 
 // #region Actions
+
+export const finalizeRecipeGen = internalAction({
+	args: {
+		genId: vv.id("recipeGens"),
+		recipeId: vv.id("recipes"),
+		imgPrompt: vv.string(),
+	},
+	handler: async (ctx, args) => {
+		const imgGenId = await nanoBanana.generate(ctx, {
+			userId: SYSTEM_ID,
+			prompt: args.imgPrompt,
+			aspectRatio: "5:4",
+		});
+
+		await ctx.runMutation(internal.recipeGens.updateState, {
+			genId: args.genId,
+			user: SYSTEM_ID,
+			state: {
+				status: "completed",
+				recipeId: args.recipeId,
+				imgGenId,
+			},
+		});
+	},
+});
 
 // TODO: convert to a workflow | https://www.convex.dev/components/workflow
 export const generateRecipe = internalAction({
