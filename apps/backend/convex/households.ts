@@ -57,8 +57,10 @@ export const householdMutation = customMutation(authedMutation, {
 
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
+		const validateHousehold = getHouseholdEntityValidator(args.householdId);
+
 		return {
-			ctx: { user }, //? Convex don't propagate the extensions by other extended custom functions
+			ctx: { user, validateHousehold }, //? Convex don't propagate the extensions by other extended custom functions
 			args,
 		};
 	},
