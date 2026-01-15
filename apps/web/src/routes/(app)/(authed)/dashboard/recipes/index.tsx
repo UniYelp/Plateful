@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/")({
 	component: RouteComponent,
@@ -150,6 +151,8 @@ function RecipesPage() {
 										alt={recipe.title}
 										className="h-48 w-full object-cover"
 									/>
+								) : imgGen?.status === "generating" ? (
+									<Skeleton className="h-48 w-full rounded-xl" />
 								) : (
 									<div className="flex h-48 w-full items-center justify-center bg-muted">
 										<Utensils className="h-12 w-12 text-muted-foreground" />

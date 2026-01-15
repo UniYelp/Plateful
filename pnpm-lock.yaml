@@ -125,6 +125,15 @@ importers:
       '@elysiajs/server-timing':
         specifier: ^1.4.0
         version: 1.4.0(elysia@1.4.21(@sinclair/typebox@0.34.47)(exact-mirror@0.2.6(@sinclair/typebox@0.34.47))(file-type@19.6.0)(openapi-types@12.1.3)(typescript@5.9.3))
+      '@langfuse/otel':
+        specifier: ^4.5.1
+        version: 4.5.1(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/exporter-trace-otlp-http@0.210.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.4.0(@opentelemetry/api@1.9.0))
+      '@langfuse/tracing':
+        specifier: ^4.5.1
+        version: 4.5.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/sdk-node':
+        specifier: ^0.210.0
+        version: 0.210.0(@opentelemetry/api@1.9.0)
       '@plateful/agents':
         specifier: workspace:*
         version: link:../../packages/agents
@@ -452,15 +461,6 @@ importers:
       '@ai-sdk/openai':
         specifier: ^3.0.11
         version: 3.0.11(zod@4.3.5)
-      '@langfuse/otel':
-        specifier: ^4.5.1
-        version: 4.5.1(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.4.0(@opentelemetry/api@1.9.0))(@opentelemetry/exporter-trace-otlp-http@0.210.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.4.0(@opentelemetry/api@1.9.0))
-      '@langfuse/tracing':
-        specifier: ^4.5.1
-        version: 4.5.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-node':
-        specifier: ^0.210.0
-        version: 0.210.0(@opentelemetry/api@1.9.0)
       '@plateful/ingredients':
         specifier: workspace:*
         version: link:../ingredients

@@ -19,6 +19,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
@@ -167,10 +168,12 @@ function RecipeDetailPage() {
 					<img
 						src={imgGen.imageUrl}
 						alt={recipe.title}
-						className="h-66 w-full rounded-lg object-cover"
+						className="h-68 w-full rounded-lg object-cover"
 					/>
+				) : imgGen?.status === "generating" ? (
+					<Skeleton className="h-68 w-full rounded-xl" />
 				) : (
-					<div className="flex h-66 w-full items-center justify-center bg-muted">
+					<div className="flex h-68 w-full items-center justify-center bg-muted">
 						<Utensils className="h-12 w-12 text-muted-foreground" />
 					</div>
 				)}
