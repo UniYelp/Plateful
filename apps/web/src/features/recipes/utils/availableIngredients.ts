@@ -12,8 +12,10 @@ export const isIngredientSufficient = ({
 	ingredientQuantities,
 	neededQuantities,
 }: IsIngredientSufficientArgs) => {
-	const existing = { ...getGroupedTotalAmount(ingredientQuantities) };
+	const existing = getGroupedTotalAmount(ingredientQuantities);
 	const needed = getGroupedTotalAmount(neededQuantities);
+
+    // TODO: write tests
 
 	for (const [neededUnit, neededAmount] of entriesOf(needed)) {
 		// Scalar: exact match only
@@ -25,16 +27,17 @@ export const isIngredientSufficient = ({
 			continue;
 		}
 
-		let remaining = neededAmount;
+		let remainingNeeded = neededAmount;
 
 		for (const [unit, amount] of entriesOf(existing)) {
 			if (amount <= 0) continue;
 			if (unit === ScalarQuantity) continue;
 
 			const converted = convertIngredientUnits(unit, neededUnit, amount);
+
 			if (converted === null) continue;
 
-			const used = Math.min(converted.value, remaining);
+			const used = Math.min(converted.value, remainingNeeded);
 
 			// convert used back to original unit so we subtract correctly
 			const usedInOriginalUnit =
@@ -42,15 +45,15 @@ export const isIngredientSufficient = ({
 					? used
 					: convertIngredientUnits(neededUnit, unit, used)?.value;
 
-            if (usedInOriginalUnit) {
-                existing[unit] -= usedInOriginalUnit;
-            }
-			remaining -= used;
+			if (usedInOriginalUnit) {
+				existing[unit] -= usedInOriginalUnit;
+			}
+			remainingNeeded -= used;
 
-			if (remaining <= 0) break;
+			if (remainingNeeded <= 0) break;
 		}
 
-		if (remaining > 0) return false;
+		if (remainingNeeded > 0) return false;
 	}
 
 	return true;

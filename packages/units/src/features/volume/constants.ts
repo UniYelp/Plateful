@@ -11,28 +11,28 @@ export const aliasesByVolumeUnit = {
  * TODO: US_{UNIT} and METRIC_{UNIT} w/ extra field?
  */
 export const volumeUnitConversions: ScalarUnitConversion<VolumeUnit>[] = [
-	{ from: VolumeUnit.Milliliter, to: VolumeUnit.Liter, by: 1000 },
+	{ from: VolumeUnit.Liter, to: VolumeUnit.Milliliter, by: 1000 },
 	{
-		from: VolumeUnit.Teaspoon,
-		to: VolumeUnit.Dessertspoon,
-		by: 2,
+		from: VolumeUnit.Dessertspoon,
+		to: VolumeUnit.Tablespoon,
+		by: 2 /** @note metric/imperial tsp | US tsp is by 4.93 */,
 	},
 	{
-		from: VolumeUnit.Teaspoon,
-		to: VolumeUnit.Tablespoon,
-		by: 3,
+		from: VolumeUnit.Tablespoon,
+		to: VolumeUnit.Teaspoon,
+		by: 3 /** @note metric/imperial tsp | US tsp is by 4.93 */,
 	},
 	{
 		from: VolumeUnit.Teaspoon,
 		to: VolumeUnit.Milliliter,
 		isLossy: true,
-		by: 5 /** @note metric/imperial tsp | US tsp is by 4.93 */,
+		by: 5.93 /** @note metric/imperial tsp | US tsp is by 4.93 */,
 	},
 	{
 		from: VolumeUnit.Tablespoon,
 		to: VolumeUnit.Milliliter,
 		isLossy: true,
-		by: 15 /** @note metric/imperial tsp | US tsp is by 14.79 */,
+		by: 17.76 /** @note metric/imperial tsp | US tsp is by 14.79 */,
 	},
 	{
 		from: VolumeUnit.Cup,
@@ -43,6 +43,7 @@ export const volumeUnitConversions: ScalarUnitConversion<VolumeUnit>[] = [
 	{
 		from: VolumeUnit.Cup,
 		to: VolumeUnit.Milliliter,
-		by: 240,
+		isLossy: true,
+		by: 284.131 /** @note metric/imperial tsp | US tsp is by 4.93 */,
 	},
 ];

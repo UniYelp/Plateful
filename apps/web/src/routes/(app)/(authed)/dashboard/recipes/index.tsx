@@ -110,12 +110,31 @@ function RecipesPage() {
 
 			{/* Recipes Grid */}
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{filteredRecipes.map((recipe) => (
-					<Card
-						key={recipe._id}
-						className="overflow-hidden transition-shadow hover:shadow-md"
-					>
-						{/* <div className="relative">
+				{filteredRecipes.map((recipe) => {
+					// TODO: add to fetch
+					// const ingredientsByIsAvailable = Object.groupBy(
+					// 	recipe.ingredients,
+					// 	(ingredient) => {
+					// 		const isAvailable = isIngredientSufficient({
+					// 			ingredientQuantities: ingredient.ingredient.quantities,
+					// 			neededQuantities: ingredient.quantities,
+					// 		});
+
+					// 		return `${isAvailable}`;
+					// 	},
+					// );
+
+					// const availableIngredients = ingredientsByIsAvailable.true ?? [];
+					// const missingIngredients = ingredientsByIsAvailable.false ?? [];
+
+					const canCook = false; //missingIngredients.length === 0;
+
+					return (
+						<Card
+							key={recipe._id}
+							className="overflow-hidden transition-shadow hover:shadow-md"
+						>
+							{/* <div className="relative">
 							<img
 								src={recipe.image || "/placeholder.svg"}
 								alt={recipe.title}
@@ -123,26 +142,26 @@ function RecipesPage() {
 							/>
 						</div> */}
 
-						<CardContent className="flex h-full flex-col justify-between p-4">
-							<div>
-								<div className="mb-2 flex items-start justify-between">
-									<h3 className="font-semibold text-lg leading-tight">
-										{recipe.title}
-									</h3>
-								</div>
+							<CardContent className="flex h-full flex-col justify-between p-4">
+								<div>
+									<div className="mb-2 flex items-start justify-between">
+										<h3 className="font-semibold text-lg leading-tight">
+											{recipe.title}
+										</h3>
+									</div>
 
-								<p className="mb-3 line-clamp-2 text-muted-foreground text-sm">
-									{recipe.description}
-								</p>
+									<p className="mb-3 line-clamp-2 text-muted-foreground text-sm">
+										{recipe.description}
+									</p>
 
-								<div className="mb-4 flex flex-wrap gap-1">
-									{recipe.tags.slice(0, 3).map((tag) => (
-										<Badge key={tag} variant="outline" className="text-xs">
-											{tag}
-										</Badge>
-									))}
-									<div className="absolute top-3 right-3">
-										{/* <Badge
+									<div className="mb-4 flex flex-wrap gap-1">
+										{recipe.tags.slice(0, 3).map((tag) => (
+											<Badge key={tag} variant="outline" className="text-xs">
+												{tag}
+											</Badge>
+										))}
+										<div className="absolute top-3 right-3">
+											{/* <Badge
 											className={
 												difficultyColors[
 													recipe.difficulty as keyof typeof difficultyColors
@@ -151,75 +170,79 @@ function RecipesPage() {
 											>
 												{recipe.difficulty}
 											</Badge> */}
-									</div>
-									{!recipe.canCook && (
-										<Badge
-											variant="secondary"
-											className="bg-amber-100 text-amber-800"
-										>
-											Missing Ingredients
-										</Badge>
-									)}
-								</div>
-
-								<div className="mb-3 flex items-center gap-4 text-muted-foreground text-sm">
-									{recipe.cookTime && (
-										<div className="flex items-center gap-1">
-											<Clock className="h-3 w-3" />
-											{
-												// TODO: fix error
-												// @ts-expect-error: unrecognized available API
-												new Intl.DurationFormat("en", {
-													style: "short",
-												}).format(parse(recipe.cookTime))
-											}
 										</div>
-									)}
+										{!canCook && (
+											<Badge
+												variant="secondary"
+												className="bg-amber-100 text-amber-800"
+											>
+												Missing Ingredients
+											</Badge>
+										)}
+									</div>
 
-									{/* <div className="flex items-center gap-1">
+									<div className="mb-3 flex items-center gap-4 text-muted-foreground text-sm">
+										{recipe.cookTime && (
+											<div className="flex items-center gap-1">
+												<Clock className="h-3 w-3" />
+												{
+													// TODO: fix error
+													// @ts-expect-error: unrecognized available API
+													new Intl.DurationFormat("en", {
+														style: "short",
+													}).format(parse(recipe.cookTime))
+												}
+											</div>
+										)}
+
+										{/* <div className="flex items-center gap-1">
 									<Users className="h-3 w-3" />
 									{recipe.servings}
 								</div> */}
-								</div>
-								{/* {recipe.lastCooked && (
+									</div>
+									{/* {recipe.lastCooked && (
 								<p className="mt-2 text-muted-foreground text-xs">
 									Last cooked:{" "}
 									{new Date(recipe.lastCooked).toLocaleDateString()}
 								</p>
 							)} */}
-							</div>
+								</div>
 
-							<div className="flex gap-2">
-								<Button
-									size="sm"
-									className="flex-1"
-									disabled={!recipe.canCook}
-									asChild={recipe.canCook}
-								>
-									{recipe.canCook ? (
+								<div className="flex gap-2">
+									<Button
+										size="sm"
+										className="flex-1"
+										disabled={!canCook}
+										asChild={canCook}
+									>
+										{canCook ? (
+											<Link
+												to="/dashboard/recipes/$id"
+												params={{ id: recipe._id }}
+											>
+												<Play className="mr-1 h-3 w-3" />
+												Cook Now
+											</Link>
+										) : (
+											<>
+												<Play className="mr-1 h-3 w-3" />
+												Cook Now
+											</>
+										)}
+									</Button>
+									<Button variant="outline" size="sm" asChild>
 										<Link
 											to="/dashboard/recipes/$id"
 											params={{ id: recipe._id }}
 										>
-											<Play className="mr-1 h-3 w-3" />
-											Cook Now
+											<BookOpen className="h-3 w-3" />
 										</Link>
-									) : (
-										<>
-											<Play className="mr-1 h-3 w-3" />
-											Cook Now
-										</>
-									)}
-								</Button>
-								<Button variant="outline" size="sm" asChild>
-									<Link to="/dashboard/recipes/$id" params={{ id: recipe._id }}>
-										<BookOpen className="h-3 w-3" />
-									</Link>
-								</Button>
-							</div>
-						</CardContent>
-					</Card>
-				))}
+									</Button>
+								</div>
+							</CardContent>
+						</Card>
+					);
+				})}
 			</div>
 
 			{filteredRecipes.length === 0 && (
