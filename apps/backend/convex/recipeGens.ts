@@ -302,7 +302,8 @@ export const generateRecipe = internalAction({
 					"keywords",
 					"notes",
 					"tags",
-				] satisfies (keyof EntityShape<"recipes">)[];
+					"steps",
+				] satisfies (keyof EntityShape<"recipes"> | "steps")[];
 
 				const detailsByIngredient = Object.groupBy(
 					steps.flatMap((parts) =>
