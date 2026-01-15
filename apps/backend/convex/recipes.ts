@@ -41,6 +41,7 @@ export const byIdAndHousehold = householdQuery({
 	},
 });
 
+
 // #endregion
 
 // #region Mutations

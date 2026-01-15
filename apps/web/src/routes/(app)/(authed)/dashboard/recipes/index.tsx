@@ -1,23 +1,29 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	BookOpen,
-	Clock,
-	Play,
-	Search,
-	Sparkles,
-	Star,
-	Users,
-} from "lucide-react";
+import { parse } from "iso8601-duration";
+import { BookOpen, Clock, Play, Search, Sparkles } from "lucide-react";
 import { useState } from "react";
 
+import { api } from "@backend/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { difficultyColors, mockRecipes } from "@/pages/dashboard/recipes";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/")({
 	component: RouteComponent,
+	loader: async ({ context }) => {
+		const { household, queryClient } = context;
+
+		const recipes = await queryClient.ensureQueryData(
+			convexQuery(api.recipes.byHousehold, {
+				householdId: household._id,
+			}),
+		);
+
+		return { household, recipes };
+	},
 });
 
 function RouteComponent() {
@@ -27,21 +33,28 @@ function RouteComponent() {
 function RecipesPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedFilter, setSelectedFilter] = useState("all");
-	const [recipes] = useState(mockRecipes);
+
+	const { household } = Route.useLoaderData();
+
+	const { data: recipes } = useSuspenseQuery(
+		convexQuery(api.recipes.byHousehold, {
+			householdId: household._id,
+		}),
+	);
 
 	const filteredRecipes = recipes.filter((recipe) => {
 		const matchesSearch =
 			recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			recipe.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			recipe.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			recipe.tags.some((tag) =>
 				tag.toLowerCase().includes(searchTerm.toLowerCase()),
 			);
 
-		const matchesFilter =
-			selectedFilter === "all" ||
-			(selectedFilter === "can-cook" && recipe.canCook) ||
-			(selectedFilter === "cooked" && recipe.lastCooked) ||
-			(selectedFilter === "new" && !recipe.lastCooked);
+		// TODO: add canCook functionality, as well as other filters
+		const matchesFilter = selectedFilter === "all"; // ||
+		// (selectedFilter === "can-cook" && recipe.canCook) ||
+		// (selectedFilter === "cooked" && recipe.lastCooked) ||
+		// (selectedFilter === "new" && !recipe.lastCooked);
 
 		return matchesSearch && matchesFilter;
 	});
@@ -99,88 +112,82 @@ function RecipesPage() {
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{filteredRecipes.map((recipe) => (
 					<Card
-						key={recipe.id}
+						key={recipe._id}
 						className="overflow-hidden transition-shadow hover:shadow-md"
 					>
-						<div className="relative">
+						{/* <div className="relative">
 							<img
 								src={recipe.image || "/placeholder.svg"}
 								alt={recipe.title}
 								className="h-48 w-full object-cover"
 							/>
-							<div className="absolute top-3 right-3">
-								<Badge
-									className={
-										difficultyColors[
-											recipe.difficulty as keyof typeof difficultyColors
-										]
-									}
-								>
-									{recipe.difficulty}
-								</Badge>
-							</div>
-							{!recipe.canCook && (
-								<div className="absolute top-3 left-3">
-									<Badge
-										variant="secondary"
-										className="bg-amber-100 text-amber-800"
-									>
-										Missing Ingredients
-									</Badge>
+						</div> */}
+
+						<CardContent className="flex h-full flex-col justify-between p-4">
+							<div>
+								<div className="mb-2 flex items-start justify-between">
+									<h3 className="font-semibold text-lg leading-tight">
+										{recipe.title}
+									</h3>
 								</div>
-							)}
-						</div>
 
-						<CardContent className="p-4">
-							<div className="mb-2 flex items-start justify-between">
-								<h3 className="font-semibold text-lg leading-tight">
-									{recipe.title}
-								</h3>
-								<div className="flex items-center gap-1 text-muted-foreground text-sm">
-									<Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-									{recipe.rating}
-								</div>
-							</div>
+								<p className="mb-3 line-clamp-2 text-muted-foreground text-sm">
+									{recipe.description}
+								</p>
 
-							<p className="mb-3 line-clamp-2 text-muted-foreground text-sm">
-								{recipe.description}
-							</p>
-
-							<div className="mb-3 flex items-center gap-4 text-muted-foreground text-sm">
-								<div className="flex items-center gap-1">
-									<Clock className="h-3 w-3" />
-									{recipe.cookTime}m
-								</div>
-								<div className="flex items-center gap-1">
-									<Users className="h-3 w-3" />
-									{recipe.servings}
-								</div>
-							</div>
-
-							<div className="mb-4 flex flex-wrap gap-1">
-								{recipe.tags.slice(0, 3).map((tag) => (
-									<Badge key={tag} variant="outline" className="text-xs">
-										{tag}
-									</Badge>
-								))}
-							</div>
-
-							{recipe.variants.length > 0 && (
-								<div className="mb-3">
-									<p className="mb-1 text-muted-foreground text-xs">
-										Variants:
-									</p>
-									{recipe.variants.map((variant) => (
-										<Badge
-											key={variant.id}
-											variant="secondary"
-											className="mr-1 text-xs"
-										>
-											{variant.title}
+								<div className="mb-4 flex flex-wrap gap-1">
+									{recipe.tags.slice(0, 3).map((tag) => (
+										<Badge key={tag} variant="outline" className="text-xs">
+											{tag}
 										</Badge>
 									))}
+									<div className="absolute top-3 right-3">
+										{/* <Badge
+											className={
+												difficultyColors[
+													recipe.difficulty as keyof typeof difficultyColors
+												]
+												}
+											>
+												{recipe.difficulty}
+											</Badge> */}
+									</div>
+									{!recipe.canCook && (
+										<Badge
+											variant="secondary"
+											className="bg-amber-100 text-amber-800"
+										>
+											Missing Ingredients
+										</Badge>
+									)}
 								</div>
-							)}
+
+								<div className="mb-3 flex items-center gap-4 text-muted-foreground text-sm">
+									{recipe.cookTime && (
+										<div className="flex items-center gap-1">
+											<Clock className="h-3 w-3" />
+											{
+												// TODO: fix error
+												// @ts-expect-error: unrecognized available API
+												new Intl.DurationFormat("en", {
+													style: "short",
+												}).format(parse(recipe.cookTime))
+											}
+										</div>
+									)}
+
+									{/* <div className="flex items-center gap-1">
+									<Users className="h-3 w-3" />
+									{recipe.servings}
+								</div> */}
+								</div>
+								{/* {recipe.lastCooked && (
+								<p className="mt-2 text-muted-foreground text-xs">
+									Last cooked:{" "}
+									{new Date(recipe.lastCooked).toLocaleDateString()}
+								</p>
+							)} */}
+							</div>
 
 							<div className="flex gap-2">
 								<Button
@@ -192,7 +199,7 @@ function RecipesPage() {
 									{recipe.canCook ? (
 										<Link
 											to="/dashboard/recipes/$id"
-											params={{ id: recipe.id }}
+											params={{ id: recipe._id }}
 										>
 											<Play className="mr-1 h-3 w-3" />
 											Cook Now
@@ -205,18 +212,11 @@ function RecipesPage() {
 									)}
 								</Button>
 								<Button variant="outline" size="sm" asChild>
-									<Link to="/dashboard/recipes/$id" params={{ id: recipe.id }}>
+									<Link to="/dashboard/recipes/$id" params={{ id: recipe._id }}>
 										<BookOpen className="h-3 w-3" />
 									</Link>
 								</Button>
 							</div>
-
-							{recipe.lastCooked && (
-								<p className="mt-2 text-muted-foreground text-xs">
-									Last cooked:{" "}
-									{new Date(recipe.lastCooked).toLocaleDateString()}
-								</p>
-							)}
 						</CardContent>
 					</Card>
 				))}

@@ -5,6 +5,7 @@ import { AlertTriangle, BookOpen, Package, Plus, Sparkles } from "lucide-react";
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
+import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,9 +50,9 @@ function DashboardPage() {
 		{ householdId: household._id },
 	);
 
-	// const latestGenerations = useQuery(
-	// 	api.recipeGens.
-	// )
+	const latestGenerations = useQuery(api.recipeGens.byHousehold, {
+		householdId: household._id,
+	});
 
 	if (!isLoaded || !user) {
 		return <div>Loading...</div>;
@@ -162,36 +163,9 @@ function DashboardPage() {
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-3">
-								<div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
-									<div className="h-12 w-12 overflow-hidden rounded-lg bg-primary/10">
-										<img
-											src="/creamy-basil-chicken-pasta.jpg"
-											alt=""
-											className="h-full w-full object-cover"
-										/>
-									</div>
-									<div className="flex-1">
-										<p className="font-medium text-sm">Creamy Chicken Pasta</p>
-										<p className="text-muted-foreground text-xs">
-											Generated 2 days ago
-										</p>
-									</div>
-								</div>
-								<div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
-									<div className="h-12 w-12 overflow-hidden rounded-lg bg-primary/10">
-										<img
-											src="/mediterranean-chicken-bowl.jpg"
-											alt=""
-											className="h-full w-full object-cover"
-										/>
-									</div>
-									<div className="flex-1">
-										<p className="font-medium text-sm">Mediterranean Bowl</p>
-										<p className="text-muted-foreground text-xs">
-											Generated 3 days ago
-										</p>
-									</div>
-								</div>
+								{latestGenerations?.map((gen) => (
+									<RecipeGenState key={gen._id} gen={gen} />
+								))}
 							</div>
 							<Button
 								variant="outline"

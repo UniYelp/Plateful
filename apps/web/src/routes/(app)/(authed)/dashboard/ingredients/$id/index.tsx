@@ -6,7 +6,6 @@ import {
 	type ExpiryDetails,
 	getExpiryDetailsFromExpiryDates,
 } from "@plateful/ingredients";
-import { entriesOf } from "@plateful/utils";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
@@ -14,7 +13,7 @@ import {
 	colorByExpiryStatus,
 	ingredientImgByCategory,
 } from "&/ingredients/constants";
-import { ScalarQuantity } from "&/units/constants";
+import { getTotalAmount } from "&/ingredients/utils/total-amount";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -61,7 +60,7 @@ export function IngredientDetailPage() {
 	);
 
 	const recipes = useQuery(
-		api.recipeIngredients.byIngredient,
+		api.recipeIngredients.fullByIngredient,
 		household && ingredient
 			? { householdId: household._id, ingredientId: ingredient._id }
 			: "skip",
@@ -71,21 +70,7 @@ export function IngredientDetailPage() {
 
 	if (!household || !ingredient) return "Loading...";
 
-	const quantityByUnit = ingredient.quantities.reduce(
-		(acc, q) => {
-			const unit = q.unit ?? ScalarQuantity;
-			if (!acc[unit]) acc[unit] = 0;
-			acc[unit] += q.amount;
-			return acc;
-		},
-		{} as Record<string | typeof ScalarQuantity, number>,
-	);
-
-	const totalAmount = entriesOf(quantityByUnit)
-		.map(([unit, amount]) =>
-			unit === ScalarQuantity ? amount : `${amount}${unit}`,
-		)
-		.join(", ");
+	const totalAmount = getTotalAmount(ingredient.quantities);
 
 	const deleteIngredientHandler = async () => {
 		await deleteIngredient({
@@ -215,8 +200,7 @@ export function IngredientDetailPage() {
 														{recipe.recipe.title}
 													</span>
 													<span className="text-muted-foreground text-xs">
-														{recipe.quantity.amount}
-														{recipe.quantity.unit}
+														{getTotalAmount(recipe.quantities)}
 													</span>
 												</Link>
 											),
