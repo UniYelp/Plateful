@@ -33,8 +33,8 @@ export const byIdAndHousehold = householdQuery({
 
 		if (recipe?.householdId !== args.householdId || isSoftDeleted(recipe)) {
 			throw notFound({
-				entity: "Recipe",
-				in: "Household",
+				entity: "recipe",
+				in: "household",
 			});
 		}
 
@@ -87,7 +87,7 @@ async function getRecipeGenImage(
 
 	if (!recipeGen || isSoftDeleted(recipeGen)) {
 		if (shouldThrow) {
-			throw notFound({ entity: "recipe generation", by: "household" });
+			throw notFound({ entity: "recipe generation", by: "generation" });
 		}
 
 		return null;
