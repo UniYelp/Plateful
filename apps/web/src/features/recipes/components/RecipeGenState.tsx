@@ -13,10 +13,11 @@ import { Card, CardContent } from "@/components/ui/card";
 
 type Props = {
 	gen: RecipeGenDoc;
+	title?: string;
 };
 
 export const RecipeGenState = (props: Props) => {
-	const { gen } = props;
+	const { gen, title } = props;
 
 	return (
 		<Card className="overflow-hidden">
@@ -86,17 +87,20 @@ export const RecipeGenState = (props: Props) => {
 						<div className="flex h-15 w-15 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
 							<ChefHat className="h-5 w-5" />
 						</div>
+						<div className="mt-4 flex w-full justify-between">
+							<div>{title}</div>
 
-						<div className="min-w-0 flex-1">
-							<Button size="sm" asChild>
-								<Link
-									to={`/dashboard/recipes/$id`}
-									params={{ id: gen.state.recipeId }}
-								>
-									<ExternalLink className="mr-2 h-3 w-3" />
-									View Recipe
-								</Link>
-							</Button>
+							<div className="min-w-0">
+								<Button size="sm" asChild>
+									<Link
+										to={`/dashboard/recipes/$id`}
+										params={{ id: gen.state.recipeId }}
+									>
+										<ExternalLink className="mr-2 h-3 w-3" />
+										View Recipe
+									</Link>
+								</Button>
+							</div>
 						</div>
 					</>
 				)}

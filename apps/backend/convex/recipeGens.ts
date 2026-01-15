@@ -11,6 +11,7 @@ import { nanoBanana } from "./configs/nano-banana.config";
 import { InternalError, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { householdMutation, householdQuery } from "./households";
+import type { FullRecipeGenDoc } from "./recipeGens.exports";
 import {
 	type EntityShape,
 	type IngredientQuantity,
@@ -61,11 +62,14 @@ export const byHousehold = householdQuery({
 
 		const gensWithTitle = await Promise.all(
 			generations.map(async (gen) => {
-				if (gen.state.status !== "completed") return gen;
+				if (gen.state.status !== "completed") return gen as FullRecipeGenDoc;
 
 				const recipe = await ctx.db.get("recipes", gen.state.recipeId);
 
-				return Object.assign({}, gen, { title: recipe?.title });
+				return {
+					...gen,
+					title: recipe?.title,
+				} satisfies FullRecipeGenDoc;
 			}),
 		);
 

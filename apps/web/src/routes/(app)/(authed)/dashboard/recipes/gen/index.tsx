@@ -58,7 +58,7 @@ function RecipeGenerationsPage() {
 
 			<div className="space-y-4">
 				{recipeGens.map((item) => (
-					<RecipeGenState key={item._id} gen={item} />
+					<RecipeGenState key={item._id} gen={item} title={item.title} />
 				))}
 			</div>
 		</>
