@@ -71,7 +71,6 @@ export function Combobox<T extends string = string>(props: ComboboxProps<T>) {
 						className,
 					)}
 				>
-					{selectedOption?.icon}
 					{selectedOption?.label || "Select..."}
 					<ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 				</Button>
