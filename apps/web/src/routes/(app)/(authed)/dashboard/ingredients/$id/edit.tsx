@@ -118,6 +118,7 @@ function EditIngredientPage() {
 											.split("T")[0]
 									: undefined,
 							}}
+							submitAction="Edit"
 							onSubmit={onSubmit}
 						/>
 					</CardContent>

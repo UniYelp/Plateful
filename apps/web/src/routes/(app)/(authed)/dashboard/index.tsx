@@ -5,6 +5,7 @@ import { AlertTriangle, BookOpen, Package, Plus, Sparkles } from "lucide-react";
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
+import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,10 @@ function DashboardPage() {
 		{ householdId: household._id },
 	);
 
+	const latestGenerations = useQuery(api.recipeGens.byHousehold, {
+		householdId: household._id,
+	});
+
 	if (!isLoaded || !user) {
 		return <div>Loading...</div>;
 	}
@@ -66,7 +71,7 @@ function DashboardPage() {
 			</div>
 
 			{/* Stats Cards */}
-			<div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+			<div className="mb-8 grid grid-cols-3 gap-4 md:grid-cols-3">
 				<Card>
 					<CardContent className="p-4">
 						<div className="flex items-center gap-3">
@@ -146,6 +151,30 @@ function DashboardPage() {
 									</Link>
 								</Button>
 							</div>
+						</CardContent>
+					</Card>
+					{/* Recipe Generations */}
+					<Card className="mt-6">
+						<CardHeader>
+							<CardTitle>Recipe Generations</CardTitle>
+							<CardDescription>
+								Your recent AI-generated recipes
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div className="space-y-3">
+								{latestGenerations?.map((gen) => (
+									<RecipeGenState key={gen._id} gen={gen} title={gen.title} />
+								))}
+							</div>
+							<Button
+								variant="outline"
+								size="sm"
+								className="mt-4 w-full bg-transparent"
+								asChild
+							>
+								<Link to="/dashboard/recipes/gen">View All Generations</Link>
+							</Button>
 						</CardContent>
 					</Card>
 				</div>

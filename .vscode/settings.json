@@ -26,6 +26,7 @@
     "cSpell.words": [
         "Elysia",
         "elysiajs",
+        "LANGFUSE",
         "ngrok",
         "Redix",
         "svix",
@@ -77,5 +78,6 @@
     "typescript.experimental.useTsgo": true,
     "[prisma]": {
         "editor.defaultFormatter": "Prisma.prisma"
-    }
+    },
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

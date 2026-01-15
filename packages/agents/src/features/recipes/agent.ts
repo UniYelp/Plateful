@@ -13,4 +13,5 @@ export const recipeAgent = new Agent({
 	// 	convertTemperatures,
 	// },
 	stopWhen: stepCountIs(20),
+	experimental_telemetry: { isEnabled: true },
 });

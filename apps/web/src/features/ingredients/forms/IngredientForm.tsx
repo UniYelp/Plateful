@@ -44,6 +44,7 @@ import type { SelectGroup, SelectOption } from "@/types/ui/select";
 type Props = {
 	householdId: Id<"households">;
 	defaultValues?: Partial<IngredientFormInput>;
+	submitAction: string;
 	onSubmit: (value: IngredientFormOutput) => Promise<void>;
 };
 
@@ -67,6 +68,7 @@ const ingredientUnitGroups = entriesOf(ingredientUnitsByCategory).map(
 export function IngredientForm({
 	householdId,
 	defaultValues,
+	submitAction,
 	onSubmit,
 }: Props) {
 	const form = useAppForm({
@@ -130,9 +132,18 @@ export function IngredientForm({
 								onChangeAsyncDebounceMs: 800,
 								onChangeAsync: async (field) => {
 									const name = field.value?.trim();
-									if (!name || name.length < INGREDIENT_MINIMUM_NAME_LENGTH) {
+
+									const isDefaultValue =
+										field.fieldApi.state.meta.isDefaultValue;
+
+									if (
+										isDefaultValue ||
+										!name ||
+										name.length < INGREDIENT_MINIMUM_NAME_LENGTH
+									) {
 										return;
 									}
+
 									const similarIngredient = await convexClient.query(
 										api.ingredients.uniqueByName,
 										{
@@ -269,9 +280,7 @@ export function IngredientForm({
 
 				{/* Submit Buttons */}
 				<div className="flex justify-end gap-3 pt-4">
-					<form.SubmitButton>
-						{form.state.isSubmitting ? "Adding..." : "Add Ingredient"}
-					</form.SubmitButton>
+					<form.SubmitButton>{submitAction} Ingredient</form.SubmitButton>
 					<Button type="button" variant="outline" asChild>
 						<Link to="/dashboard/ingredients">Cancel</Link>
 					</Button>

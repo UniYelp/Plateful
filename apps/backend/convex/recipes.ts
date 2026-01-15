@@ -1,8 +1,10 @@
+import { bool } from "@plateful/utils";
 import type { Id } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import { nanoBanana } from "./configs/nano-banana.config";
 import { notFound } from "./errors";
 import { householdQuery } from "./households";
+import { getRecipeIngredients } from "./recipeIngredients";
 import { vv } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
 
@@ -42,7 +44,61 @@ export const byIdAndHousehold = householdQuery({
 
 		const imgGen = await getRecipeGenImage(ctx, recipe.genId);
 
-		return Object.assign(recipe, { imgGen });
+		return Object.assign({}, recipe, { imgGen });
+	},
+});
+
+export const fullById = householdQuery({
+	args: {
+		recipeId: vv.id("recipes"),
+	},
+	handler: async (ctx, args) => {
+		const recipe = await ctx.db.get("recipes", args.recipeId);
+
+		ctx.validateHousehold(recipe);
+
+		if (!recipe || isSoftDeleted(recipe)) {
+			throw notFound({ entity: "Recipe", in: "Household" });
+		}
+
+		const recipeIngredients = await getRecipeIngredients(ctx, args.recipeId);
+
+		const ingredients = await Promise.all(
+			recipeIngredients.map(async (recipeIngredient) => {
+				const ingredient = await ctx.db.get(
+					"ingredients",
+					recipeIngredient.ingredientId,
+				);
+
+				if (
+					!ingredient ||
+					isSoftDeleted(ingredient) ||
+					ingredient.householdId !== recipe.householdId
+				)
+					return;
+
+				return {
+					quantities: recipeIngredient.quantities,
+					ingredient: ingredient,
+				};
+			}),
+		);
+
+		const steps = await ctx.db
+			.query("recipeSteps")
+			.withIndex("by_recipe_and_index", (q) => q.eq("recipeId", args.recipeId))
+			.collect();
+
+		const recipeImgGen = recipe.genId
+			? await getRecipeGenImage(ctx, recipe.genId)
+			: null;
+
+		return {
+			recipe,
+			ingredients: ingredients.filter(bool),
+			imgGen: recipeImgGen,
+			steps,
+		};
 	},
 });
 
@@ -65,17 +121,50 @@ async function getHouseholdRecipes(
 		)
 		.collect();
 
-	const recipesWithImg = await Promise.all(
+	const fullRecipes = await Promise.all(
 		recipes.map(async (recipe) => {
-			if (!recipe.genId) return recipe;
+			const recipeIngredients = await getRecipeIngredients(ctx, recipe._id);
 
-			const imgGen = await getRecipeGenImage(ctx, recipe.genId);
+			const ingredients = await Promise.all(
+				recipeIngredients.map(async (recipeIngredient) => {
+					const ingredient = await ctx.db.get(
+						"ingredients",
+						recipeIngredient.ingredientId,
+					);
 
-			return Object.assign(recipe, { imgGen });
+					if (
+						!ingredient ||
+						isSoftDeleted(ingredient) ||
+						ingredient.householdId !== recipe.householdId
+					)
+						return;
+
+					return {
+						quantities: recipeIngredient.quantities,
+						ingredient: ingredient,
+					};
+				}),
+			);
+
+			const steps = await ctx.db
+				.query("recipeSteps")
+				.withIndex("by_recipe_and_index", (q) => q.eq("recipeId", recipe._id))
+				.collect();
+
+			const imgGen = recipe.genId
+				? await getRecipeGenImage(ctx, recipe.genId)
+				: null;
+
+			return {
+				recipe,
+				ingredients: ingredients.filter(bool),
+				imgGen,
+				steps,
+			};
 		}),
 	);
 
-	return recipesWithImg;
+	return fullRecipes;
 }
 
 async function getRecipeGenImage(

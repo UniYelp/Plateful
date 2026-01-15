@@ -39,9 +39,10 @@
     },
     "dependencies": {
         "@ai-sdk/google": "2.0.46",
-        "@plateful/units": "workspace:*",
+        "@ai-sdk/openai": "^3.0.11",
         "@plateful/ingredients": "workspace:*",
         "@plateful/recipes": "workspace:*",
+        "@plateful/units": "workspace:*",
         "@plateful/utils": "workspace:*",
         "ai": "5.0.113",
         "dedent": "^1.7.1",

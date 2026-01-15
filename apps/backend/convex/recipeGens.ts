@@ -11,6 +11,7 @@ import { nanoBanana } from "./configs/nano-banana.config";
 import { InternalError, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { householdMutation, householdQuery } from "./households";
+import type { FullRecipeGenDoc } from "./recipeGens.exports";
 import {
 	type EntityShape,
 	type IngredientQuantity,
@@ -59,7 +60,20 @@ export const byHousehold = householdQuery({
 			.order("desc")
 			.take(5);
 
-		return generations;
+		const gensWithTitle = await Promise.all(
+			generations.map(async (gen) => {
+				if (gen.state.status !== "completed") return gen as FullRecipeGenDoc;
+
+				const recipe = await ctx.db.get("recipes", gen.state.recipeId);
+
+				return {
+					...gen,
+					title: recipe?.title,
+				} satisfies FullRecipeGenDoc;
+			}),
+		);
+
+		return gensWithTitle;
 	},
 });
 
@@ -236,7 +250,7 @@ export const finalizeRecipeGen = internalAction({
 		const imgGenId = await nanoBanana.generate(ctx, {
 			userId: SYSTEM_ID,
 			prompt: args.imgPrompt,
-			aspectRatio: "5:4",
+			aspectRatio: "16:9",
 		});
 
 		await ctx.runMutation(internal.recipeGens.updateState, {

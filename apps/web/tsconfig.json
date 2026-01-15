@@ -1,49 +1,33 @@
 {
-    "extends": "../../tsconfig.base.json",
-    "compilerOptions": {
-        "target": "ES2024",
-        "module": "ESNext",
-        "lib": [
-            "ES2024",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "types": [
-            "vite/client"
-        ],
-        "skipLibCheck": true,
-        /* Bundler mode */
-        "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "verbatimModuleSyntax": true,
-        "noEmit": true,
-        "jsx": "react-jsx",
-        /* Linting */
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true,
-        "noUncheckedSideEffectImports": true,
-        "baseUrl": ".",
-        "paths": {
-            "&/*": [
-                "./src/features/*"
-            ],
-            "@/*": [
-                "./src/*"
-            ],
-            "@backend/*": [
-                "../backend/convex/_generated/*",
-                "../backend/convex/*.exports.ts",
-            ],
-            "@api/*": [
-                "../api/src/exports/*"
-            ]
-        }
-    },
-    "include": [
-        "**/*.ts",
-        "**/*.tsx",
-        "../backend/convex/_generated"
-    ]
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"target": "ES2024",
+		"module": "ESNext",
+		"lib": ["ES2024", "ESNext.Intl", "DOM", "DOM.Iterable"],
+		"types": ["vite/client"],
+		"skipLibCheck": true,
+		/* Bundler mode */
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+		/* Linting */
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true,
+		"baseUrl": ".",
+		"paths": {
+			"&/*": ["./src/features/*"],
+			"@/*": ["./src/*"],
+			"@backend/*": [
+				"../backend/convex/_generated/*",
+				"../backend/convex/*.exports.ts"
+			],
+			"@api/*": ["../api/src/exports/*"]
+		}
+	},
+	"include": ["**/*.ts", "**/*.tsx", "../backend/convex/_generated"]
 }

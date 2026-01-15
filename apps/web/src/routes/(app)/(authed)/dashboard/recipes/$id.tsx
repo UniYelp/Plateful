@@ -1,7 +1,15 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Edit, Heart, Play, Star, Users } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Clock, Play, Utensils } from "lucide-react";
 
+import { api } from "@backend/api";
+import type { Id } from "@backend/dataModel";
+import { getTotalAmount } from "&/ingredients/utils/total-amount";
+import { recipesLoader } from "&/recipes/components/loaders/recipes";
+import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
+import { formatDuration } from "&/recipes/utils/format-duration";
+import { formatStep } from "&/recipes/utils/format-step";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +19,26 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { mockRecipe } from "@/pages/dashboard/recipes";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
+	loader: async ({ context, params }) => {
+		const { household, queryClient } = context;
+		const { id } = params;
+
+		const fullRecipe = await queryClient.ensureQueryData(
+			convexQuery(api.recipes.fullById, {
+				householdId: household._id,
+				recipeId: id as Id<"recipes">,
+			}),
+		);
+
+		const { recipe } = fullRecipe;
+
+		return { household, recipeId: recipe._id };
+	},
+	pendingComponent: () => recipesLoader,
 });
 
 function RouteComponent() {
@@ -22,14 +46,34 @@ function RouteComponent() {
 }
 
 function RecipeDetailPage() {
-	// const { id } = Route.useParams();
-	const [recipe] = useState(mockRecipe);
-	const [isFavorited, setIsFavorited] = useState(false);
+	const { household, recipeId } = Route.useLoaderData();
 
-	const availableIngredients = recipe.ingredients.filter(
-		(ing) => ing.available,
+	const { data: fullRecipe } = useSuspenseQuery(
+		convexQuery(api.recipes.fullById, {
+			recipeId,
+			householdId: household._id,
+		}),
 	);
-	const missingIngredients = recipe.ingredients.filter((ing) => !ing.available);
+
+	const { recipe, ingredients, imgGen, steps } = fullRecipe;
+
+	const ingredientNameById = Object.fromEntries(
+		ingredients.map(({ ingredient: { name, _id } }) => [_id, name] as const),
+	);
+
+	const ingredientsByIsAvailable = Object.groupBy(ingredients, (ingredient) => {
+		const isAvailable = isIngredientSufficient({
+			ingredientQuantities: ingredient.ingredient.quantities,
+			neededQuantities: ingredient.quantities,
+		});
+
+		return `${isAvailable}`;
+	});
+
+	const availableIngredients = ingredientsByIsAvailable.true ?? [];
+	const missingIngredients = ingredientsByIsAvailable.false ?? [];
+
+	const canCook = missingIngredients.length === 0;
 
 	return (
 		<>
@@ -44,57 +88,36 @@ function RecipeDetailPage() {
 			{/* Recipe Header */}
 			<div className="mb-8 grid gap-8 lg:grid-cols-2">
 				<div>
-					<img
-						src={recipe.image || "/placeholder.svg"}
-						alt={recipe.title}
-						className="h-64 w-full rounded-lg object-cover lg:h-80"
-					/>
-				</div>
-
-				<div>
 					<div className="mb-4 flex items-start justify-between">
 						<div>
 							<h1 className="mb-2 font-bold text-3xl">{recipe.title}</h1>
-							<div className="mb-3 flex items-center gap-2">
-								<div className="flex items-center gap-1">
-									<Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-									<span className="font-medium">{recipe.rating}</span>
-								</div>
-								<Badge
-									className={
-										recipe.difficulty === "Easy"
-											? "bg-green-100 text-green-800"
-											: recipe.difficulty === "Medium"
-												? "bg-yellow-100 text-yellow-800"
-												: "bg-red-100 text-red-800"
-									}
-								>
-									{recipe.difficulty}
-								</Badge>
-							</div>
 						</div>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => setIsFavorited(!isFavorited)}
-						>
-							<Heart
-								className={`h-5 w-5 ${isFavorited ? "fill-red-500 text-red-500" : ""}`}
-							/>
-						</Button>
 					</div>
 
 					<p className="mb-6 text-muted-foreground">{recipe.description}</p>
 
 					<div className="mb-6 grid grid-cols-2 gap-4">
-						<div className="flex items-center gap-2">
-							<Clock className="h-4 w-4 text-muted-foreground" />
-							<span className="text-sm">{recipe.cookTime} minutes</span>
-						</div>
-						<div className="flex items-center gap-2">
+						{recipe.cookTime && (
+							<div className="flex items-center gap-2">
+								<Clock className="h-4 w-4 text-muted-foreground" />
+								<span className="text-sm">
+									Cook: {formatDuration(recipe.cookTime)}
+								</span>
+							</div>
+						)}
+						{recipe.prepTime && (
+							<div className="flex items-center gap-2">
+								<Clock className="h-4 w-4 text-muted-foreground" />
+								<span className="text-sm">
+									Prep: {formatDuration(recipe.prepTime)}
+								</span>
+							</div>
+						)}
+
+						{/* <div className="flex items-center gap-2">
 							<Users className="h-4 w-4 text-muted-foreground" />
 							<span className="text-sm">{recipe.servings} servings</span>
-						</div>
+						</div> */}
 					</div>
 
 					<div className="mb-6 flex flex-wrap gap-2">
@@ -109,11 +132,11 @@ function RecipeDetailPage() {
 						<Button
 							size="lg"
 							className="flex-1"
-							disabled={!recipe.canCook}
-							asChild={recipe.canCook}
+							disabled={!canCook}
+							asChild={canCook}
 						>
-							{recipe.canCook ? (
-								<Link to="/dashboard/recipes/$id" params={{ id: recipe.id }}>
+							{canCook ? (
+								<Link to="/dashboard/recipes/$id" params={{ id: recipeId }}>
 									<Play className="mr-2 h-4 w-4" />
 									Start Cooking
 								</Link>
@@ -124,21 +147,36 @@ function RecipeDetailPage() {
 								</>
 							)}
 						</Button>
-						<Button variant="outline" size="lg">
+						{/* <Button variant="outline" size="lg">
 							<Edit className="mr-2 h-4 w-4" />
 							Edit
-						</Button>
+						</Button> */}
 					</div>
 
-					{!recipe.canCook && (
+					{!canCook && (
 						<div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
 							<p className="text-amber-800 text-sm">
 								<strong>Missing ingredients:</strong>{" "}
-								{missingIngredients.map((ing) => ing.name).join(", ")}
+								{missingIngredients
+									.map((ing) => ing.ingredient.name)
+									.join(", ")}
 							</p>
 						</div>
 					)}
 				</div>
+				{imgGen?.imageUrl ? (
+					<img
+						src={imgGen.imageUrl}
+						alt={recipe.title}
+						className="h-68 w-full rounded-lg object-cover"
+					/>
+				) : imgGen?.status === "generating" ? (
+					<Skeleton className="h-68 w-full rounded-xl" />
+				) : (
+					<div className="flex h-68 w-full items-center justify-center bg-muted">
+						<Utensils className="h-12 w-12 text-muted-foreground" />
+					</div>
+				)}
 			</div>
 
 			<div className="grid gap-8 lg:grid-cols-3">
@@ -148,66 +186,38 @@ function RecipeDetailPage() {
 						<CardHeader>
 							<CardTitle>Ingredients</CardTitle>
 							<CardDescription>
-								{availableIngredients.length} of {recipe.ingredients.length}{" "}
-								available
+								{availableIngredients.length} of {ingredients.length} available
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-3">
-								{recipe.ingredients.map((ingredient, index) => (
-									<div
-										// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-										key={index}
-										className="flex items-center justify-between"
-									>
-										<div
-											className={`flex-1 ${!ingredient.available ? "text-muted-foreground line-through" : ""}`}
-										>
-											<span className="font-medium">{ingredient.name}</span>
-											<p className="text-muted-foreground text-sm">
-												{ingredient.amount}
-											</p>
-										</div>
-										<div
-											className={`h-3 w-3 rounded-full ${ingredient.available ? "bg-green-500" : "bg-red-500"}`}
-										/>
-									</div>
-								))}
-							</div>
-						</CardContent>
-					</Card>
+								{ingredients.map((ingredient) => {
+									const isAvailable = isIngredientSufficient({
+										ingredientQuantities: ingredient.ingredient.quantities,
+										neededQuantities: ingredient.quantities,
+									});
 
-					{/* Nutrition Info */}
-					<Card className="mt-6">
-						<CardHeader>
-							<CardTitle>Nutrition (per serving)</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="grid grid-cols-2 gap-4 text-sm">
-								<div>
-									<p className="font-medium">Calories</p>
-									<p className="text-muted-foreground">
-										{recipe.nutritionInfo.calories}
-									</p>
-								</div>
-								<div>
-									<p className="font-medium">Protein</p>
-									<p className="text-muted-foreground">
-										{recipe.nutritionInfo.protein}
-									</p>
-								</div>
-								<div>
-									<p className="font-medium">Carbs</p>
-									<p className="text-muted-foreground">
-										{recipe.nutritionInfo.carbs}
-									</p>
-								</div>
-								<div>
-									<p className="font-medium">Fat</p>
-									<p className="text-muted-foreground">
-										{recipe.nutritionInfo.fat}
-									</p>
-								</div>
+									return (
+										<div
+											key={ingredient.ingredient._id}
+											className="flex items-center justify-between"
+										>
+											<div
+												className={`flex-1 ${!isAvailable ? "text-muted-foreground line-through" : ""}`}
+											>
+												<span className="font-medium">
+													{ingredient?.ingredient.name}
+												</span>
+												<p className="text-muted-foreground text-sm">
+													{getTotalAmount(ingredient?.quantities)}
+												</p>
+											</div>
+											<div
+												className={`h-3 w-3 rounded-full ${isAvailable ? "bg-green-500" : "bg-red-500"}`}
+											/>
+										</div>
+									);
+								})}
 							</div>
 						</CardContent>
 					</Card>
@@ -224,31 +234,14 @@ function RecipeDetailPage() {
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
-								{recipe.steps.map((step, index) => (
-									// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-									<div key={index} className="flex gap-4">
-										<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
-											{index + 1}
+								{steps.map((step) => (
+									<div key={step._id} className="flex items-center gap-4">
+										<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
+											{step.index + 1}
 										</div>
-										<p className="pt-1 text-sm leading-relaxed">{step}</p>
-									</div>
-								))}
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Advantages */}
-					<Card className="mt-6">
-						<CardHeader>
-							<CardTitle>Why You'll Love This Recipe</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="grid gap-2">
-								{recipe.advantages.map((advantage, index) => (
-									// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-									<div key={index} className="flex items-center gap-2">
-										<div className="h-2 w-2 rounded-full bg-primary" />
-										<span className="text-sm">{advantage}</span>
+										<p className="text-sm leading-relaxed">
+											{formatStep(step, ingredientNameById)}
+										</p>
 									</div>
 								))}
 							</div>
