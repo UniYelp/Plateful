@@ -1,7 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Play } from "lucide-react";
+import { ArrowLeft, Clock, Play, Utensils } from "lucide-react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
@@ -163,13 +163,17 @@ function RecipeDetailPage() {
 						</div>
 					)}
 				</div>
-				<div>
+				{imgGen?.imageUrl ? (
 					<img
-						src={imgGen?.imageUrl || undefined}
+						src={imgGen.imageUrl}
 						alt={recipe.title}
-						className="h-66 w-full rounded-lg object-cover lg:h-66"
+						className="h-66 w-full rounded-lg object-cover"
 					/>
-				</div>
+				) : (
+					<div className="flex h-66 w-full items-center justify-center bg-muted">
+						<Utensils className="h-12 w-12 text-muted-foreground" />
+					</div>
+				)}
 			</div>
 
 			<div className="grid gap-8 lg:grid-cols-3">

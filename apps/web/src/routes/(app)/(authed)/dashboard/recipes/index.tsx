@@ -2,7 +2,14 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { parse } from "iso8601-duration";
-import { BookOpen, Clock, Play, Search, Sparkles } from "lucide-react";
+import {
+	BookOpen,
+	Clock,
+	Play,
+	Search,
+	Sparkles,
+	Utensils,
+} from "lucide-react";
 import { useState } from "react";
 
 import { api } from "@backend/api";
@@ -137,11 +144,17 @@ function RecipesPage() {
 							className="overflow-hidden transition-shadow hover:shadow-md"
 						>
 							<div className="relative">
-								<img
-									src={imgGen?.imageUrl || undefined}
-									alt={recipe.title}
-									className="h-48 w-full object-cover"
-								/>
+								{imgGen?.imageUrl ? (
+									<img
+										src={imgGen?.imageUrl || undefined}
+										alt={recipe.title}
+										className="h-48 w-full object-cover"
+									/>
+								) : (
+									<div className="flex h-48 w-full items-center justify-center bg-muted">
+										<Utensils className="h-12 w-12 text-muted-foreground" />
+									</div>
+								)}
 							</div>
 
 							<CardContent className="flex h-full flex-col justify-between p-4">
