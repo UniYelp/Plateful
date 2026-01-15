@@ -3,3 +3,7 @@ import type { EntityShape } from "./schema";
 
 export type RecipeGenDoc = Doc<"recipeGens">;
 export type RecipeGenShape = EntityShape<"recipeGens">;
+
+export type FullRecipeGenDoc = RecipeGenDoc & {
+	title?: EntityShape<"recipes">["title"];
+};

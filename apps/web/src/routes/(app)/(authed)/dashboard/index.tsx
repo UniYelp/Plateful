@@ -71,7 +71,7 @@ function DashboardPage() {
 			</div>
 
 			{/* Stats Cards */}
-			<div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+			<div className="mb-8 grid grid-cols-3 gap-4 md:grid-cols-3">
 				<Card>
 					<CardContent className="p-4">
 						<div className="flex items-center gap-3">
@@ -164,7 +164,7 @@ function DashboardPage() {
 						<CardContent>
 							<div className="space-y-3">
 								{latestGenerations?.map((gen) => (
-									<RecipeGenState key={gen._id} gen={gen} />
+									<RecipeGenState key={gen._id} gen={gen} title={gen.title} />
 								))}
 							</div>
 							<Button
