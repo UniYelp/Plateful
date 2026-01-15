@@ -1,14 +1,15 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { parse } from "iso8601-duration";
-import { ArrowLeft, Clock, Play } from "lucide-react";
+import { ArrowLeft, Clock, Play, Utensils } from "lucide-react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
+import { formatDuration } from "&/recipes/utils/format-duration";
+import { formatStep } from "&/recipes/utils/format-step";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
@@ -54,6 +56,10 @@ function RecipeDetailPage() {
 	);
 
 	const { recipe, ingredients, imgGen, steps } = fullRecipe;
+
+	const ingredientNameById = Object.fromEntries(
+		ingredients.map(({ ingredient: { name, _id } }) => [_id, name] as const),
+	);
 
 	const ingredientsByIsAvailable = Object.groupBy(ingredients, (ingredient) => {
 		const isAvailable = isIngredientSufficient({
@@ -95,13 +101,15 @@ function RecipeDetailPage() {
 							<div className="flex items-center gap-2">
 								<Clock className="h-4 w-4 text-muted-foreground" />
 								<span className="text-sm">
-									{
-										// TODO: fix error
-										// @ts-expect-error: unrecognized available API
-										new Intl.DurationFormat("en", {
-											style: "short",
-										}).format(parse(recipe.cookTime))
-									}{" "}
+									Cook: {formatDuration(recipe.cookTime)}
+								</span>
+							</div>
+						)}
+						{recipe.prepTime && (
+							<div className="flex items-center gap-2">
+								<Clock className="h-4 w-4 text-muted-foreground" />
+								<span className="text-sm">
+									Prep: {formatDuration(recipe.prepTime)}
 								</span>
 							</div>
 						)}
@@ -156,13 +164,19 @@ function RecipeDetailPage() {
 						</div>
 					)}
 				</div>
-				<div>
+				{imgGen?.imageUrl ? (
 					<img
-						src={imgGen?.imageUrl || undefined}
+						src={imgGen.imageUrl}
 						alt={recipe.title}
-						className="h-64 w-full rounded-lg object-cover lg:h-80"
+						className="h-68 w-full rounded-lg object-cover"
 					/>
-				</div>
+				) : imgGen?.status === "generating" ? (
+					<Skeleton className="h-68 w-full rounded-xl" />
+				) : (
+					<div className="flex h-68 w-full items-center justify-center bg-muted">
+						<Utensils className="h-12 w-12 text-muted-foreground" />
+					</div>
+				)}
 			</div>
 
 			<div className="grid gap-8 lg:grid-cols-3">
@@ -221,11 +235,13 @@ function RecipeDetailPage() {
 						<CardContent>
 							<div className="space-y-4">
 								{steps.map((step) => (
-									<div key={step._id} className="flex gap-4">
-										<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
+									<div key={step._id} className="flex items-center gap-4">
+										<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
 											{step.index + 1}
 										</div>
-										<p className="pt-1 text-sm leading-relaxed">step.blocks</p>
+										<p className="text-sm leading-relaxed">
+											{formatStep(step, ingredientNameById)}
+										</p>
 									</div>
 								))}
 							</div>

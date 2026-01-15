@@ -5,7 +5,10 @@ import { History } from "lucide-react";
 
 import { api } from "@backend/api";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
-import { isGeneratingRecipe } from "&/recipes/utils/status";
+import {
+	isCompletedRecipeGen,
+	isGeneratingRecipe,
+} from "&/recipes/utils/status";
 import { generatingRecipeLoader } from "@/features/recipes/components/loaders/recipe-gen";
 
 export const Route = createFileRoute(
@@ -52,6 +55,14 @@ function RecipeGenerationPage() {
 	);
 
 	if (isGeneratingRecipe(recipeGen)) return generatingRecipeLoader;
+
+	if (isCompletedRecipeGen(recipeGen)) {
+		const {
+			state: { recipeId },
+		} = recipeGen;
+
+		return <Navigate to="/dashboard/recipes/$id" params={{ id: recipeId }} />;
+	}
 
 	return <Navigate to="/dashboard/recipes/gen" />;
 }

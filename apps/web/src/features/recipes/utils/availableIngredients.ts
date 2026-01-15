@@ -48,6 +48,7 @@ export const isIngredientSufficient = ({
 			if (usedInOriginalUnit) {
 				existing[unit] -= usedInOriginalUnit;
 			}
+            
 			remainingNeeded -= used;
 
 			if (remainingNeeded <= 0) break;

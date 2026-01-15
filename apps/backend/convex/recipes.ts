@@ -44,7 +44,7 @@ export const byIdAndHousehold = householdQuery({
 
 		const imgGen = await getRecipeGenImage(ctx, recipe.genId);
 
-		return Object.assign(recipe, { imgGen });
+		return Object.assign({}, recipe, { imgGen });
 	},
 });
 

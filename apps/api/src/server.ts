@@ -1,3 +1,5 @@
+import './instruments'
+
 import { cors } from "@elysiajs/cors";
 import { node } from "@elysiajs/node";
 import { openapi } from "@elysiajs/openapi";

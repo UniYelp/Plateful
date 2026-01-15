@@ -83,7 +83,7 @@ export const fullByIngredient = householdQuery({
 			recipeIngredients.map(async (recipeIngredient) => {
 				const recipe = await ctx.db.get("recipes", recipeIngredient.recipeId);
 
-				if (!recipe) return null;
+				if (!recipe || isSoftDeleted(recipe)) return null;
 				return {
 					recipe: {
 						_id: recipe._id,

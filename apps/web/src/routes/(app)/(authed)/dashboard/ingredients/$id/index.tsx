@@ -32,9 +32,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/ingredients/$id/",
 )({
-	loader: async ({ context }) => {
-		context.queryClient;
-	},
 	component: RouteComponent,
 });
 

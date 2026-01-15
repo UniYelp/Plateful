@@ -250,7 +250,7 @@ export const finalizeRecipeGen = internalAction({
 		const imgGenId = await nanoBanana.generate(ctx, {
 			userId: SYSTEM_ID,
 			prompt: args.imgPrompt,
-			aspectRatio: "5:4",
+			aspectRatio: "16:9",
 		});
 
 		await ctx.runMutation(internal.recipeGens.updateState, {

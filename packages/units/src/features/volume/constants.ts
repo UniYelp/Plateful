@@ -14,7 +14,7 @@ export const volumeUnitConversions: ScalarUnitConversion<VolumeUnit>[] = [
 	{ from: VolumeUnit.Liter, to: VolumeUnit.Milliliter, by: 1000 },
 	{
 		from: VolumeUnit.Dessertspoon,
-		to: VolumeUnit.Tablespoon,
+		to: VolumeUnit.Teaspoon,
 		by: 2 /** @note metric/imperial tsp | US tsp is by 4.93 */,
 	},
 	{
