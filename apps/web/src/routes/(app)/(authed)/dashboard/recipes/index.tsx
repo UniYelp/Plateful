@@ -53,22 +53,46 @@ function RecipesPage() {
 		}),
 	);
 
-	const filteredRecipes = fullRecipes.filter(({ recipe }) => {
-		const matchesSearch =
-			recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			recipe.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			recipe.tags.some((tag) =>
-				tag.toLowerCase().includes(searchTerm.toLowerCase()),
-			);
+	const detailedRecipes = fullRecipes.map((fullRecipe) => {
+		const { ingredients } = fullRecipe;
 
-		// TODO: add canCook functionality, as well as other filters
-		const matchesFilter = selectedFilter === "all"; // ||
-		// (selectedFilter === "can-cook" && recipe.canCook) ||
-		// (selectedFilter === "cooked" && recipe.lastCooked) ||
-		// (selectedFilter === "new" && !recipe.lastCooked);
+		const ingredientsByIsAvailable = Object.groupBy(
+			ingredients,
+			(ingredient) => {
+				const isAvailable = isIngredientSufficient({
+					ingredientQuantities: ingredient.ingredient.quantities,
+					neededQuantities: ingredient.quantities,
+				});
 
-		return matchesSearch && matchesFilter;
+				return `${isAvailable}`;
+			},
+		);
+
+		const missingIngredients = ingredientsByIsAvailable.false ?? [];
+
+		return {
+			...fullRecipe,
+			missingIngredients,
+		};
 	});
+
+	const filteredRecipes = detailedRecipes.filter(
+		({ recipe, missingIngredients }) => {
+			const matchesSearch =
+				recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				recipe.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				recipe.tags.some((tag) =>
+					tag.toLowerCase().includes(searchTerm.toLowerCase()),
+				);
+
+			// TODO: add canCook functionality, as well as other filters
+			const matchesFilter =
+				selectedFilter === "all" ||
+				(selectedFilter === "can-cook" && !missingIngredients.length);
+
+			return matchesSearch && matchesFilter;
+		},
+	);
 
 	return (
 		<>
@@ -103,8 +127,6 @@ function RecipesPage() {
 					{[
 						{ value: "all", label: "All" },
 						{ value: "can-cook", label: "Can Cook" },
-						{ value: "cooked", label: "Previously Cooked" },
-						{ value: "new", label: "New" },
 					].map((filter) => (
 						<Button
 							key={filter.value}
@@ -122,21 +144,8 @@ function RecipesPage() {
 			{/* Recipes Grid */}
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{filteredRecipes.map((fullRecipe) => {
-					const { imgGen, recipe, ingredients } = fullRecipe;
+					const { imgGen, recipe, missingIngredients } = fullRecipe;
 
-					const ingredientsByIsAvailable = Object.groupBy(
-						ingredients,
-						(ingredient) => {
-							const isAvailable = isIngredientSufficient({
-								ingredientQuantities: ingredient.ingredient.quantities,
-								neededQuantities: ingredient.quantities,
-							});
-
-							return `${isAvailable}`;
-						},
-					);
-
-					const missingIngredients = ingredientsByIsAvailable.false ?? [];
 					const canCook = missingIngredients.length === 0;
 
 					return (

@@ -155,6 +155,8 @@ export const edit = householdMutation({
 		}
 
 		if (ingredient.name !== args.name) {
+			console.log({ currName: ingredient.name, newName: args.name });
+
 			const similarIngredient = await getHouseholdIngredients(
 				ctx,
 				args.householdId,

@@ -39,7 +39,7 @@ function AddIngredientPage() {
 			? new Date(value.expiryDate).getTime()
 			: undefined;
 
-		const _ingredientId = await addIngredient({
+		const ingredientId = await addIngredient({
 			name: value.name,
 			description: value.description,
 			quantities: [
@@ -57,7 +57,7 @@ function AddIngredientPage() {
 
 		navigate({
 			to: "/dashboard/ingredients/$id",
-			params: { id: _ingredientId },
+			params: { id: ingredientId },
 		});
 	};
 
@@ -91,7 +91,11 @@ function AddIngredientPage() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<IngredientForm householdId={householdId} onSubmit={onSubmit} />
+					<IngredientForm
+						submitAction="Add"
+						householdId={householdId}
+						onSubmit={onSubmit}
+					/>
 				</CardContent>
 			</Card>
 		</>
