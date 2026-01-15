@@ -136,15 +136,13 @@ function RecipesPage() {
 							key={recipe._id}
 							className="overflow-hidden transition-shadow hover:shadow-md"
 						>
-							{imgGen?.imageUrl && (
-								<div className="relative">
-									<img
-										src={imgGen.imageUrl}
-										alt={recipe.title}
-										className="h-48 w-full object-cover"
-									/>
-								</div>
-							)}
+							<div className="relative">
+								<img
+									src={imgGen?.imageUrl || undefined}
+									alt={recipe.title}
+									className="h-48 w-full object-cover"
+								/>
+							</div>
 
 							<CardContent className="flex h-full flex-col justify-between p-4">
 								<div>
