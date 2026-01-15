@@ -60,8 +60,6 @@ const formatMaterialBlock = (
 			? data.ingredient.name
 			: nameById[data.ingredient.id];
 
-	console.log(data.ingredient, name);
-
 	let qtyStr = "";
 	if (typeof data.quantity === "string") {
 		// These strings should ideally be pulled from a translation file
