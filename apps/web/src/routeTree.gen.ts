@@ -13,6 +13,7 @@ import { Route as DevRouteImport } from './routes/dev'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
+import { Route as appOnboardingRouteImport } from './routes/(app)/onboarding'
 import { Route as appauthedRouteRouteImport } from './routes/(app)/(authed)/route'
 import { Route as appauthedDashboardRouteRouteImport } from './routes/(app)/(authed)/dashboard/route'
 import { Route as appauthedDashboardIndexRouteImport } from './routes/(app)/(authed)/dashboard/index'
@@ -44,6 +45,11 @@ const authSignInRoute = authSignInRouteImport.update({
   id: '/(auth)/sign-in',
   path: '/sign-in',
   getParentRoute: () => rootRouteImport,
+} as any)
+const appOnboardingRoute = appOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => appRouteRoute,
 } as any)
 const appauthedRouteRoute = appauthedRouteRouteImport.update({
   id: '/(authed)',
@@ -117,6 +123,7 @@ const appauthedDashboardIngredientsIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dev': typeof DevRoute
+  '/onboarding': typeof appOnboardingRoute
   '/sign-in': typeof authSignInRoute
   '/dashboard': typeof appauthedDashboardRouteRouteWithChildren
   '/dashboard/': typeof appauthedDashboardIndexRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dev': typeof DevRoute
+  '/onboarding': typeof appOnboardingRoute
   '/sign-in': typeof authSignInRoute
   '/dashboard': typeof appauthedDashboardIndexRoute
   '/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/dev': typeof DevRoute
   '/(app)/(authed)': typeof appauthedRouteRouteWithChildren
+  '/(app)/onboarding': typeof appOnboardingRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(app)/(authed)/dashboard': typeof appauthedDashboardRouteRouteWithChildren
   '/(app)/(authed)/dashboard/': typeof appauthedDashboardIndexRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dev'
+    | '/onboarding'
     | '/sign-in'
     | '/dashboard'
     | '/dashboard/'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dev'
+    | '/onboarding'
     | '/sign-in'
     | '/dashboard'
     | '/dashboard/ingredients/add'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/dev'
     | '/(app)/(authed)'
+    | '/(app)/onboarding'
     | '/(auth)/sign-in'
     | '/(app)/(authed)/dashboard'
     | '/(app)/(authed)/dashboard/'
@@ -252,6 +264,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sign-in'
       preLoaderRoute: typeof authSignInRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(app)/onboarding': {
+      id: '/(app)/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof appOnboardingRouteImport
+      parentRoute: typeof appRouteRoute
     }
     '/(app)/(authed)': {
       id: '/(app)/(authed)'
@@ -391,10 +410,12 @@ const appauthedRouteRouteWithChildren = appauthedRouteRoute._addFileChildren(
 
 interface appRouteRouteChildren {
   appauthedRouteRoute: typeof appauthedRouteRouteWithChildren
+  appOnboardingRoute: typeof appOnboardingRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appauthedRouteRoute: appauthedRouteRouteWithChildren,
+  appOnboardingRoute: appOnboardingRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(

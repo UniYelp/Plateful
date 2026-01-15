@@ -1,0 +1,659 @@
+import { createFileRoute } from "@tanstack/react-router";
+import {
+	ArrowLeft,
+	ArrowRight,
+	Check,
+	ChefHat,
+	Plus,
+	Sparkles,
+	X,
+} from "lucide-react";
+import { useRef, useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { TextArea } from "@/components/ui/textarea";
+
+export const Route = createFileRoute("/(app)/onboarding")({
+	component: RouteComponent,
+});
+
+function RouteComponent() {
+	return <OnboardingPage/>;
+}
+
+const commonAllergens = [
+	"Dairy",
+	"Eggs",
+	"Fish",
+	"Shellfish",
+	"Tree Nuts",
+	"Peanuts",
+	"Wheat",
+	"Soy",
+	"Sesame",
+	"Gluten",
+];
+
+const spiceLevels = [
+	{ value: "none", label: "No Spice", emoji: "🥛", desc: "Keep it cool" },
+	{ value: "mild", label: "Mild", emoji: "🌶️", desc: "Just a hint" },
+	{ value: "medium", label: "Medium", emoji: "🌶️🌶️", desc: "Perfect balance" },
+	{ value: "hot", label: "Hot", emoji: "🌶️🌶️🌶️", desc: "Bring the heat" },
+	{
+		value: "very-hot",
+		label: "Very Hot",
+		emoji: "🌶️🌶️🌶️🌶️",
+		desc: "Fire in the hole",
+	},
+];
+
+const quickFeatures = [
+		{
+			icon: "🥗",
+			title: "Personalized Recipes",
+			description: "Just for you",
+		},
+		{
+			icon: "🛡️",
+			title: "Allergen Safe",
+			description: "Stay protected",
+		},
+		{
+			icon: "⚡",
+			title: "Quick & Easy",
+			description: "Save time",
+		},
+	];
+
+export function OnboardingPage() {
+	const navigate = Route.useNavigate()
+	const [step, setStep] = useState(1);
+	const totalSteps = 4;
+	const customAllergenInputRef = useRef<HTMLInputElement>(null);
+	const customDietaryInputRef = useRef<HTMLInputElement>(null);
+
+	// Form state
+	const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
+	const [customAllergen, setCustomAllergen] = useState("");
+	const [spiceLevel, setSpiceLevel] = useState("medium");
+	const [likedFoods, setLikedFoods] = useState("");
+	const [dislikedFoods, setDislikedFoods] = useState("");
+	const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([]);
+	const [customDietary, setCustomDietary] = useState("");
+
+	const dietaryOptions = [
+		"Vegetarian",
+		"Vegan",
+		"Pescatarian",
+		"Halal",
+		"Kosher",
+		"Low-Carb",
+		"Keto",
+		"Paleo",
+	];
+
+	const toggleAllergen = (allergen: string) => {
+		setSelectedAllergens((prev) =>
+			prev.includes(allergen)
+				? prev.filter((a) => a !== allergen)
+				: [...prev, allergen],
+		);
+	};
+
+	const addCustomAllergen = () => {
+		const trimmed = customAllergen.trim();
+		if (trimmed && !selectedAllergens.includes(trimmed)) {
+			setSelectedAllergens((prev) => [...prev, trimmed]);
+			setCustomAllergen("");
+			customAllergenInputRef.current?.focus();
+		}
+	};
+
+	const removeAllergen = (allergen: string) => {
+		setSelectedAllergens((prev) => prev.filter((a) => a !== allergen));
+	};
+
+	const toggleDietaryPreference = (pref: string) => {
+		setDietaryPreferences((prev) =>
+			prev.includes(pref) ? prev.filter((p) => p !== pref) : [...prev, pref],
+		);
+	};
+
+	const addCustomDietary = () => {
+		const trimmed = customDietary.trim();
+		if (trimmed && !dietaryPreferences.includes(trimmed)) {
+			setDietaryPreferences((prev) => [...prev, trimmed]);
+			setCustomDietary("");
+			customDietaryInputRef.current?.focus();
+		}
+	};
+
+	const removeDietary = (pref: string) => {
+		setDietaryPreferences((prev) => prev.filter((p) => p !== pref));
+	};
+
+	const handleComplete = () => {
+		const preferences = {
+			allergens: selectedAllergens,
+			spiceLevel,
+			likedFoods: likedFoods
+				.split(",")
+				.map((f) => f.trim())
+				.filter(Boolean),
+			dislikedFoods: dislikedFoods
+				.split(",")
+				.map((f) => f.trim())
+				.filter(Boolean),
+			dietaryPreferences,
+		};
+		console.log("Saving preferences:", preferences);
+		localStorage.setItem("userPreferences", JSON.stringify(preferences));
+		localStorage.setItem("onboardingComplete", "true");
+		navigate({to: "/dashboard"});
+	};
+
+	const progressValue = (step / totalSteps) * 100;
+
+	
+
+	return (
+		<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-primary/5 via-background to-primary/10 p-4">
+			<div className="pointer-events-none absolute inset-0 overflow-hidden">
+				<div className="absolute top-20 left-10 h-72 w-72 animate-pulse rounded-full bg-primary/10 blur-3xl"></div>
+				<div className="absolute right-10 bottom-20 h-96 w-96 animate-pulse rounded-full bg-primary/5 blur-3xl delay-1000"></div>
+				<div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-125 w-125 animate-spin-slow rounded-full bg-linear-to-r from-primary/5 to-transparent blur-3xl"></div>
+			</div>
+
+			<Card className="relative z-10 w-full max-w-3xl border-2 shadow-2xl">
+				<CardHeader className="space-y-2 pb-6 text-center">
+					<div className="relative mb-4 flex justify-center">
+						<div className="absolute inset-0 animate-pulse rounded-3xl bg-primary/20 blur-xl"></div>
+						<div className="relative flex h-20 w-20 transform items-center justify-center rounded-3xl bg-linear-to-br from-primary to-primary/70 shadow-2xl transition-transform duration-300 hover:scale-110">
+							<ChefHat className="h-12 w-12 animate-bounce-subtle text-primary-foreground" />
+						</div>
+					</div>
+					<div className="space-y-1">
+						<CardTitle className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text font-bold text-4xl text-transparent">
+							Welcome to CookEase
+						</CardTitle>
+						<CardDescription className="flex items-center justify-center gap-2 text-lg">
+							<Sparkles className="h-4 w-4 text-primary" />
+							Let's personalize your cooking experience
+							<Sparkles className="h-4 w-4 text-primary" />
+						</CardDescription>
+					</div>
+					<div className="pt-6">
+						<div className="mb-3 flex justify-between px-1 font-medium text-muted-foreground text-sm">
+							<span className="flex items-center gap-2">
+								Step <span className="text-lg text-primary">{step}</span> of{" "}
+								{totalSteps}
+							</span>
+							<span className="font-semibold text-lg text-primary">
+								{Math.round(progressValue)}%
+							</span>
+						</div>
+						<Progress value={progressValue} className="h-3 shadow-inner" />
+					</div>
+				</CardHeader>
+
+				<CardContent className="space-y-6 pb-8">
+					{/* Step 1: Welcome */}
+					{step === 1 && (
+						<div className="fade-in slide-in-from-bottom-8 animate-in space-y-6 duration-700">
+							<div className="space-y-6 py-6 text-center">
+								<div className="space-y-3">
+									<h2 className="bg-linear-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-3xl text-transparent">
+										Ready to start your culinary journey?
+									</h2>
+									<p className="mx-auto max-w-xl text-lg text-muted-foreground leading-relaxed">
+										We'll help you discover amazing recipes tailored to your
+										tastes, dietary needs, and cooking style. This will only
+										take a minute!
+									</p>
+								</div>
+								<div className="grid grid-cols-3 gap-6 pt-8">
+									{quickFeatures.map((feature) => (
+										<div
+											key={feature.title}
+											className="flex flex-col items-center gap-3 rounded-2xl border-2 border-primary/20 bg-linear-to-br from-primary/10 to-primary/5 p-6 shadow-lg transition-transform duration-300 hover:scale-105"
+										>
+											<div className="animate-bounce-subtle text-5xl">{feature.icon}</div>
+											<p className="text-center font-semibold text-sm">
+												{feature.title}
+											</p>
+											<p className="text-center text-muted-foreground text-xs">
+												{feature.description}
+											</p>
+										</div>
+									))}
+								</div>
+							</div>
+						</div>
+					)}
+
+					{/* Step 2: Allergens */}
+					{step === 2 && (
+						<div className="fade-in slide-in-from-bottom-8 animate-in space-y-6 duration-700">
+							<div className="space-y-2 text-center">
+								<h2 className="font-bold text-2xl">
+									Do you have any food allergens?
+								</h2>
+								<p className="text-muted-foreground">
+									Select common allergens or add your own. We'll keep you safe.
+								</p>
+							</div>
+
+							<div>
+								<Label className="mb-3 block font-semibold text-muted-foreground text-sm">
+									COMMON ALLERGENS
+								</Label>
+								<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+									{commonAllergens.map((allergen) => (
+										<button
+											type="button"
+											key={allergen}
+											onClick={() => toggleAllergen(allergen)}
+											className={`group relative overflow-hidden rounded-xl border-2 p-4 text-left transition-all duration-300 ${
+												selectedAllergens.includes(allergen)
+													? "scale-105 border-primary bg-linear-to-br from-primary/10 to-primary/5 shadow-lg"
+													: "border-border hover:border-primary/50 hover:shadow-md"
+											}`}
+										>
+											<div className="relative z-10 flex items-center justify-between">
+												<span className="font-medium">{allergen}</span>
+												{selectedAllergens.includes(allergen) && (
+													<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary shadow-md">
+														<Check className="h-4 w-4 text-primary-foreground" />
+													</div>
+												)}
+											</div>
+											<div className="absolute inset-0 translate-y-full bg-primary/5 transition-transform duration-300 group-hover:translate-y-0"></div>
+										</button>
+									))}
+								</div>
+							</div>
+
+							<div className="space-y-3">
+								<Label className="block font-semibold text-muted-foreground text-sm">
+									ADD CUSTOM ALLERGEN
+								</Label>
+								<div className="flex gap-2">
+									<Input
+										ref={customAllergenInputRef}
+										type="text"
+										placeholder="e.g., Mustard, Celery, Lupin..."
+										value={customAllergen}
+										onChange={(e) => setCustomAllergen(e.target.value)}
+										onKeyDown={(e) => e.key === "Enter" && addCustomAllergen()}
+										className="h-11 flex-1"
+									/>
+									<Button
+										type="button"
+										onClick={addCustomAllergen}
+										disabled={!customAllergen.trim()}
+										className="h-11 px-6"
+									>
+										<Plus className="mr-2 h-4 w-4" />
+										Add
+									</Button>
+								</div>
+							</div>
+
+							{selectedAllergens.length > 0 && (
+								<div className="rounded-xl border-2 border-destructive/20 bg-linear-to-br from-destructive/5 to-destructive/10 p-5">
+									<p className="mb-3 flex items-center gap-2 font-semibold text-sm">
+										<span className="h-2 w-2 animate-pulse rounded-full bg-destructive"></span>
+										Your allergens ({selectedAllergens.length}):
+									</p>
+									<div className="flex flex-wrap gap-2">
+										{selectedAllergens.map((allergen) => (
+											<Badge
+												key={allergen}
+												variant="secondary"
+												className="group py-1.5 pr-2 pl-3 text-sm transition-colors hover:bg-destructive/20"
+											>
+												{allergen}
+												<button
+													type="button"
+													onClick={() => removeAllergen(allergen)}
+													className="ml-2 rounded-full p-0.5 transition-colors hover:bg-destructive/30"
+												>
+													<X className="h-3 w-3" />
+												</button>
+											</Badge>
+										))}
+									</div>
+								</div>
+							)}
+
+							<p className="pt-2 text-center text-muted-foreground text-xs">
+								You can skip this step if you don't have any allergens
+							</p>
+						</div>
+					)}
+
+					{/* Step 3: Spice Level & Dietary Preferences */}
+					{step === 3 && (
+						<div className="fade-in slide-in-from-bottom-8 animate-in space-y-6 duration-700">
+							<div className="space-y-2 text-center">
+								<h2 className="font-bold text-2xl">
+									Tell us about your preferences
+								</h2>
+								<p className="text-muted-foreground">
+									This helps us suggest recipes you'll love
+								</p>
+							</div>
+
+							<div className="space-y-6">
+								<div className="space-y-4">
+									<Label className="block text-center font-semibold text-base">
+										How spicy do you like your food?
+									</Label>
+									<div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+										{spiceLevels.map((level, idx) => (
+											<button
+												type="button"
+												key={level.value}
+												onClick={() => setSpiceLevel(level.value)}
+												style={{ animationDelay: `${idx * 50}ms` }}
+												className={`group fade-in slide-in-from-bottom-4 relative animate-in overflow-hidden rounded-xl border-2 p-4 text-center transition-all duration-300 ${
+													spiceLevel === level.value
+														? "scale-110 border-primary bg-linear-to-br from-primary/10 to-primary/5 shadow-lg"
+														: "border-border hover:scale-105 hover:border-primary/50"
+												}`}
+											>
+												<div className="relative z-10">
+													<div className="mb-2 transform text-3xl transition-transform group-hover:scale-110">
+														{level.emoji}
+													</div>
+													<div className="mb-0.5 font-semibold text-sm">
+														{level.label}
+													</div>
+													<div className="text-muted-foreground text-xs">
+														{level.desc}
+													</div>
+												</div>
+												{spiceLevel === level.value && (
+													<div className="absolute inset-0 animate-pulse bg-primary/10"></div>
+												)}
+											</button>
+										))}
+									</div>
+								</div>
+
+								<div className="space-y-4">
+									<Label className="block text-center font-semibold text-base">
+										Any dietary preferences?
+									</Label>
+									<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+										{dietaryOptions.map((pref) => (
+											<button
+												type="button"
+												key={pref}
+												onClick={() => toggleDietaryPreference(pref)}
+												className={`group relative overflow-hidden rounded-lg border-2 px-4 py-3 font-medium text-sm transition-all duration-300 ${
+													dietaryPreferences.includes(pref)
+														? "scale-105 border-primary bg-linear-to-br from-primary/10 to-primary/5 shadow-md"
+														: "border-border hover:border-primary/50"
+												}`}
+											>
+												<span className="relative z-10 flex items-center justify-center gap-1">
+													{pref}
+													{dietaryPreferences.includes(pref) && (
+														<Check className="h-3 w-3" />
+													)}
+												</span>
+												<div className="absolute inset-0 translate-x-full bg-primary/5 transition-transform duration-300 group-hover:translate-x-0"></div>
+											</button>
+										))}
+									</div>
+
+									<div className="flex gap-2 pt-2">
+										<Input
+											ref={customDietaryInputRef}
+											type="text"
+											placeholder="Add custom preference (e.g., Gluten-free, Organic...)"
+											value={customDietary}
+											onChange={(e) => setCustomDietary(e.target.value)}
+											onKeyDown={(e) => e.key === "Enter" && addCustomDietary()}
+											className="h-10 flex-1"
+										/>
+										<Button
+											type="button"
+											onClick={addCustomDietary}
+											disabled={!customDietary.trim()}
+											size="sm"
+											className="h-10"
+										>
+											<Plus className="mr-1 h-4 w-4" />
+											Add
+										</Button>
+									</div>
+
+									{dietaryPreferences.some(
+										(p) => !dietaryOptions.includes(p),
+									) && (
+										<div className="flex flex-wrap gap-2 pt-2">
+											{dietaryPreferences
+												.filter((p) => !dietaryOptions.includes(p))
+												.map((pref) => (
+													<Badge
+														key={pref}
+														variant="outline"
+														className="border-primary/50 py-1.5 pr-2 pl-3"
+													>
+														{pref}
+														<button
+															type="button"
+															onClick={() => removeDietary(pref)}
+															className="ml-2 rounded-full p-0.5 transition-colors hover:bg-destructive/30"
+														>
+															<X className="h-3 w-3" />
+														</button>
+													</Badge>
+												))}
+										</div>
+									)}
+								</div>
+							</div>
+						</div>
+					)}
+
+					{/* Step 4: Food Likes/Dislikes */}
+					{step === 4 && (
+						<div className="fade-in slide-in-from-bottom-8 animate-in space-y-6 duration-700">
+							<div className="space-y-2 text-center">
+								<h2 className="font-bold text-2xl">Almost there!</h2>
+								<p className="text-muted-foreground">
+									Tell us about your food preferences to get better recipe
+									suggestions
+								</p>
+							</div>
+
+							<div className="space-y-5">
+								<div className="space-y-3">
+									<Label
+										htmlFor="liked-foods"
+										className="flex items-center gap-2 font-semibold text-base"
+									>
+										<span className="text-2xl">😍</span>
+										Foods you love
+									</Label>
+									<p className="text-muted-foreground text-xs">
+										Separate multiple items with commas (e.g., chicken, pasta,
+										broccoli)
+									</p>
+									<TextArea
+										id="liked-foods"
+										placeholder="chicken, pasta, tomatoes, garlic, avocado..."
+										value={likedFoods}
+										onChange={(e) => setLikedFoods(e.target.value)}
+										rows={4}
+										className="resize-none text-base"
+									/>
+								</div>
+
+								<div className="space-y-3">
+									<Label
+										htmlFor="disliked-foods"
+										className="flex items-center gap-2 font-semibold text-base"
+									>
+										<span className="text-2xl">🚫</span>
+										Foods you'd rather avoid
+									</Label>
+									<p className="text-muted-foreground text-xs">
+										Separate multiple items with commas
+									</p>
+									<TextArea
+										id="disliked-foods"
+										placeholder="mushrooms, olives, cilantro..."
+										value={dislikedFoods}
+										onChange={(e) => setDislikedFoods(e.target.value)}
+										rows={4}
+										className="resize-none text-base"
+									/>
+								</div>
+							</div>
+
+							{(selectedAllergens.length > 0 ||
+								dietaryPreferences.length > 0) && (
+								<div className="space-y-4 rounded-xl border-2 border-primary/20 bg-linear-to-br from-primary/5 to-primary/10 p-6">
+									<p className="flex items-center gap-2 font-bold text-base">
+										<Sparkles className="h-5 w-5 text-primary" />
+										Your Profile Summary
+									</p>
+									{selectedAllergens.length > 0 && (
+										<div>
+											<p className="mb-2 font-semibold text-muted-foreground text-sm">
+												Allergens:
+											</p>
+											<div className="flex flex-wrap gap-2">
+												{selectedAllergens.map((allergen) => (
+													<Badge
+														key={allergen}
+														variant="destructive"
+														className="text-xs"
+													>
+														{allergen}
+													</Badge>
+												))}
+											</div>
+										</div>
+									)}
+									{dietaryPreferences.length > 0 && (
+										<div>
+											<p className="mb-2 font-semibold text-muted-foreground text-sm">
+												Dietary Preferences:
+											</p>
+											<div className="flex flex-wrap gap-2">
+												{dietaryPreferences.map((pref) => (
+													<Badge key={pref} className="text-xs">
+														{pref}
+													</Badge>
+												))}
+											</div>
+										</div>
+									)}
+									{spiceLevel && (
+										<div>
+											<p className="mb-2 font-semibold text-muted-foreground text-sm">
+												Spice Level:
+											</p>
+											<Badge variant="outline" className="text-xs">
+												{spiceLevels.find((l) => l.value === spiceLevel)?.emoji}{" "}
+												{spiceLevels.find((l) => l.value === spiceLevel)?.label}
+											</Badge>
+										</div>
+									)}
+								</div>
+							)}
+						</div>
+					)}
+
+					<div className="flex justify-between border-t-2 pt-6">
+						{step > 1 ? (
+							<Button
+								variant="outline"
+								onClick={() => setStep(step - 1)}
+								size="lg"
+								className="gap-2"
+							>
+								<ArrowLeft className="h-4 w-4" />
+								Back
+							</Button>
+						) : (
+							<div />
+						)}
+
+						{step < totalSteps ? (
+							<Button
+								onClick={() => setStep(step + 1)}
+								size="lg"
+								className="gap-2 shadow-lg"
+							>
+								Next
+								<ArrowRight className="h-4 w-4" />
+							</Button>
+						) : (
+							<Button
+								onClick={handleComplete}
+								size="lg"
+								className="gap-2 bg-linear-to-r from-primary to-primary/80 shadow-lg"
+							>
+								<Sparkles className="h-4 w-4" />
+								Complete Setup
+								<Check className="h-4 w-4" />
+							</Button>
+						)}
+					</div>
+				</CardContent>
+			</Card>
+
+			<style jsx>{`
+        @keyframes bounce-subtle {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-5px);
+          }
+        }
+        @keyframes spin-slow {
+          from {
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          to {
+            transform: translate(-50%, -50%) rotate(360deg);
+          }
+        }
+        .animate-bounce-subtle {
+          animation: bounce-subtle 3s ease-in-out infinite;
+        }
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+        .delay-100 {
+          animation-delay: 100ms;
+        }
+        .delay-200 {
+          animation-delay: 200ms;
+        }
+        .delay-1000 {
+          animation-delay: 1000ms;
+        }
+      `}</style>
+		</div>
+	);
+}
