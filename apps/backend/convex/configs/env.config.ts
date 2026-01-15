@@ -10,6 +10,8 @@ export const ENV = createEnv({
 		CLERK_JWT_ISSUER_DOMAIN: z.url(),
 		CLERK_WEBHOOK_SECRET: z.string(),
 		CLERK_SECRET_KEY: z.string(),
+        //? GenAi
+        GEMINI_API_KEY: z.string()
 	},
 
 	/**

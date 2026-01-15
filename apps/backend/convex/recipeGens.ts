@@ -3,10 +3,11 @@ import { Duration } from "luxon";
 import type { RecipeGenInput } from "@plateful/agents/recipes";
 import type { StrictOmit } from "@plateful/types";
 import { TemperatureUnit } from "@plateful/units/temperature";
-import { entriesOf } from "@plateful/utils";
+import { Arr, bool, entriesOf } from "@plateful/utils";
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
 import { apiClient } from "./configs/api.config";
+import { nanoBanana } from "./configs/nano-banana.config";
 import { InternalError, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { householdMutation, householdQuery } from "./households";
@@ -153,12 +154,13 @@ export const completeGen = internalMutation({
 		steps: vv.array(recipeStepFields.blocks),
 	},
 	handler: async (ctx, args) => {
-		const { user, recipe } = args;
+		const { user, recipe, genId } = args;
 
 		const now = Date.now();
 
 		const recipeId = await ctx.db.insert("recipes", {
 			householdId: recipe.householdId,
+			genId,
 			type: recipe.type,
 			title: recipe.title,
 			description: recipe.description,
@@ -198,7 +200,7 @@ export const completeGen = internalMutation({
 
 		await Promise.all([...ingredientPromises, ...stepsPromises]);
 
-		await ctx.db.patch("recipeGens", args.genId, {
+		await ctx.db.patch("recipeGens", genId, {
 			state: {
 				status: "completed",
 				recipeId,
@@ -206,12 +208,48 @@ export const completeGen = internalMutation({
 			updatedBy: user,
 			updatedAt: now,
 		});
+
+		await ctx.scheduler.runAfter(0, internal.recipeGens.finalizeRecipeGen, {
+			genId,
+			recipeId,
+			imgPrompt: `Generate an image that matches the following recipe's details
+            ---
+            Title: ${recipe.title}
+            Description: ${recipe.description || "---"}
+            Tags: ${recipe.tags.join(", ")}
+            `,
+		});
 	},
 });
 
 // #endregion
 
 // #region Actions
+
+export const finalizeRecipeGen = internalAction({
+	args: {
+		genId: vv.id("recipeGens"),
+		recipeId: vv.id("recipes"),
+		imgPrompt: vv.string(),
+	},
+	handler: async (ctx, args) => {
+		const imgGenId = await nanoBanana.generate(ctx, {
+			userId: SYSTEM_ID,
+			prompt: args.imgPrompt,
+			aspectRatio: "5:4",
+		});
+
+		await ctx.runMutation(internal.recipeGens.updateState, {
+			genId: args.genId,
+			user: SYSTEM_ID,
+			state: {
+				status: "completed",
+				recipeId: args.recipeId,
+				imgGenId,
+			},
+		});
+	},
+});
 
 // TODO: convert to a workflow | https://www.convex.dev/components/workflow
 export const generateRecipe = internalAction({
@@ -293,6 +331,17 @@ export const generateRecipe = internalAction({
 				const { title, description, tags, steps, notes } = data;
 
 				console.log({ genId, notes, data });
+
+				const stepTokensToSanitize = [
+					"cookTime",
+					"prepTime",
+					"description",
+					"title",
+					"keywords",
+					"notes",
+					"tags",
+					"steps",
+				] satisfies (keyof EntityShape<"recipes"> | "steps")[];
 
 				const detailsByIngredient = Object.groupBy(
 					steps.flatMap((parts) =>
@@ -385,47 +434,59 @@ export const generateRecipe = internalAction({
 					user: SYSTEM_ID,
 					recipe,
 					ingredients,
-					steps: steps.map((parts) =>
-						parts.map((part) => {
-							if (typeof part === "string") return part;
+					steps: steps
+						.map((parts) => {
+							const [firstPart] = parts;
 
-							if (part.type === "time") {
-								const { kind, duration } = part;
-								return { type: "duration" as const, kind, value: duration };
+							if (
+								typeof firstPart === "string" &&
+								Arr.includes(stepTokensToSanitize, firstPart)
+							) {
+								console.warn("sanitizing step from recipe", parts);
+								return null;
 							}
 
-							if (part.type === "material") {
-								const {
-									type,
-									kind,
-									name,
-									quantity: quantityData,
-									state,
-								} = part;
+							return parts.map((part) => {
+								if (typeof part === "string") return part;
 
-								const { value: amount, unit } = quantityData;
+								if (part.type === "time") {
+									const { kind, duration } = part;
+									return { type: "duration" as const, kind, value: duration };
+								}
 
-								const ingredientId = ingredientIdByName[name];
+								if (part.type === "material") {
+									const {
+										type,
+										kind,
+										name,
+										quantity: quantityData,
+										state,
+									} = part;
 
-								const ingredient =
-									kind === "input" && ingredientId
-										? { id: ingredientId }
-										: { name };
+									const { value: amount, unit } = quantityData;
 
-								const quantity =
-									amount === "remaining"
-										? REMAINING_QUANTITY
-										: ({
-												amount,
-												unit: typeof unit === "string" ? unit : unit?.value,
-											} satisfies IngredientQuantity);
+									const ingredientId = ingredientIdByName[name];
 
-								return { type, kind, ingredient, quantity, state } as const;
-							}
+									const ingredient =
+										kind === "input" && ingredientId
+											? { id: ingredientId }
+											: { name };
 
-							return part;
-						}),
-					),
+									const quantity =
+										amount === "remaining"
+											? REMAINING_QUANTITY
+											: ({
+													amount,
+													unit: typeof unit === "string" ? unit : unit?.value,
+												} satisfies IngredientQuantity);
+
+									return { type, kind, ingredient, quantity, state } as const;
+								}
+
+								return part;
+							});
+						})
+						.filter(bool),
 				});
 
 				return;

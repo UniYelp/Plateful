@@ -181,4 +181,149 @@ export declare const components: {
       >;
     };
   };
+  nanoBanana: {
+    edit: {
+      edit: FunctionReference<
+        "action",
+        "internal",
+        {
+          apiKey: string;
+          aspectRatio?: string;
+          imageSize?: string;
+          inputImages: Array<{ base64: string; mimeType: string }>;
+          model: string;
+          negativePrompt?: string;
+          prompt: string;
+          userId: string;
+        },
+        string
+      >;
+      editFromStorage: FunctionReference<
+        "action",
+        "internal",
+        {
+          apiKey: string;
+          aspectRatio?: string;
+          imageSize?: string;
+          inputStorageIds: Array<string>;
+          model: string;
+          negativePrompt?: string;
+          prompt: string;
+          userId: string;
+        },
+        string
+      >;
+    };
+    generate: {
+      generate: FunctionReference<
+        "action",
+        "internal",
+        {
+          apiKey: string;
+          aspectRatio?: string;
+          imageSize?: string;
+          model: string;
+          negativePrompt?: string;
+          prompt: string;
+          userId: string;
+        },
+        string
+      >;
+    };
+    mutations: {
+      deleteAllForUser: FunctionReference<
+        "mutation",
+        "internal",
+        { userId: string },
+        { deleted: number }
+      >;
+      deleteGeneration: FunctionReference<
+        "mutation",
+        "internal",
+        { generationId: string },
+        null
+      >;
+    };
+    queries: {
+      get: FunctionReference<
+        "query",
+        "internal",
+        { generationId: string },
+        {
+          _creationTime: number;
+          _id: string;
+          aspectRatio?: string;
+          durationMs?: number;
+          error?: string;
+          imageSize?: string;
+          imageStorageId?: string;
+          imageUrl?: string | null;
+          inputImageStorageIds?: Array<string>;
+          model: string;
+          negativePrompt?: string;
+          prompt: string;
+          responseText?: string;
+          status: "pending" | "generating" | "complete" | "failed";
+          userId: string;
+        } | null
+      >;
+      getImageUrl: FunctionReference<
+        "query",
+        "internal",
+        { generationId: string },
+        string | null
+      >;
+      list: FunctionReference<
+        "query",
+        "internal",
+        { cursor?: string; limit?: number; userId: string },
+        {
+          cursor?: string;
+          generations: Array<{
+            _creationTime: number;
+            _id: string;
+            aspectRatio?: string;
+            durationMs?: number;
+            error?: string;
+            imageSize?: string;
+            imageStorageId?: string;
+            imageUrl?: string | null;
+            inputImageStorageIds?: Array<string>;
+            model: string;
+            negativePrompt?: string;
+            prompt: string;
+            responseText?: string;
+            status: "pending" | "generating" | "complete" | "failed";
+            userId: string;
+          }>;
+          hasMore: boolean;
+        }
+      >;
+      listByStatus: FunctionReference<
+        "query",
+        "internal",
+        {
+          limit?: number;
+          status: "pending" | "generating" | "complete" | "failed";
+        },
+        Array<{
+          _creationTime: number;
+          _id: string;
+          aspectRatio?: string;
+          durationMs?: number;
+          error?: string;
+          imageSize?: string;
+          imageStorageId?: string;
+          imageUrl?: string | null;
+          inputImageStorageIds?: Array<string>;
+          model: string;
+          negativePrompt?: string;
+          prompt: string;
+          responseText?: string;
+          status: "pending" | "generating" | "complete" | "failed";
+          userId: string;
+        }>
+      >;
+    };
+  };
 };
