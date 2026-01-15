@@ -294,7 +294,7 @@ export const generateRecipe = internalAction({
 
 				console.log({ genId, notes, data });
 
-				const recipeFields = [
+				const stepTokensToSanitize = [
 					"cookTime",
 					"prepTime",
 					"description",
@@ -402,7 +402,7 @@ export const generateRecipe = internalAction({
 
 							if (
 								typeof firstPart === "string" &&
-								Arr.includes(recipeFields, firstPart)
+								Arr.includes(stepTokensToSanitize, firstPart)
 							) {
 								console.warn("sanitizing step from recipe", parts);
 								return null;
