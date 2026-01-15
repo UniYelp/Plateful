@@ -6,6 +6,8 @@ import { BookOpen, Clock, Play, Search, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 import { api } from "@backend/api";
+import { recipesLoader } from "&/recipes/components/loaders/recipes";
+import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,14 +18,15 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/")({
 	loader: async ({ context }) => {
 		const { household, queryClient } = context;
 
-		const recipes = await queryClient.ensureQueryData(
+		await queryClient.ensureQueryData(
 			convexQuery(api.recipes.byHousehold, {
 				householdId: household._id,
 			}),
 		);
 
-		return { household, recipes };
+		return { household };
 	},
+	pendingComponent: () => recipesLoader,
 });
 
 function RouteComponent() {
@@ -36,13 +39,13 @@ function RecipesPage() {
 
 	const { household } = Route.useLoaderData();
 
-	const { data: recipes } = useSuspenseQuery(
+	const { data: fullRecipes } = useSuspenseQuery(
 		convexQuery(api.recipes.byHousehold, {
 			householdId: household._id,
 		}),
 	);
 
-	const filteredRecipes = recipes.filter((recipe) => {
+	const filteredRecipes = fullRecipes.filter(({ recipe }) => {
 		const matchesSearch =
 			recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			recipe.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -110,37 +113,38 @@ function RecipesPage() {
 
 			{/* Recipes Grid */}
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{filteredRecipes.map((recipe) => {
-					// TODO: add to fetch
-					// const ingredientsByIsAvailable = Object.groupBy(
-					// 	recipe.ingredients,
-					// 	(ingredient) => {
-					// 		const isAvailable = isIngredientSufficient({
-					// 			ingredientQuantities: ingredient.ingredient.quantities,
-					// 			neededQuantities: ingredient.quantities,
-					// 		});
+				{filteredRecipes.map((fullRecipe) => {
+					const { imgGen, recipe, ingredients } = fullRecipe;
 
-					// 		return `${isAvailable}`;
-					// 	},
-					// );
+					const ingredientsByIsAvailable = Object.groupBy(
+						ingredients,
+						(ingredient) => {
+							const isAvailable = isIngredientSufficient({
+								ingredientQuantities: ingredient.ingredient.quantities,
+								neededQuantities: ingredient.quantities,
+							});
 
-					// const availableIngredients = ingredientsByIsAvailable.true ?? [];
-					// const missingIngredients = ingredientsByIsAvailable.false ?? [];
+							return `${isAvailable}`;
+						},
+					);
 
-					const canCook = false; //missingIngredients.length === 0;
+					const missingIngredients = ingredientsByIsAvailable.false ?? [];
+					const canCook = missingIngredients.length === 0;
 
 					return (
 						<Card
 							key={recipe._id}
 							className="overflow-hidden transition-shadow hover:shadow-md"
 						>
-							{/* <div className="relative">
-							<img
-								src={recipe.image || "/placeholder.svg"}
-								alt={recipe.title}
-								className="h-48 w-full object-cover"
-							/>
-						</div> */}
+							{imgGen?.imageUrl && (
+								<div className="relative">
+									<img
+										src={imgGen.imageUrl}
+										alt={recipe.title}
+										className="h-48 w-full object-cover"
+									/>
+								</div>
+							)}
 
 							<CardContent className="flex h-full flex-col justify-between p-4">
 								<div>

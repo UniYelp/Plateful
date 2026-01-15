@@ -56,12 +56,13 @@ export const fullByRecipe = householdQuery({
 
 		const steps = await ctx.db
 			.query("recipeSteps")
-			.withIndex("by_recipe_and_index", q => q.eq("recipeId", args.recipeId)).collect();
+			.withIndex("by_recipe_and_index", (q) => q.eq("recipeId", args.recipeId))
+			.collect();
 
 		return {
 			recipe,
 			ingredients: ingredients.filter(bool),
-			steps
+			steps,
 		};
 	},
 });
@@ -100,7 +101,10 @@ export const fullByIngredient = householdQuery({
 // #endregion
 
 // #region Helpers
-async function getRecipeIngredients(ctx: QueryCtx, recipeId: Id<"recipes">) {
+export async function getRecipeIngredients(
+	ctx: QueryCtx,
+	recipeId: Id<"recipes">,
+) {
 	const recipes = await ctx.db
 		.query("recipeIngredients")
 		.withIndex("by_recipe_deletedAt_ingredient", (q) =>

@@ -59,7 +59,17 @@ export const byHousehold = householdQuery({
 			.order("desc")
 			.take(5);
 
-		return generations;
+		const gensWithTitle = await Promise.all(
+			generations.map(async (gen) => {
+				if (gen.state.status !== "completed") return gen;
+
+				const recipe = await ctx.db.get("recipes", gen.state.recipeId);
+
+				return Object.assign(gen, { title: recipe?.title });
+			}),
+		);
+
+		return gensWithTitle;
 	},
 });
 

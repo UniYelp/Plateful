@@ -2,12 +2,12 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { parse } from "iso8601-duration";
-import { ArrowLeft, Clock, Heart, Play } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Clock, Play } from "lucide-react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
+import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,22 +18,25 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { mockRecipe } from "@/pages/dashboard/recipes";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
 	loader: async ({ context, params }) => {
 		const { household, queryClient } = context;
 		const { id } = params;
+
 		const fullRecipe = await queryClient.ensureQueryData(
-			convexQuery(api.recipeIngredients.fullByRecipe, {
+			convexQuery(api.recipes.fullById, {
 				householdId: household._id,
 				recipeId: id as Id<"recipes">,
 			}),
 		);
 
-		return { household, fullRecipe };
+		const { recipe } = fullRecipe;
+
+		return { household, recipeId: recipe._id };
 	},
+	pendingComponent: () => recipesLoader,
 });
 
 function RouteComponent() {
@@ -41,28 +44,25 @@ function RouteComponent() {
 }
 
 function RecipeDetailPage() {
-	const { household } = Route.useLoaderData();
-	const { id } = Route.useParams();
-	const [_recipe] = useState(mockRecipe);
+	const { household, recipeId } = Route.useLoaderData();
 
 	const { data: fullRecipe } = useSuspenseQuery(
-		convexQuery(api.recipeIngredients.fullByRecipe, {
-			recipeId: id as Id<"recipes">,
+		convexQuery(api.recipes.fullById, {
+			recipeId,
 			householdId: household._id,
 		}),
 	);
 
-	const ingredientsByIsAvailable = Object.groupBy(
-		fullRecipe.ingredients,
-		(ingredient) => {
-			const isAvailable = isIngredientSufficient({
-				ingredientQuantities: ingredient.ingredient.quantities,
-				neededQuantities: ingredient.quantities,
-			});
+	const { recipe, ingredients, imgGen, steps } = fullRecipe;
 
-			return `${isAvailable}`;
-		},
-	);
+	const ingredientsByIsAvailable = Object.groupBy(ingredients, (ingredient) => {
+		const isAvailable = isIngredientSufficient({
+			ingredientQuantities: ingredient.ingredient.quantities,
+			neededQuantities: ingredient.quantities,
+		});
+
+		return `${isAvailable}`;
+	});
 
 	const availableIngredients = ingredientsByIsAvailable.true ?? [];
 	const missingIngredients = ingredientsByIsAvailable.false ?? [];
@@ -81,29 +81,27 @@ function RecipeDetailPage() {
 
 			{/* Recipe Header */}
 			<div className="mb-8 grid gap-8 lg:grid-cols-2">
-				{/* <div>
-					<img
-						src={recipe.image || "/placeholder.svg"}
-						alt={recipe.title}
-						className="h-64 w-full rounded-lg object-cover lg:h-80"
-					/>
-				</div> */}
+				{imgGen?.imageUrl && (
+					<div>
+						<img
+							src={imgGen.imageUrl}
+							alt={recipe.title}
+							className="h-64 w-full rounded-lg object-cover lg:h-80"
+						/>
+					</div>
+				)}
 
 				<div>
 					<div className="mb-4 flex items-start justify-between">
 						<div>
-							<h1 className="mb-2 font-bold text-3xl">
-								{fullRecipe.recipe.title}
-							</h1>
+							<h1 className="mb-2 font-bold text-3xl">{recipe.title}</h1>
 						</div>
 					</div>
 
-					<p className="mb-6 text-muted-foreground">
-						{fullRecipe.recipe.description}
-					</p>
+					<p className="mb-6 text-muted-foreground">{recipe.description}</p>
 
 					<div className="mb-6 grid grid-cols-2 gap-4">
-						{fullRecipe.recipe.cookTime && (
+						{recipe.cookTime && (
 							<div className="flex items-center gap-2">
 								<Clock className="h-4 w-4 text-muted-foreground" />
 								<span className="text-sm">
@@ -112,7 +110,7 @@ function RecipeDetailPage() {
 										// @ts-expect-error: unrecognized available API
 										new Intl.DurationFormat("en", {
 											style: "short",
-										}).format(parse(fullRecipe.recipe.cookTime))
+										}).format(parse(recipe.cookTime))
 									}{" "}
 								</span>
 							</div>
@@ -125,7 +123,7 @@ function RecipeDetailPage() {
 					</div>
 
 					<div className="mb-6 flex flex-wrap gap-2">
-						{fullRecipe.recipe.tags.map((tag) => (
+						{recipe.tags.map((tag) => (
 							<Badge key={tag} variant="outline">
 								{tag}
 							</Badge>
@@ -140,10 +138,7 @@ function RecipeDetailPage() {
 							asChild={canCook}
 						>
 							{canCook ? (
-								<Link
-									to="/dashboard/recipes/$id"
-									params={{ id: fullRecipe.recipe._id }}
-								>
+								<Link to="/dashboard/recipes/$id" params={{ id: recipeId }}>
 									<Play className="mr-2 h-4 w-4" />
 									Start Cooking
 								</Link>
@@ -180,17 +175,17 @@ function RecipeDetailPage() {
 						<CardHeader>
 							<CardTitle>Ingredients</CardTitle>
 							<CardDescription>
-								{availableIngredients.length} of {fullRecipe.ingredients.length}{" "}
-								available
+								{availableIngredients.length} of {ingredients.length} available
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-3">
-								{fullRecipe.ingredients.map((ingredient) => {
+								{ingredients.map((ingredient) => {
 									const isAvailable = isIngredientSufficient({
 										ingredientQuantities: ingredient.ingredient.quantities,
 										neededQuantities: ingredient.quantities,
 									});
+
 									return (
 										<div
 											key={ingredient.ingredient._id}
@@ -228,7 +223,7 @@ function RecipeDetailPage() {
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
-								{fullRecipe.steps.map((step) => (
+								{steps.map((step) => (
 									<div key={step._id} className="flex gap-4">
 										<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
 											{step.index + 1}
