@@ -96,7 +96,7 @@ function RecipeDetailPage() {
 
 					<p className="mb-6 text-muted-foreground">{recipe.description}</p>
 
-					<div className="mb-6 grid grid-cols-2 gap-4">
+					<div className="mb-6 flex gap-5">
 						{recipe.cookTime && (
 							<div className="flex items-center gap-2">
 								<Clock className="h-4 w-4 text-muted-foreground" />
