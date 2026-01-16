@@ -9,20 +9,21 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import type { Maybe } from "@plateful/types";
 import { submitFormHandler } from "&/forms/utils/submission";
 import { focusInvalid } from "&/forms/utils/validation";
 import {
 	COMMON_ALLERGENS,
-	DEFAULT_VALUES,
 	DIETARY_OPTIONS,
+	preferenceDefaultValues,
 	QUICK_FEATURES,
 	SPICE_LEVELS,
-} from "&/onboarding/form/constants";
+} from "&/preferences/form/constants";
 import {
-	type OnboardingFormInput,
-	type OnboardingFormOutput,
-	OnboardingFormSchema,
-} from "&/onboarding/form/schema";
+	type PreferencesFormInput,
+	type PreferencesFormOutput,
+	PreferencesFormSchema,
+} from "&/preferences/form/schema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,27 +45,27 @@ import { useAppForm } from "@/lib/form";
 // TODO: add all inputs to the summary
 // TODO: add "skip" button to the entire process
 
-type OnboardingFormProps = {
-	onSubmit: (value: OnboardingFormOutput) => Promise<void>;
-	defaultValues?: Partial<OnboardingFormInput>;
+type PreferencesFormProps = {
+	defaultValues?: Maybe<Partial<PreferencesFormInput>>;
+	onSubmit: (value: PreferencesFormOutput) => Promise<void>;
 };
-export function OnboardingForm({
-	onSubmit,
+export function PreferencesForm({
 	defaultValues,
-}: OnboardingFormProps) {
+	onSubmit,
+}: PreferencesFormProps) {
 	const [step, setStep] = useState(1);
 	const totalSteps = 5;
 
 	const form = useAppForm({
 		defaultValues: {
-			...DEFAULT_VALUES,
+			...preferenceDefaultValues,
 			...defaultValues,
 		},
 		validators: {
-			onChange: OnboardingFormSchema,
+			onChange: PreferencesFormSchema,
 		},
 		onSubmitInvalid: focusInvalid,
-		onSubmit: ({value}) => onSubmit(value),
+		onSubmit: ({ value }) => onSubmit(value),
 	});
 
 	const [customAllergen, setCustomAllergen] = useState("");
@@ -178,14 +179,9 @@ export function OnboardingForm({
 																type="button"
 																key={allergen}
 																onClick={() => {
-																	if (
-																		form.state.value.includes(
-																			allergen.toLocaleLowerCase(),
-																		)
-																	) {
-																		const index = form.state.value.indexOf(
-																			allergen.toLocaleLowerCase(),
-																		);
+																	if (form.state.value.includes(allergen)) {
+																		const index =
+																			form.state.value.indexOf(allergen);
 																		form.removeValue(index);
 																	} else {
 																		form.pushValue(allergen);

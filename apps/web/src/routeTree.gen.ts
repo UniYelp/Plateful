@@ -13,8 +13,8 @@ import { Route as DevRouteImport } from './routes/dev'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
-import { Route as appOnboardingRouteImport } from './routes/(app)/onboarding'
 import { Route as appauthedRouteRouteImport } from './routes/(app)/(authed)/route'
+import { Route as appauthedPreferencesRouteImport } from './routes/(app)/(authed)/preferences'
 import { Route as appauthedDashboardRouteRouteImport } from './routes/(app)/(authed)/dashboard/route'
 import { Route as appauthedDashboardIndexRouteImport } from './routes/(app)/(authed)/dashboard/index'
 import { Route as appauthedDashboardRecipesIndexRouteImport } from './routes/(app)/(authed)/dashboard/recipes/index'
@@ -46,14 +46,14 @@ const authSignInRoute = authSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appOnboardingRoute = appOnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => appRouteRoute,
-} as any)
 const appauthedRouteRoute = appauthedRouteRouteImport.update({
   id: '/(authed)',
   getParentRoute: () => appRouteRoute,
+} as any)
+const appauthedPreferencesRoute = appauthedPreferencesRouteImport.update({
+  id: '/preferences',
+  path: '/preferences',
+  getParentRoute: () => appauthedRouteRoute,
 } as any)
 const appauthedDashboardRouteRoute = appauthedDashboardRouteRouteImport.update({
   id: '/dashboard',
@@ -123,9 +123,9 @@ const appauthedDashboardIngredientsIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dev': typeof DevRoute
-  '/onboarding': typeof appOnboardingRoute
   '/sign-in': typeof authSignInRoute
   '/dashboard': typeof appauthedDashboardRouteRouteWithChildren
+  '/preferences': typeof appauthedPreferencesRoute
   '/dashboard/': typeof appauthedDashboardIndexRoute
   '/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
   '/dashboard/recipes/$id': typeof appauthedDashboardRecipesIdRoute
@@ -140,8 +140,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dev': typeof DevRoute
-  '/onboarding': typeof appOnboardingRoute
   '/sign-in': typeof authSignInRoute
+  '/preferences': typeof appauthedPreferencesRoute
   '/dashboard': typeof appauthedDashboardIndexRoute
   '/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
   '/dashboard/recipes/$id': typeof appauthedDashboardRecipesIdRoute
@@ -159,9 +159,9 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/dev': typeof DevRoute
   '/(app)/(authed)': typeof appauthedRouteRouteWithChildren
-  '/(app)/onboarding': typeof appOnboardingRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(app)/(authed)/dashboard': typeof appauthedDashboardRouteRouteWithChildren
+  '/(app)/(authed)/preferences': typeof appauthedPreferencesRoute
   '/(app)/(authed)/dashboard/': typeof appauthedDashboardIndexRoute
   '/(app)/(authed)/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
   '/(app)/(authed)/dashboard/recipes/$id': typeof appauthedDashboardRecipesIdRoute
@@ -178,9 +178,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dev'
-    | '/onboarding'
     | '/sign-in'
     | '/dashboard'
+    | '/preferences'
     | '/dashboard/'
     | '/dashboard/ingredients/add'
     | '/dashboard/recipes/$id'
@@ -195,8 +195,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dev'
-    | '/onboarding'
     | '/sign-in'
+    | '/preferences'
     | '/dashboard'
     | '/dashboard/ingredients/add'
     | '/dashboard/recipes/$id'
@@ -213,9 +213,9 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/dev'
     | '/(app)/(authed)'
-    | '/(app)/onboarding'
     | '/(auth)/sign-in'
     | '/(app)/(authed)/dashboard'
+    | '/(app)/(authed)/preferences'
     | '/(app)/(authed)/dashboard/'
     | '/(app)/(authed)/dashboard/ingredients/add'
     | '/(app)/(authed)/dashboard/recipes/$id'
@@ -265,19 +265,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignInRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)/onboarding': {
-      id: '/(app)/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof appOnboardingRouteImport
-      parentRoute: typeof appRouteRoute
-    }
     '/(app)/(authed)': {
       id: '/(app)/(authed)'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof appauthedRouteRouteImport
       parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(authed)/preferences': {
+      id: '/(app)/(authed)/preferences'
+      path: '/preferences'
+      fullPath: '/preferences'
+      preLoaderRoute: typeof appauthedPreferencesRouteImport
+      parentRoute: typeof appauthedRouteRoute
     }
     '/(app)/(authed)/dashboard': {
       id: '/(app)/(authed)/dashboard'
@@ -398,10 +398,12 @@ const appauthedDashboardRouteRouteWithChildren =
 
 interface appauthedRouteRouteChildren {
   appauthedDashboardRouteRoute: typeof appauthedDashboardRouteRouteWithChildren
+  appauthedPreferencesRoute: typeof appauthedPreferencesRoute
 }
 
 const appauthedRouteRouteChildren: appauthedRouteRouteChildren = {
   appauthedDashboardRouteRoute: appauthedDashboardRouteRouteWithChildren,
+  appauthedPreferencesRoute: appauthedPreferencesRoute,
 }
 
 const appauthedRouteRouteWithChildren = appauthedRouteRoute._addFileChildren(
@@ -410,12 +412,10 @@ const appauthedRouteRouteWithChildren = appauthedRouteRoute._addFileChildren(
 
 interface appRouteRouteChildren {
   appauthedRouteRoute: typeof appauthedRouteRouteWithChildren
-  appOnboardingRoute: typeof appOnboardingRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appauthedRouteRoute: appauthedRouteRouteWithChildren,
-  appOnboardingRoute: appOnboardingRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(

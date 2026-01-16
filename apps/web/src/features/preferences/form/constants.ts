@@ -1,4 +1,4 @@
-import type { OnboardingFormInput } from "./schema";
+import type { PreferencesFormInput } from "./schema";
 
 export const COMMON_ALLERGENS = [
 	"Dairy",
@@ -54,7 +54,7 @@ export const DIETARY_OPTIONS = [
 	"paleo",
 ];
 
-export const DEFAULT_VALUES : OnboardingFormInput = {
+export const preferenceDefaultValues: Readonly<PreferencesFormInput> = {
 	allergens: [] as string[],
 	spiceLevel: "medium",
 	likedFoods: "",

@@ -84,10 +84,6 @@ const stampsFields = {
 
 export type EntityStamps = ObjectType<typeof stampsFields>;
 
-export const userPreferencesFields = {
-	userId: v.id("users"),
-};
-
 export const householdMemberFields = {
 	householdId: v.id("households"),
 	userId: v.id("users"),
@@ -227,6 +223,14 @@ export const recipeGensFields = {
 	metadata: v.union(v.object(recipeGenV0MetadataFields)),
 };
 
+export const userPreferencesFields = {
+	allergens: v.array(v.string()),
+	dietaryPreferences: v.array(v.string()),
+	spiceLevel: v.string(),
+	likedFoods: v.string(),
+	dislikedFoods: v.string(),
+};
+
 // #endregion
 
 // #region schema
@@ -243,6 +247,11 @@ const schema = defineSchema({
 	}).index("byExternalId", ["externalId"]),
 	// #endregion
 	// #region userland
+	userPreferences: defineTable({
+		userId: v.id("users"),
+		...userPreferencesFields,
+		...timestampsFields,
+	}).index("by_user_deletedAt", ["userId", "deletedAt"]),
 	households: defineTable({
 		name: v.string(),
 		description: v.optional(v.string()),
