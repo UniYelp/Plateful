@@ -90,7 +90,7 @@ const dietaryOptions = [
 
 // TODO: handle array values in lowercase to avoid duplicates
 // TODO: fix pages sizes
-// TODO: add all inputs to the summery
+// TODO: add all inputs to the summary
 // TODO: add "skip" button to the entire process
 
 const onboardingDefaultValues = {
@@ -123,7 +123,7 @@ export function OnboardingPage() {
 	const [customAllergen, setCustomAllergen] = useState("");
 	const [customDietary, setCustomDietary] = useState("");
 
-	const progressValue = ((step - 1) / totalSteps) * 100;
+	const progressValue = ((step - 1) / (totalSteps - 1)) * 100;
 
 	return (
 		<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-primary/5 via-background to-primary/10 p-4">
@@ -271,7 +271,10 @@ export function OnboardingPage() {
 														onChange={(e) => setCustomAllergen(e.target.value)}
 														onKeyDown={(e) => {
 															if (e.key === "Enter") {
-																form.pushValue(customAllergen.trim());
+																e.preventDefault();
+																const value = customAllergen.trim();
+																if (!value) return;
+																form.pushValue(value);
 																setCustomAllergen("");
 															}
 														}}
@@ -280,7 +283,9 @@ export function OnboardingPage() {
 													<Button
 														type="button"
 														onClick={() => {
-															form.pushValue(customAllergen.trim());
+															const value = customAllergen.trim();
+															if (!value) return;
+															form.pushValue(value);
 															setCustomAllergen("");
 														}}
 														disabled={!customAllergen.trim()}
@@ -425,7 +430,10 @@ export function OnboardingPage() {
 														onChange={(e) => setCustomDietary(e.target.value)}
 														onKeyDown={(e) => {
 															if (e.key === "Enter") {
-																form.pushValue(customDietary.trim());
+																e.preventDefault();
+																const value = customDietary.trim();
+																if (!value) return;
+																form.pushValue(value);
 																setCustomDietary("");
 															}
 														}}
@@ -434,7 +442,9 @@ export function OnboardingPage() {
 													<Button
 														type="button"
 														onClick={() => {
-															form.pushValue(customDietary.trim());
+															const value = customDietary.trim();
+															if (!value) return;
+															form.pushValue(value);
 															setCustomDietary("");
 														}}
 														disabled={!customDietary.trim()}
@@ -540,7 +550,7 @@ export function OnboardingPage() {
 						{step === 5 && (
 							<div className="fade-in slide-in-from-bottom-8 animate-in space-y-6 duration-700">
 								<div className="space-y-2 text-center">
-									<h2 className="font-bold text-2xl">Summery</h2>
+									<h2 className="font-bold text-2xl">summary</h2>
 									<p className="text-muted-foreground">
 										Review the details we gathered together
 									</p>
