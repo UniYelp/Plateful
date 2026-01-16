@@ -101,6 +101,45 @@ export const byIdAndHousehold = householdQuery({
 	},
 });
 
+export const stats = householdQuery({
+	args: {},
+	handler: async (ctx, args) => {
+		const now = new Date();
+
+		const utcMidnightNow = Date.UTC(
+			now.getUTCFullYear(),
+			now.getUTCMonth(),
+			now.getUTCDate(),
+		);
+
+		const maxDailyGen = 5;
+
+		const generationsToday = await ctx.db
+			.query("recipeGens")
+			.withIndex("by_household_deletedAt", (q) =>
+				q
+					.eq("householdId", args.householdId)
+					.eq(...notDeletedIndex)
+					.gte("_creationTime", utcMidnightNow),
+			)
+			.order("desc")
+			.take(maxDailyGen);
+
+		const currentGen = generationsToday.find(
+			(gen) =>
+				gen.state.status === "generating" || gen.state.status === "pending",
+		);
+
+		return {
+			currentId: currentGen?._id,
+			today: {
+				total: generationsToday.length,
+				max: maxDailyGen,
+			},
+		};
+	},
+});
+
 // #endregion
 
 // #region Mutations
