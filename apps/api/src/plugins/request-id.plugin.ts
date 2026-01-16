@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import Elysia, { t } from "elysia";
+import Elysia from "elysia";
 
-type Options = {
+type RequestIdOptions = {
 	uuid?: () => string;
 	header?: string;
 };
@@ -11,16 +11,10 @@ export const RequestIdPluginName = "requestId.Plugin";
 export const requestId = ({
 	uuid = randomUUID,
 	header = "x-request-id",
-}: Options = {}) =>
+}: RequestIdOptions = {}) =>
 	new Elysia({ name: RequestIdPluginName, seed: { header } })
-		.guard({
-			schema: "standalone",
-			headers: t.Object({
-				[header]: t.Optional(t.String()),
-			}),
-		})
-		.derive(({ request }) => {
-			const requestId = request.headers.get(header) ?? uuid();
+		.derive(({ headers }) => {
+			const requestId = headers[header] ?? uuid();
 			return { requestId };
 		})
 		.onAfterHandle(({ requestId, set }) => {

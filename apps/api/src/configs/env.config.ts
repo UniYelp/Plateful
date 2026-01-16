@@ -1,14 +1,19 @@
 import { createEnv } from "@t3-oss/env-core";
 import { upstashRedis, vercel } from "@t3-oss/env-core/presets-zod";
 import z from "zod";
+
 export const ENV = createEnv({
 	extends: [vercel(), upstashRedis()],
 	server: {
+		//? Env
+		NODE_ENV: z.string().default("development"),
 		//? Client
 		ALLOWED_ORIGINS: z.codec(z.string(), z.url().array(), {
 			decode: (val) => val.split(",").map((origin) => origin.trim()),
 			encode: (val) => val.join(","),
 		}),
+        //? Auth
+        API_KEY: z.string(),
 		//? Clerk
 		CLERK_PUBLISHABLE_KEY: z.string(),
 		CLERK_SECRET_KEY: z.string(),

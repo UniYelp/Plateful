@@ -4,6 +4,9 @@ import type { Redis } from "@upstash/redis";
 import type { DeepDict, FN } from "@plateful/types";
 import { RedisKeys } from "./keys";
 
+export type LockFactory<Args extends any[] = any[]> = [redis: Redis, ...Args];
+
+// TODO: QuotaLock
 export const RedisLocks = {
 	recipes: {
 		generate: {
@@ -15,4 +18,4 @@ export const RedisLocks = {
 				}),
 		},
 	},
-} satisfies DeepDict<Lock | FN<Lock>>;
+} satisfies DeepDict<FN<Lock, LockFactory>>;

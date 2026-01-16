@@ -7,6 +7,7 @@ import { Arr, bool, entriesOf } from "@plateful/utils";
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
 import { apiClient } from "./configs/api.config";
+import { ENV } from "./configs/env.config";
 import { nanoBanana } from "./configs/nano-banana.config";
 import { InternalError, notFound } from "./errors";
 import { internalMutation } from "./functions";
@@ -328,14 +329,21 @@ export const generateRecipe = internalAction({
 		try {
 			const user = await ctx.auth.getUserIdentity();
 
-			const res = await apiClient.recipes.generate.post({
-				userId: user?.subject || "unknown",
-				ingredients,
-				tags,
-				temperatureUnit: TemperatureUnit.Celsius,
-				toleratedSpiceLevel: "no-preference",
-				tools: "unlimited",
-			});
+			const res = await apiClient.recipes.generate.post(
+				{
+					userId: user?.subject || "unknown",
+					ingredients,
+					tags,
+					temperatureUnit: TemperatureUnit.Celsius,
+					toleratedSpiceLevel: "no-preference",
+					tools: "unlimited",
+				},
+				{
+					headers: {
+						"x-api-key": ENV.API_KEY,
+					},
+				},
+			);
 
 			const { data, error } = res;
 

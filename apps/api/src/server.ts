@@ -1,4 +1,4 @@
-import './instruments'
+import "./instruments"; //! must be the first import
 
 import { cors } from "@elysiajs/cors";
 import { node } from "@elysiajs/node";
@@ -9,10 +9,11 @@ import z from "zod";
 
 import { appConfig } from "./configs/app.config";
 import { ENV } from "./configs/env.config";
+import { devOnly } from "./modules/dev/index";
 import { health } from "./modules/health";
 import { recipes } from "./modules/recipes";
-import { logger } from "./plugins/logger";
-import { requestId } from "./plugins/request-id";
+import { logger } from "./plugins/logger.plugin";
+import { requestId } from "./plugins/request-id.plugin";
 
 /**
  * @see {@link https://elysiajs.com/essential/best-practice}
@@ -62,6 +63,7 @@ export const app = new Elysia({ adapter: node() })
 	// 	},
 	// )
 	.use(health)
-	.use(recipes);
+	.use(recipes)
+	.use(devOnly);
 
 export type App = typeof app;
