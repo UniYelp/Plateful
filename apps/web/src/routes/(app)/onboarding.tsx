@@ -646,53 +646,6 @@ export function OnboardingPage() {
 					</form.AppForm>
 				</CardContent>
 			</Card>
-
-			<style>{`
-	@keyframes
-	bounce - subtle;
-	0%,
-          100% {
-            transform: translateY(0);
-	50% {
-            transform: translateY(-5px);
-}
-}
-@keyframes
-spin - slow;
-{
-	from;
-	transform: translate(-50%, -50%)
-	rotate(0deg);
-	to;
-	transform: translate(-50%, -50%)
-	rotate(360deg);
-}
-.animate-bounce-subtle
-{
-	animation: bounce - subtle;
-	3s ease-in-out infinite
-}
-.animate-spin-slow
-{
-	animation: spin - slow;
-	20s linear infinite
-}
-.delay-100
-{
-	animation - delay;
-	: 100ms
-}
-.delay-200
-{
-	animation - delay;
-	: 200ms
-}
-.delay-1000
-{
-	animation - delay;
-	: 1000ms
-}
-`}</style>
 		</div>
 	);
 }
