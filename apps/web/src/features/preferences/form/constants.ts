@@ -44,14 +44,14 @@ export const QUICK_FEATURES = [
 ];
 
 export const DIETARY_OPTIONS = [
-	"vegetarian",
-	"vegan",
-	"pescatarian",
-	"halal",
-	"kosher",
-	"low-Carb",
-	"keto",
-	"paleo",
+	"Vegetarian",
+	"Vegan",
+	"Pescatarian",
+	"Halal",
+	"Kosher",
+	"Low-Carb",
+	"Keto",
+	"Paleo",
 ];
 
 export const preferenceDefaultValues: Readonly<PreferencesFormInput> = {

@@ -32,7 +32,8 @@ export function PreferencesPage() {
 	);
 
 	const onSubmit = async (value: PreferencesFormOutput) => {
-		const userPreferencesId = await upsertUserPreferences(value);
+		// TODO: handle errors
+		await upsertUserPreferences(value);
 
 		navigate({ to: "/dashboard" });
 	};

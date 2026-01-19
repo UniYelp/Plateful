@@ -266,6 +266,7 @@ export function PreferencesForm({
 																	{allergen}
 																	<button
 																		type="button"
+																		aria-label={`Remove ${allergen}`}
 																		onClick={() => form.removeValue(index)}
 																		className="ml-2 rounded-full p-0.5 transition-colors hover:bg-destructive/30"
 																	>
@@ -421,6 +422,7 @@ export function PreferencesForm({
 																	{pref}
 																	<button
 																		type="button"
+																		aria-label={`Remove ${pref}`}
 																		onClick={() => form.removeValue(index)}
 																		className="ml-2 rounded-full p-0.5 transition-colors hover:bg-destructive/30"
 																	>

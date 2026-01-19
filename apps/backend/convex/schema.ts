@@ -72,10 +72,14 @@ const userStampsFields = {
 	updatedBy: vUserStampId,
 };
 
+export type EntityUserStamps = ObjectType<typeof userStampsFields>;
+
 const timestampsFields = {
 	updatedAt: vTimestamp,
 	deletedAt: v.optional(vTimestamp),
 };
+
+export type EntityTimeStamps = ObjectType<typeof timestampsFields>;
 
 const stampsFields = {
 	...userStampsFields,
@@ -365,6 +369,8 @@ export type EntityShape<TableName extends TableNames> = Omit<
 	keyof EntityStamps
 >;
 
+export type UserStampedEntity = Extract<Doc<TableNames>, EntityUserStamps>;
+export type TimeStampedEntity = Extract<Doc<TableNames>, EntityTimeStamps>;
 export type StampedEntity = Extract<Doc<TableNames>, EntityStamps>;
 export type StampedTableNames = StampedEntity["_id"]["__tableName"];
 

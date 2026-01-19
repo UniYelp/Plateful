@@ -1,4 +1,5 @@
 import { userPreferencesFields } from "./schema";
+import { isSoftDeleted } from "./utils/soft_delete";
 import { authedMutation, authedQuery } from "./with_auth";
 
 // #region Queries
@@ -10,7 +11,7 @@ export const byActiveUser = authedQuery({
 			.withIndex("by_user_deletedAt", (q) => q.eq("userId", ctx.user._id))
 			.unique();
 
-		if (!userPreferences) return null;
+		if (!userPreferences || isSoftDeleted(userPreferences)) return null;
 
 		const {
 			allergens,
@@ -58,13 +59,7 @@ export const upsert = authedMutation({
 			return userPreferencesId;
 		}
 
-		const userPreferencesId = await ctx.db.patch(
-			"userPreferences",
-			userPreferences._id,
-			data,
-		);
-
-		return userPreferencesId;
+		await ctx.db.patch("userPreferences", userPreferences._id, data);
 	},
 });
 
