@@ -210,7 +210,10 @@ export function PreferencesForm({
 												</div>
 
 												<div className="space-y-3">
-													<Label htmlFor="custom-allergen" className="block font-semibold text-muted-foreground text-sm">
+													<Label
+														htmlFor="custom-allergen"
+														className="block font-semibold text-muted-foreground text-sm"
+													>
 														ADD CUSTOM ALLERGEN
 													</Label>
 													<div className="flex gap-2">
@@ -344,14 +347,13 @@ export function PreferencesForm({
 										<form.AppField name="dietaryPreferences" mode="array">
 											{(form) => (
 												<div className="space-y-4">
-													<Label htmlFor="custom-dietary-preference" className="block text-center font-semibold text-base">
+													<Label className="block text-center font-semibold text-base">
 														Any dietary preferences?
 													</Label>
 													<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
 														{DIETARY_OPTIONS.map((pref, idx) => (
 															<button
 																type="button"
-																id="custom-dietary-preference"
 																key={`${pref}-${idx}`}
 																onClick={() => {
 																	if (form.state.value.includes(pref)) {
@@ -382,6 +384,7 @@ export function PreferencesForm({
 													<div className="flex gap-2 pt-2">
 														<Input
 															type="text"
+															id="custom-dietary-preference"
 															placeholder="Add custom preference (e.g., Gluten-free, Organic...)"
 															value={customDietary}
 															onChange={(e) => setCustomDietary(e.target.value)}
@@ -545,7 +548,10 @@ export function PreferencesForm({
 														</p>
 														<div className="flex flex-wrap gap-2">
 															{dietaryPreferences.map((pref, index) => (
-																<Badge key={`${pref}-${index}`} className="text-xs">
+																<Badge
+																	key={`${pref}-${index}`}
+																	className="text-xs"
+																>
 																	{pref}
 																</Badge>
 															))}
