@@ -25,6 +25,4 @@ export const EXPIRATION_WARNING_TIME_WINDOW_MS = WEEK;
 
 export const EXPIRING_SOON_TIME_WINDOW_MS = 3 * DAY;
 
-// export const EXPIRING
-
 export { aliasesByUnit } from "@plateful/units";

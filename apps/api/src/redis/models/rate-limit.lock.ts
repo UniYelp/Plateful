@@ -116,12 +116,12 @@ export class RateLimitLock {
 	}
 
 	async details(): Promise<RateLimitDetails> {
-		const pipline = this.#redis
+		const pipeline = this.#redis
 			.pipeline()
 			.get<RateLimitLockValue>(this.#key)
 			.pttl(this.#key);
 
-		const [value, ttlMs] = await pipline.exec();
+		const [value, ttlMs] = await pipeline.exec();
 
 		const remaining = this.#remaining(value);
 		const resetAt = this.#resetAt(ttlMs);
