@@ -210,12 +210,13 @@ export function PreferencesForm({
 												</div>
 
 												<div className="space-y-3">
-													<Label className="block font-semibold text-muted-foreground text-sm">
+													<Label htmlFor="custom-allergen" className="block font-semibold text-muted-foreground text-sm">
 														ADD CUSTOM ALLERGEN
 													</Label>
 													<div className="flex gap-2">
 														<Input
 															type="text"
+															id="custom-allergen"
 															placeholder="e.g., Mustard, Celery, Lupin..."
 															value={customAllergen}
 															maxLength={25}
@@ -343,13 +344,14 @@ export function PreferencesForm({
 										<form.AppField name="dietaryPreferences" mode="array">
 											{(form) => (
 												<div className="space-y-4">
-													<Label className="block text-center font-semibold text-base">
+													<Label htmlFor="custom-dietary-preference" className="block text-center font-semibold text-base">
 														Any dietary preferences?
 													</Label>
 													<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
 														{DIETARY_OPTIONS.map((pref, idx) => (
 															<button
 																type="button"
+																id="custom-dietary-preference"
 																key={`${pref}-${idx}`}
 																onClick={() => {
 																	if (form.state.value.includes(pref)) {
