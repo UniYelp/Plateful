@@ -174,10 +174,10 @@ export function PreferencesForm({
 														COMMON ALLERGENS
 													</Label>
 													<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-														{COMMON_ALLERGENS.map((allergen) => (
+														{COMMON_ALLERGENS.map((allergen, index) => (
 															<button
 																type="button"
-																key={allergen}
+																key={`${allergen}-${index}`}
 																onClick={() => {
 																	if (form.state.value.includes(allergen)) {
 																		const index =
@@ -259,7 +259,7 @@ export function PreferencesForm({
 														<div className="flex flex-wrap gap-2">
 															{form.state.value.map((allergen, index) => (
 																<Badge
-																	key={allergen}
+																	key={`${allergen}-${index}`}
 																	variant="secondary"
 																	className="group py-1.5 pr-2 pl-3 text-sm transition-colors hover:bg-destructive/20"
 																>
@@ -347,10 +347,10 @@ export function PreferencesForm({
 														Any dietary preferences?
 													</Label>
 													<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-														{DIETARY_OPTIONS.map((pref) => (
+														{DIETARY_OPTIONS.map((pref, idx) => (
 															<button
 																type="button"
-																key={pref}
+																key={`${pref}-${idx}`}
 																onClick={() => {
 																	if (form.state.value.includes(pref)) {
 																		const index =
@@ -415,7 +415,7 @@ export function PreferencesForm({
 														<div className="flex flex-wrap gap-2 pt-2">
 															{form.state.value.map((pref, index) => (
 																<Badge
-																	key={pref}
+																	key={`${pref}-${index}`}
 																	variant="outline"
 																	className="border-primary/50 py-1.5 pr-2 pl-3"
 																>
@@ -524,9 +524,9 @@ export function PreferencesForm({
 															Allergens:
 														</p>
 														<div className="flex flex-wrap gap-2">
-															{allergens.map((allergen) => (
+															{allergens.map((allergen, index) => (
 																<Badge
-																	key={allergen}
+																	key={`${allergen}-${index}`}
 																	variant="destructive"
 																	className="text-xs"
 																>
@@ -542,8 +542,8 @@ export function PreferencesForm({
 															Dietary Preferences:
 														</p>
 														<div className="flex flex-wrap gap-2">
-															{dietaryPreferences.map((pref) => (
-																<Badge key={pref} className="text-xs">
+															{dietaryPreferences.map((pref, index) => (
+																<Badge key={`${pref}-${index}`} className="text-xs">
 																	{pref}
 																</Badge>
 															))}

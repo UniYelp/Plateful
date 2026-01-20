@@ -31,6 +31,17 @@ export const byActiveUser = authedQuery({
 	},
 });
 
+export const exists = authedQuery({
+	async handler(ctx) {
+		const userPreferences = await ctx.db
+			.query("userPreferences")
+			.withIndex("by_user_deletedAt", (q) => q.eq("userId", ctx.user._id))
+			.unique();
+
+		return !(!userPreferences || isSoftDeleted(userPreferences));
+	},
+});
+
 // #endregion
 
 // #region Mutations

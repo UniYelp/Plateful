@@ -1,10 +1,12 @@
 import { useUser } from "@clerk/clerk-react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { convexQuery } from "@convex-dev/react-query";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { AlertTriangle, BookOpen, Package, Plus, Sparkles } from "lucide-react";
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
+import { HouseholdLoading } from "&/households/components/loaders/householdLoader";
 import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +21,19 @@ import {
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/")({
 	loader: async ({ context }) => {
-		const { household } = context;
+		const { household, queryClient } = context;
+
+		const hasPreferences = await queryClient.ensureQueryData(
+			convexQuery(api.userPreferences.exists, {}),
+		);
+
+		if (!hasPreferences) {
+			throw redirect({ to: "/preferences" });
+		}
+
 		return { household };
 	},
+	pendingComponent: HouseholdLoading,
 	onError: getRouteErrorHandler(),
 	component: RouteComponent,
 });
