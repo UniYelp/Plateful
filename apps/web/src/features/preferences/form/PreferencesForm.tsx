@@ -506,7 +506,7 @@ export function PreferencesForm({
 							{step === 5 && (
 								<div className="fade-in slide-in-from-bottom-8 animate-in space-y-6 duration-700">
 									<div className="space-y-2 text-center">
-										<h2 className="font-bold text-2xl">summary</h2>
+										<h2 className="font-bold text-2xl">Summary</h2>
 										<p className="text-muted-foreground">
 											Review the details we gathered together
 										</p>
