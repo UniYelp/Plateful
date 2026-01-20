@@ -143,6 +143,9 @@ importers:
       '@plateful/ingredients':
         specifier: workspace:*
         version: link:../../packages/ingredients
+      '@plateful/time':
+        specifier: workspace:*
+        version: link:../../packages/time
       '@plateful/units':
         specifier: workspace:*
         version: link:../../packages/units
@@ -514,6 +517,9 @@ importers:
 
   packages/ingredients:
     dependencies:
+      '@plateful/time':
+        specifier: workspace:*
+        version: link:../time
       '@plateful/units':
         specifier: workspace:*
         version: link:../units
@@ -543,6 +549,8 @@ importers:
       '@plateful/types':
         specifier: workspace:*
         version: link:../types
+
+  packages/time: {}
 
   packages/types: {}
 

@@ -11,13 +11,16 @@ export const RequestIdPluginName = "requestId.Plugin";
 export const requestId = ({
 	uuid = randomUUID,
 	header = "x-request-id",
-}: RequestIdOptions = {}) =>
-	new Elysia({ name: RequestIdPluginName, seed: { header } })
+}: RequestIdOptions = {}) => {
+	const headerKey = header.toLowerCase();
+
+	return new Elysia({ name: RequestIdPluginName, seed: { headerKey } })
 		.derive(({ headers }) => {
-			const requestId = headers[header] ?? uuid();
+			const requestId = headers[headerKey] ?? uuid();
 			return { requestId };
 		})
 		.onAfterHandle(({ requestId, set }) => {
-			set.headers[header] = requestId;
+			set.headers[headerKey] = requestId;
 		})
 		.as("scoped");
+};

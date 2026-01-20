@@ -1,6 +1,8 @@
 import Elysia from "elysia";
 
-import { LockNotAcquiredError } from "../../errors/models/lock-not-acquired";
+import { HttpStatusCode } from "@plateful/http";
+import { LockedError } from "../../models/errors/locked";
+import { RateLimitError } from "../../models/errors/rate-limit";
 import { auth } from "../../plugins/auth.plugin";
 import { logger } from "../../plugins/logger.plugin";
 import { redis } from "../../plugins/redis.plugin";
@@ -14,46 +16,70 @@ export const recipes = new Elysia({
 	.use(auth())
 	.use(redis())
 	.use(logger())
-	.error({
-		LockNotAcquiredError,
-	})
-	.post(
-		"generate",
-		async ({ body, logger, getRedis }) => {
+	.get(
+		":userId/limit",
+		async ({ params, getRedis }) => {
 			const redis = getRedis();
 
-			const lock = RedisLocks.recipes.generate.user(redis, body.userId);
+			const rpuLock = RedisLocks.recipes.generate.user.rpu(
+				redis,
+				params.userId,
+			);
 
-			logger.log("acquiring lock for user", body.userId, "...");
+			const rpuRateLimitDetails = await rpuLock.details();
 
-			const acquired = await lock.acquire();
+			return {
+				rpu: rpuRateLimitDetails,
+			};
+		},
+		{
+			response: {
+				[HttpStatusCode.OK]: RecipesModel.userLimit,
+			},
+		},
+	)
+	.get(":userId/limit/observe", async () => {})
+	.post(
+		"generate",
+		async ({ body, getRedis }) => {
+			const redis = getRedis();
+
+			const userLock = RedisLocks.recipes.generate.user.index(
+				redis,
+				body.userId,
+			);
+
+			const acquired = await userLock.acquire();
 
 			if (!acquired) {
-				throw new LockNotAcquiredError(
-					"You may only generate one recipe at a time",
+				throw new LockedError("You may only generate one recipe at a time");
+			}
+
+			const rpuLock = RedisLocks.recipes.generate.user.rpu(redis, body.userId);
+
+			const { acquired: hasRemaining, resetAt } = await rpuLock.tryAcquire();
+
+			if (!hasRemaining) {
+				throw new RateLimitError(
+					{ limit: rpuLock.limit, resetAt },
+					"User requests limit exceeded",
 				);
 			}
 
-			logger.log("acquired lock for user", body.userId, "...");
-
 			try {
-				logger.log("generating recipe for user", body.userId, "...");
 				const result = await RecipeService.generateRecipe(body);
-				logger.log("generated recipe for user", body.userId, "...");
 				return result;
-			} catch (err) {
-				logger.error("error for user", body.userId, "...", err);
-				throw err;
 			} finally {
-				await lock.release();
+				await userLock.release();
 			}
 		},
 		{
 			apiKey: true,
 			body: RecipesModel.generateRecipeBody,
 			response: {
-				200: RecipesModel.generateRecipeResponse,
-				[LockNotAcquiredError.status]: LockNotAcquiredError.$response,
+				[HttpStatusCode.OK]: RecipesModel.generateRecipeResponse,
+				[LockedError.status]: LockedError.$response,
+				[RateLimitError.status]: RateLimitError.$response,
 			},
 		},
 	);

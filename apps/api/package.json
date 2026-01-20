@@ -27,6 +27,7 @@
         "@plateful/agents": "workspace:*",
         "@plateful/http": "workspace:*",
         "@plateful/ingredients": "workspace:*",
+        "@plateful/time": "workspace:*",
         "@plateful/units": "workspace:*",
         "@sinclair/typebox": "^0.34.47",
         "@t3-oss/env-core": "^0.13.8",

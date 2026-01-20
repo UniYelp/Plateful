@@ -1,6 +1,6 @@
 import Elysia from "elysia";
 
-import { UnauthorizedError } from "../errors/models/unauthorized";
+import { UnauthorizedError } from "../models/errors/unauthorized";
 import { env } from "./env.plugin";
 
 type AuthOptions = {
@@ -9,16 +9,18 @@ type AuthOptions = {
 
 export const AuthPluginName = "auth.Plugin";
 
-export const auth = ({ header = "x-api-key" }: AuthOptions = {}) =>
-	new Elysia({ name: AuthPluginName, seed: { header } })
+export const auth = ({ header = "x-api-key" }: AuthOptions = {}) => {
+	const headerKey = header.toLowerCase();
+
+	return new Elysia({ name: AuthPluginName, seed: { headerKey } })
 		.use(env())
 		.error({
 			UnauthorizedError,
 		})
 		.macro({
 			apiKey: {
-				resolve({ headers,  env }) {
-					const apiKey = headers[header];
+				resolve({ headers, env }) {
+					const apiKey = headers[headerKey];
 
 					const isValidApiKey = apiKey === env.API_KEY;
 
@@ -33,3 +35,4 @@ export const auth = ({ header = "x-api-key" }: AuthOptions = {}) =>
 				},
 			},
 		});
+};

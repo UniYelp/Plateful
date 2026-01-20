@@ -1,3 +1,9 @@
+import { DAY } from "@plateful/time";
+import {
+	EXPIRATION_WARNING_TIME_WINDOW_MS,
+	EXPIRING_SOON_TIME_WINDOW_MS,
+} from "../constants";
+
 export const expiryStatus = ["expired", "expiring", "warning", "good"] as const;
 export type ExpiryStatus = (typeof expiryStatus)[number];
 
@@ -6,19 +12,14 @@ export type ExpiryDetails = {
 	text: string;
 };
 
-export const SECOND = 1000;
-export const MINUTE = SECOND * 60;
-export const HOUR = MINUTE * 60;
-export const DAY = HOUR * 24;
-export const DAYS_IN_WEEK = 7;
-export const WEEK = DAY * DAYS_IN_WEEK;
-
 export const isExpired = (timeDiff: number) => timeDiff <= 0;
 export const isExpiringSoon = (timeDiff: number) =>
-	timeDiff > 0 && timeDiff < DAY * 3;
+	timeDiff > 0 && timeDiff < EXPIRING_SOON_TIME_WINDOW_MS;
 export const isExpirationWarning = (timeDiff: number) =>
-	timeDiff >= DAY * 3 && timeDiff < WEEK;
-export const isGood = (timeDiff: number) => timeDiff >= WEEK;
+	timeDiff >= EXPIRING_SOON_TIME_WINDOW_MS &&
+	timeDiff < EXPIRATION_WARNING_TIME_WINDOW_MS;
+export const isGood = (timeDiff: number) =>
+	timeDiff >= EXPIRATION_WARNING_TIME_WINDOW_MS;
 
 export const getExpiryStatusByDiffTime = (diffTime: number): ExpiryStatus => {
 	if (isGood(diffTime)) return "good";
