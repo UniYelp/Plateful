@@ -18,14 +18,14 @@ export const RedisKeys = {
 					 */
 					rpm: redisKey(
 						(provider: string, model: string, key: string) =>
-							`agents:providers:${provider}:models:${model}:keys${key}:rpm` as const,
+							`agents:providers:${provider}:models:${model}:keys:${key}:rpm` as const,
 					).$type<RateLimitLockValue>(),
 					/**
 					 *? Requests per provider per model per key per day
 					 */
 					rpd: redisKey(
 						(provider: string, model: string, key: string) =>
-							`agents:providers:${provider}:models:${model}:keys${key}:rpd` as const,
+							`agents:providers:${provider}:models:${model}:keys:${key}:rpd` as const,
 					).$type<RateLimitLockValue>(),
 				},
 			},

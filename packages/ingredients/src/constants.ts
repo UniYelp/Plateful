@@ -21,14 +21,8 @@ export const ingredientUnitsByCategory = {
 export const ingredientsUnitConversions: ScalarUnitConversion<IngredientUnit>[] =
 	[massUnitConversions, volumeUnitConversions].flat();
 
-/**
- * @description A week
- */
 export const EXPIRATION_WARNING_TIME_WINDOW_MS = WEEK;
 
-/**
- * @description A week
- */
 export const EXPIRING_SOON_TIME_WINDOW_MS = 3 * DAY;
 
 // export const EXPIRING

@@ -16,29 +16,6 @@ export const recipes = new Elysia({
 	.use(auth())
 	.use(redis())
 	.use(logger())
-	.get(
-		":userId/limit",
-		async ({ params, getRedis }) => {
-			const redis = getRedis();
-
-			const rpuLock = RedisLocks.recipes.generate.user.rpu(
-				redis,
-				params.userId,
-			);
-
-			const rpuRateLimitDetails = await rpuLock.details();
-
-			return {
-				rpu: rpuRateLimitDetails,
-			};
-		},
-		{
-			response: {
-				[HttpStatusCode.OK]: RecipesModel.userLimit,
-			},
-		},
-	)
-	.get(":userId/limit/observe", async () => {})
 	.post(
 		"generate",
 		async ({ body, getRedis }) => {
@@ -55,18 +32,21 @@ export const recipes = new Elysia({
 				throw new LockedError("You may only generate one recipe at a time");
 			}
 
-			const rpuLock = RedisLocks.recipes.generate.user.rpu(redis, body.userId);
-
-			const { acquired: hasRemaining, resetAt } = await rpuLock.tryAcquire();
-
-			if (!hasRemaining) {
-				throw new RateLimitError(
-					{ limit: rpuLock.limit, resetAt },
-					"User requests limit exceeded",
-				);
-			}
-
 			try {
+				const rpuLock = RedisLocks.recipes.generate.user.rpu(
+					redis,
+					body.userId,
+				);
+
+				const { acquired: hasRemaining, resetAt } = await rpuLock.tryAcquire();
+
+				if (!hasRemaining) {
+					throw new RateLimitError(
+						{ limit: rpuLock.limit, resetAt },
+						"User requests limit exceeded",
+					);
+				}
+
 				const result = await RecipeService.generateRecipe(body);
 				return result;
 			} finally {
