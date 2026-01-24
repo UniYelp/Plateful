@@ -1,66 +1,14 @@
 import type { Redis } from "@upstash/redis";
-import { t } from "elysia";
 
-import type { TypedRedisKey } from "../types/keys";
-
-export type RateLimitLockValue = number;
-
-export type AnyRateLimitLockKeyLike = TypedRedisKey<RateLimitLockValue>;
-
-export type AnyRateLimitLockKey = Extract<AnyRateLimitLockKeyLike, string>;
-
-type RateLimitAcquireScriptRes = [
-	allowed: 0 | 1,
-	remaining: number,
-	resetAt: number,
-];
-
-type RateLimitOptions = {
-	key: AnyRateLimitLockKey;
-	/** Max allowed acquires per window */
-	limit: number;
-	/** Window duration in milliseconds */
-	windowMs: number;
-};
-
-type AcquireResult = {
-	acquired: boolean;
-	remaining: number;
-	resetAt: number;
-};
-
-export const RateLimitDetailsSchema = t.Object({
-	remaining: t.Number(),
-	resetAt: t.Nullable(t.Number()),
-});
-
-export type RateLimitDetails = typeof RateLimitDetailsSchema.static;
-
-const LUA_ACQUIRE = `
-local key = KEYS[1]
-local limit = tonumber(ARGV[1])
-local windowMs = tonumber(ARGV[2])
-local now = tonumber(ARGV[3])
-
-local current = redis.call("GET", key)
-
-if not current then
-  redis.call("SET", key, 1, "PX", windowMs)
-  return {1, limit - 1, now + windowMs}
-end
-
-current = tonumber(current)
-
-if current >= limit then
-  local ttl = redis.call("PTTL", key)
-  return {0, 0, now + ttl}
-end
-
-current = redis.call("INCR", key)
-local ttl = redis.call("PTTL", key)
-
-return {1, limit - current, now + ttl}
-`;
+import { LUA_ACQUIRE_SCRIPT } from "./script";
+import type {
+	AnyRateLimitLockKey,
+	RateLimitAcquireResult,
+	RateLimitAcquireScriptRes,
+	RateLimitLockValue,
+	RateLimitOptions,
+} from "./types";
+import type { RateLimitDetails } from "./schema";
 
 export class RateLimitLock {
 	#redis: Redis;
@@ -76,11 +24,11 @@ export class RateLimitLock {
 		this.windowMs = options.windowMs;
 	}
 
-	async tryAcquire(): Promise<AcquireResult> {
+	async tryAcquire(): Promise<RateLimitAcquireResult> {
 		const now = Date.now();
 
 		const [allowed, remaining, resetAt]: RateLimitAcquireScriptRes =
-			await this.#redis.eval(LUA_ACQUIRE, [this.#key], [
+			await this.#redis.eval(LUA_ACQUIRE_SCRIPT, [this.#key], [
 				this.limit.toString(),
 				this.windowMs.toString(),
 				now.toString(),

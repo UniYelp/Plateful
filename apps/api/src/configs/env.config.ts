@@ -50,3 +50,5 @@ export const ENV = createEnv({
 	 */
 	emptyStringAsUndefined: true,
 });
+
+export type Env = typeof ENV;
