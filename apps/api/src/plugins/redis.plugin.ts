@@ -7,4 +7,4 @@ export const RedisPluginName = "redis.Plugin";
 export const redis = () =>
 	new Elysia({
 		name: RedisPluginName,
-	}).decorate("redis", redisClient);
+	}).decorate("getRedis", () => redisClient);

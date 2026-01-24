@@ -1,4 +1,4 @@
-import { EXPIRING_SOON_TIME_WINDOW_MS } from "@plateful/ingredients";
+import { EXPIRATION_WARNING_TIME_WINDOW_MS } from "@plateful/ingredients";
 import type { Doc } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import { conflict, notFound } from "./errors";
@@ -82,7 +82,7 @@ export const expiringSoonIngredients = householdQuery({
 			args.householdId,
 		).collect();
 
-		const expiryWindow = Date.now() + EXPIRING_SOON_TIME_WINDOW_MS;
+		const expiryWindow = Date.now() + EXPIRATION_WARNING_TIME_WINDOW_MS;
 
 		const expiringSoonIngredients = ingredients.filter((ingredient) => {
 			return ingredient.quantities.some(

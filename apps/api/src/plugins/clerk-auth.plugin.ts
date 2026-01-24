@@ -1,10 +1,10 @@
 import Elysia from "elysia";
 import { clerkPlugin } from "elysia-clerk";
 
-export const AuthPluginName = "auth.Plugin";
+export const ClerkAuthPluginName = "clerkAuth.Plugin";
 
-export const auth = () =>
-	new Elysia({ name: AuthPluginName }).use(clerkPlugin()).macro({
+export const clerkAuth = () =>
+	new Elysia({ name: ClerkAuthPluginName }).use(clerkPlugin()).macro({
 		auth: {
 			async resolve({ clerk, auth, status }) {
 				console.log(typeof auth); // prints undefined // TODO: fix this

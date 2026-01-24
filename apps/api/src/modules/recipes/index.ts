@@ -1,51 +1,65 @@
 import Elysia from "elysia";
 
-import { LockNotAcquired } from "../../errors/lock-not-acquired";
-import { logger } from "../../plugins/logger";
+import { HttpStatusCode } from "@plateful/http";
+import { LockedError } from "../../models/errors/locked";
+import { RateLimitError } from "../../models/errors/rate-limit";
+import { auth } from "../../plugins/auth.plugin";
+import { logger } from "../../plugins/logger.plugin";
 import { redis } from "../../plugins/redis.plugin";
+import { RedisLocks } from "../../redis/locks";
 import { RecipesModel } from "./model";
 import * as RecipeService from "./service";
 
 export const recipes = new Elysia({
 	prefix: "recipes",
 })
+	.use(auth())
 	.use(redis())
 	.use(logger())
-	.error({
-		LockNotAcquired,
-	})
 	.post(
 		"generate",
-		async ({ body, logger }) => {
-			// const lock = RedisLocks.recipes.generate.user(redis, body.userId);
+		async ({ body, getRedis }) => {
+			const redis = getRedis();
 
-			// logger.log("acquiring lock for user", body.userId, "...");
+			const userLock = RedisLocks.recipes.generate.user.index(
+				redis,
+				body.userId,
+			);
 
-			// const acquired = await lock.acquire();
+			const acquired = await userLock.acquire();
 
-			// if (!acquired) {
-			// 	throw new LockNotAcquired("You may only generate one recipe at a time");
-			// }
-
-			// logger.log("acquired lock for user", body.userId, "...");
+			if (!acquired) {
+				throw new LockedError("You may only generate one recipe at a time");
+			}
 
 			try {
-				logger.log("generating recipe for user", body.userId, "...");
+				const rpuLock = RedisLocks.recipes.generate.user.rpu(
+					redis,
+					body.userId,
+				);
+
+				const { acquired: hasRemaining, resetAt } = await rpuLock.tryAcquire();
+
+				if (!hasRemaining) {
+					throw new RateLimitError(
+						{ limit: rpuLock.limit, resetAt },
+						"User requests limit exceeded",
+					);
+				}
+
 				const result = await RecipeService.generateRecipe(body);
-				logger.log("generated recipe for user", body.userId, "...");
 				return result;
-			} catch (err) {
-				logger.error("error for user", body.userId, "...", err);
-				throw err;
 			} finally {
-				// await lock.release();
+				await userLock.release();
 			}
 		},
 		{
+			apiKey: true,
 			body: RecipesModel.generateRecipeBody,
 			response: {
-				200: RecipesModel.generateRecipeResponse,
-				[LockNotAcquired.status]: LockNotAcquired.$response,
+				[HttpStatusCode.OK]: RecipesModel.generateRecipeResponse,
+				[LockedError.status]: LockedError.$response,
+				[RateLimitError.status]: RateLimitError.$response,
 			},
 		},
 	);
