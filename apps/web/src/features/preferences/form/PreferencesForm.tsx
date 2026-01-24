@@ -521,66 +521,66 @@ export function PreferencesForm({
 										</p>
 									</div>
 									<form.Subscribe selector={(state) => state.values}>
-										{({ allergens, dietaryPreferences, spiceLevel }) => (
-											<div className="space-y-4 rounded-xl border-2 border-primary/20 bg-linear-to-br from-primary/5 to-primary/10 p-6">
-												<p className="flex items-center gap-2 font-bold text-base">
-													<Sparkles className="h-5 w-5 text-primary" />
-													Your Profile Summary
-												</p>
-												{allergens.length > 0 && (
-													<div>
-														<p className="mb-2 font-semibold text-muted-foreground text-sm">
-															Allergens:
-														</p>
-														<div className="flex flex-wrap gap-2">
-															{allergens.map((allergen, index) => (
-																<Badge
-																	key={`${allergen}-${index}`}
-																	variant="destructive"
-																	className="text-xs"
-																>
-																	{allergen}
-																</Badge>
-															))}
+										{({ allergens, dietaryPreferences, spiceLevel }) => {
+											const spiceLevelOption = spiceLevel
+												? SPICE_LEVELS.find((l) => l.value === spiceLevel)
+												: undefined;
+
+											return (
+												<div className="space-y-4 rounded-xl border-2 border-primary/20 bg-linear-to-br from-primary/5 to-primary/10 p-6">
+													<p className="flex items-center gap-2 font-bold text-base">
+														<Sparkles className="h-5 w-5 text-primary" />
+														Your Profile Summary
+													</p>
+													{allergens.length > 0 && (
+														<div>
+															<p className="mb-2 font-semibold text-muted-foreground text-sm">
+																Allergens:
+															</p>
+															<div className="flex flex-wrap gap-2">
+																{allergens.map((allergen, index) => (
+																	<Badge
+																		key={`${allergen}-${index}`}
+																		variant="destructive"
+																		className="text-xs"
+																	>
+																		{allergen}
+																	</Badge>
+																))}
+															</div>
 														</div>
-													</div>
-												)}
-												{dietaryPreferences.length > 0 && (
-													<div>
-														<p className="mb-2 font-semibold text-muted-foreground text-sm">
-															Dietary Preferences:
-														</p>
-														<div className="flex flex-wrap gap-2">
-															{dietaryPreferences.map((pref, index) => (
-																<Badge
-																	key={`${pref}-${index}`}
-																	className="text-xs"
-																>
-																	{pref}
-																</Badge>
-															))}
+													)}
+													{dietaryPreferences.length > 0 && (
+														<div>
+															<p className="mb-2 font-semibold text-muted-foreground text-sm">
+																Dietary Preferences:
+															</p>
+															<div className="flex flex-wrap gap-2">
+																{dietaryPreferences.map((pref, index) => (
+																	<Badge
+																		key={`${pref}-${index}`}
+																		className="text-xs"
+																	>
+																		{pref}
+																	</Badge>
+																))}
+															</div>
 														</div>
-													</div>
-												)}
-												{spiceLevel && (
-													<div>
-														<p className="mb-2 font-semibold text-muted-foreground text-sm">
-															Spice Level:
-														</p>
-														<Badge variant="outline" className="text-xs">
-															{
-																SPICE_LEVELS.find((l) => l.value === spiceLevel)
-																	?.emoji
-															}{" "}
-															{
-																SPICE_LEVELS.find((l) => l.value === spiceLevel)
-																	?.label
-															}
-														</Badge>
-													</div>
-												)}
-											</div>
-										)}
+													)}
+													{spiceLevelOption && (
+														<div>
+															<p className="mb-2 font-semibold text-muted-foreground text-sm">
+																Spice Level:
+															</p>
+															<Badge variant="outline" className="text-xs">
+																{spiceLevelOption.emoji}{" "}
+																{spiceLevelOption.label}
+															</Badge>
+														</div>
+													)}
+												</div>
+											);
+										}}
 									</form.Subscribe>
 								</div>
 							)}
