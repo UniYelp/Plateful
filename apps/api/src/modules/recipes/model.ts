@@ -5,7 +5,7 @@ import {
 	RecipeGenInputSchema,
 	RecipeGenOutputSchema,
 } from "@plateful/agents/recipes";
-import { RateLimitDetailsSchema } from "../../redis/models/rate-limit.lock";
+import { RateLimitDetailsSchema } from "../../redis/models/rate-limit";
 
 export namespace RecipesModel {
 	export const userLimit = t.Object({
@@ -21,6 +21,6 @@ export namespace RecipesModel {
 	export type GenerateRecipeBody = z.infer<typeof generateRecipeBody>;
 
 	export const generateRecipeResponse = RecipeGenOutputSchema;
-    
+
 	export type GenerateRecipeResponse = z.infer<typeof generateRecipeResponse>;
 }

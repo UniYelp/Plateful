@@ -131,7 +131,7 @@ export const stats = householdQuery({
 		);
 
 		return {
-			currentId: currentGen?._id,
+			activeGenID: currentGen?._id,
 			today: {
 				total: generationsToday.length,
 				max: maxDailyGen,
