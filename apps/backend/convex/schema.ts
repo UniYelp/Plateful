@@ -72,10 +72,14 @@ const userStampsFields = {
 	updatedBy: vUserStampId,
 };
 
+export type EntityUserStamps = ObjectType<typeof userStampsFields>;
+
 const timestampsFields = {
 	updatedAt: vTimestamp,
 	deletedAt: v.optional(vTimestamp),
 };
+
+export type EntityTimeStamps = ObjectType<typeof timestampsFields>;
 
 const stampsFields = {
 	...userStampsFields,
@@ -83,10 +87,6 @@ const stampsFields = {
 };
 
 export type EntityStamps = ObjectType<typeof stampsFields>;
-
-export const userPreferencesFields = {
-	userId: v.id("users"),
-};
 
 export const householdMemberFields = {
 	householdId: v.id("households"),
@@ -227,6 +227,14 @@ export const recipeGensFields = {
 	metadata: v.union(v.object(recipeGenV0MetadataFields)),
 };
 
+export const userPreferencesFields = {
+	allergens: v.array(v.string()),
+	dietaryPreferences: v.array(v.string()),
+	spiceLevel: v.optional(v.nullable(v.string())),
+	likedFoods: v.optional(v.nullable(v.string())),
+	dislikedFoods: v.optional(v.nullable(v.string())),
+};
+
 // #endregion
 
 // #region schema
@@ -243,6 +251,11 @@ const schema = defineSchema({
 	}).index("byExternalId", ["externalId"]),
 	// #endregion
 	// #region userland
+	userPreferences: defineTable({
+		userId: v.id("users"),
+		...userPreferencesFields,
+		...timestampsFields,
+	}).index("by_user_deletedAt", ["userId", "deletedAt"]),
 	households: defineTable({
 		name: v.string(),
 		description: v.optional(v.string()),
@@ -356,6 +369,8 @@ export type EntityShape<TableName extends TableNames> = Omit<
 	keyof EntityStamps
 >;
 
+export type UserStampedEntity = Extract<Doc<TableNames>, EntityUserStamps>;
+export type TimeStampedEntity = Extract<Doc<TableNames>, EntityTimeStamps>;
 export type StampedEntity = Extract<Doc<TableNames>, EntityStamps>;
 export type StampedTableNames = StampedEntity["_id"]["__tableName"];
 
