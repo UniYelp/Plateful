@@ -55,9 +55,9 @@ export const DIETARY_OPTIONS = [
 ];
 
 export const preferenceDefaultValues: Readonly<PreferencesFormInput> = {
-	allergens: [] as string[],
-	spiceLevel: "medium",
+	allergens: [],
+	spiceLevel: null,
 	likedFoods: "",
 	dislikedFoods: "",
-	dietaryPreferences: [] as string[],
+	dietaryPreferences: [],
 };

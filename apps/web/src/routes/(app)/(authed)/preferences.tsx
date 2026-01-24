@@ -6,6 +6,7 @@ import { useMutation } from "convex/react";
 import { api } from "@backend/api";
 import { PreferencesForm } from "&/preferences/form/PreferencesForm";
 import type { PreferencesFormOutput } from "&/preferences/form/schema";
+
 export const Route = createFileRoute("/(app)/(authed)/preferences")({
 	loader: async ({ context }) => {
 		const { queryClient } = context;
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/(app)/(authed)/preferences")({
 			convexQuery(api.userPreferences.byActiveUser),
 		);
 
-		return { userPreferences };
+		return {};
 	},
 	component: RouteComponent,
 });

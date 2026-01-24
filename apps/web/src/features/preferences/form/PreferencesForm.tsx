@@ -315,7 +315,11 @@ export function PreferencesForm({
 															<button
 																type="button"
 																key={level.value}
-																onClick={() => form.handleChange(level.value)}
+																onClick={() =>
+																	form.state.value === level.value
+																		? form.handleChange(null)
+																		: form.handleChange(level.value)
+																}
 																style={{ animationDelay: `${idx * 50}ms` }}
 																className={`group fade-in slide-in-from-bottom-4 relative animate-in overflow-hidden rounded-xl border-2 p-4 text-center transition-all duration-300 ${
 																	form.state.value === level.value
@@ -473,7 +477,7 @@ export function PreferencesForm({
 													<TextArea
 														id="liked-foods"
 														placeholder="chicken, pasta, tomatoes, garlic, avocado..."
-														value={form.state.value}
+														value={form.state.value || ""}
 														onChange={(e) => form.handleChange(e.target.value)}
 														rows={4}
 														className="resize-none text-base"
@@ -497,7 +501,7 @@ export function PreferencesForm({
 													<TextArea
 														id="disliked-foods"
 														placeholder="mushrooms, olives, cilantro..."
-														value={form.state.value}
+														value={form.state.value || ""}
 														onChange={(e) => form.handleChange(e.target.value)}
 														rows={4}
 														className="resize-none text-base"

@@ -21,15 +21,7 @@ import {
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/")({
 	loader: async ({ context }) => {
-		const { household, queryClient } = context;
-
-		const hasPreferences = await queryClient.ensureQueryData(
-			convexQuery(api.userPreferences.exists, {}),
-		);
-
-		if (!hasPreferences) {
-			throw redirect({ to: "/preferences" });
-		}
+		const { household } = context;
 
 		return { household };
 	},

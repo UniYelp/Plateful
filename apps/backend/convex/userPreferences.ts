@@ -58,9 +58,15 @@ export const upsert = authedMutation({
 			.withIndex("by_user_deletedAt", (q) => q.eq("userId", ctx.user._id))
 			.unique();
 
+		const { spiceLevel, dietaryPreferences, likedFoods, dislikedFoods, allergens} = args;
+
 		const data = {
 			userId: ctx.user._id,
-			...args,
+			spiceLevel: spiceLevel || undefined,
+			dietaryPreferences: dietaryPreferences || undefined,
+			likedFoods: likedFoods || undefined,
+			dislikedFoods: dislikedFoods || undefined, 
+			allergens: allergens || undefined,
 			deletedAt: undefined,
 			updatedAt: now,
 		};

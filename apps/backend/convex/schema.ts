@@ -230,9 +230,9 @@ export const recipeGensFields = {
 export const userPreferencesFields = {
 	allergens: v.array(v.string()),
 	dietaryPreferences: v.array(v.string()),
-	spiceLevel: v.string(),
-	likedFoods: v.string(),
-	dislikedFoods: v.string(),
+	spiceLevel: v.optional(v.nullable(v.string())),
+	likedFoods: v.optional(v.nullable(v.string())),
+	dislikedFoods: v.optional(v.nullable(v.string())),
 };
 
 // #endregion
