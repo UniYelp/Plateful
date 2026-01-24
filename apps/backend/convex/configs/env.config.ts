@@ -6,12 +6,17 @@ export const ENV = createEnv({
 	server: {
 		//? Api
 		API_URL: z.url(),
+		//? Auth
+		/**
+		 * ? The api key from the api service
+		 */
+		API_KEY: z.string(),
 		//? Clerk
 		CLERK_JWT_ISSUER_DOMAIN: z.url(),
 		CLERK_WEBHOOK_SECRET: z.string(),
 		CLERK_SECRET_KEY: z.string(),
-        //? GenAi
-        GEMINI_API_KEY: z.string()
+		//? GenAi
+		GEMINI_API_KEY: z.string(),
 	},
 
 	/**

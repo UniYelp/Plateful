@@ -7,6 +7,7 @@ import { Arr, bool, entriesOf } from "@plateful/utils";
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
 import { apiClient } from "./configs/api.config";
+import { ENV } from "./configs/env.config";
 import { nanoBanana } from "./configs/nano-banana.config";
 import { InternalError, notFound } from "./errors";
 import { internalMutation } from "./functions";
@@ -97,6 +98,45 @@ export const byIdAndHousehold = householdQuery({
 		}
 
 		return recipeGen;
+	},
+});
+
+export const stats = householdQuery({
+	args: {},
+	handler: async (ctx, args) => {
+		const now = new Date();
+
+		const utcMidnightNow = Date.UTC(
+			now.getUTCFullYear(),
+			now.getUTCMonth(),
+			now.getUTCDate(),
+		);
+
+		const maxDailyGen = 5;
+
+		const generationsToday = await ctx.db
+			.query("recipeGens")
+			.withIndex("by_household_deletedAt", (q) =>
+				q
+					.eq("householdId", args.householdId)
+					.eq(...notDeletedIndex)
+					.gte("_creationTime", utcMidnightNow),
+			)
+			.order("desc")
+			.take(maxDailyGen);
+
+		const currentGen = generationsToday.find(
+			(gen) =>
+				gen.state.status === "generating" || gen.state.status === "pending",
+		);
+
+		return {
+			activeGenID: currentGen?._id,
+			today: {
+				total: generationsToday.length,
+				max: maxDailyGen,
+			},
+		};
 	},
 });
 
@@ -328,14 +368,21 @@ export const generateRecipe = internalAction({
 		try {
 			const user = await ctx.auth.getUserIdentity();
 
-			const res = await apiClient.recipes.generate.post({
-				userId: user?.subject || "unknown",
-				ingredients,
-				tags,
-				temperatureUnit: TemperatureUnit.Celsius,
-				toleratedSpiceLevel: "no-preference",
-				tools: "unlimited",
-			});
+			const res = await apiClient.recipes.generate.post(
+				{
+					userId: user?.subject || "unknown",
+					ingredients,
+					tags,
+					temperatureUnit: TemperatureUnit.Celsius,
+					toleratedSpiceLevel: "no-preference",
+					tools: "unlimited",
+				},
+				{
+					headers: {
+						"x-api-key": ENV.API_KEY,
+					},
+				},
+			);
 
 			const { data, error } = res;
 

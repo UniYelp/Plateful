@@ -26,5 +26,8 @@ export const health = new Elysia({ prefix: "/health" })
 				await redis.setex(key, 30, true satisfies typeof key.$type);
 				console.log("Redis Ping");
 			},
+			catch: (err) => {
+				console.error(err);
+			},
 		}),
 	);
