@@ -1,106 +1,95 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
-    "vcs": {
-        "enabled": true,
-        "clientKind": "git",
-        "useIgnoreFile": true
-    },
-    "files": {
-        "ignoreUnknown": false
-    },
-    "formatter": {
-        "enabled": true,
-        "indentStyle": "tab"
-    },
-    "linter": {
-        "enabled": true,
-        "rules": {
-            "recommended": true,
-            "style": {
-                "noEnum": "warn",
-                "noMagicNumbers": "warn",
-                "noDefaultExport": "warn",
-                "noYodaExpression": "warn",
-                "useNumericSeparators": "warn",
-                "useConsistentCurlyBraces": "error"
-            },
-            "suspicious": {
-                "noDuplicateTestHooks": "error",
-                "noArrayIndexKey": "warn"
-            },
-            "correctness": {
-                "noRenderReturnValue": "on"
-            },
-            "nursery": {
-                "useSortedClasses": {
-                    "level": "error",
-                    "fix": "safe",
-                    "options": {
-                        "functions": [
-                            "clsx",
-                            "cva",
-                            "cn",
-                            "twMerge"
-                        ]
-                    }
-                },
-                "noFloatingPromises": "error"
-            }
-        }
-    },
-    "javascript": {
-        "formatter": {
-            "quoteStyle": "double"
-        }
-    },
-    "css": {
-        "formatter": {
-            "enabled": false
-        }
-    },
-    "assist": {
-        "enabled": true,
-        "actions": {
-            "source": {
-                "organizeImports": {
-                    "level": "on",
-                    "options": {
-                        "groups": [
-                            ":URL:",
-                            ":BLANK_LINE:",
-                            [
-                                ":NODE:",
-                                ":BUN:"
-                            ],
-                            [
-                                ":PACKAGE:",
-                                ":PACKAGE_WITH_PROTOCOL:",
-                                "!@plateful/**",
-                                "!@backend/**",
-                                "!@api/**"
-                            ],
-                            ":BLANK_LINE:",
-                            "@plateful/**",
-                            [
-                                "@backend/**",
-                                "@api/**"
-                            ],
-                            [
-                                ":ALIAS:",
-                                "&/**",
-                                "!**/*.css*"
-                            ],
-                            ":PATH:",
-                            ":BLANK_LINE:",
-                            "**/*.css*",
-                            ":BLANK_LINE:",
-                            "**/*.(svg|png|jpeg)"
-                        ]
-                    }
-                },
-                "useSortedKeys": "off",
-                "useSortedAttributes": "off"
-            }
-        }
-    }
+	"$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": false
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"style": {
+				"noEnum": "warn",
+				"noMagicNumbers": "warn",
+				"noDefaultExport": "warn",
+				"noYodaExpression": "warn",
+				"useNumericSeparators": "warn",
+				"useConsistentCurlyBraces": "error"
+			},
+			"suspicious": {
+				"noDuplicateTestHooks": "error",
+				"noArrayIndexKey": "warn"
+			},
+			"correctness": {
+				"noRenderReturnValue": "on"
+			},
+			"nursery": {
+				"useSortedClasses": {
+					"level": "error",
+					"fix": "safe",
+					"options": {
+						"functions": ["clsx", "cva", "cn", "twMerge"]
+					}
+				},
+				"noFloatingPromises": "error"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	},
+	"css": {
+		"formatter": {
+			"enabled": true
+		},
+		"parser": {
+			"cssModules": true,
+			"tailwindDirectives": true
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": {
+					"level": "on",
+					"options": {
+						"groups": [
+							":URL:",
+							":BLANK_LINE:",
+							[":NODE:", ":BUN:"],
+							[
+								":PACKAGE:",
+								":PACKAGE_WITH_PROTOCOL:",
+								"!@plateful/**",
+								"!@backend/**",
+								"!@api/**"
+							],
+							":BLANK_LINE:",
+							"@plateful/**",
+							["@backend/**", "@api/**"],
+							[":ALIAS:", "&/**", "!**/*.css*"],
+							":PATH:",
+							":BLANK_LINE:",
+							"**/*.css*",
+							":BLANK_LINE:",
+							"**/*.(svg|png|jpeg)"
+						]
+					}
+				},
+				"useSortedKeys": "off",
+				"useSortedAttributes": "off"
+			}
+		}
+	}
 }

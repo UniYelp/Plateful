@@ -29,6 +29,7 @@ import type * as recipes from "../recipes.js";
 import type * as routes_webhooks from "../routes/webhooks.js";
 import type * as triggers from "../triggers.js";
 import type * as triggers_index from "../triggers/index.js";
+import type * as userPreferences from "../userPreferences.js";
 import type * as users from "../users.js";
 import type * as utils_soft_delete from "../utils/soft_delete.js";
 import type * as values from "../values.js";
@@ -62,6 +63,7 @@ declare const fullApi: ApiFromModules<{
   "routes/webhooks": typeof routes_webhooks;
   triggers: typeof triggers;
   "triggers/index": typeof triggers_index;
+  userPreferences: typeof userPreferences;
   users: typeof users;
   "utils/soft_delete": typeof utils_soft_delete;
   values: typeof values;

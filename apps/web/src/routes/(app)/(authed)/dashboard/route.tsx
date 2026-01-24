@@ -1,5 +1,5 @@
 import { convexQuery } from "@convex-dev/react-query";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { api } from "@backend/api";
 import { seo } from "@/utils/seo";
@@ -21,6 +21,14 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 		const household = await context.queryClient.ensureQueryData(
 			convexQuery(api.households.currentUserHousehold),
 		);
+
+		const hasPreferences = await context.queryClient.ensureQueryData(
+			convexQuery(api.userPreferences.exists, {}),
+		);
+
+		if (!hasPreferences) {
+			throw redirect({ to: "/preferences" });
+		}
 
 		return { household };
 	},
