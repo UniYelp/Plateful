@@ -1,4 +1,5 @@
 import migrations from "@convex-dev/migrations/convex.config";
+import workflow from "@convex-dev/workflow/convex.config.js";
 import { defineApp } from "convex/server";
 import nanoBanana from "convex-nano-banana/convex.config";
 
@@ -8,6 +9,11 @@ import nanoBanana from "convex-nano-banana/convex.config";
 
 const app = defineApp();
 app.use(migrations);
+
+/**
+ * @see {@link https://www.convex.dev/components/workflow}
+ */
+app.use(workflow);
 
 /**
  * @see {@link https://www.convex.dev/components/nano-banana}

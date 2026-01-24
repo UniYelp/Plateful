@@ -45,21 +45,21 @@ Vercel ^Jqtkmi6B
 Web ^JCXvLKVt
 
 ## Embedded Files
-76e18d425e4519dda525be9a66839eddfe549f98: [[ConvexLogo.svg]]
+76e18d425e4519dda525be9a66839eddfe549f98: [[ConvexIcon.svg]]
 
-47f0f74034f51a130bf7956bbb3800452a67d1f3: [[RedisLogo.svg]]
+47f0f74034f51a130bf7956bbb3800452a67d1f3: [[RedisIcon.svg]]
 
-4336b4cf8b37bb21a845f83b5d3391364cee4d7e: [[UpstashLogo.svg]]
+4336b4cf8b37bb21a845f83b5d3391364cee4d7e: [[UpstashIcon.svg]]
 
-7674c0032f62a2d91d6d418cad8de96d68c4fdc6: [[ElysiaJsLogo.png]]
+7674c0032f62a2d91d6d418cad8de96d68c4fdc6: [[ElysiaJsIcon.png]]
 
-34859b1c649cdb0c2c54f8851dfeb3958e56876c: [[VercelLogo.svg]]
+34859b1c649cdb0c2c54f8851dfeb3958e56876c: [[VercelIcon.svg]]
 
-f0cd89579eea2876aba729a11a5da6db80d58691: [[TurborepoLogo.svg]]
+f0cd89579eea2876aba729a11a5da6db80d58691: [[TurborepoIcon.svg]]
 
 cce1bc500c87d8dafcc7bc804af2763bc4d4113d: [[TanstackLogo.svg]]
 
-e4c3a21492906c586922bfe33f61f1592e0b6ca0: [[ReactLogo.svg]]
+e4c3a21492906c586922bfe33f61f1592e0b6ca0: [[ReactIcon.svg]]
 
 6fdf0e350f63099e795d8aad2dc33aaf01cb5926: https://vite.dev/assets/vite-dark.D2ACe7TL.svg
 
@@ -67,7 +67,7 @@ d1dfc49001bc165a396c121c89ac3bdea44f5542: https://www.typescriptlang.org/favicon
 
 48552173ea8156b9f3295d0c4f9b0f42c6408467: https://posthog.com/favicon-32x32.png?v=6e5ac8d4a5b381b5caa29396fbf7c955
 
-0c9c4bb7135ea035b8a48cdfc69d632b430fd715: [[Pasted Image 20260115215802_131.svg]]
+0c9c4bb7135ea035b8a48cdfc69d632b430fd715: [[ClerkLogo.svg]]
 
 %%
 ## Drawing
