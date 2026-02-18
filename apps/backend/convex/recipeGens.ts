@@ -1,6 +1,7 @@
 import { Duration } from "luxon";
 
 import type { RecipeGenInput } from "@plateful/agents/recipes";
+import type { IngredientUnit } from "@plateful/ingredients";
 import type { StrictOmit } from "@plateful/types";
 import { TemperatureUnit } from "@plateful/units/temperature";
 import { Arr, bool, entriesOf } from "@plateful/utils";
@@ -24,7 +25,7 @@ import {
 	vvv,
 } from "./schema";
 import { isSoftDeleted, notDeletedIndex } from "./utils/soft_delete";
-import { REMAINING_QUANTITY, SYSTEM_ID } from "./values";
+import { SYSTEM_ID } from "./values";
 
 // #region Validations
 
@@ -345,7 +346,7 @@ export const generateRecipe = internalAction({
 						state: state || null,
 						quantity: {
 							value: amount,
-							unit: unit || null,
+							unit: (unit as IngredientUnit) || null,
 						},
 					}))
 				: {
@@ -407,7 +408,6 @@ export const generateRecipe = internalAction({
 				const detailsByIngredient = Object.groupBy(
 					steps.flatMap((parts) =>
 						parts.flatMap((part) => {
-							if (typeof part === "string") return [];
 							if (part.type !== "material") return [];
 							if (part.kind !== "input") return [];
 
@@ -421,9 +421,8 @@ export const generateRecipe = internalAction({
 							return {
 								name,
 								quantity: {
-									amount:
-										value === "remaining" ? quantity.expectedRemainder : value,
-									unit: typeof unit === "string" ? unit : unit?.value,
+									amount: value,
+									unit,
 								} satisfies IngredientQuantity,
 								state,
 							};
@@ -454,8 +453,7 @@ export const generateRecipe = internalAction({
 				const timeByKind = Object.groupBy(
 					steps.flatMap((parts) =>
 						parts.flatMap((part) => {
-							if (typeof part === "string") return [];
-							if (part.type !== "time") return [];
+							if (part.type !== "duration") return [];
 
 							return part;
 						}),
@@ -508,9 +506,7 @@ export const generateRecipe = internalAction({
 							}
 
 							return parts.map((part) => {
-								if (typeof part === "string") return part;
-
-								if (part.type === "time") {
+								if (part.type === "duration") {
 									const { kind, duration } = part;
 									return { type: "duration" as const, kind, value: duration };
 								}
@@ -533,13 +529,10 @@ export const generateRecipe = internalAction({
 											? { id: ingredientId }
 											: { name };
 
-									const quantity =
-										amount === "remaining"
-											? REMAINING_QUANTITY
-											: ({
-													amount,
-													unit: typeof unit === "string" ? unit : unit?.value,
-												} satisfies IngredientQuantity);
+									const quantity = {
+										amount,
+										unit,
+									} satisfies IngredientQuantity;
 
 									return { type, kind, ingredient, quantity, state } as const;
 								}

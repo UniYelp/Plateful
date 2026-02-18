@@ -11,7 +11,7 @@ const IngredientQuantitySchema = z
 		z
 			.object({
 				value: z.number(),
-				unit: z.nullish(MaterialUnitSchema).default(null),
+				unit: z.nullable(MaterialUnitSchema),
 			})
 			.meta({
 				description:
@@ -30,8 +30,8 @@ const IngredientQuantitySchema = z
 const IngredientInputSchema = z
 	.object({
 		name: z.string(),
-		state: z.nullish(z.string()).default(null).meta({
-			description: "The state of the ingredient. ",
+		state: z.nullable(z.string()).meta({
+			description: "The state of the ingredient.",
 		}),
 		quantity: IngredientQuantitySchema,
 	})
@@ -62,3 +62,5 @@ export const RecipeGenInputSchema = z.object({
 });
 
 export type RecipeGenInput = z.infer<typeof RecipeGenInputSchema>;
+
+export const RecipeGenInputJsonSchema = z.toJSONSchema(RecipeGenInputSchema);

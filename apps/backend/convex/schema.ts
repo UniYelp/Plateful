@@ -14,6 +14,7 @@ import {
 } from "convex/values";
 import { typedV } from "convex-helpers/validators";
 
+import { RecipeMaterialKind } from "@plateful/recipes";
 import { temperatureUnits } from "@plateful/units/temperature";
 import type { Doc, TableNames } from "./_generated/dataModel";
 import {
@@ -153,7 +154,14 @@ export const recipeIngredientFields = {
 };
 
 export const recipeStepBlock = v.union(
-	v.string(),
+	v.object({
+		type: v.literal("text"),
+		text: v.string(),
+	}),
+	v.object({
+		type: v.literal("action"),
+		action: v.string(),
+	}),
 	v.object({
 		type: v.literal("tool"),
 		name: v.string(),
@@ -184,12 +192,7 @@ export const recipeStepBlock = v.union(
 			v.literal(ALL_QUANTITY),
 		),
 		state: v.optional(v.string()),
-		kind: v.union(
-			v.literal("input"),
-			v.literal("derived-input"),
-			v.literal("derived-output"),
-			v.literal("output"),
-		),
+		kind: vEnum(Object.values(RecipeMaterialKind)),
 	}),
 );
 
