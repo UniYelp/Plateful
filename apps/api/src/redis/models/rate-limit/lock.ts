@@ -1,5 +1,6 @@
 import type { Redis } from "@upstash/redis";
 
+import type { RateLimitDetails } from "./schema";
 import { LUA_ACQUIRE_SCRIPT } from "./script";
 import type {
 	AnyRateLimitLockKey,
@@ -8,8 +9,10 @@ import type {
 	RateLimitLockValue,
 	RateLimitOptions,
 } from "./types";
-import type { RateLimitDetails } from "./schema";
 
+/**
+ * @see {@link https://upstash.com/docs/redis/sdks/ratelimit-ts/overview}
+ */
 export class RateLimitLock {
 	#redis: Redis;
 	#key: AnyRateLimitLockKey;

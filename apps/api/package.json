@@ -10,6 +10,8 @@
         "start": "NODE_ENV=production node dist/index.js",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",
+        "test:eval": "evalite",
+        "test:eval:dev": "evalite watch",
         "test:types": "tsc --noEmit"
     },
     "dependencies": {
@@ -27,6 +29,7 @@
         "@plateful/agents": "workspace:*",
         "@plateful/http": "workspace:*",
         "@plateful/ingredients": "workspace:*",
+        "@plateful/recipes": "workspace:*",
         "@plateful/time": "workspace:*",
         "@plateful/units": "workspace:*",
         "@sinclair/typebox": "^0.34.47",

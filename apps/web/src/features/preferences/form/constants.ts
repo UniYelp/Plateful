@@ -1,3 +1,4 @@
+import { RecipeSpiceLevel } from "@plateful/recipes";
 import type { PreferencesFormInput } from "./schema";
 
 export const COMMON_ALLERGENS = [
@@ -13,12 +14,32 @@ export const COMMON_ALLERGENS = [
 ];
 
 export const SPICE_LEVELS = [
-	{ value: "no-spice", label: "No Spice", emoji: "🥛", desc: "Keep it cool" },
-	{ value: "mild", label: "Mild", emoji: "🌶️", desc: "Just a hint" },
-	{ value: "medium", label: "Medium", emoji: "🌶️🌶️", desc: "Perfect balance" },
-	{ value: "hot", label: "Hot", emoji: "🌶️🌶️🌶️", desc: "Bring the heat" },
 	{
-		value: "very-hot",
+		value: RecipeSpiceLevel.None,
+		label: "No Spice",
+		emoji: "🥛",
+		desc: "Keep it cool",
+	},
+	{
+		value: RecipeSpiceLevel.Mild,
+		label: "Mild",
+		emoji: "🌶️",
+		desc: "Just a hint",
+	},
+	{
+		value: RecipeSpiceLevel.Medium,
+		label: "Medium",
+		emoji: "🌶️🌶️",
+		desc: "Perfect balance",
+	},
+	{
+		value: RecipeSpiceLevel.Hot,
+		label: "Hot",
+		emoji: "🌶️🌶️🌶️",
+		desc: "Bring the heat",
+	},
+	{
+		value: RecipeSpiceLevel.VeryHot,
 		label: "Very Hot",
 		emoji: "🌶️🌶️🌶️🌶️",
 		desc: "Fire in the hole",
