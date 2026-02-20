@@ -396,16 +396,12 @@ export const generateRecipe = internalAction({
 				}
 			}
 
-			let completed = false;
-
 			for await (const chunk of data) {
 				switch (chunk.event) {
 					case "started": {
 						continue;
 					}
 					case "done": {
-						completed = true;
-
 						const { data } = chunk;
 						const { householdId } = args;
 
@@ -582,8 +578,6 @@ export const generateRecipe = internalAction({
 						return;
 					}
 					case "failed": {
-						completed = true;
-
 						const {
 							data: { error },
 						} = chunk;
@@ -592,16 +586,14 @@ export const generateRecipe = internalAction({
 					}
 					default: {
 						const _exhaustive: never = chunk;
-						return _exhaustive;
+						continue;
 					}
 				}
 			}
 
-			if (!completed) {
-				throw new InternalError("Internal Error", {
-					cause: "Stream ended without completion",
-				});
-			}
+			throw new InternalError("Internal Error", {
+				cause: "Stream ended without completion",
+			});
 		} catch (err) {
 			await ctx.runMutation(internal.recipeGens.updateState, {
 				genId,
