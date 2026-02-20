@@ -403,8 +403,6 @@ export const generateRecipe = internalAction({
 					}
 					case "done": {
 						const { data } = chunk;
-						const { householdId } = args;
-
 						const { title, description, tags, steps, notes } = data;
 
 						console.log({ genId, notes, data });
