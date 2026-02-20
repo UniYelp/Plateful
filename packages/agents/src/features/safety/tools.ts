@@ -35,7 +35,7 @@ export const queryPinecone = async ({ query }: { query: string }) => {
 
 	const { result } = await namespace.searchRecords({
 		query: {
-			topK: 2,
+			topK: 5,
 			inputs: { text: query },
 		},
 	});
