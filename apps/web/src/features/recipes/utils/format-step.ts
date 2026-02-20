@@ -25,10 +25,17 @@ const formatStepBlock = (
 	if (typeof block === "string") return block;
 
 	switch (block.type) {
+		case "text": {
+			return block.text;
+		}
+		case "action": {
+			return block.action;
+		}
 		case "tool": {
 			return block.name;
 		}
 		case "duration": {
+			if (block.kind === "prep") return "";
 			return formatDuration(block.value);
 		}
 		case "temperature": {
@@ -71,7 +78,7 @@ const formatMaterialBlock = (
 			qtyStr = new Intl.NumberFormat(userLocale, {
 				style: unit ? "unit" : "decimal",
 				...(unit && { unit: unit.toLowerCase() }),
-				unitDisplay: "short",
+				unitDisplay: "narrow",
 			}).format(amount);
 		} catch (_e) {
 			const numberPart = new Intl.NumberFormat(userLocale, {
@@ -84,12 +91,14 @@ const formatMaterialBlock = (
 
 	const parts = [
 		qtyStr,
-		data.state,
+		// data.state,
 		name?.toLocaleLowerCase() || "unknown",
 	].filter(bool);
 
-	return new Intl.ListFormat(userLocale, {
+	const formattedStr = new Intl.ListFormat(userLocale, {
 		style: "narrow",
 		type: "unit",
 	}).format(parts);
+
+	return formattedStr;
 };

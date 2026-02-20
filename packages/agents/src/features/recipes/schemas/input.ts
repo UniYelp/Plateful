@@ -30,9 +30,9 @@ const IngredientQuantitySchema = z
 const IngredientInputSchema = z
 	.object({
 		name: z.string(),
-		state: z.nullable(z.string()).meta({
-			description: "The state of the ingredient.",
-		}),
+		// state: z.nullable(z.string()).meta({
+		// 	description: "The state of the ingredient.",
+		// }),
 		quantity: IngredientQuantitySchema,
 	})
 	.meta({

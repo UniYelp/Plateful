@@ -58,9 +58,11 @@ export const MaterialBlockSchema = z
 			value: z.number(),
 			unit: z.optional(MaterialUnitSchema),
 		}),
-		state: z.optional(z.string()).meta({
-			description: "The state of the material.",
-		}),
+		// state: z.optional(z.string()).meta({
+		// 	description: "The state of the material.",
+		// }),
+		// - When referencing materials, use the base material name whenever possible. Do NOT include the state in the material's name unless the state is a commonly recognized part of the material name (e.g., “whipped cream”), in that case, do not use the state field. Track any changes in state using the state field of the material block. Mention the state in the name only if it is necessary for clarity.
+
 		kind: RecipeMaterialKindSchema,
 	})
 	.meta({
@@ -83,6 +85,9 @@ export const MaterialBlockSchema = z
             Within a single step:
             - Input-kind materials must appear before any Output-kind materials.
             - If a step would require mixing material kinds in a way that violates these rules, the action must be split into multiple steps.
+            - Represent materials inline using a material block of kind "input" or "derived-input", with quantity${/** and optional state*/ ""}.
+            ${/**- When referencing materials, use the base material name whenever possible. Do NOT include the state in the material's name unless the state is a commonly recognized part of the material name (e.g., “whipped cream”), in that case, do not use the state field. Track any changes in state using the state field of the material block. Mention the state in the name only if it is necessary for clarity. */ ""}
+            - Materials produced in the step ("output-kind") must appear as material blocks at the **end of the step**
 
             Across steps:
             - An "output-kind" material may appear at any point in the recipe, but only after all "input-kind" materials required to produce it have appeared earlier in the same step or in previous steps.
@@ -164,6 +169,8 @@ const RecipeStepSchema = z
             - Do NOT include in plain text that which can be expressed as a structured object.
             - Do NOT introduce any additional structured block types.
             - Steps must be readable as-is by a human when rendered sequentially.
+            - Typed blocks (e.g., tool, temperature, time, material) must be inlined at the point in the step where they are necessary, interleaved with plain text so the step reads naturally when rendered sequentially.
+            - Do not restate or duplicate information already expressed via a typed block in prior or later plain text, and do not append typed blocks at the end of a step if the corresponding concept was already referenced inline.
         `,
 	});
 
@@ -177,6 +184,8 @@ export const RecipeGenOutputSchema = z
 	})
 	.meta({
 		title: "Recipe",
+		description:
+			"The output should be formattable into plaintext. Mind that when structuring the blocks",
 	});
 
 export type RecipeGenOutput = z.infer<typeof RecipeGenOutputSchema>;

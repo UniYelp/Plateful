@@ -112,7 +112,7 @@ export const ingredientFields = {
 	quantities: v.array(
 		v.object({
 			...ingredientQuantityFields,
-			state: v.optional(v.string()),
+			// state: v.optional(v.string()),
 			expiresAt: v.optional(vTimestamp),
 		}),
 	),
@@ -148,7 +148,7 @@ export const recipeIngredientFields = {
 	quantities: v.array(
 		v.object({
 			...ingredientQuantityFields,
-			state: v.optional(v.string()),
+			// state: v.optional(v.string()),
 		}),
 	),
 };
@@ -191,7 +191,7 @@ export const recipeStepBlock = v.union(
 			v.literal(REMAINING_QUANTITY),
 			v.literal(ALL_QUANTITY),
 		),
-		state: v.optional(v.string()),
+		// state: v.optional(v.string()),
 		kind: vEnum(Object.values(RecipeMaterialKind)),
 	}),
 );

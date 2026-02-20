@@ -39,7 +39,7 @@ const vRecipeGenIngredient = vv.object({
 		vv.array(
 			vv.object({
 				...ingredientQuantityFields,
-				state: vv.optional(vv.string()),
+				// state: vv.optional(vv.string()),
 				expiresAt: vv.optional(vvv.timestamp()),
 			}),
 		),
@@ -341,9 +341,9 @@ export const generateRecipe = internalAction({
 			RecipeGenInput["ingredients"][number]
 		>(({ name, quantities }) =>
 			Array.isArray(quantities)
-				? quantities.map(({ state, amount, unit }) => ({
+				? quantities.map(({ /**state, */ amount, unit }) => ({
 						name,
-						state: state || null,
+						// state: state || null,
 						quantity: {
 							value: amount,
 							unit: (unit as IngredientUnit) || null,
@@ -351,7 +351,7 @@ export const generateRecipe = internalAction({
 					}))
 				: {
 						name,
-						state: null,
+						// state: null,
 						quantity: "unlimited",
 					},
 		);
@@ -359,7 +359,7 @@ export const generateRecipe = internalAction({
 		if (!hasWater) {
 			ingredients.push({
 				name: "water",
-				state: null,
+				// state: null,
 				quantity: "unlimited",
 			});
 		}
@@ -411,7 +411,7 @@ export const generateRecipe = internalAction({
 							if (part.type !== "material") return [];
 							if (part.kind !== "input") return [];
 
-							const { name, quantity, state } = part;
+							const { name, quantity, /**state */ } = part;
 							const { value, unit } = quantity;
 
 							if (!hasWater && collator.compare(name, "water") === 0) {
@@ -424,7 +424,7 @@ export const generateRecipe = internalAction({
 									amount: value,
 									unit,
 								} satisfies IngredientQuantity,
-								state,
+								// state,
 							};
 						}),
 					),
@@ -439,9 +439,9 @@ export const generateRecipe = internalAction({
 
 						return {
 							ingredientId,
-							quantities: details.flatMap(({ quantity, state }) => ({
+							quantities: details.flatMap(({ quantity, /**state */ }) => ({
 								...quantity,
-								state,
+								// state,
 							})),
 						} satisfies StrictOmit<
 							EntityShape<"recipeIngredients">,
@@ -517,7 +517,7 @@ export const generateRecipe = internalAction({
 										kind,
 										name,
 										quantity: quantityData,
-										state,
+										// state,
 									} = part;
 
 									const { value: amount, unit } = quantityData;
@@ -534,7 +534,7 @@ export const generateRecipe = internalAction({
 										unit,
 									} satisfies IngredientQuantity;
 
-									return { type, kind, ingredient, quantity, state } as const;
+									return { type, kind, ingredient, quantity, /**state */ } as const;
 								}
 
 								return part;
