@@ -578,6 +578,10 @@ export const generateRecipe = internalAction({
 
 						return;
 					}
+					default: {
+						const _exhaustive: never = chunk;
+						return _exhaustive;
+					}
 				}
 			}
 		} catch (err) {
