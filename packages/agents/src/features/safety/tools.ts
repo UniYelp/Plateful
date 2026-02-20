@@ -24,7 +24,7 @@ export const queryPinecone = async ({ query }: { query: string }) => {
 		throw new Error("PINECONE_INDEX_NAME is not set in environment variables.");
 	}
 	const index = getPineconeClient().index({
-		name: process.env.PINECONE_INDEX_NAME,
+		name: indexName,
 	});
 
 	const namespaceName = process.env.PINECONE_NAMESPACE;
