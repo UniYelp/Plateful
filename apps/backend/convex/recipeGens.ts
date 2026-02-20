@@ -315,7 +315,7 @@ export const generateRecipe = internalAction({
 		ingredients: vv.array(vRecipeGenIngredient),
 	},
 	handler: async (ctx, args) => {
-		const { genId } = args;
+		const { genId, householdId } = args;
 
 		await ctx.runMutation(internal.recipeGens.updateState, {
 			genId,
@@ -367,11 +367,8 @@ export const generateRecipe = internalAction({
 		console.log({ ingredientIdByName, hasWater });
 
 		try {
-			const user = await ctx.auth.getUserIdentity();
-
 			const res = await apiClient.recipes.generate.post(
 				{
-					userId: user?.subject || "unknown",
 					ingredients,
 					tags,
 					temperatureUnit: TemperatureUnit.Celsius,
@@ -379,6 +376,9 @@ export const generateRecipe = internalAction({
 					tools: "unlimited",
 				},
 				{
+					query: {
+						userId: householdId,
+					},
 					headers: {
 						"x-api-key": ENV.API_KEY,
 					},
@@ -387,171 +387,197 @@ export const generateRecipe = internalAction({
 
 			const { data, error } = res;
 
-			if (data) {
-				const { householdId } = args;
-
-				const { title, description, tags, steps, notes } = data;
-
-				console.log({ genId, notes, data });
-
-				const stepTokensToSanitize = [
-					"cookTime",
-					"prepTime",
-					"description",
-					"title",
-					"keywords",
-					"notes",
-					"tags",
-					"steps",
-				] satisfies (keyof EntityShape<"recipes"> | "steps")[];
-
-				const detailsByIngredient = Object.groupBy(
-					steps.flatMap((parts) =>
-						parts.flatMap((part) => {
-							if (part.type !== "material") return [];
-							if (part.kind !== "input") return [];
-
-							const { name, quantity, /**state */ } = part;
-							const { value, unit } = quantity;
-
-							if (!hasWater && collator.compare(name, "water") === 0) {
-								return [];
-							}
-
-							return {
-								name,
-								quantity: {
-									amount: value,
-									unit,
-								} satisfies IngredientQuantity,
-								// state,
-							};
-						}),
-					),
-					(ing) => ing.name,
-				);
-
-				const ingredients = entriesOf(detailsByIngredient).flatMap(
-					([name, details]) => {
-						if (!details) return [];
-
-						const ingredientId = ingredientIdByName[name];
-
-						return {
-							ingredientId,
-							quantities: details.flatMap(({ quantity, /**state */ }) => ({
-								...quantity,
-								// state,
-							})),
-						} satisfies StrictOmit<
-							EntityShape<"recipeIngredients">,
-							"recipeId"
-						>;
-					},
-				);
-
-				const timeByKind = Object.groupBy(
-					steps.flatMap((parts) =>
-						parts.flatMap((part) => {
-							if (part.type !== "duration") return [];
-
-							return part;
-						}),
-					),
-					(part) => part.kind,
-				);
-
-				const prepTime =
-					timeByKind.prep
-						?.reduce((acc, d) => {
-							const currDuration = Duration.fromISO(d.duration);
-							return acc.plus(currDuration);
-						}, Duration.fromMillis(0))
-						?.toISO() ?? null;
-
-				const cookTime =
-					timeByKind.cook
-						?.reduce((acc, d) => {
-							const currDuration = Duration.fromISO(d.duration);
-							return acc.plus(currDuration);
-						}, Duration.fromMillis(0))
-						.toISO() ?? null;
-
-				const recipe: EntityShape<"recipes"> = {
-					type: "simple",
-					householdId,
-					title,
-					description,
-					tags,
-					keywords: [],
-					cookTime,
-					prepTime,
-				};
-
-				await ctx.runMutation(internal.recipeGens.completeGen, {
-					genId,
-					user: SYSTEM_ID,
-					recipe,
-					ingredients,
-					steps: steps
-						.map((parts) => {
-							const [firstPart] = parts;
-
-							if (
-								typeof firstPart === "string" &&
-								Arr.includes(stepTokensToSanitize, firstPart)
-							) {
-								console.warn("sanitizing step from recipe", parts);
-								return null;
-							}
-
-							return parts.map((part) => {
-								if (part.type === "duration") {
-									const { kind, duration } = part;
-									return { type: "duration" as const, kind, value: duration };
-								}
-
-								if (part.type === "material") {
-									const {
-										type,
-										kind,
-										name,
-										quantity: quantityData,
-										// state,
-									} = part;
-
-									const { value: amount, unit } = quantityData;
-
-									const ingredientId = ingredientIdByName[name];
-
-									const ingredient =
-										kind === "input" && ingredientId
-											? { id: ingredientId }
-											: { name };
-
-									const quantity = {
-										amount,
-										unit,
-									} satisfies IngredientQuantity;
-
-									return { type, kind, ingredient, quantity, /**state */ } as const;
-								}
-
-								return part;
-							});
-						})
-						.filter(bool),
-				});
-
-				return;
+			if (error) {
+				switch (error.status) {
+					case 423: {
+						throw new InternalError(error.value, { cause: error });
+					}
+					case 429: {
+						const {
+							value: { error: message },
+						} = error;
+						throw new InternalError(message, { cause: error });
+					}
+					default: {
+						console.error(error);
+						throw new InternalError("Internal Error", { cause: error });
+					}
+				}
 			}
 
-			switch (error.status) {
-				case 423: {
-					throw new InternalError(error.value, { cause: error });
-				}
-				default: {
-					throw new InternalError("Internal Error", { cause: error });
+			for await (const chunk of data) {
+				switch (chunk.event) {
+					case "started": {
+						continue;
+					}
+					case "done": {
+						const { data } = chunk;
+						const { householdId } = args;
+
+						const { title, description, tags, steps, notes } = data;
+
+						console.log({ genId, notes, data });
+
+						const stepTokensToSanitize = [
+							"cookTime",
+							"prepTime",
+							"description",
+							"title",
+							"keywords",
+							"notes",
+							"tags",
+							"steps",
+						] satisfies (keyof EntityShape<"recipes"> | "steps")[];
+
+						const detailsByIngredient = Object.groupBy(
+							steps.flatMap((parts) =>
+								parts.flatMap((part) => {
+									if (part.type !== "material") return [];
+									if (part.kind !== "input") return [];
+
+									const { name, quantity /**state */ } = part;
+									const { value, unit } = quantity;
+
+									if (!hasWater && collator.compare(name, "water") === 0) {
+										return [];
+									}
+
+									return {
+										name,
+										quantity: {
+											amount: value,
+											unit,
+										} satisfies IngredientQuantity,
+										// state,
+									};
+								}),
+							),
+							(ing) => ing.name,
+						);
+
+						const ingredients = entriesOf(detailsByIngredient).flatMap(
+							([name, details]) => {
+								if (!details) return [];
+
+								const ingredientId = ingredientIdByName[name];
+
+								return {
+									ingredientId,
+									quantities: details.flatMap(({ quantity /**state */ }) => ({
+										...quantity,
+										// state,
+									})),
+								} satisfies StrictOmit<
+									EntityShape<"recipeIngredients">,
+									"recipeId"
+								>;
+							},
+						);
+
+						const timeByKind = Object.groupBy(
+							steps.flatMap((parts) =>
+								parts.flatMap((part) => {
+									if (part.type !== "duration") return [];
+
+									return part;
+								}),
+							),
+							(part) => part.kind,
+						);
+
+						const prepTime =
+							timeByKind.prep
+								?.reduce((acc, d) => {
+									const currDuration = Duration.fromISO(d.duration);
+									return acc.plus(currDuration);
+								}, Duration.fromMillis(0))
+								?.toISO() ?? null;
+
+						const cookTime =
+							timeByKind.cook
+								?.reduce((acc, d) => {
+									const currDuration = Duration.fromISO(d.duration);
+									return acc.plus(currDuration);
+								}, Duration.fromMillis(0))
+								.toISO() ?? null;
+
+						const recipe: EntityShape<"recipes"> = {
+							type: "simple",
+							householdId,
+							title,
+							description,
+							tags,
+							keywords: [],
+							cookTime,
+							prepTime,
+						};
+
+						await ctx.runMutation(internal.recipeGens.completeGen, {
+							genId,
+							user: SYSTEM_ID,
+							recipe,
+							ingredients,
+							steps: steps
+								.map((parts) => {
+									const [firstPart] = parts;
+
+									if (
+										typeof firstPart === "string" &&
+										Arr.includes(stepTokensToSanitize, firstPart)
+									) {
+										console.warn("sanitizing step from recipe", parts);
+										return null;
+									}
+
+									return parts.map((part) => {
+										if (part.type === "duration") {
+											const { kind, duration } = part;
+											return {
+												type: "duration" as const,
+												kind,
+												value: duration,
+											};
+										}
+
+										if (part.type === "material") {
+											const {
+												type,
+												kind,
+												name,
+												quantity: quantityData,
+												// state,
+											} = part;
+
+											const { value: amount, unit } = quantityData;
+
+											const ingredientId = ingredientIdByName[name];
+
+											const ingredient =
+												kind === "input" && ingredientId
+													? { id: ingredientId }
+													: { name };
+
+											const quantity = {
+												amount,
+												unit,
+											} satisfies IngredientQuantity;
+
+											return {
+												type,
+												kind,
+												ingredient,
+												quantity /**state */,
+											} as const;
+										}
+
+										return part;
+									});
+								})
+								.filter(bool),
+						});
+
+						return;
+					}
 				}
 			}
 		} catch (err) {

@@ -1,6 +1,5 @@
-import Elysia from "elysia";
+import Elysia, { sse } from "elysia";
 
-import { HttpStatusCode } from "@plateful/http";
 import { LockedError } from "../../models/errors/locked";
 import { RateLimitError } from "../../models/errors/rate-limit";
 import { auth } from "../../plugins/auth.plugin";
@@ -18,14 +17,10 @@ export const recipes = new Elysia({
 	.use(logger())
 	.post(
 		"generate",
-		async ({ body, getRedis }) => {
+		async function* ({ query: { userId }, body, getRedis }) {
 			const redis = getRedis();
 
-			const userLock = RedisLocks.recipes.generate.user.index(
-				redis,
-				body.userId,
-			);
-
+			const userLock = RedisLocks.recipes.generate.user.index(redis, userId);
 			const acquired = await userLock.acquire();
 
 			if (!acquired) {
@@ -33,10 +28,7 @@ export const recipes = new Elysia({
 			}
 
 			try {
-				const rpuLock = RedisLocks.recipes.generate.user.rpu(
-					redis,
-					body.userId,
-				);
+				const rpuLock = RedisLocks.recipes.generate.user.rpu(redis, userId);
 
 				const { acquired: hasRemaining, resetAt } = await rpuLock.tryAcquire();
 
@@ -47,17 +39,25 @@ export const recipes = new Elysia({
 					);
 				}
 
+				yield sse({
+					event: "started",
+				});
+
 				const result = await RecipeService.generateRecipe(body);
-				return result;
+
+				yield sse({
+					event: "done",
+					data: result,
+				});
 			} finally {
 				await userLock.release();
 			}
 		},
 		{
 			apiKey: true,
+			query: RecipesModel.generateRecipeQuery,
 			body: RecipesModel.generateRecipeBody,
 			response: {
-				[HttpStatusCode.OK]: RecipesModel.generateRecipeResponse,
 				[LockedError.status]: LockedError.$response,
 				[RateLimitError.status]: RateLimitError.$response,
 			},

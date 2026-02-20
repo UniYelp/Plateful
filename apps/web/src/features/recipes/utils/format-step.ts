@@ -100,5 +100,5 @@ const formatMaterialBlock = (
 		type: "unit",
 	}).format(parts);
 
-	return formattedStr;
+	return ` ${formattedStr} `;
 };

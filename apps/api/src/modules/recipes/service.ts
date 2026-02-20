@@ -3,7 +3,7 @@ import type { RecipesModel } from "./model";
 
 export const generateRecipe = async (
 	body: RecipesModel.GenerateRecipeBody,
-): Promise<RecipesModel.GenerateRecipeResponse> => {
+): Promise<RecipesModel.GenerateRecipeCompleteEventData> => {
 	const result = await RecipeAgent.generateRecipe(body);
 	const { output } = result;
 
