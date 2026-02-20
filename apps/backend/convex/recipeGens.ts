@@ -389,15 +389,6 @@ export const generateRecipe = internalAction({
 
 			if (error) {
 				switch (error.status) {
-					case 423: {
-						throw new InternalError(error.value, { cause: error });
-					}
-					case 429: {
-						const {
-							value: { error: message },
-						} = error;
-						throw new InternalError(message, { cause: error });
-					}
 					default: {
 						console.error(error);
 						throw new InternalError("Internal Error", { cause: error });

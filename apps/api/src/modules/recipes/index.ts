@@ -20,28 +20,28 @@ export const recipes = new Elysia({
 		async function* ({ query: { householdId }, body, getRedis }) {
 			const redis = getRedis();
 
-			const userLock = RedisLocks.recipes.gen.household.lock(
+			const householdLock = RedisLocks.recipes.gen.household.lock(
 				redis,
 				householdId,
 			);
 
 			try {
-				const acquired = await userLock.acquire();
+				const acquired = await householdLock.acquire();
 
 				if (!acquired) {
 					throw new LockedError("You may only generate one recipe at a time");
 				}
 
-				const rpuLock = RedisLocks.recipes.gen.household.rph(
+				const rphLock = RedisLocks.recipes.gen.household.rph(
 					redis,
 					householdId,
 				);
 
-				const { acquired: hasRemaining, resetAt } = await rpuLock.tryAcquire();
+				const { acquired: hasRemaining, resetAt } = await rphLock.tryAcquire();
 
 				if (!hasRemaining) {
 					throw new RateLimitError(
-						{ limit: rpuLock.limit, resetAt },
+						{ limit: rphLock.limit, resetAt },
 						"Household requests limit exceeded",
 					);
 				}
@@ -72,16 +72,12 @@ export const recipes = new Elysia({
 					},
 				});
 			} finally {
-				await userLock.release();
+				await householdLock.release();
 			}
 		},
 		{
 			apiKey: true,
 			query: RecipesModel.generateRecipeQuery,
 			body: RecipesModel.generateRecipeBody,
-			response: {
-				[LockedError.status]: LockedError.$response,
-				[RateLimitError.status]: RateLimitError.$response,
-			},
 		},
 	);
