@@ -578,6 +578,13 @@ export const generateRecipe = internalAction({
 
 						return;
 					}
+					case "failed": {
+						const {
+							data: { error },
+						} = chunk;
+
+						throw new InternalError(error, { cause: error });
+					}
 					default: {
 						const _exhaustive: never = chunk;
 						return _exhaustive;

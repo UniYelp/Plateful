@@ -25,13 +25,13 @@ export const recipes = new Elysia({
 				householdId,
 			);
 
-			const acquired = await userLock.acquire();
-
-			if (!acquired) {
-				throw new LockedError("You may only generate one recipe at a time");
-			}
-
 			try {
+				const acquired = await userLock.acquire();
+
+				if (!acquired) {
+					throw new LockedError("You may only generate one recipe at a time");
+				}
+
 				const rpuLock = RedisLocks.recipes.gen.household.rph(
 					redis,
 					householdId,
@@ -55,6 +55,21 @@ export const recipes = new Elysia({
 				yield sse({
 					event: "done",
 					data: result,
+				});
+			} catch (err) {
+				let error: Error;
+
+				if (err instanceof Error) {
+					error = err;
+				} else {
+					error = new Error(JSON.stringify(err));
+				}
+
+				yield sse({
+					event: "failed",
+					data: {
+						error: error.message,
+					},
 				});
 			} finally {
 				await userLock.release();
