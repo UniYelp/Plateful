@@ -17,10 +17,14 @@ export const recipes = new Elysia({
 	.use(logger())
 	.post(
 		"generate",
-		async function* ({ query: { userId }, body, getRedis }) {
+		async function* ({ query: { householdId }, body, getRedis }) {
 			const redis = getRedis();
 
-			const userLock = RedisLocks.recipes.generate.user.index(redis, userId);
+			const userLock = RedisLocks.recipes.gen.household.lock(
+				redis,
+				householdId,
+			);
+
 			const acquired = await userLock.acquire();
 
 			if (!acquired) {
@@ -28,7 +32,10 @@ export const recipes = new Elysia({
 			}
 
 			try {
-				const rpuLock = RedisLocks.recipes.generate.user.rpu(redis, userId);
+				const rpuLock = RedisLocks.recipes.gen.household.rph(
+					redis,
+					householdId,
+				);
 
 				const { acquired: hasRemaining, resetAt } = await rpuLock.tryAcquire();
 

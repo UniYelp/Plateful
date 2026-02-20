@@ -1,7 +1,7 @@
 import dedent from "dedent";
 import z from "zod";
 
-import { RecipeMaterialKind } from "@plateful/recipes";
+import { RecipeMaterialKind, RecipeStepBlockType } from "@plateful/recipes";
 import { MaterialUnitSchema, TemperatureUnitSchema } from "./literals";
 
 const InputMaterialKindSchema = z.literal(RecipeMaterialKind.Input).meta({
@@ -13,28 +13,26 @@ const InputMaterialKindSchema = z.literal(RecipeMaterialKind.Input).meta({
 const DerivedInputMaterialKindSchema = z
 	.literal(RecipeMaterialKind.DerivedInput)
 	.meta({
-		title: "Input Material Kind",
+		title: "Derived-Input Material Kind",
 		description:
 			"A material that was produced in an earlier step and is now being consumed.",
 	});
 
-const OutputMaterialKindSchema = z
+const DerivedOutputMaterialKindSchema = z
 	.literal(RecipeMaterialKind.DerivedOutput)
 	.meta({
-		title: "Output Material Kind",
+		title: "Derived-Output Material Kind",
 		description:
 			"A material that is produced in the step and may be used in later steps.",
 	});
 
-const DerivedOutputMaterialKindSchema = z
-	.literal(RecipeMaterialKind.Output)
-	.meta({
-		title: "Derived-Output Material Kind",
-		description:
-			"A final yield material that is not used to produce any other material.",
-	});
+const OutputMaterialKindSchema = z.literal(RecipeMaterialKind.Output).meta({
+	title: "Output Material Kind",
+	description:
+		"A final yield material that is not used to produce any other material.",
+});
 
-const schemaByRecipeMaterialKind = {
+const schemaByMaterialKind = {
 	[InputMaterialKindSchema.value]: InputMaterialKindSchema,
 	[DerivedInputMaterialKindSchema.value]: DerivedInputMaterialKindSchema,
 	[OutputMaterialKindSchema.value]: OutputMaterialKindSchema,
@@ -45,14 +43,14 @@ const schemaByRecipeMaterialKind = {
 };
 
 export const RecipeMaterialKindSchema = z
-	.union(Object.values(schemaByRecipeMaterialKind))
+	.union(Object.values(schemaByMaterialKind))
 	.meta({
 		title: "Recipe Material Kind",
 	});
 
 export const MaterialBlockSchema = z
 	.object({
-		type: z.literal("material"),
+		type: z.literal(RecipeStepBlockType.Material),
 		name: z.string(),
 		quantity: z.object({
 			value: z.number(),
@@ -98,7 +96,7 @@ export const MaterialBlockSchema = z
 
 export const DurationBlockSchema = z
 	.object({
-		type: z.literal("duration"),
+		type: z.literal(RecipeStepBlockType.Duration),
 		kind: z.enum(["prep", "cook"]),
 		duration: z.iso.duration(), //? ISO 8601 duration (e.g., 'PT5M')
 	})
@@ -108,7 +106,7 @@ export const DurationBlockSchema = z
 
 export const TemperatureBlockSchema = z
 	.object({
-		type: z.literal("temperature"),
+		type: z.literal(RecipeStepBlockType.Temperature),
 		value: z.number(),
 		unit: TemperatureUnitSchema,
 	})
@@ -124,39 +122,46 @@ export const TemperatureBlockSchema = z
 
 export const ToolBlockSchema = z
 	.object({
-		type: z.literal("tool"),
+		type: z.literal(RecipeStepBlockType.Tool),
 		name: z.string(),
 	})
 	.meta({
 		title: "Tool Block",
 	});
 
-export const ActionBlockSchema = z
-	.object({
-		type: z.literal("action"),
-		action: z.string(),
-	})
-	.meta({
-		title: "Action Block",
-	});
+// export const ActionBlockSchema = z
+// 	.object({
+// 		type: z.literal(RecipeStepBlockType.Action),
+// 		action: z.string(),
+// 	})
+// 	.meta({
+// 		title: "Action Block",
+// 	});
 
 export const TextBlockSchema = z
 	.object({
-		type: z.literal("text"),
+		type: z.literal(RecipeStepBlockType.Text),
 		text: z.string(),
 	})
 	.meta({
 		title: "Text Block",
 	});
 
-export const StepBlockSchema = z.union([
-	TextBlockSchema,
-	TemperatureBlockSchema,
-	DurationBlockSchema,
-	// TODO: use ActionBlockSchema,
-	ToolBlockSchema,
-	MaterialBlockSchema,
-]);
+const schemaByBlockKind = {
+	// [RecipeStepBlockType.Action]: ActionBlockSchema,
+	[RecipeStepBlockType.Duration]: DurationBlockSchema,
+	[RecipeStepBlockType.Material]: MaterialBlockSchema,
+	[RecipeStepBlockType.Temperature]: TemperatureBlockSchema,
+	[RecipeStepBlockType.Text]: TextBlockSchema,
+	[RecipeStepBlockType.Tool]: ToolBlockSchema,
+	// TODO: add reference blocks for referencing a material during a step without using it actively
+} as const satisfies {
+	[U in RecipeStepBlockType]: z.ZodObject<{
+		type: z.ZodLiteral<U>;
+	}>;
+};
+
+export const StepBlockSchema = z.union(Object.values(schemaByBlockKind));
 
 const RecipeStepSchema = z
 	.array(StepBlockSchema)

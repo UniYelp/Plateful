@@ -377,7 +377,7 @@ export const generateRecipe = internalAction({
 				},
 				{
 					query: {
-						userId: householdId,
+						householdId,
 					},
 					headers: {
 						"x-api-key": ENV.API_KEY,

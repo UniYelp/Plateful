@@ -10,8 +10,6 @@
         "start": "NODE_ENV=production node dist/index.js",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",
-        "test:eval": "evalite",
-        "test:eval:dev": "evalite watch",
         "test:types": "tsc --noEmit"
     },
     "dependencies": {

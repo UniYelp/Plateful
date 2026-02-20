@@ -11,36 +11,18 @@ export const RedisKeys = {
 	health: redisKey((id: string) => `health:${id}` as const).$type<true>(),
 	recipes: {
 		gen: {
-			user: {
-				index: redisKey(
-					(userId: string) => `locks:recipes:gen:user:${userId}` as const,
+			household: {
+				lock: redisKey(
+					(householdId: string) =>
+						`recipes:gen:user:${householdId}:lock` as const,
 				),
 				/**
 				 *? Requests per user
 				 */
-				rpu: redisKey(
-					(userId: string) => `locks:recipes:gen:user:${userId}:rpu` as const,
+				rph: redisKey(
+					(householdId: string) =>
+						`recipes:gen:user:${householdId}:rpu` as const,
 				).$type<RateLimitLockValue>(),
-			},
-		},
-	},
-	locks: {
-		// TODO: delete
-		recipes: {
-			generate: {
-				user: {
-					index: redisKey(
-						(userId: string) =>
-							`locks:recipes:generate:user:${userId}` as const,
-					),
-					/**
-					 *? Requests per user per day
-					 */
-					rpu: redisKey(
-						(userId: string) =>
-							`locks:recipes:generate:user:${userId}:rpu` as const,
-					).$type<RateLimitLockValue>(),
-				},
 			},
 		},
 	},

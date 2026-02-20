@@ -8,7 +8,7 @@ import {
 
 export namespace RecipesModel {
 	export const generateRecipeQuery = t.Object({
-		userId: t.String(),
+		householdId: t.String(),
 	});
 
 	export const generateRecipeBody = RecipeGenInputSchema;
