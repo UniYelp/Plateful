@@ -5,7 +5,7 @@ import { RecipeGenOutputSchema } from "./schemas";
 
 export const recipeAgent = new Agent({
 	model: google("gemini-2.5-flash"),
-	experimental_output: Output.object({
+	output: Output.object({
 		schema: RecipeGenOutputSchema,
 	}),
 	// tools: {

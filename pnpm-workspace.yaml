@@ -2,6 +2,7 @@ packages:
   - apps/*
   - libs/*
   - packages/*
+  - scripts/*
 
 catalog:
   '@clerk/backend': ^2.15.0
@@ -9,7 +10,7 @@ catalog:
   convex: ^1.31.2
   effect: ^3.19.4
   hono: ^4.9.9
-  zod: ^4.2.1
+  zod: ^4.3.5
 
 catalogMode: manual
 

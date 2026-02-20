@@ -22,7 +22,7 @@ catalogs:
       specifier: ^4.9.9
       version: 4.11.4
     zod:
-      specifier: ^4.2.1
+      specifier: ^4.3.5
       version: 4.3.5
 
 importers:
@@ -94,7 +94,7 @@ importers:
         version: 0.5.6
       vercel:
         specifier: ^50.3.0
-        version: 50.3.0(rollup@4.55.1)(typescript@5.9.3)
+        version: 50.3.0(encoding@0.1.13)(rollup@4.55.1)(typescript@5.9.3)
       vitest:
         specifier: ^4.0.15
         version: 4.0.17(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@22.19.5)(@vitest/ui@4.0.17)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
@@ -201,9 +201,15 @@ importers:
       '@dotenvx/dotenvx':
         specifier: ^1.50.1
         version: 1.51.4
+      '@langfuse/client':
+        specifier: ^4.6.1
+        version: 4.6.1(@opentelemetry/api@1.9.0)
       '@plateful/types':
         specifier: workspace:*
         version: link:../../packages/types
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       tsx:
         specifier: ^4.7.1
         version: 4.21.0
@@ -465,11 +471,14 @@ importers:
   packages/agents:
     dependencies:
       '@ai-sdk/google':
-        specifier: 2.0.46
-        version: 2.0.46(zod@4.3.5)
+        specifier: 3.0.30
+        version: 3.0.30(zod@4.3.5)
       '@ai-sdk/openai':
-        specifier: ^3.0.11
-        version: 3.0.11(zod@4.3.5)
+        specifier: ^3.0.30
+        version: 3.0.30(zod@4.3.5)
+      '@pinecone-database/pinecone':
+        specifier: ^7.1.0
+        version: 7.1.0
       '@plateful/ingredients':
         specifier: workspace:*
         version: link:../ingredients
@@ -483,8 +492,8 @@ importers:
         specifier: workspace:*
         version: link:../utils
       ai:
-        specifier: 5.0.113
-        version: 5.0.113(zod@4.3.5)
+        specifier: 6.0.94
+        version: 6.0.94(zod@4.3.5)
       dedent:
         specifier: ^1.7.1
         version: 1.7.1
@@ -590,14 +599,26 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
+  '@ai-sdk/gateway@3.0.52':
+    resolution: {integrity: sha512-lYCXP8T3YnIDiz8DP7loAMT27wnblc3IAYzQ7igg89RCRyTUjk6ffbxHXXQ5Pmv8jrdLF0ZIJnH54Dsr1OCKHg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
   '@ai-sdk/google@2.0.46':
     resolution: {integrity: sha512-8PK6u4sGE/kXebd7ZkTp+0aya4kNqzoqpS5m7cHY2NfTK6fhPc6GNvE+MZIZIoHQTp5ed86wGBdeBPpFaaUtyg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai@3.0.11':
-    resolution: {integrity: sha512-nX7Egt9EJtvImiq1D88sZCOlfAIJgKJGa987ptp40hJRp7CQ4snBLnEHt344m2tqB0LIpzdc53l02o+LlYsM2A==}
+  '@ai-sdk/google@3.0.30':
+    resolution: {integrity: sha512-ZzG6dU0XUSSXbxQJJTQUFpWeKkfzdpR7IykEZwaiaW5d+3u3RZ/zkRiGwAOcUpLp6k0eMd+IJF4looJv21ecxw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/openai@3.0.30':
+    resolution: {integrity: sha512-YDht3t7TDyWKP+JYZp20VuYqSjyF2brHYh47GGFDUPf2wZiqNQ263ecL+quar2bP3GZ3BeQA8f0m2B7UwLPR+g==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -608,8 +629,8 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider-utils@4.0.7':
-    resolution: {integrity: sha512-ItzTdBxRLieGz1GHPwl9X3+HKfwTfFd9MdIa91aXRnOjUVRw68ENjAGKm3FcXGsBLkXDLaFWgjbTVdXe2igs2w==}
+  '@ai-sdk/provider-utils@4.0.15':
+    resolution: {integrity: sha512-8XiKWbemmCbvNN0CLR9u3PQiet4gtEVIrX4zzLxnCj06AwsEDJwJVBbKrEI4t6qE8XRSIvU2irka0dcpziKW6w==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -618,8 +639,8 @@ packages:
     resolution: {integrity: sha512-6o7Y2SeO9vFKB8lArHXehNuusnpddKPk7xqL7T2/b+OvXMRIXUO1rR4wcv1hAFUAT9avGZshty3Wlua/XA7TvA==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/provider@3.0.3':
-    resolution: {integrity: sha512-qGPYdoAuECaUXPrrz0BPX1SacZQuJ6zky0aakxpW89QW1hrY0eF4gcFm/3L9Pk8C5Fwe+RvBf2z7ZjDhaPjnlg==}
+  '@ai-sdk/provider@3.0.8':
+    resolution: {integrity: sha512-oGMAgGoQdBXbZqNG0Ze56CHjDZ1IDYOwGYxYjO5KLSlz5HiNQ9udIXsPZ61VWaHGZ5XW/jyjmr6t2xz2jGVwbQ==}
     engines: {node: '>=18'}
 
   '@ai-sdk/react@2.0.115':
@@ -1665,8 +1686,18 @@ packages:
   '@js-sdsl/ordered-map@4.4.2':
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
 
+  '@langfuse/client@4.6.1':
+    resolution: {integrity: sha512-/jR/a/tJx7gZtrPla56IfG2/B9+QabZzdATXPgdUAph4Nc87Kaj9O5jHvm3y1n7JJTqfAvAvYL9lWq8jjSEAMw==}
+    peerDependencies:
+      '@opentelemetry/api': ^1.9.0
+
   '@langfuse/core@4.5.1':
     resolution: {integrity: sha512-caJ2YWcaEU+kbzxFiyzRYaCmKxGzL9DSxbrCer8HbayYo2TaFaAu67Zeili8u8qG4q7TXga4aL2+rpU5ebWdRA==}
+    peerDependencies:
+      '@opentelemetry/api': ^1.9.0
+
+  '@langfuse/core@4.6.1':
+    resolution: {integrity: sha512-DtQoKWHQh0I0MsJxcKrBQVKAJ3fea6+raXlISVY3NDMFG/zSKkdkNouQvUXQtSCHBbOFupHMBw8imM30lbhq3g==}
     peerDependencies:
       '@opentelemetry/api': ^1.9.0
 
@@ -1681,6 +1712,12 @@ packages:
 
   '@langfuse/tracing@4.5.1':
     resolution: {integrity: sha512-PvN8fJzEDG2IQMD7/iGhoeEzMM0fJ/ktZdy5gfMfj3/UUccigqV0flxpzvgRoAUss+0ZmqkIlJoaerHKOCMD+A==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@opentelemetry/api': ^1.9.0
+
+  '@langfuse/tracing@4.6.1':
+    resolution: {integrity: sha512-Ld1bPU6RxzifgGEDtN70Og8u2eL906jtnnEnt62BEOcML8UUiMgzwAKZDBbIjF2midnfac7Xnho3s546fcCDtQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@opentelemetry/api': ^1.9.0
@@ -2075,6 +2112,10 @@ packages:
     resolution: {integrity: sha512-M7z0xjYQq1HdJk2DxTSLMvRMyBSI4wn4FXGcVQBsbAihgXevAReqwMdb593nmCK/OiFwSNcOaGIzUvzyzQ+95w==}
     cpu: [x64]
     os: [win32]
+
+  '@pinecone-database/pinecone@7.1.0':
+    resolution: {integrity: sha512-w6HoBCriv4NKOVFjdj4/KuJ6df7RZpQEsZ61VctRzoauTXQpe8wpccsS94AawxAxMOu7hOTXVlcQ5QLHYKjrDA==}
+    engines: {node: '>=20.0.0'}
 
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
@@ -3752,6 +3793,10 @@ packages:
     resolution: {integrity: sha512-fnYhv671l+eTTp48gB4zEsTW/YtRgRPnkI2nT7x6qw5rkI1Lq2hTmQIpHPgyThI0znLK+vX2n9XxKdXZ7BUbbw==}
     engines: {node: '>= 20'}
 
+  '@vercel/oidc@3.1.0':
+    resolution: {integrity: sha512-Fw28YZpRnA3cAHHDlkt7xQHiJ0fcL+NRcIqsocZQUSmbzeIKRpwttJjik5ZGanXP+vlA4SbTg+AbA3bP363l+w==}
+    engines: {node: '>= 20'}
+
   '@vercel/python@6.1.6':
     resolution: {integrity: sha512-4N9doC1i97rx6nh8h05GiDWfnAIRZLVjKKg+hJmxBO5aVWr8uyXrM337KFC4NF6rxutMHsXAp5DBe/M+dOJDKg==}
 
@@ -3848,6 +3893,12 @@ packages:
 
   ai@5.0.113:
     resolution: {integrity: sha512-26vivpSO/mzZj0k1Si2IpsFspp26ttQICHRySQiMrtWcRd5mnJMX2a8sG28vmZ38C+JUn1cWmfZrsLMxkSMw9g==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  ai@6.0.94:
+    resolution: {integrity: sha512-/F9wh262HbK05b/5vILh38JvPiheonT+kBj1L97712E7VPchqmcx7aJuZN3QSk5Pj6knxUJLm2FFpYJI1pHXUA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -4423,6 +4474,9 @@ packages:
   empathic@2.0.0:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
     engines: {node: '>=14'}
+
+  encoding@0.1.13:
+    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
 
   end-of-stream@1.1.0:
     resolution: {integrity: sha512-EoulkdKF/1xa92q25PbjuDcgJ9RDHYU2Rs3SCIvs2/dSQ3BpmxneNHmA/M7fe60M3PrV7nNGTTNbkK62l6vXiQ==}
@@ -5052,6 +5106,10 @@ packages:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
 
+  iconv-lite@0.6.3:
+    resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
+    engines: {node: '>=0.10.0'}
+
   iconv-lite@0.7.2:
     resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
     engines: {node: '>=0.10.0'}
@@ -5495,6 +5553,10 @@ packages:
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
+
+  mustache@4.2.0:
+    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
+    hasBin: true
 
   mysql2@3.15.3:
     resolution: {integrity: sha512-FBrGau0IXmuqg4haEZRBfHNWB5mUARw6hNwPDXXGg0XzVJ50mr/9hb267lvpVMnhZ1FON3qNd4Xfcez1rbFwSg==}
@@ -6901,16 +6963,29 @@ snapshots:
       '@vercel/oidc': 3.0.5
       zod: 4.3.5
 
+  '@ai-sdk/gateway@3.0.52(zod@4.3.5)':
+    dependencies:
+      '@ai-sdk/provider': 3.0.8
+      '@ai-sdk/provider-utils': 4.0.15(zod@4.3.5)
+      '@vercel/oidc': 3.1.0
+      zod: 4.3.5
+
   '@ai-sdk/google@2.0.46(zod@4.3.5)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.19(zod@4.3.5)
       zod: 4.3.5
 
-  '@ai-sdk/openai@3.0.11(zod@4.3.5)':
+  '@ai-sdk/google@3.0.30(zod@4.3.5)':
     dependencies:
-      '@ai-sdk/provider': 3.0.3
-      '@ai-sdk/provider-utils': 4.0.7(zod@4.3.5)
+      '@ai-sdk/provider': 3.0.8
+      '@ai-sdk/provider-utils': 4.0.15(zod@4.3.5)
+      zod: 4.3.5
+
+  '@ai-sdk/openai@3.0.30(zod@4.3.5)':
+    dependencies:
+      '@ai-sdk/provider': 3.0.8
+      '@ai-sdk/provider-utils': 4.0.15(zod@4.3.5)
       zod: 4.3.5
 
   '@ai-sdk/provider-utils@3.0.19(zod@4.3.5)':
@@ -6920,9 +6995,9 @@ snapshots:
       eventsource-parser: 3.0.6
       zod: 4.3.5
 
-  '@ai-sdk/provider-utils@4.0.7(zod@4.3.5)':
+  '@ai-sdk/provider-utils@4.0.15(zod@4.3.5)':
     dependencies:
-      '@ai-sdk/provider': 3.0.3
+      '@ai-sdk/provider': 3.0.8
       '@standard-schema/spec': 1.1.0
       eventsource-parser: 3.0.6
       zod: 4.3.5
@@ -6931,7 +7006,7 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/provider@3.0.3':
+  '@ai-sdk/provider@3.0.8':
     dependencies:
       json-schema: 0.4.0
 
@@ -7796,7 +7871,18 @@ snapshots:
 
   '@js-sdsl/ordered-map@4.4.2': {}
 
+  '@langfuse/client@4.6.1(@opentelemetry/api@1.9.0)':
+    dependencies:
+      '@langfuse/core': 4.6.1(@opentelemetry/api@1.9.0)
+      '@langfuse/tracing': 4.6.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/api': 1.9.0
+      mustache: 4.2.0
+
   '@langfuse/core@4.5.1(@opentelemetry/api@1.9.0)':
+    dependencies:
+      '@opentelemetry/api': 1.9.0
+
+  '@langfuse/core@4.6.1(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
 
@@ -7813,18 +7899,23 @@ snapshots:
       '@langfuse/core': 4.5.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/api': 1.9.0
 
+  '@langfuse/tracing@4.6.1(@opentelemetry/api@1.9.0)':
+    dependencies:
+      '@langfuse/core': 4.6.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/api': 1.9.0
+
   '@loaderkit/resolve@1.0.4':
     dependencies:
       '@braidai/lang': 1.1.2
 
   '@lukeed/ms@2.0.2': {}
 
-  '@mapbox/node-pre-gyp@2.0.3':
+  '@mapbox/node-pre-gyp@2.0.3(encoding@0.1.13)':
     dependencies:
       consola: 3.4.2
       detect-libc: 2.1.2
       https-proxy-agent: 7.0.6
-      node-fetch: 2.7.0
+      node-fetch: 2.7.0(encoding@0.1.13)
       nopt: 8.1.0
       semver: 7.7.3
       tar: 7.5.2
@@ -8242,6 +8333,8 @@ snapshots:
 
   '@oxc-resolver/binding-win32-x64-msvc@11.16.2':
     optional: true
+
+  '@pinecone-database/pinecone@7.1.0': {}
 
   '@pinojs/redact@0.4.0': {}
 
@@ -9723,11 +9816,11 @@ snapshots:
     dependencies:
       uncrypto: 0.1.3
 
-  '@vercel/backends@0.0.18(rollup@4.55.1)(typescript@5.9.3)':
+  '@vercel/backends@0.0.18(encoding@0.1.13)(rollup@4.55.1)(typescript@5.9.3)':
     dependencies:
       '@vercel/cervel': 0.0.8(typescript@5.9.3)
       '@vercel/introspection': 0.0.8
-      '@vercel/nft': 1.1.1(rollup@4.55.1)
+      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
       fs-extra: 11.1.0
       rolldown: 1.0.0-beta.35
@@ -9757,9 +9850,9 @@ snapshots:
 
   '@vercel/detect-agent@1.0.0': {}
 
-  '@vercel/elysia@0.1.16(rollup@4.55.1)':
+  '@vercel/elysia@0.1.16(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
-      '@vercel/node': 5.5.17(rollup@4.55.1)
+      '@vercel/node': 5.5.17(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -9770,11 +9863,11 @@ snapshots:
 
   '@vercel/error-utils@2.0.3': {}
 
-  '@vercel/express@0.1.23(rollup@4.55.1)(typescript@5.9.3)':
+  '@vercel/express@0.1.23(encoding@0.1.13)(rollup@4.55.1)(typescript@5.9.3)':
     dependencies:
       '@vercel/cervel': 0.0.8(typescript@5.9.3)
-      '@vercel/nft': 1.1.1(rollup@4.55.1)
-      '@vercel/node': 5.5.17(rollup@4.55.1)
+      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.55.1)
+      '@vercel/node': 5.5.17(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
       fs-extra: 11.1.0
       path-to-regexp: 8.3.0
@@ -9789,9 +9882,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@vercel/fastify@0.1.19(rollup@4.55.1)':
+  '@vercel/fastify@0.1.19(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
-      '@vercel/node': 5.5.17(rollup@4.55.1)
+      '@vercel/node': 5.5.17(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -9800,7 +9893,7 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/fun@1.2.0':
+  '@vercel/fun@1.2.0(encoding@0.1.13)':
     dependencies:
       '@tootallnate/once': 2.0.0
       async-listen: 1.2.0
@@ -9808,7 +9901,7 @@ snapshots:
       generic-pool: 3.4.2
       micro: 9.3.5-canary.3
       ms: 2.1.1
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7(encoding@0.1.13)
       path-match: 1.2.4
       promisepipe: 3.0.0
       semver: 7.5.4
@@ -9838,9 +9931,9 @@ snapshots:
 
   '@vercel/go@3.3.0': {}
 
-  '@vercel/h3@0.1.25(rollup@4.55.1)':
+  '@vercel/h3@0.1.25(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
-      '@vercel/node': 5.5.17(rollup@4.55.1)
+      '@vercel/node': 5.5.17(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -9849,10 +9942,10 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/hono@0.2.19(rollup@4.55.1)':
+  '@vercel/hono@0.2.19(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
-      '@vercel/nft': 1.1.1(rollup@4.55.1)
-      '@vercel/node': 5.5.17(rollup@4.55.1)
+      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.55.1)
+      '@vercel/node': 5.5.17(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
       fs-extra: 11.1.0
       path-to-regexp: 8.3.0
@@ -9876,9 +9969,9 @@ snapshots:
       path-to-regexp: 8.3.0
       zod: 3.22.4
 
-  '@vercel/nestjs@0.2.20(rollup@4.55.1)':
+  '@vercel/nestjs@0.2.20(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
-      '@vercel/node': 5.5.17(rollup@4.55.1)
+      '@vercel/node': 5.5.17(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -9887,17 +9980,17 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/next@4.15.11(rollup@4.55.1)':
+  '@vercel/next@4.15.11(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
-      '@vercel/nft': 1.1.1(rollup@4.55.1)
+      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.55.1)
     transitivePeerDependencies:
       - encoding
       - rollup
       - supports-color
 
-  '@vercel/nft@1.1.1(rollup@4.55.1)':
+  '@vercel/nft@1.1.1(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
-      '@mapbox/node-pre-gyp': 2.0.3
+      '@mapbox/node-pre-gyp': 2.0.3(encoding@0.1.13)
       '@rollup/pluginutils': 5.3.0(rollup@4.55.1)
       acorn: 8.15.0
       acorn-import-attributes: 1.9.5(acorn@8.15.0)
@@ -9914,7 +10007,7 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/node@5.5.17(rollup@4.55.1)':
+  '@vercel/node@5.5.17(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
       '@edge-runtime/node-utils': 2.3.0
       '@edge-runtime/primitives': 4.1.0
@@ -9922,7 +10015,7 @@ snapshots:
       '@types/node': 16.18.11
       '@vercel/build-utils': 13.2.5
       '@vercel/error-utils': 2.0.3
-      '@vercel/nft': 1.1.1(rollup@4.55.1)
+      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
       async-listen: 3.0.0
       cjs-module-lexer: 1.2.3
@@ -9931,7 +10024,7 @@ snapshots:
       esbuild: 0.14.47
       etag: 1.8.1
       mime-types: 2.1.35
-      node-fetch: 2.6.9
+      node-fetch: 2.6.9(encoding@0.1.13)
       path-to-regexp: 6.1.0
       path-to-regexp-updated: path-to-regexp@6.3.0
       ts-morph: 12.0.0
@@ -9948,11 +10041,13 @@ snapshots:
 
   '@vercel/oidc@3.0.5': {}
 
+  '@vercel/oidc@3.1.0': {}
+
   '@vercel/python@6.1.6': {}
 
-  '@vercel/redwood@2.4.6(rollup@4.55.1)':
+  '@vercel/redwood@2.4.6(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
-      '@vercel/nft': 1.1.1(rollup@4.55.1)
+      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
       semver: 6.3.1
       ts-morph: 12.0.0
@@ -9961,10 +10056,10 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/remix-builder@5.5.6(rollup@4.55.1)':
+  '@vercel/remix-builder@5.5.6(encoding@0.1.13)(rollup@4.55.1)':
     dependencies:
       '@vercel/error-utils': 2.0.3
-      '@vercel/nft': 1.1.1(rollup@4.55.1)
+      '@vercel/nft': 1.1.1(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/static-config': 3.1.2
       path-to-regexp: 6.1.0
       path-to-regexp-updated: path-to-regexp@6.3.0
@@ -10083,6 +10178,14 @@ snapshots:
       '@ai-sdk/gateway': 2.0.21(zod@4.3.5)
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.19(zod@4.3.5)
+      '@opentelemetry/api': 1.9.0
+      zod: 4.3.5
+
+  ai@6.0.94(zod@4.3.5):
+    dependencies:
+      '@ai-sdk/gateway': 3.0.52(zod@4.3.5)
+      '@ai-sdk/provider': 3.0.8
+      '@ai-sdk/provider-utils': 4.0.15(zod@4.3.5)
       '@opentelemetry/api': 1.9.0
       zod: 4.3.5
 
@@ -10597,6 +10700,11 @@ snapshots:
   emoji-regex@9.2.2: {}
 
   empathic@2.0.0: {}
+
+  encoding@0.1.13:
+    dependencies:
+      iconv-lite: 0.6.3
+    optional: true
 
   end-of-stream@1.1.0:
     dependencies:
@@ -11336,6 +11444,11 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
+  iconv-lite@0.6.3:
+    dependencies:
+      safer-buffer: 2.1.2
+    optional: true
+
   iconv-lite@0.7.2:
     dependencies:
       safer-buffer: 2.1.2
@@ -11712,6 +11825,8 @@ snapshots:
 
   ms@2.1.3: {}
 
+  mustache@4.2.0: {}
+
   mysql2@3.15.3:
     dependencies:
       aws-ssl-profiles: 1.1.2
@@ -11736,17 +11851,23 @@ snapshots:
 
   node-fetch-native@1.6.7: {}
 
-  node-fetch@2.6.7:
+  node-fetch@2.6.7(encoding@0.1.13):
     dependencies:
       whatwg-url: 5.0.0
+    optionalDependencies:
+      encoding: 0.1.13
 
-  node-fetch@2.6.9:
+  node-fetch@2.6.9(encoding@0.1.13):
     dependencies:
       whatwg-url: 5.0.0
+    optionalDependencies:
+      encoding: 0.1.13
 
-  node-fetch@2.7.0:
+  node-fetch@2.7.0(encoding@0.1.13):
     dependencies:
       whatwg-url: 5.0.0
+    optionalDependencies:
+      encoding: 0.1.13
 
   node-fetch@3.3.2:
     dependencies:
@@ -12843,26 +12964,26 @@ snapshots:
 
   validate-npm-package-name@5.0.1: {}
 
-  vercel@50.3.0(rollup@4.55.1)(typescript@5.9.3):
+  vercel@50.3.0(encoding@0.1.13)(rollup@4.55.1)(typescript@5.9.3):
     dependencies:
-      '@vercel/backends': 0.0.18(rollup@4.55.1)(typescript@5.9.3)
+      '@vercel/backends': 0.0.18(encoding@0.1.13)(rollup@4.55.1)(typescript@5.9.3)
       '@vercel/blob': 1.0.2
       '@vercel/build-utils': 13.2.5
       '@vercel/detect-agent': 1.0.0
-      '@vercel/elysia': 0.1.16(rollup@4.55.1)
-      '@vercel/express': 0.1.23(rollup@4.55.1)(typescript@5.9.3)
-      '@vercel/fastify': 0.1.19(rollup@4.55.1)
-      '@vercel/fun': 1.2.0
+      '@vercel/elysia': 0.1.16(encoding@0.1.13)(rollup@4.55.1)
+      '@vercel/express': 0.1.23(encoding@0.1.13)(rollup@4.55.1)(typescript@5.9.3)
+      '@vercel/fastify': 0.1.19(encoding@0.1.13)(rollup@4.55.1)
+      '@vercel/fun': 1.2.0(encoding@0.1.13)
       '@vercel/go': 3.3.0
-      '@vercel/h3': 0.1.25(rollup@4.55.1)
-      '@vercel/hono': 0.2.19(rollup@4.55.1)
+      '@vercel/h3': 0.1.25(encoding@0.1.13)(rollup@4.55.1)
+      '@vercel/hono': 0.2.19(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/hydrogen': 1.3.3
-      '@vercel/nestjs': 0.2.20(rollup@4.55.1)
-      '@vercel/next': 4.15.11(rollup@4.55.1)
-      '@vercel/node': 5.5.17(rollup@4.55.1)
+      '@vercel/nestjs': 0.2.20(encoding@0.1.13)(rollup@4.55.1)
+      '@vercel/next': 4.15.11(encoding@0.1.13)(rollup@4.55.1)
+      '@vercel/node': 5.5.17(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/python': 6.1.6
-      '@vercel/redwood': 2.4.6(rollup@4.55.1)
-      '@vercel/remix-builder': 5.5.6(rollup@4.55.1)
+      '@vercel/redwood': 2.4.6(encoding@0.1.13)(rollup@4.55.1)
+      '@vercel/remix-builder': 5.5.6(encoding@0.1.13)(rollup@4.55.1)
       '@vercel/ruby': 2.2.4
       '@vercel/rust': 1.0.4
       '@vercel/static-build': 2.8.16

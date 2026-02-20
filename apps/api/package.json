@@ -10,6 +10,7 @@
         "start": "NODE_ENV=production node dist/index.js",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",
+        "test:agent": "dotenvx run -- tsx ./tests/langfuse/evaluate.ts",
         "test:types": "tsc --noEmit"
     },
     "dependencies": {
@@ -48,7 +49,9 @@
     },
     "devDependencies": {
         "@dotenvx/dotenvx": "^1.50.1",
+        "@langfuse/client": "^4.6.1",
         "@plateful/types": "workspace:*",
+        "dotenv": "^17.2.3",
         "tsx": "^4.7.1"
     }
 }

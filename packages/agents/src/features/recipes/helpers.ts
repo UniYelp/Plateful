@@ -4,7 +4,7 @@ import type { RecipeGenInput } from "./schemas";
 
 export const generateRecipe = async (input: RecipeGenInput) => {
 	const {
-		experimental_output: output,
+		output,
 		text,
 		steps,
 	} = await recipeAgent.generate({
