@@ -405,12 +405,16 @@ export const generateRecipe = internalAction({
 				}
 			}
 
+			let completed = false;
+
 			for await (const chunk of data) {
 				switch (chunk.event) {
 					case "started": {
 						continue;
 					}
 					case "done": {
+						completed = true;
+
 						const { data } = chunk;
 						const { householdId } = args;
 
@@ -461,6 +465,14 @@ export const generateRecipe = internalAction({
 
 								const ingredientId = ingredientIdByName[name];
 
+								if (!ingredientId) {
+									console.warn(
+										`Ingredient "${name}" not found in household ingredients, skipping`,
+									);
+
+									return [];
+								}
+
 								return {
 									ingredientId,
 									quantities: details.flatMap(({ quantity /**state */ }) => ({
@@ -491,7 +503,7 @@ export const generateRecipe = internalAction({
 									const currDuration = Duration.fromISO(d.duration);
 									return acc.plus(currDuration);
 								}, Duration.fromMillis(0))
-								?.toISO() ?? null;
+								.toISO() ?? null;
 
 						const cookTime =
 							timeByKind.cook
@@ -579,6 +591,8 @@ export const generateRecipe = internalAction({
 						return;
 					}
 					case "failed": {
+						completed = true;
+
 						const {
 							data: { error },
 						} = chunk;
@@ -590,6 +604,12 @@ export const generateRecipe = internalAction({
 						return _exhaustive;
 					}
 				}
+			}
+
+			if (!completed) {
+				throw new InternalError("Internal Error", {
+					cause: "Stream ended without completion",
+				});
 			}
 		} catch (err) {
 			await ctx.runMutation(internal.recipeGens.updateState, {
