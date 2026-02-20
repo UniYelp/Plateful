@@ -1,5 +1,5 @@
 import dedent from "dedent";
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { critiqueRecipesSafety } from "../src/features/safety/service";
 
@@ -34,12 +34,14 @@ describe("Safety Agent", () => {
 		"should critique the safety of a recipe",
 		{ timeout: 100_000 },
 		async () => {
-
 			const goodResult = await critiqueRecipesSafety({ recipe: goodRecipe });
 			const badResult = await critiqueRecipesSafety({ recipe: badRecipe });
 
 			console.log(goodResult);
 			console.log(badResult);
+
+			expect(goodResult.text).toBeTruthy();
+			expect(badResult.text).toBeTruthy();
 		},
 	);
 });

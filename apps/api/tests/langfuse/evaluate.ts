@@ -1,4 +1,8 @@
-import { type Evaluator, type ExperimentTask, LangfuseClient } from "@langfuse/client";
+import {
+	type Evaluator,
+	type ExperimentTask,
+	LangfuseClient,
+} from "@langfuse/client";
 import { LangfuseSpanProcessor } from "@langfuse/otel";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 
@@ -13,18 +17,22 @@ sdk.start();
 // Initialize client
 const langfuse = new LangfuseClient();
 
-const getNumberOfSteps = (recipe: { steps: Object[]}): number => {
-    return recipe.steps.length;
-}
+const getNumberOfSteps = (recipe: { steps: object[] }): number => {
+	return recipe.steps.length;
+};
 
-const stepsEvaluator: Evaluator<any, any, Record<string, any>> = async ({ input, output, expectedOutput }) => {
-            const numSteps = getNumberOfSteps(output);
-            return {
-                name: "Number of Steps",
-                value: numSteps,
-                comment: `The recipe has ${numSteps} steps.`,
-            };
-        }
+const stepsEvaluator: Evaluator<any, any, Record<string, any>> = async ({
+	input,
+	output,
+	expectedOutput,
+}) => {
+	const numSteps = getNumberOfSteps(output);
+	return {
+		name: "Number of Steps",
+		value: numSteps,
+		comment: `The recipe has ${numSteps} steps.`,
+	};
+};
 
 const test: ExperimentTask = async ({ input }) => {
 	const result = await RecipeService.generateRecipe(input);
@@ -40,9 +48,7 @@ const result = await dataset.runExperiment({
 	name: "First eval",
 	description: "testing the recipe agent with a small dataset",
 	task: test,
-    evaluators: [
-        stepsEvaluator
-    ]
+	evaluators: [stepsEvaluator],
 });
 
 // Print formatted result

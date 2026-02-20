@@ -10,19 +10,34 @@ const getPineconeApiKey = () => {
 	return apiKey;
 };
 
-const pc = new Pinecone({ apiKey: getPineconeApiKey() });
+let _pc: Pinecone | undefined;
+const getPineconeClient = () => {
+	if (!_pc) {
+		_pc = new Pinecone({ apiKey: getPineconeApiKey() });
+	}
+	return _pc;
+};
 
 export const queryPinecone = async ({ query }: { query: string }) => {
-	const index = pc.index({ name: process.env.PINECONE_INDEX_NAME });
+	const indexName = process.env.PINECONE_INDEX_NAME;
+	if (!indexName) {
+		throw new Error("PINECONE_INDEX_NAME is not set in environment variables.");
+	}
+	const index = getPineconeClient().index({
+		name: process.env.PINECONE_INDEX_NAME,
+	});
 
-	const namespace = index.namespace(
-		process.env.PINECONE_NAMESPACE || "example-namespace",
-	);
+	const namespaceName = process.env.PINECONE_NAMESPACE;
+	if (!namespaceName) {
+		throw new Error("PINECONE_NAMESPACE is not set in environment variables.");
+	}
+	const namespace = index.namespace(namespaceName);
+
 	const { result } = await namespace.searchRecords({
 		query: {
 			topK: 2,
 			inputs: { text: query },
-		}
+		},
 	});
 
 	return { result: result.hits };

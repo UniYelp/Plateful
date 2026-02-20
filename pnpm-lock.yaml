@@ -102,8 +102,8 @@ importers:
   apps/api:
     dependencies:
       '@ai-sdk/google':
-        specifier: 2.0.46
-        version: 2.0.46(zod@4.3.5)
+        specifier: 3.0.30
+        version: 3.0.30(zod@4.3.5)
       '@clerk/backend':
         specifier: 'catalog:'
         version: 2.29.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -168,8 +168,8 @@ importers:
         specifier: ^1.36.0
         version: 1.36.1
       ai:
-        specifier: 5.0.113
-        version: 5.0.113(zod@4.3.5)
+        specifier: 6.0.94
+        version: 6.0.94(zod@4.3.5)
       croner:
         specifier: ^6.0.7
         version: 6.0.7
@@ -601,12 +601,6 @@ packages:
 
   '@ai-sdk/gateway@3.0.52':
     resolution: {integrity: sha512-lYCXP8T3YnIDiz8DP7loAMT27wnblc3IAYzQ7igg89RCRyTUjk6ffbxHXXQ5Pmv8jrdLF0ZIJnH54Dsr1OCKHg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
-
-  '@ai-sdk/google@2.0.46':
-    resolution: {integrity: sha512-8PK6u4sGE/kXebd7ZkTp+0aya4kNqzoqpS5m7cHY2NfTK6fhPc6GNvE+MZIZIoHQTp5ed86wGBdeBPpFaaUtyg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -6968,12 +6962,6 @@ snapshots:
       '@ai-sdk/provider': 3.0.8
       '@ai-sdk/provider-utils': 4.0.15(zod@4.3.5)
       '@vercel/oidc': 3.1.0
-      zod: 4.3.5
-
-  '@ai-sdk/google@2.0.46(zod@4.3.5)':
-    dependencies:
-      '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.19(zod@4.3.5)
       zod: 4.3.5
 
   '@ai-sdk/google@3.0.30(zod@4.3.5)':

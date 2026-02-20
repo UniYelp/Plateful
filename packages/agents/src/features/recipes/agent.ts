@@ -1,9 +1,9 @@
 import { google } from "@ai-sdk/google";
-import { Experimental_Agent as Agent, Output, stepCountIs } from "ai";
+import { ToolLoopAgent, Output, stepCountIs } from "ai";
 
 import { RecipeGenOutputSchema } from "./schemas";
 
-export const recipeAgent = new Agent({
+export const recipeAgent = new ToolLoopAgent({
 	model: google("gemini-2.5-flash"),
 	output: Output.object({
 		schema: RecipeGenOutputSchema,

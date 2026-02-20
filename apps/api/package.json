@@ -14,7 +14,7 @@
         "test:types": "tsc --noEmit"
     },
     "dependencies": {
-        "@ai-sdk/google": "2.0.46",
+        "@ai-sdk/google": "3.0.30",
         "@clerk/backend": "catalog:",
         "@clerk/shared": "^3.39.0",
         "@elysiajs/cors": "^1.4.1",
@@ -36,7 +36,7 @@
         "@upstash/query": "^0.0.2",
         "@upstash/realtime": "^1.0.0",
         "@upstash/redis": "^1.36.0",
-        "ai": "5.0.113",
+        "ai": "6.0.94",
         "croner": "^6.0.7",
         "dedent": "^1.7.0",
         "effect": "catalog:",

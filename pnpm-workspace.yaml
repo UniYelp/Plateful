@@ -2,7 +2,6 @@ packages:
   - apps/*
   - libs/*
   - packages/*
-  - scripts/*
 
 catalog:
   '@clerk/backend': ^2.15.0
