@@ -1,6 +1,5 @@
-import Elysia from "elysia";
+import Elysia, { sse } from "elysia";
 
-import { HttpStatusCode } from "@plateful/http";
 import { LockedError } from "../../models/errors/locked";
 import { RateLimitError } from "../../models/errors/rate-limit";
 import { auth } from "../../plugins/auth.plugin";
@@ -18,48 +17,67 @@ export const recipes = new Elysia({
 	.use(logger())
 	.post(
 		"generate",
-		async ({ body, getRedis }) => {
+		async function* ({ query: { householdId }, body, getRedis }) {
 			const redis = getRedis();
 
-			const userLock = RedisLocks.recipes.generate.user.index(
+			const householdLock = RedisLocks.recipes.gen.household.lock(
 				redis,
-				body.userId,
+				householdId,
 			);
 
-			const acquired = await userLock.acquire();
-
-			if (!acquired) {
-				throw new LockedError("You may only generate one recipe at a time");
-			}
-
 			try {
-				const rpuLock = RedisLocks.recipes.generate.user.rpu(
+				const acquired = await householdLock.acquire();
+
+				if (!acquired) {
+					throw new LockedError("You may only generate one recipe at a time");
+				}
+
+				const rphLock = RedisLocks.recipes.gen.household.rph(
 					redis,
-					body.userId,
+					householdId,
 				);
 
-				const { acquired: hasRemaining, resetAt } = await rpuLock.tryAcquire();
+				const { acquired: hasRemaining, resetAt } = await rphLock.tryAcquire();
 
 				if (!hasRemaining) {
 					throw new RateLimitError(
-						{ limit: rpuLock.limit, resetAt },
-						"User requests limit exceeded",
+						{ limit: rphLock.limit, resetAt },
+						"Household requests limit exceeded",
 					);
 				}
 
+				yield sse({
+					event: "started",
+				});
+
 				const result = await RecipeService.generateRecipe(body);
-				return result;
+
+				yield sse({
+					event: "done",
+					data: result,
+				});
+			} catch (err) {
+				let error: Error;
+
+				if (err instanceof Error) {
+					error = err;
+				} else {
+					error = new Error(JSON.stringify(err));
+				}
+
+				yield sse({
+					event: "failed",
+					data: {
+						error: error.message,
+					},
+				});
 			} finally {
-				await userLock.release();
+				await householdLock.release();
 			}
 		},
 		{
 			apiKey: true,
+			query: RecipesModel.generateRecipeQuery,
 			body: RecipesModel.generateRecipeBody,
-			response: {
-				[HttpStatusCode.OK]: RecipesModel.generateRecipeResponse,
-				[LockedError.status]: LockedError.$response,
-				[RateLimitError.status]: RateLimitError.$response,
-			},
 		},
 	);
