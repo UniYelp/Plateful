@@ -6,6 +6,7 @@ import {
 import { LangfuseSpanProcessor } from "@langfuse/otel";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 
+import type { RecipeGenInput, RecipeGenOutput } from "@plateful/agents/recipes";
 import * as RecipeService from "../../src/modules/recipes/service";
 
 const sdk = new NodeSDK({
@@ -21,11 +22,19 @@ const getNumberOfSteps = (recipe: { steps: object[] }): number => {
 	return recipe.steps.length;
 };
 
-const stepsEvaluator: Evaluator<any, any, Record<string, any>> = async ({
-	input,
-	output,
-	expectedOutput,
-}) => {
+const stepsEvaluator: Evaluator<
+	RecipeGenInput,
+	RecipeGenOutput,
+	Record<string, any>
+> = async ({ input, output, expectedOutput }) => {
+	if (!output || typeof output !== "object" || !Array.isArray(output.steps)) {
+		return {
+			name: "Number of Steps",
+			value: -1,
+			comment: "Output is not in the expected format.",
+		};
+	}
+
 	const numSteps = getNumberOfSteps(output);
 	return {
 		name: "Number of Steps",
