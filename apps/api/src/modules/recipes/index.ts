@@ -42,7 +42,7 @@ export const recipes = new Elysia({
 				if (!hasRemaining) {
 					throw new RateLimitError(
 						{ limit: rpuLock.limit, resetAt },
-						"User requests limit exceeded",
+						"Household requests limit exceeded",
 					);
 				}
 

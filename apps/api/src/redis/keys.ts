@@ -14,14 +14,14 @@ export const RedisKeys = {
 			household: {
 				lock: redisKey(
 					(householdId: string) =>
-						`recipes:gen:user:${householdId}:lock` as const,
+						`recipes:gen:household:${householdId}:lock` as const,
 				),
 				/**
-				 *? Requests per user
+				 *? Requests per household
 				 */
 				rph: redisKey(
 					(householdId: string) =>
-						`recipes:gen:user:${householdId}:rpu` as const,
+						`recipes:gen:household:${householdId}:rph` as const,
 				).$type<RateLimitLockValue>(),
 			},
 		},
