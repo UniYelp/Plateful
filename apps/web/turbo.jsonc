@@ -9,7 +9,7 @@
             "interactive": true,
             "with": [
                 "@plateful/backend#dev",
-                "@plateful/api#dev"
+                "@plateful/api#dev:proxy"
             ],
             "inputs": [
                 "$TURBO_EXTENDS$",

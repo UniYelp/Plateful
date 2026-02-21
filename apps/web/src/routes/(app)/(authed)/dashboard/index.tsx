@@ -1,12 +1,11 @@
 import { useUser } from "@clerk/clerk-react";
-import { convexQuery } from "@convex-dev/react-query";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { AlertTriangle, BookOpen, Package, Plus, Sparkles } from "lucide-react";
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
-import { HouseholdLoading } from "&/households/components/loaders/householdLoader";
+import { HouseholdLoading } from "&/households/components/loaders/HouseholdLoader";
 import { RecipeGenState } from "&/recipes/components/RecipeGenState";
 import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { Badge } from "@/components/ui/badge";

@@ -10,32 +10,16 @@ import type { LockFactory } from "./types/locks";
 export const RedisLocks = {
 	recipes: {
 		gen: {
-			user: {
-				index: (redis: Redis, userId: string) =>
+			household: {
+				lock: (redis: Redis, householdId: string) =>
 					new Lock({
-						id: RedisKeys.recipes.gen.user.index(userId),
-						lease: 10 * MINUTE,
+						id: RedisKeys.recipes.gen.household.lock(householdId),
+						lease: 5 * MINUTE,
 						redis,
 					}),
-				rpu: (redis: Redis, userId: string) =>
+				rph: (redis: Redis, householdId: string) =>
 					new RateLimitLock(redis, {
-						key: RedisKeys.recipes.gen.user.rpu(userId),
-						limit: 5,
-						windowMs: DAY,
-					}),
-			},
-		},
-		generate: {
-			user: {
-				index: (redis: Redis, userId: string) =>
-					new Lock({
-						id: RedisKeys.locks.recipes.generate.user.index(userId),
-						lease: MINUTE,
-						redis,
-					}),
-				rpu: (redis: Redis, userId: string) =>
-					new RateLimitLock(redis, {
-						key: RedisKeys.locks.recipes.generate.user.rpu(userId),
+						key: RedisKeys.recipes.gen.household.rph(householdId),
 						limit: 5,
 						windowMs: DAY,
 					}),

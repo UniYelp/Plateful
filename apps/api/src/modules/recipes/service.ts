@@ -1,7 +1,9 @@
 import { RecipeAgent } from "@plateful/agents/recipes";
 import type { RecipesModel } from "./model";
 
-export const generateRecipe = async (body: RecipesModel.GenerateRecipeBody) => {
+export const generateRecipe = async (
+	body: RecipesModel.GenerateRecipeBody,
+): Promise<RecipesModel.GenerateRecipeCompleteEventData> => {
 	const result = await RecipeAgent.generateRecipe(body);
 	const { output } = result;
 

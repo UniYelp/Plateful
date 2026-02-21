@@ -1,9 +1,10 @@
 import type { ValueOf } from "@plateful/types";
 
 export const RecipeStepBlockType = {
-	// PlainText: "plain-text",
+	Text: "text",
+	// Action: "action",
 	Tool: "tool",
-	Time: "time",
+	Duration: "duration",
 	Temperature: "temperature",
 	Material: "material",
 } as const;
