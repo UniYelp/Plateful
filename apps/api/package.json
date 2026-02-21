@@ -10,10 +10,11 @@
         "start": "NODE_ENV=production node dist/index.js",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",
+        "test:agent": "dotenvx run -- tsx ./tests/langfuse/evaluate.ts",
         "test:types": "tsc --noEmit"
     },
     "dependencies": {
-        "@ai-sdk/google": "2.0.46",
+        "@ai-sdk/google": "catalog:",
         "@clerk/backend": "catalog:",
         "@clerk/shared": "^3.39.0",
         "@elysiajs/cors": "^1.4.1",
@@ -36,7 +37,7 @@
         "@upstash/query": "^0.0.2",
         "@upstash/realtime": "^1.0.0",
         "@upstash/redis": "^1.36.0",
-        "ai": "5.0.113",
+        "ai": "catalog:",
         "croner": "^6.0.7",
         "dedent": "^1.7.0",
         "effect": "catalog:",
@@ -49,7 +50,9 @@
     },
     "devDependencies": {
         "@dotenvx/dotenvx": "^1.50.1",
+        "@langfuse/client": "^4.6.1",
         "@plateful/types": "workspace:*",
-        "tsx": "^4.7.1"
+        "tsx": "^4.7.1",
+        "vite": "^7.3.1"
     }
 }
