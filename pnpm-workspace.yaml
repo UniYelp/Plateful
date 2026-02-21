@@ -7,7 +7,7 @@ catalog:
   '@clerk/backend': ^2.15.0
   '@hono/zod-validator': ^0.7.3
   convex: ^1.31.2
-  effect: ^3.19.4
+  effect: ^3.19.14
   hono: ^4.9.9
   zod: ^4.2.1
 
