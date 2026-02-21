@@ -6,12 +6,21 @@ settings:
 
 catalogs:
   default:
+    '@ai-sdk/google':
+      specifier: 3.0.30
+      version: 3.0.30
+    '@ai-sdk/openai':
+      specifier: ^3.0.30
+      version: 3.0.30
     '@clerk/backend':
       specifier: ^2.15.0
       version: 2.29.2
     '@hono/zod-validator':
       specifier: ^0.7.3
       version: 0.7.6
+    ai:
+      specifier: 6.0.94
+      version: 6.0.94
     convex:
       specifier: ^1.31.2
       version: 1.31.4
@@ -102,7 +111,7 @@ importers:
   apps/api:
     dependencies:
       '@ai-sdk/google':
-        specifier: 3.0.30
+        specifier: 'catalog:'
         version: 3.0.30(zod@4.3.5)
       '@clerk/backend':
         specifier: 'catalog:'
@@ -168,7 +177,7 @@ importers:
         specifier: ^1.36.0
         version: 1.36.1
       ai:
-        specifier: 6.0.94
+        specifier: 'catalog:'
         version: 6.0.94(zod@4.3.5)
       croner:
         specifier: ^6.0.7
@@ -207,12 +216,12 @@ importers:
       '@plateful/types':
         specifier: workspace:*
         version: link:../../packages/types
-      dotenv:
-        specifier: ^17.2.3
-        version: 17.2.3
       tsx:
         specifier: ^4.7.1
         version: 4.21.0
+      vite:
+        specifier: ^7.3.1
+        version: 7.3.1(@types/node@22.19.5)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
 
   apps/backend:
     dependencies:
@@ -471,10 +480,10 @@ importers:
   packages/agents:
     dependencies:
       '@ai-sdk/google':
-        specifier: 3.0.30
+        specifier: 'catalog:'
         version: 3.0.30(zod@4.3.5)
       '@ai-sdk/openai':
-        specifier: ^3.0.30
+        specifier: 'catalog:'
         version: 3.0.30(zod@4.3.5)
       '@pinecone-database/pinecone':
         specifier: ^7.1.0
@@ -492,7 +501,7 @@ importers:
         specifier: workspace:*
         version: link:../utils
       ai:
-        specifier: 6.0.94
+        specifier: 'catalog:'
         version: 6.0.94(zod@4.3.5)
       dedent:
         specifier: ^1.7.1

@@ -1,7 +1,7 @@
 import dedent from "dedent";
 import { describe, expect, it } from "vitest";
 
-import { critiqueRecipesSafety } from "../src/features/safety/service";
+import { critiqueRecipeSafety } from "../src/features/safety/service";
 
 const goodRecipe = dedent`
 	Lemon Herb Roasted Chicken & Asparagus
@@ -34,8 +34,8 @@ describe("Safety Agent", () => {
 		"should critique the safety of a recipe",
 		{ timeout: 100_000 },
 		async () => {
-			const goodResult = await critiqueRecipesSafety({ recipe: goodRecipe });
-			const badResult = await critiqueRecipesSafety({ recipe: badRecipe });
+			const goodResult = await critiqueRecipeSafety({ recipe: goodRecipe });
+			const badResult = await critiqueRecipeSafety({ recipe: badRecipe });
 
 			console.log(goodResult);
 			console.log(badResult);

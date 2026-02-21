@@ -1,8 +1,6 @@
 import { google } from "@ai-sdk/google";
-import { Output, stepCountIs, ToolLoopAgent } from "ai";
-import z from "zod";
+import { stepCountIs, ToolLoopAgent } from "ai";
 
-import { safetyOutputSchema } from "./schemas";
 import { searchSafetyInstructions } from "./tools";
 
 export const safetyAgent = new ToolLoopAgent({

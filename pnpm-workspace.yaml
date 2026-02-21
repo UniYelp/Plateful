@@ -10,6 +10,10 @@ catalog:
   effect: ^3.19.4
   hono: ^4.9.9
   zod: ^4.3.5
+  "ai": "6.0.94"
+  "@ai-sdk/google": "3.0.30"
+  "@ai-sdk/openai": "^3.0.30"
+
 
 catalogMode: manual
 

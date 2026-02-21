@@ -10,6 +10,22 @@ const getPineconeApiKey = () => {
 	return apiKey;
 };
 
+const getPineconeNamespace = () => {
+	const namespace = process.env.PINECONE_NAMESPACE;
+	if (!namespace) {
+		throw new Error("Pinecone namespace is not set in environment variables.");
+	}
+	return namespace;
+};
+
+const getPineconeIndex = () => {
+	const indexName = process.env.PINECONE_INDEX_NAME;
+	if (!indexName) {
+		throw new Error("Pinecone index name is not set in environment variables.");
+	}
+	return indexName;
+};
+
 let _pc: Pinecone | undefined;
 const getPineconeClient = () => {
 	if (!_pc) {
@@ -19,18 +35,12 @@ const getPineconeClient = () => {
 };
 
 export const queryPinecone = async ({ query }: { query: string }) => {
-	const indexName = process.env.PINECONE_INDEX_NAME;
-	if (!indexName) {
-		throw new Error("PINECONE_INDEX_NAME is not set in environment variables.");
-	}
+	const indexName = getPineconeIndex();
+	const namespaceName = getPineconeNamespace();
+
 	const index = getPineconeClient().index({
 		name: indexName,
 	});
-
-	const namespaceName = process.env.PINECONE_NAMESPACE;
-	if (!namespaceName) {
-		throw new Error("PINECONE_NAMESPACE is not set in environment variables.");
-	}
 	const namespace = index.namespace(namespaceName);
 
 	const { result } = await namespace.searchRecords({

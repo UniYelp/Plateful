@@ -1,9 +1,13 @@
 import { google } from "@ai-sdk/google";
-import { ToolLoopAgent, Output, stepCountIs } from "ai";
+import { type DeepPartial, Output, stepCountIs, ToolLoopAgent } from "ai";
 
-import { RecipeGenOutputSchema } from "./schemas";
+import { type RecipeGenOutput, RecipeGenOutputSchema } from "./schemas";
 
-export const recipeAgent = new ToolLoopAgent({
+export const recipeAgent: ToolLoopAgent<
+	never,
+	{},
+	Output.Output<RecipeGenOutput, DeepPartial<RecipeGenOutput>, never>
+> = new ToolLoopAgent({
 	model: google("gemini-2.5-flash"),
 	output: Output.object({
 		schema: RecipeGenOutputSchema,

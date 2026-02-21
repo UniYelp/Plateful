@@ -14,7 +14,7 @@
         "test:types": "tsc --noEmit"
     },
     "dependencies": {
-        "@ai-sdk/google": "3.0.30",
+        "@ai-sdk/google": "catalog:",
         "@clerk/backend": "catalog:",
         "@clerk/shared": "^3.39.0",
         "@elysiajs/cors": "^1.4.1",
@@ -36,7 +36,7 @@
         "@upstash/query": "^0.0.2",
         "@upstash/realtime": "^1.0.0",
         "@upstash/redis": "^1.36.0",
-        "ai": "6.0.94",
+        "ai": "catalog:",
         "croner": "^6.0.7",
         "dedent": "^1.7.0",
         "effect": "catalog:",
@@ -51,7 +51,7 @@
         "@dotenvx/dotenvx": "^1.50.1",
         "@langfuse/client": "^4.6.1",
         "@plateful/types": "workspace:*",
-        "dotenv": "^17.2.3",
-        "tsx": "^4.7.1"
+        "tsx": "^4.7.1",
+        "vite": "^7.3.1"
     }
 }

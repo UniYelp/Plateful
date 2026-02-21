@@ -44,3 +44,18 @@ Follow the guides in [ngrok](../../notes/Architecture/Services/ngrok.md)
 1. Search and click the `Upstash` integration
 1. Install the `Upstash for Redis` integration and fill its info
 1. Copy the environment variables from `.env.local` and place them in the [.env](.env) file
+
+### Pinecone
+
+1. Go to [Pinecone](https://app.pinecone.io/)
+2. In the organization, navigate to the "API Keys" tab on the left sidebar
+3. create a new API key
+4. To get the namespace name, go to the "Database" Tab > indexes, and choose the relevant index
+5. to get the namespace, click on the index and go to the "namespaces" tab.
+
+### Langfuse
+
+1. go to [Langfuse](https://cloud.langfuse.com/)
+2. Enter the relevant project
+3. Go to settings > API keys
+4. create a new API key and copy the variables they provide
