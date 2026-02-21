@@ -49,13 +49,21 @@ Follow the guides in [ngrok](../../notes/Architecture/Services/ngrok.md)
 
 1. Go to [Pinecone](https://app.pinecone.io/)
 2. In the organization, navigate to the "API Keys" tab on the left sidebar
-3. create a new API key
-4. To get the namespace name, go to the "Database" Tab > indexes, and choose the relevant index
-5. to get the namespace, click on the index and go to the "namespaces" tab.
+3. Create a new API key
+4. Go to the "Database" tab, select your index, then click the "Namespaces" tab to get your namespace name
+5. Make sure you have the following environment variables in your `.env`:
+
+- `PINECONE_API_KEY`
+- `PINECONE_INDEX_NAME`
+- `PINECONE_NAMESPACE`
 
 ### Langfuse
 
-1. go to [Langfuse](https://cloud.langfuse.com/)
+1. Go to [Langfuse](https://cloud.langfuse.com/)
 2. Enter the relevant project
 3. Go to settings > API keys
-4. create a new API key and copy the variables they provide
+4. Create a new API key and copy the variables they provide
+5. Add the following environment variables to your `.env`:
+   - `LANGFUSE_PUBLIC_KEY`
+   - `LANGFUSE_SECRET_KEY`
+   - `LANGFUSE_BASE_URL` (optional, defaults to `https://cloud.langfuse.com`)

@@ -29,10 +29,12 @@ const badRecipe = dedent`
 	Store any leftovers on the counter; they will be fine to eat for up to 6 hours.
 `;
 
+const hasApiKey = !!process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
 describe("Safety Agent", () => {
 	it(
 		"should critique the safety of a recipe",
-		{ timeout: 100_000 },
+		{ timeout: 100_000, skip: !hasApiKey },
 		async () => {
 			const goodResult = await critiqueRecipeSafety({ recipe: goodRecipe });
 			const badResult = await critiqueRecipeSafety({ recipe: badRecipe });
