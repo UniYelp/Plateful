@@ -1,4 +1,5 @@
 import { RecipeAgent } from "@plateful/agents/recipes";
+import { SafetyAgent } from "@plateful/agents/safety";
 import type { RecipesModel } from "./model";
 
 export const generateRecipe = async (
@@ -8,4 +9,11 @@ export const generateRecipe = async (
 	const { output } = result;
 
 	return output;
+};
+
+export const safetyCheck = async (
+	recipe: string,
+): Promise<{ score: number | null; text: string }> => {
+	const result = await SafetyAgent.critiqueRecipeSafety({ recipe });
+	return result;
 };

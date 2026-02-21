@@ -401,6 +401,12 @@ export const generateRecipe = internalAction({
 					case "started": {
 						continue;
 					}
+					case "working": {
+						continue;
+					}
+					case "safety-check": {
+						continue;
+					}
 					case "done": {
 						const { data } = chunk;
 						const { title, description, tags, steps, notes } = data;

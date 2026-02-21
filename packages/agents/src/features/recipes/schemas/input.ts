@@ -59,6 +59,14 @@ export const RecipeGenInputSchema = z.object({
 	tags: z.array(z.string()),
 	temperatureUnit: TemperatureUnitSchema,
 	toleratedSpiceLevel: SpiceLevelSchema,
+	safetyCritique: z.string().optional().meta({
+		description:
+			"Safety critique feedback from the previous recipe generation attempt",
+	}),
+	previouslyGenerated: z.string().optional().meta({
+		description:
+			"The previously generated recipe that the safety critique applies to",
+	}),
 });
 
 export type RecipeGenInput = z.infer<typeof RecipeGenInputSchema>;
