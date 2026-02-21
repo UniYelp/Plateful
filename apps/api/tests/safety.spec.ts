@@ -39,11 +39,13 @@ describe("Safety Agent", () => {
 			const goodResult = await critiqueRecipeSafety({ recipe: goodRecipe });
 			const badResult = await critiqueRecipeSafety({ recipe: badRecipe });
 
-			console.log(goodResult);
-			console.log(badResult);
-
 			expect(goodResult.text).toBeTruthy();
 			expect(badResult.text).toBeTruthy();
+			expect(goodResult.score).toBeDefined();
+			expect(badResult.score).toBeDefined();
+			expect(goodResult.score).toBeGreaterThan(badResult.score || 0);
+			expect(goodResult.score).toBeGreaterThan(0.5);
+			expect(badResult.score).toBeLessThan(0.5);
 		},
 	);
 });
