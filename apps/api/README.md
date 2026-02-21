@@ -52,10 +52,9 @@ Follow the guides in [ngrok](../../notes/Architecture/Services/ngrok.md)
 3. Create a new API key
 4. Go to the "Database" tab, select your index, then click the "Namespaces" tab to get your namespace name
 5. Make sure you have the following environment variables in your `.env`:
-
-- `PINECONE_API_KEY`
-- `PINECONE_INDEX_NAME`
-- `PINECONE_NAMESPACE`
+    - `PINECONE_API_KEY`
+    - `PINECONE_INDEX_NAME`
+    - `PINECONE_NAMESPACE`
 
 ### Langfuse
 
