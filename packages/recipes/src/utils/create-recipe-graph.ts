@@ -50,14 +50,6 @@ export const createRecipeGraph = (
 			}
 
 			for (const [stepIndex, stepMaterials] of recipeInput.steps.entries()) {
-				const inputs = stepMaterials.filter((material) =>
-					MaterialInputKinds.has(material.kind),
-				);
-
-				const outputs = stepMaterials.filter((material) =>
-					MaterialOutputKinds.has(material.kind),
-				);
-
 				for (const material of stepMaterials) {
 					nodeByName[material.name] ??= Graph.addNode(mutableGraph, {
 						...material,
@@ -65,6 +57,14 @@ export const createRecipeGraph = (
 						type: "material",
 					});
 				}
+
+				const inputs = stepMaterials.filter((material) =>
+					MaterialInputKinds.has(material.kind),
+				);
+
+				const outputs = stepMaterials.filter((material) =>
+					MaterialOutputKinds.has(material.kind),
+				);
 
 				for (const input of inputs) {
 					for (const output of outputs) {
