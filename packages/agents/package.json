@@ -46,6 +46,7 @@
         "@plateful/utils": "workspace:*",
         "ai": "5.0.113",
         "dedent": "^1.7.1",
+        "effect": "catalog:",
         "zod": "catalog:"
     },
     "devDependencies": {

@@ -494,6 +494,9 @@ importers:
       dedent:
         specifier: ^1.7.1
         version: 1.7.1
+      effect:
+        specifier: 'catalog:'
+        version: 3.19.14
       zod:
         specifier: 'catalog:'
         version: 4.3.5
