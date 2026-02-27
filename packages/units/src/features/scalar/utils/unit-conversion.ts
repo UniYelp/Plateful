@@ -16,7 +16,7 @@ export const scalarUnitConversion = <
 		conversions,
 		getConversion: ({ by, isLossy }) => ({ by, isLossy }),
 		getReverseConversion: ({ by, isLossy }) => ({ by: 1 / by, isLossy }),
-		cost: (data) => 1 - (data.isLossy ? LossyConversionCostPenalty : 0),
+		cost: (data) => 1 + (data.isLossy ? LossyConversionCostPenalty : 0),
 		calculate: (res, initialValue: number = 1) => {
 			let isLossy = false;
 			let value = initialValue;
