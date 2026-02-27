@@ -1,55 +1,43 @@
 import { Graph } from "effect";
 
 import { MaterialInputKinds, MaterialOutputKinds } from "../constants";
-import type { RecipeMaterialKind } from "../enums";
-
-type Quantity = { value: number; unit?: string };
-
-type RecipeIngredient = {
-	name: string;
-	quantity: Quantity | "unlimited";
-};
-
-type RecipeMaterial = {
-	name: string;
-	kind: RecipeMaterialKind;
-	quantity: Quantity;
-};
+import { RecipeStepBlockType } from "../enums";
+import type {
+	Recipe,
+	RecipeGraph,
+	RecipeGraphEdge,
+	RecipeGraphNode,
+	RecipeIngredient,
+	RecipeMaterial,
+} from "../types";
 
 export type RecipeGraphInput = {
 	ingredients: RecipeIngredient[];
 	steps: RecipeMaterial[][];
 };
 
-type RecipeGraphNode =
-	| ({
-			type: "ingredient";
-	  } & RecipeIngredient)
-	| ({
-			type: "material";
-			stepIndex: number;
-	  } & RecipeMaterial);
-
-type RecipeGraphEdge = {
-	quantity: Quantity;
-	stepIndex: number;
-};
-
-export const createRecipeGraph = (
-	recipeInput: RecipeGraphInput,
-): Graph.DirectedGraph<RecipeGraphNode, RecipeGraphEdge> => {
+export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
 	const nodeByName = {} as Record<string, number>;
 
 	const graph = Graph.directed<RecipeGraphNode, RecipeGraphEdge>(
 		(mutableGraph) => {
-			for (const ing of recipeInput.ingredients) {
+            //? Initialize the graph with the ingredients as the base nodes
+			for (const ing of recipe.ingredients) {
 				nodeByName[ing.name] = Graph.addNode(mutableGraph, {
 					...ing,
 					type: "ingredient",
 				});
 			}
 
-			for (const [stepIndex, stepMaterials] of recipeInput.steps.entries()) {
+			for (const [stepIndex, step] of recipe.steps.entries()) {
+                //? Ignore non-material step blocks
+                const stepMaterials = step.flatMap<RecipeMaterial>((block) => {
+                    const { type, ...data } = block;
+					if (type !== RecipeStepBlockType.Material) return [];
+					return data as RecipeMaterial;
+				});
+
+                //? Add the first appearance of a material as a node
 				for (const material of stepMaterials) {
 					nodeByName[material.name] ??= Graph.addNode(mutableGraph, {
 						...material,
@@ -66,6 +54,7 @@ export const createRecipeGraph = (
 					MaterialOutputKinds.has(material.kind),
 				);
 
+                //? Connect input materials to output materials
 				for (const input of inputs) {
 					for (const output of outputs) {
 						Graph.addEdge(

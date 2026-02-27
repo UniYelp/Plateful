@@ -17,3 +17,5 @@ export const MaterialInputKinds = new Set<RecipeMaterialKind>(
 export const MaterialOutputKinds = new Set<RecipeMaterialKind>(
 	MaterialOutputKindsValues,
 );
+
+export const UNLIMITED_QUANTITY = "unlimited";
