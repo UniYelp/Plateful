@@ -29,29 +29,33 @@ export const generateRecipePrompt = (input: RecipeGenInput) => {
 			previouslyGenerated?: string;
 		};
 
-	let prompt = dedent`
-    ${generateRecipeSystemPrompt}
+	const safetySection =
+		previouslyGenerated && safetyCritique
+			? dedent`
+                <previous_attempt>
+                <previously_generated_recipe>
+                ${previouslyGenerated}
+                </previously_generated_recipe>
 
-    ---
+                <safety_critique>
+                ${safetyCritique}
+                </safety_critique>
 
-    ${JSON.stringify(inputWithoutCritique, null, 2)}
-`;
+                Please review the safety critique and improve the recipe to address all concerns while maintaining quality and appeal.
+                </previous_attempt>
+            `
+			: "";
 
-	if (previouslyGenerated && safetyCritique) {
-		prompt += dedent`
+	const prompt = dedent`
+        <system>
+        ${generateRecipeSystemPrompt}
+        ${safetySection}
+        </system>
 
-    ---PREVIOUS ATTEMPT WITH SAFETY FEEDBACK---
-    PREVIOUSLY GENERATED RECIPE:
-    ${previouslyGenerated}
-
-    SAFETY CRITIQUE:
-    ${safetyCritique}
-
-    Please review the safety critique and improve the recipe to address all concerns while maintaining quality and appeal.
-    ---END PREVIOUS ATTEMPT---
-`;
-	}
+        <user_input>
+        ${JSON.stringify(inputWithoutCritique, null, 2)}
+        </user_input>
+    `;
 
 	return prompt;
 };
-

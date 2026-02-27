@@ -13,7 +13,8 @@ import { nanoBanana } from "./configs/nano-banana.config";
 import { InternalError, notFound } from "./errors";
 import { internalMutation } from "./functions";
 import { householdMutation, householdQuery } from "./households";
-import type { FullRecipeGenDoc } from "./recipeGens.exports";
+import type { FullRecipeGenDoc } from "./recipeGens/types";
+import { GeneratingRecipeStatuses } from "./recipeGens.exports";
 import {
 	type EntityShape,
 	type IngredientQuantity,
@@ -126,9 +127,8 @@ export const stats = householdQuery({
 			.order("desc")
 			.take(maxDailyGen);
 
-		const currentGen = generationsToday.find(
-			(gen) =>
-				gen.state.status === "generating" || gen.state.status === "pending",
+		const currentGen = generationsToday.find((gen) =>
+			GeneratingRecipeStatuses.has(gen.state.status),
 		);
 
 		return {

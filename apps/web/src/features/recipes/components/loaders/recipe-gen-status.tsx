@@ -1,9 +1,9 @@
 import {
-    CheckCircle2,
-    Flame,
-    ShieldCheck,
-    Sparkles,
-    Utensils,
+	CheckCircle2,
+	Flame,
+	ShieldCheck,
+	Sparkles,
+	Utensils,
 } from "lucide-react";
 
 export const stageStatusDetails = [
@@ -40,15 +40,14 @@ export const stageStatusDetails = [
 type stageId = (typeof stageStatusDetails)[number]["id"];
 
 export function RecipeGenStatus({ currentStep }: { currentStep: stageId }) {
-	const currentStageIndex = stageStatusDetails.findIndex(
-		(stage) => stage.id === currentStep,
-	);
+	const currentStageIndex =
+		stageStatusDetails.findIndex((stage) => stage.id === currentStep) || 0;
 	const currentStage = stageStatusDetails[currentStageIndex];
 
 	const StageIcon = currentStage.icon;
 
 	return (
-		<div className="flex h-175 items-center justify-center overflow-hidden bg-background">
+		<div className="flex min-h-full items-center justify-center overflow-hidden bg-background">
 			{/* Animated background layer */}
 			<div className="pointer-events-none fixed inset-0">
 				{/* Radial gradient that shifts with stages */}
@@ -62,19 +61,16 @@ export function RecipeGenStatus({ currentStep }: { currentStep: stageId }) {
 				{/* Floating particles */}
 				{Array.from({ length: 12 }).map((_, i) => (
 					<div
-						// eslint-disable-next-line react-hooks/purity
-						key={`${Math.random()}-${i}`}
-						className="absolute h-1.5 w-1.5 rounded-full bg-primary/20"
-						style={{
-							// eslint-disable-next-line react-hooks/purity
-							left: `${10 + Math.random() * 80}%`,
-							// eslint-disable-next-line react-hooks/purity
-							top: `${10 + Math.random() * 80}%`,
-							// eslint-disable-next-line react-hooks/purity
-							animation: `float-particle ${3 + Math.random() * 4}s ease-in-out infinite`,
-							// eslint-disable-next-line react-hooks/purity
-							animationDelay: `${Math.random() * 2}s`,
-						}}
+						key={`particle-${i}`}
+						className={`absolute h-1.5 w-1.5 animate-float-particle rounded-full bg-primary/20`}
+						style={
+							{
+								left: `${10 + ((i * 17) % 80)}%`,
+								top: `${10 + ((i * 23) % 80)}%`,
+								animationDuration: `${3 + (i % 4)}s`,
+								animationDelay: `${(i % 5) * 0.2}s`,
+							} as React.CSSProperties
+						}
 					/>
 				))}
 
@@ -94,7 +90,7 @@ export function RecipeGenStatus({ currentStep }: { currentStep: stageId }) {
 				))}
 			</div>
 
-			<div className="relative z-10 mx-auto w-full max-w-lg px-6">
+			<div className="relative z-10 mx-auto w-full max-w-lg px-6 pt-50">
 				{/* Main animation area */}
 				<div className="flex flex-col items-center">
 					{/* Central icon with rings */}
@@ -141,52 +137,20 @@ export function RecipeGenStatus({ currentStep }: { currentStep: stageId }) {
 					{/* Stage label and description */}
 					<div className="mb-10 space-y-2 text-center">
 						<h2
-							className="font-bold text-2xl text-foreground transition-all duration-300"
+							className="animate-fade-in-up font-bold text-2xl text-foreground transition-all duration-300"
 							key={currentStage.id}
-							style={{ animation: "fade-in-up 0.4s ease-out" }}
 						>
 							{currentStage.label}
 						</h2>
 						<p
-							className="mx-auto max-w-xs text-muted-foreground text-sm"
+							className="mx-auto max-w-xs animate-fade-in-up-delayed-both text-muted-foreground text-sm"
 							key={`desc-${currentStage.id}`}
-							style={{ animation: "fade-in-up 0.4s ease-out 0.1s both" }}
 						>
 							{currentStage.description}
 						</p>
 					</div>
 				</div>
 			</div>
-			<style>{`
-        @keyframes float-particle {
-          0%, 100% {
-            transform: translateY(0px) translateX(0px) scale(1);
-            opacity: 0.3;
-          }
-          25% {
-            transform: translateY(-20px) translateX(10px) scale(1.5);
-            opacity: 0.6;
-          }
-          50% {
-            transform: translateY(-10px) translateX(-10px) scale(1);
-            opacity: 0.4;
-          }
-          75% {
-            transform: translateY(-25px) translateX(5px) scale(1.3);
-            opacity: 0.5;
-          }
-        }
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
 		</div>
 	);
 }

@@ -1,4 +1,3 @@
-import type { RecipeGenShape } from "@backend/recipeGens";
 import {
 	type CompletedRecipeStatus,
 	CompletedRecipeStatuses,
@@ -6,7 +5,8 @@ import {
 	FailedRecipeStatuses,
 	type GeneratingRecipeStatus,
 	GeneratingRecipeStatuses,
-} from "../enums/gen-status";
+	type RecipeGenShape,
+} from "@backend/recipeGens";
 import type { RecipeGenState } from "../types";
 
 export const isGeneratingRecipe = (

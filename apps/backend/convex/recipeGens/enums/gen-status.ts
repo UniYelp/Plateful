@@ -1,4 +1,4 @@
-import type { RecipeGenStatus } from "@backend/recipeGens";
+import type { RecipeGenStatus } from "../types";
 
 export const GeneratingRecipeStatusesValues = [
 	"pending",

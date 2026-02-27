@@ -93,7 +93,7 @@ export const recipes = new Elysia({
 					}
 				}
 
-				if (finalRecipe === null) {
+				if (finalRecipe === null || finalSafetyScore === null) {
 					throw new Error("Failed to generate a recipe");
 				}
 
