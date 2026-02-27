@@ -1,17 +1,25 @@
 import type { RecipeGenShape } from "@backend/recipeGens";
+import {
+	type CompletedRecipeStatus,
+	CompletedRecipeStatuses,
+	type FailedRecipeStatus,
+	FailedRecipeStatuses,
+	type GeneratingRecipeStatus,
+	GeneratingRecipeStatuses,
+} from "../enums/gen-status";
 import type { RecipeGenState } from "../types";
 
 export const isGeneratingRecipe = (
 	recipeGen: RecipeGenShape,
-): recipeGen is RecipeGenState<"pending" | "generating"> =>
-	recipeGen.state.status === "pending" ||
-	recipeGen.state.status === "generating";
+): recipeGen is RecipeGenState<GeneratingRecipeStatus> =>
+	GeneratingRecipeStatuses.has(recipeGen.state.status);
 
 export const isFailedRecipeGen = (
 	recipeGen: RecipeGenShape,
-): recipeGen is RecipeGenState<"failed"> => recipeGen.state.status === "failed";
+): recipeGen is RecipeGenState<FailedRecipeStatus> =>
+	FailedRecipeStatuses.has(recipeGen.state.status);
 
 export const isCompletedRecipeGen = (
 	recipeGen: RecipeGenShape,
-): recipeGen is RecipeGenState<"completed"> =>
-	recipeGen.state.status === "completed";
+): recipeGen is RecipeGenState<CompletedRecipeStatus> =>
+	CompletedRecipeStatuses.has(recipeGen.state.status);

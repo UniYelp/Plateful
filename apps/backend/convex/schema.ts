@@ -214,7 +214,7 @@ export const recipeGensFields = {
 
 	state: v.union(
 		v.object({
-			status: v.union(v.literal("pending"), v.literal("generating")),
+			status: v.union(v.literal("pending"), v.literal("generating"), v.literal("validating")),
 		}),
 		v.object({
 			status: v.literal("completed"),

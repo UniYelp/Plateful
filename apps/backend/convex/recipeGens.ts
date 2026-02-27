@@ -402,9 +402,23 @@ export const generateRecipe = internalAction({
 						continue;
 					}
 					case "working": {
+						await ctx.runMutation(internal.recipeGens.updateState, {
+							genId,
+							user: SYSTEM_ID,
+							state: {
+								status: "generating",
+							},
+						});
 						continue;
 					}
 					case "safety-check": {
+						await ctx.runMutation(internal.recipeGens.updateState, {
+							genId,
+							user: SYSTEM_ID,
+							state: {
+								status: "validating",
+							},
+						});
 						continue;
 					}
 					case "done": {
