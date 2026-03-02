@@ -204,7 +204,7 @@
 		@apply bg-background text-foreground;
 	}
 
-	button {
+	button:enabled {
 		cursor: pointer;
 	}
 }

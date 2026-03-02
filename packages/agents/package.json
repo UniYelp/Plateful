@@ -51,7 +51,6 @@
         "@plateful/units": "workspace:*",
         "@plateful/utils": "workspace:*",
         "ai": "catalog:",
-        "arkregex": "^0.0.5",
         "dedent": "^1.7.1",
         "zod": "catalog:"
     },
