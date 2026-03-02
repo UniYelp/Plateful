@@ -9,13 +9,16 @@ export const getTotalAmount = (
 ) => {
 	const quantityByUnit = getGroupedTotalAmount(quantities)
 
-	const totalAmount = entriesOf(quantityByUnit)
-		.map(([unit, amount]) =>
-			unit === ScalarQuantity ? amount : `${amount}${unit}`,
-		)
-		.join(", ");
+	const parts: (string | number)[] = entriesOf(quantityByUnit).map(
+		([unit, amount]) => `${amount}${unit as string}`,
+	);
 
-	return totalAmount;
+	const scalarAmount = quantityByUnit[ScalarQuantity];
+	if (scalarAmount !== undefined) {
+		parts.push(scalarAmount);
+	}
+
+	return parts.join(", ");
 };
 
 

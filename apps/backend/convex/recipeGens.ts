@@ -155,6 +155,11 @@ export const start = householdMutation({
 		const { _id: userId } = ctx.user;
 		const { householdId, tags, ingredients } = args;
 
+		const userPreferences = await ctx.db
+			.query("userPreferences")
+			.withIndex("by_user_deletedAt", (q) => q.eq("userId", userId))
+			.unique();
+
 		const genId = await ctx.db.insert("recipeGens", {
 			householdId,
 			state: {
@@ -164,6 +169,9 @@ export const start = householdMutation({
 				version: "v0",
 				tags,
 				ingredients: ingredients.map((ing) => ing.id),
+				allergens: userPreferences?.allergens,
+				likedFoods: userPreferences?.likedFoods || undefined,
+				dislikedFoods: userPreferences?.dislikedFoods || undefined,
 			},
 			createdBy: userId,
 			updatedBy: userId,
@@ -175,6 +183,78 @@ export const start = householdMutation({
 			householdId,
 			tags,
 			ingredients,
+			allergens: userPreferences?.allergens,
+			likedFoods: userPreferences?.likedFoods || undefined,
+			dislikedFoods: userPreferences?.dislikedFoods || undefined,
+		});
+
+		return genId;
+	},
+});
+
+export const retry = householdMutation({
+	args: {
+		genId: vv.id("recipeGens"),
+	},
+	handler: async (ctx, args) => {
+		const now = Date.now();
+		const { _id: userId } = ctx.user;
+		const { householdId, genId } = args;
+
+		const recipeGen = await ctx.db.get("recipeGens", genId);
+
+		if (!recipeGen || recipeGen.householdId !== householdId || isSoftDeleted(recipeGen)) {
+			throw notFound({ entity: "recipe generation", by: "household" });
+		}
+
+		if (recipeGen.state.status !== "failed") {
+			throw new InternalError("Only failed generations can be retried");
+		}
+
+		const metadata = recipeGen.metadata;
+		if (metadata.version !== "v0") {
+			throw new InternalError("Unsupported metadata version for retry");
+		}
+
+		// Hydrate ingredients from DB
+		const ingredientsToProcess = [];
+		for (const ingId of metadata.ingredients) {
+			const ing = await ctx.db.get("ingredients", ingId);
+			if (ing && !isSoftDeleted(ing)) {
+				// We don't want to include expired items on retry either.
+				const nonExpiredQuantities = ing.quantities.filter((quantity) => {
+					if (!quantity.expiresAt) return true;
+					const expiresAtDate = new Date(quantity.expiresAt);
+					// Simplified check: is it expired as of this retry?
+					return expiresAtDate.getTime() > now;
+				});
+
+				if (nonExpiredQuantities.length > 0) {
+					ingredientsToProcess.push({
+						id: ing._id,
+						name: ing.name,
+						quantities: nonExpiredQuantities,
+					});
+				}
+			}
+		}
+
+		await ctx.db.patch("recipeGens", genId, {
+			state: {
+				status: "pending",
+			},
+			updatedBy: userId,
+			updatedAt: now,
+		});
+
+		await ctx.scheduler.runAfter(0, internal.recipeGens.generateRecipe, {
+			genId,
+			householdId,
+			tags: metadata.tags,
+			ingredients: ingredientsToProcess,
+			allergens: metadata.allergens,
+			likedFoods: metadata.likedFoods || undefined,
+			dislikedFoods: metadata.dislikedFoods || undefined,
 		});
 
 		return genId;
@@ -313,6 +393,9 @@ export const generateRecipe = internalAction({
 		householdId: vv.id("households"),
 		tags: vv.array(vv.string()),
 		ingredients: vv.array(vRecipeGenIngredient),
+		allergens: vv.optional(vv.array(vv.string())),
+		likedFoods: vv.optional(vv.string()),
+		dislikedFoods: vv.optional(vv.string()),
 	},
 	handler: async (ctx, args) => {
 		const { genId, householdId } = args;
@@ -325,7 +408,7 @@ export const generateRecipe = internalAction({
 			},
 		});
 
-		const { tags } = args;
+		const { tags, allergens, likedFoods, dislikedFoods } = args;
 
 		const ingredientIdByName = Object.fromEntries(
 			args.ingredients.map((ing) => [ing.name, ing.id] as const),
@@ -371,6 +454,9 @@ export const generateRecipe = internalAction({
 				{
 					ingredients,
 					tags,
+					allergens,
+					likedFoods,
+					dislikedFoods,
 					temperatureUnit: TemperatureUnit.Celsius,
 					toleratedSpiceLevel: "no-preference",
 					tools: "unlimited",
@@ -455,7 +541,7 @@ export const generateRecipe = internalAction({
 										name,
 										quantity: {
 											amount: value,
-											unit,
+											unit: unit ?? undefined,
 										} satisfies IngredientQuantity,
 										// state,
 									};
@@ -527,6 +613,7 @@ export const generateRecipe = internalAction({
 							keywords: [],
 							cookTime,
 							prepTime,
+							notes: notes ?? undefined,
 						};
 
 						await ctx.runMutation(internal.recipeGens.completeGen, {
@@ -576,7 +663,7 @@ export const generateRecipe = internalAction({
 
 											const quantity = {
 												amount,
-												unit,
+												unit: unit ?? undefined,
 											} satisfies IngredientQuantity;
 
 											return {

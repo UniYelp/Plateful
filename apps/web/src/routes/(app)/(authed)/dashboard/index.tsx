@@ -223,7 +223,7 @@ function DashboardPage() {
 								className="mt-4 w-full bg-transparent"
 								asChild
 							>
-								<Link to="/dashboard/ingredients">View All</Link>
+								<Link to="/dashboard/ingredients" search={{ expiringOnly: true }}>View All</Link>
 							</Button>
 						</CardContent>
 					</Card>

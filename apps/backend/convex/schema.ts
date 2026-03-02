@@ -207,6 +207,9 @@ export const recipeGenV0MetadataFields = {
 	version: v.literal("v0"),
 	tags: v.array(v.string()),
 	ingredients: v.array(v.id("ingredients")),
+	allergens: v.optional(v.array(v.string())),
+	likedFoods: v.optional(v.string()),
+	dislikedFoods: v.optional(v.string()),
 };
 
 export const recipeGensFields = {

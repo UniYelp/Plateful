@@ -3,7 +3,7 @@ import z from "zod";
 
 import { convertIngredientUnits } from "@plateful/ingredients";
 import { temperatureUnitConversion } from "@plateful/units/temperature";
-import { AnyFoodUnitSchema, TemperatureUnitSchema } from "./schemas";
+import { MaterialUnitSchema, TemperatureUnitSchema } from "./schemas";
 
 const { convertUnits: convertTemperatureUnits } = temperatureUnitConversion();
 
@@ -11,8 +11,8 @@ export const convertMeasurementUnits = tool({
 	description: "Convert food measurement units if possible",
 	inputSchema: z.object({
 		value: z.number(),
-		from: AnyFoodUnitSchema,
-		to: AnyFoodUnitSchema,
+		from: MaterialUnitSchema,
+		to: MaterialUnitSchema,
 	}),
 	outputSchema: z.object({
 		result: z.union([
@@ -25,9 +25,7 @@ export const convertMeasurementUnits = tool({
 		]),
 	}),
 	execute: ({ value, from, to }) => {
-		const fromUnit = typeof from === "string" ? from : from.value;
-		const toUnit = typeof to === "string" ? to : to.value;
-		const result = convertIngredientUnits(fromUnit, toUnit, value);
+		const result = convertIngredientUnits(from, to, value);
 
 		return { result: result ? result.value : result };
 	},

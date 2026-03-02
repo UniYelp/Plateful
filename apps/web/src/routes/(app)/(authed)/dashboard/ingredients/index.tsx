@@ -4,6 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { Eye, Package, Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { z } from "zod";
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
@@ -31,6 +32,9 @@ import { Input } from "@/components/ui/input";
 import { ingredientSymbolToDisplay } from "@/features/ingredients/utils/ingredient-symbol-to-display";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
+	validateSearch: z.object({
+		expiringOnly: z.boolean().optional().default(false),
+	}),
 	loader: async ({ context }) => {
 		const { household, queryClient } = context;
 
@@ -56,6 +60,8 @@ function IngredientsPage() {
 
 	const { household } = Route.useLoaderData();
 
+	const { expiringOnly } = Route.useSearch();
+
 	const { data: ingredients } = useSuspenseQuery(
 		convexQuery(api.ingredients.byHousehold, {
 			householdId: household._id,
@@ -64,14 +70,45 @@ function IngredientsPage() {
 
 	const deleteIngredient = useMutation(api.ingredients.deleteIngredient);
 
-	const filteredIngredients = ingredients?.filter((ingredient) => {
-		const matchesSearch =
-			ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			ingredient.description?.toLowerCase().includes(searchTerm.toLowerCase());
-		const matchesCategory =
-			selectedCategory === "all" || ingredient.category === selectedCategory;
-		return matchesSearch && matchesCategory;
-	});
+	const filteredIngredientsByCategory = ingredients
+		?.filter((ingredient) => {
+			const matchesSearch =
+				ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				ingredient.description?.toLowerCase().includes(searchTerm.toLowerCase());
+			const matchesCategory =
+				selectedCategory === "all" || ingredient.category === selectedCategory;
+
+			if (!matchesSearch || !matchesCategory) return false;
+
+			if (expiringOnly) {
+				const expirations = ingredient.quantities.flatMap(
+					(q) => q.expiresAt ?? [],
+				);
+				const expiryStatusDetails = getExpiryDetailsFromExpiryDates(expirations);
+				
+				if (!expiryStatusDetails) return false;
+				if (
+					expiryStatusDetails.status !== "expired" &&
+					expiryStatusDetails.status !== "expiring" &&
+					expiryStatusDetails.status !== "warning"
+				) {
+					return false;
+				}
+			}
+
+			return true;
+		})
+		.toSorted((a, b) => {
+			if (!expiringOnly) return 0;
+
+			const expirationsA = a.quantities.flatMap((q) => q.expiresAt ?? []);
+			const expirationsB = b.quantities.flatMap((q) => q.expiresAt ?? []);
+
+			const minExpiryA = expirationsA.length ? Math.min(...expirationsA) : Infinity;
+			const minExpiryB = expirationsB.length ? Math.min(...expirationsB) : Infinity;
+
+			return minExpiryA - minExpiryB;
+		});
 
 	return (
 		<>
@@ -101,6 +138,16 @@ function IngredientsPage() {
 					/>
 				</div>
 				<div className="flex gap-2 overflow-x-auto">
+					<Button
+						variant={expiringOnly ? "destructive" : "outline"}
+						size="sm"
+						className="whitespace-nowrap"
+					>
+						<Link to="/dashboard/ingredients" search={(prev) => ({ ...prev, expiringOnly: !prev.expiringOnly })}>
+							Expiring Soon
+						</Link>
+					</Button>
+					<div className="mx-2 w-px bg-border" />
 					{categories.map((category) => (
 						<Button
 							key={category}
@@ -117,7 +164,7 @@ function IngredientsPage() {
 
 			{/* Ingredients Grid */}
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-				{filteredIngredients?.map((ingredient) => {
+				{filteredIngredientsByCategory?.map((ingredient) => {
 					const expirations = ingredient.quantities.flatMap(
 						(q) => q.expiresAt ?? [],
 					);
@@ -225,8 +272,8 @@ function IngredientsPage() {
 				})}
 			</div>
 
-			{!filteredIngredients ||
-				(filteredIngredients.length === 0 && (
+			{!filteredIngredientsByCategory ||
+				(filteredIngredientsByCategory.length === 0 && (
 					<div className="py-12 text-center">
 						<Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 						<h3 className="mb-2 font-semibold text-lg">No ingredients found</h3>

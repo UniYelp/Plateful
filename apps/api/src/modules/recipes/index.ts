@@ -51,7 +51,7 @@ export const recipes = new Elysia({
 				});
 
 				// Criticizer-optimizer loop
-				const MAX_ATTEMPTS = 3;
+				const MAX_ATTEMPTS = 5;
 				const SAFETY_THRESHOLD = 0.8;
 				let finalRecipe: RecipesModel.GenerateRecipeCompleteEventData | null =
 					null;
