@@ -2,14 +2,25 @@ import type { Graph } from "effect";
 
 import type { RecipeIngredient, RecipeMaterial } from "./recipe";
 
-export type RecipeGraphNode =
-	| {
-			type: "start";
-	  }
-	| {
-			type: "material";
-			name: string;
-	  };
+export type StartNode = {
+	type: "start";
+};
+
+export type MaterialNode = {
+	type: "material";
+	name: string;
+};
+
+export type RecipeGraphNode = StartNode | MaterialNode;
+
+export type IngredientEdge = {
+	type: "ingredient";
+} & RecipeIngredient;
+
+export type MaterialEdge = {
+	type: "material";
+	stepIndex: number;
+} & RecipeMaterial;
 
 /**
  * - start -> material | uses ingredient as a base quantity for the material
@@ -17,12 +28,7 @@ export type RecipeGraphNode =
  * - material x -> material y | uses input-kind materials to subtract from the origin material's quantity
  */
 export type RecipeGraphEdge =
-	| ({
-			type: "ingredient";
-	  } & RecipeIngredient)
-	| ({
-			type: "material";
-			stepIndex: number;
-	  } & RecipeMaterial);
+	| IngredientEdge
+	| MaterialEdge;
 
 export type RecipeGraph = Graph.DirectedGraph<RecipeGraphNode, RecipeGraphEdge>;

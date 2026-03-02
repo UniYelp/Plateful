@@ -1,14 +1,8 @@
-import { RecipeMaterialKind } from "./enums";
-
-export const MaterialInputKindsValues = [
-	RecipeMaterialKind.Input,
-	RecipeMaterialKind.DerivedInput,
-];
-
-export const MaterialOutputKindsValues = [
-	RecipeMaterialKind.Output,
-	RecipeMaterialKind.DerivedOutput,
-];
+import {
+	MaterialInputKindsValues,
+	MaterialOutputKindsValues,
+	type RecipeMaterialKind,
+} from "./enums";
 
 export const MaterialInputKinds = new Set<RecipeMaterialKind>(
 	MaterialInputKindsValues,

@@ -6,9 +6,11 @@ export type RecipeIngredient = {
 	quantity: Quantity | UnlimitedQuantity;
 };
 
-export type RecipeMaterial = {
+export type RecipeMaterial<
+	Kind extends RecipeMaterialKind = RecipeMaterialKind,
+> = {
 	name: string;
-	kind: RecipeMaterialKind;
+	kind: Kind;
 	quantity: Quantity;
 };
 

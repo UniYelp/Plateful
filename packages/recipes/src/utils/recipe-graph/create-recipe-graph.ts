@@ -1,15 +1,20 @@
 import { Graph } from "effect";
+import type { NodeIndex } from "effect/Graph";
 
-import { MaterialInputKinds, MaterialOutputKinds } from "../constants";
-import { RecipeStepBlockType } from "../enums";
+import { RecipeStepBlockType } from "../../enums";
 import type {
+	IngredientEdge,
+	MaterialEdge,
+	MaterialNode,
 	Recipe,
 	RecipeGraph,
 	RecipeGraphEdge,
 	RecipeGraphNode,
 	RecipeIngredient,
 	RecipeMaterial,
-} from "../types";
+	StartNode,
+} from "../../types";
+import { isInputKindMaterial, isOutputKindMaterial } from "../guards";
 
 export type RecipeGraphInput = {
 	ingredients: RecipeIngredient[];
@@ -17,30 +22,30 @@ export type RecipeGraphInput = {
 };
 
 export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
-	let startNodeId = -1;
+	let startNodeId: NodeIndex = -1;
 
-	const nodeByName = {} as Record<string, number>;
+	const nodeByName = {} as Record<string, NodeIndex>;
 
 	const graph = Graph.directed<RecipeGraphNode, RecipeGraphEdge>(
 		(mutableGraph) => {
 			//? Add the start node
 			startNodeId = Graph.addNode(mutableGraph, {
 				type: "start",
-			});
+			} satisfies StartNode);
 
 			//? Initialize the graph with the ingredients as the base nodes
 			for (const ing of recipe.ingredients) {
 				const ingNodeId = Graph.addNode(mutableGraph, {
 					type: "material",
 					name: ing.name,
-				});
+				} satisfies MaterialNode);
 
 				nodeByName[ing.name] = ingNodeId;
 
 				Graph.addEdge(mutableGraph, startNodeId, ingNodeId, {
 					...ing,
 					type: "ingredient",
-				});
+				} satisfies IngredientEdge);
 			}
 
 			for (const [stepIndex, step] of recipe.steps.entries()) {
@@ -56,15 +61,15 @@ export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
 					nodeByName[material.name] ??= Graph.addNode(mutableGraph, {
 						type: "material",
 						name: material.name,
-					});
+					} satisfies MaterialNode);
 				}
 
 				const inputs = stepMaterials.filter((material) =>
-					MaterialInputKinds.has(material.kind),
+					isInputKindMaterial(material),
 				);
 
 				const outputs = stepMaterials.filter((material) =>
-					MaterialOutputKinds.has(material.kind),
+					isOutputKindMaterial(material),
 				);
 
 				//? Connect input materials to output materials - output materials link to themselves
@@ -83,7 +88,7 @@ export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
 						...output,
 						stepIndex,
 						type: "material",
-					});
+					} satisfies MaterialEdge);
 
 					for (const input of inputs) {
 						const inputNodeId = nodeByName[input.name];
@@ -100,7 +105,7 @@ export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
 							...input,
 							stepIndex,
 							type: "material",
-						});
+						} satisfies MaterialEdge);
 					}
 				}
 			}
