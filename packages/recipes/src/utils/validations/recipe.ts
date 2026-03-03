@@ -4,15 +4,15 @@ import {
 } from "../../models";
 import type { Recipe, RecipeValidationResult } from "../../types";
 import { createRecipeGraph } from "../recipe-graph";
-import { validateRecipeHasOutput } from "./recipe-graph/has-output";
 import { validateNoUnreachableMaterials } from "./recipe-graph/no-unreachable-materials";
+import { validateRecipeOutput } from "./recipe-graph/output";
 
 export const validateRecipe = (recipe: Recipe): RecipeValidationResult => {
 	const issues: RecipeValidationIssue[] = [];
 
 	const recipeGraph = createRecipeGraph(recipe);
 
-	const hasOutputRes = validateRecipeHasOutput(recipeGraph);
+	const hasOutputRes = validateRecipeOutput(recipeGraph);
 
 	if (hasOutputRes) {
 		issues.push(...hasOutputRes.issues);

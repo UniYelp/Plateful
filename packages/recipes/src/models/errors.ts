@@ -27,6 +27,15 @@ export class RecipeHasNoOutputError extends Error {
 	}
 }
 
+export class UsedOutputMaterialError extends Error {
+	static readonly _tag = "UsedOutputMaterialError";
+	readonly _tag = UsedOutputMaterialError._tag;
+
+	constructor(public id: string) {
+		super(`Output Material ${id} has been used to create another material`);
+	}
+}
+
 export class UnusedDerivedOutputError extends Error {
 	static readonly _tag = "UnusedDerivedOutputError";
 	readonly _tag = UnusedDerivedOutputError._tag;
@@ -79,6 +88,7 @@ export class MaterialQuantityExceededError extends Error {
 export type RecipeValidationIssue =
 	| UnreachableMaterialError
 	| RecipeHasNoOutputError
+	| UsedOutputMaterialError
 	| UnusedDerivedOutputError
 	| MaterialUsedBeforeProducedError
 	| MaterialProducedBeforeInputsError

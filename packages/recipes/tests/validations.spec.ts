@@ -7,7 +7,7 @@ import {
 	RecipeValidationError,
 	UnreachableMaterialError,
 	validateNoUnreachableMaterials,
-	validateRecipeHasOutput,
+	validateRecipeOutput,
 } from "../src";
 import rawIngredients from "./__fixtures__/recipe/ingredients.json" with {
 	type: "json",
@@ -30,7 +30,7 @@ describe("validations", () => {
 
 			const graph = createRecipeGraph(recipe);
 
-			const res = validateRecipeHasOutput(graph);
+			const res = validateRecipeOutput(graph);
 
 			expect(res).toBeNull();
 		});
@@ -43,7 +43,7 @@ describe("validations", () => {
 
 			const graph = createRecipeGraph(recipe);
 
-			const res = validateRecipeHasOutput(graph);
+			const res = validateRecipeOutput(graph);
 
 			expect(res).toBeInstanceOf(RecipeValidationError);
 			expect(res?.issues).toHaveLength(1);
