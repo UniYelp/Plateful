@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, ChefHat, ExternalLink, RotateCcw } from "lucide-react";
 
 import { api } from "@backend/api";
@@ -26,6 +26,14 @@ type Props = {
 export const RecipeGenState = (props: Props) => {
 	const { gen, title } = props;
 	const retryGen = useMutation(api.recipeGens.retry);
+
+	const generationsStats = useQuery(api.recipeGens.stats, {
+		householdId: gen.householdId,
+	});
+
+	const isQuotaReached =
+		generationsStats &&
+		generationsStats.today.total >= generationsStats.today.max;
 
 	const handleRetry = async () => {
 		await retryGen({ genId: gen._id, householdId: gen.householdId });
@@ -88,10 +96,19 @@ export const RecipeGenState = (props: Props) => {
 											{new Date(gen._creationTime).toLocaleDateString()}
 										</span>
 									</div>
-									<Button onClick={handleRetry} size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive">
+									<Button 
+										onClick={handleRetry} 
+										size="sm" 
+										variant="outline" 
+										className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+										disabled={isQuotaReached}
+									>
 										<RotateCcw className="mr-2 h-3 w-3" />
 										Retry
 									</Button>
+									{isQuotaReached && (
+										<p className="text-destructive text-[10px] text-right">Quota Reached</p>
+									)}
 								</div>
 							</div>
 						</div>

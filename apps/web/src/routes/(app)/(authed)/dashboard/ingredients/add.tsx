@@ -35,20 +35,16 @@ function AddIngredientPage() {
 	const addIngredient = useMutation(api.ingredients.add);
 
 	const onSubmit = async (value: IngredientFormOutput) => {
-		const expiryDate = value.expiryDate
-			? new Date(value.expiryDate).getTime()
-			: undefined;
+		const quantities = value.quantities.map((q) => ({
+			unit: q.unit,
+			expiresAt: q.expiryDate ? new Date(q.expiryDate).getTime() : undefined,
+			amount: q.amount,
+		}));
 
 		const ingredientId = await addIngredient({
 			name: value.name,
 			description: value.description,
-			quantities: [
-				{
-					unit: value.unit,
-					expiresAt: expiryDate,
-					amount: value.amount,
-				},
-			],
+			quantities,
 			householdId,
 			category: value.category,
 			tags: [],

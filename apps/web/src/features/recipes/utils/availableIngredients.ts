@@ -1,8 +1,7 @@
 import { convertIngredientUnits } from "@plateful/ingredients";
 import { entriesOf } from "@plateful/utils";
 import type { Doc } from "@backend/dataModel";
-import { getGroupedTotalAmount } from "&/ingredients/utils/total-amount";
-import { ScalarQuantity } from "&/units/constants";
+import { getGroupedTotalAmount, SCALAR_QUANTITY_KEY } from "&/ingredients/utils/total-amount";
 
 type IsIngredientSufficientArgs = {
 	ingredientQuantities: Doc<"ingredients">["quantities"];
@@ -12,18 +11,19 @@ export const isIngredientSufficient = ({
 	ingredientQuantities,
 	neededQuantities,
 }: IsIngredientSufficientArgs) => {
+	if (neededQuantities.length === 0) return false;
+
 	const existing = getGroupedTotalAmount(ingredientQuantities);
 	const needed = getGroupedTotalAmount(neededQuantities);
 
     // TODO: write tests
 
 	for (const [neededUnit, neededAmount] of entriesOf(needed)) {
-		// Scalar: exact match only
-		if (neededUnit === ScalarQuantity) {
-			const available = existing[ScalarQuantity] ?? 0;
+		if (neededUnit === SCALAR_QUANTITY_KEY) {
+			const available = existing[SCALAR_QUANTITY_KEY] ?? 0;
 			if (available < neededAmount) return false;
 
-			existing[ScalarQuantity] = available - neededAmount;
+			existing[SCALAR_QUANTITY_KEY] = available - neededAmount;
 			continue;
 		}
 
@@ -31,7 +31,7 @@ export const isIngredientSufficient = ({
 
 		for (const [unit, amount] of entriesOf(existing)) {
 			if (amount <= 0) continue;
-			if (unit === ScalarQuantity) continue;
+			if (unit === SCALAR_QUANTITY_KEY) continue;
 
 			const converted = convertIngredientUnits(unit, neededUnit, amount);
 

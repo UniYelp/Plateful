@@ -1,8 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMutation } from "convex/react";
-import { Eye, Package, Plus, Search, Trash2 } from "lucide-react";
+import { Eye, Package, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -14,22 +13,12 @@ import {
 	colorByExpiryStatus,
 	ingredientImgByCategory,
 } from "&/ingredients/constants";
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ingredientSymbolToDisplay } from "@/features/ingredients/utils/ingredient-symbol-to-display";
+import { getTotalAmount } from "&/ingredients/utils/total-amount";
+import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
 	validateSearch: z.object({
@@ -54,6 +43,8 @@ function RouteComponent() {
 	return <IngredientsPage />;
 }
 
+
+
 function IngredientsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
@@ -67,8 +58,6 @@ function IngredientsPage() {
 			householdId: household._id,
 		}),
 	);
-
-	const deleteIngredient = useMutation(api.ingredients.deleteIngredient);
 
 	const filteredIngredientsByCategory = ingredients
 		?.filter((ingredient) => {
@@ -208,9 +197,7 @@ function IngredientsPage() {
 											{ingredient.description}
 										</p>
 										<p className="mt-1 font-medium text-sm">
-											{/* TODO: do sum instead */}
-											{ingredient.quantities[0].amount}{" "}
-											{ingredientSymbolToDisplay(ingredient.quantities[0].unit)}
+											{getTotalAmount(ingredient.quantities) || "0"}
 										</p>
 									</div>
 								</div>
@@ -230,41 +217,10 @@ function IngredientsPage() {
 											View
 										</Link>
 									</Button>
-									<AlertDialog>
-										<AlertDialogTrigger asChild>
-											<Button
-												variant="outline"
-												size="sm"
-												className="bg-transparent text-destructive hover:text-destructive"
-											>
-												<Trash2 className="h-3 w-3" />
-											</Button>
-										</AlertDialogTrigger>
-										<AlertDialogContent>
-											<AlertDialogHeader>
-												<AlertDialogTitle>
-													Are you absolutely sure?
-												</AlertDialogTitle>
-												<AlertDialogDescription>
-													This action cannot be undone. You won't be able to
-													restore the ingredient data after deletion.
-												</AlertDialogDescription>
-											</AlertDialogHeader>
-											<AlertDialogFooter>
-												<AlertDialogCancel>Cancel</AlertDialogCancel>
-												<AlertDialogAction
-													onClick={() =>
-														deleteIngredient({
-															ingredientId: ingredient._id,
-															householdId: household?._id,
-														})
-													}
-												>
-													Continue
-												</AlertDialogAction>
-											</AlertDialogFooter>
-										</AlertDialogContent>
-									</AlertDialog>
+									<DeleteIngredientButton
+										ingredientId={ingredient._id}
+										householdId={household._id}
+									/>
 								</div>
 							</CardContent>
 						</Card>

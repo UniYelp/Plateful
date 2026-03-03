@@ -11,6 +11,7 @@ import {
 	Utensils,
 } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "convex/react";
 
 import { api } from "@backend/api";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
@@ -20,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/")({
 	component: RouteComponent,
@@ -46,6 +48,10 @@ function RecipesPage() {
 	const [selectedFilter, setSelectedFilter] = useState("all");
 
 	const { household } = Route.useLoaderData();
+
+	const genStats = useQuery(api.recipeGens.stats, { householdId: household._id });
+	const generationsLeft = genStats ? genStats.today.max - genStats.today.total : null;
+	const atQuota = generationsLeft !== null && generationsLeft <= 0;
 
 	const { data: fullRecipes } = useSuspenseQuery(
 		convexQuery(api.recipes.byHousehold, {
@@ -104,12 +110,26 @@ function RecipesPage() {
 						Discover and create delicious meals
 					</p>
 				</div>
-				<Button asChild>
-					<Link to="/dashboard/recipes/gen/new">
-						<Sparkles className="mr-2 h-4 w-4" />
-						Generate Recipe
-					</Link>
-				</Button>
+				<div className="flex items-center gap-3">
+					{generationsLeft !== null && (
+						<span className="text-muted-foreground text-sm">
+							{generationsLeft} generation{generationsLeft !== 1 ? "s" : ""} left today
+						</span>
+					)}
+					<Button asChild={!atQuota} disabled={atQuota}>
+						{atQuota ? (
+							<>
+								<Sparkles className="mr-2 h-4 w-4" />
+								Generate Recipe
+							</>
+						) : (
+							<Link to="/dashboard/recipes/gen/new">
+								<Sparkles className="mr-2 h-4 w-4" />
+								Generate Recipe
+							</Link>
+						)}
+					</Button>
+				</div>
 			</div>
 
 			{/* Search and Filter */}
@@ -236,27 +256,22 @@ function RecipesPage() {
 								</div>
 
 								<div className="flex gap-2">
-									<Button
-										size="sm"
-										className="flex-1"
-										disabled={!canCook}
-										asChild={canCook}
-									>
-										{canCook ? (
-											<Link
-												to="/dashboard/recipes/$id"
-												params={{ id: recipe._id }}
-											>
+									{canCook ? (
+										<CookNowDialog
+											householdId={household._id}
+											ingredients={fullRecipe.ingredients}
+										>
+											<Button size="sm" className="flex-1">
 												<Play className="mr-1 h-3 w-3" />
 												Cook Now
-											</Link>
-										) : (
-											<>
-												<Play className="mr-1 h-3 w-3" />
-												Cook Now
-											</>
-										)}
-									</Button>
+											</Button>
+										</CookNowDialog>
+									) : (
+										<Button size="sm" className="flex-1" disabled>
+											<Play className="mr-1 h-3 w-3" />
+											Cook Now
+										</Button>
+									)}
 									<Button variant="outline" size="sm" asChild>
 										<Link
 											to="/dashboard/recipes/$id"

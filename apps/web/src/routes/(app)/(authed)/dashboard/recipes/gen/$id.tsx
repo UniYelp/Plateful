@@ -1,7 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, History, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,14 @@ function RecipeGenerationPage() {
 		}),
 	);
 
+	const generationsStats = useQuery(api.recipeGens.stats, {
+		householdId: household._id,
+	});
+
+	const isQuotaReached =
+		generationsStats &&
+		generationsStats.today.total >= generationsStats.today.max;
+
 	const retryGen = useMutation(api.recipeGens.retry);
 
 	const handleRetry = async () => {
@@ -101,10 +109,13 @@ function RecipeGenerationPage() {
 						</div>
 
 						<div className="animate-fade-in-up-delayed-both" style={{ animationDelay: "0.4s" }}>
-							<Button onClick={handleRetry} size="lg" className="gap-2">
+							<Button onClick={handleRetry} size="lg" className="gap-2" disabled={isQuotaReached}>
 								<RotateCcw className="h-4 w-4" />
 								Retry Generation
 							</Button>
+							{isQuotaReached && (
+								<p className="mt-2 text-destructive text-sm font-medium">Quota Reached</p>
+							)}
 						</div>
 					</div>
 				</div>

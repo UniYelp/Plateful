@@ -1,10 +1,13 @@
-import { EXPIRATION_WARNING_TIME_WINDOW_MS } from "@plateful/ingredients";
+import { EXPIRATION_WARNING_TIME_WINDOW_MS, convertIngredientUnits } from "@plateful/ingredients";
 import type { Doc } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import { conflict, notFound } from "./errors";
 import { householdMutation, householdQuery } from "./households";
-import { ingredientFields, vv } from "./schema";
+import { ingredientFields, ingredientQuantityFields, vv } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
+
+/** Round to 10 decimal places to eliminate binary floating point drift. */
+const round = (n: number) => Math.round(n * 1e10) / 1e10;
 
 // #region Validators
 
@@ -214,6 +217,186 @@ export const deleteIngredient = householdMutation({
 });
 
 // #endregion
+
+export const addQuantity = householdMutation({
+	args: {
+		ingredientId: vv.id("ingredients"),
+		amount: vv.number(),
+		unit: vv.optional(vv.string()),
+		expiresAt: vv.optional(vv.number()),
+	},
+	handler: async (ctx, args) => {
+		const { _id: userId } = ctx.user;
+		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
+
+		if (!ingredient || isSoftDeleted(ingredient) || ingredient.householdId !== args.householdId) {
+			throw notFound({ entity: "Ingredient", in: "Household" });
+		}
+
+		const now = Date.now();
+		await ctx.db.patch("ingredients", args.ingredientId, {
+			quantities: [
+				...ingredient.quantities,
+				{ amount: args.amount, unit: args.unit, expiresAt: args.expiresAt },
+			],
+			updatedBy: userId,
+			updatedAt: now,
+		});
+	},
+});
+
+export const removeQuantityAt = householdMutation({
+	args: {
+		ingredientId: vv.id("ingredients"),
+		index: vv.number(),
+	},
+	handler: async (ctx, args) => {
+		const { _id: userId } = ctx.user;
+		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
+
+		if (!ingredient || isSoftDeleted(ingredient) || ingredient.householdId !== args.householdId) {
+			throw notFound({ entity: "Ingredient", in: "Household" });
+		}
+
+		const updated = ingredient.quantities.filter((_, i) => i !== args.index);
+		const now = Date.now();
+		await ctx.db.patch("ingredients", args.ingredientId, {
+			quantities: updated,
+			updatedBy: userId,
+			updatedAt: now,
+		});
+	},
+});
+
+export const mergeQuantities = householdMutation({
+	args: {
+		ingredientId: vv.id("ingredients"),
+	},
+	handler: async (ctx, args) => {
+		const { _id: userId } = ctx.user;
+		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
+
+		if (!ingredient || isSoftDeleted(ingredient) || ingredient.householdId !== args.householdId) {
+			throw notFound({ entity: "Ingredient", in: "Household" });
+		}
+
+		const mergedByKey = new Map<string, { amount: number; unit?: string; expiresAt?: number }>();
+
+		for (const q of ingredient.quantities) {
+			const unitKey = q.unit || "no-unit";
+			const expiryKey = q.expiresAt ? q.expiresAt.toString() : "no-expiry";
+			const key = `${unitKey}-${expiryKey}`;
+			
+			const existing = mergedByKey.get(key);
+
+			if (!existing) {
+				mergedByKey.set(key, { ...q });
+			} else {
+				existing.amount = round(existing.amount + q.amount);
+			}
+		}
+
+		const updatedQuantities = Array.from(mergedByKey.values());
+
+		const now = Date.now();
+		await ctx.db.patch("ingredients", args.ingredientId, {
+			quantities: updatedQuantities,
+			updatedBy: userId,
+			updatedAt: now,
+		});
+	},
+});
+
+export const consumeForRecipe = householdMutation({
+	args: {
+		ingredients: vv.array(
+			vv.object({
+				ingredientId: vv.id("ingredients"),
+				quantities: vv.array(vv.object(ingredientQuantityFields)),
+			}),
+		),
+	},
+	handler: async (ctx, args) => {
+		const { _id: userId } = ctx.user;
+		const { householdId, ingredients } = args;
+		const now = Date.now();
+
+		const results: { name: string; quantities: { amount: number; unit?: string }[] }[] = [];
+
+		for (const { ingredientId, quantities: neededQuantities } of ingredients) {
+			const ingredient = await ctx.db.get("ingredients", ingredientId);
+
+			if (!ingredient || isSoftDeleted(ingredient) || ingredient.householdId !== householdId) {
+				continue;
+			}
+
+			// Mutable copy of quantities, sorted by expiry date ascending (soonest first)
+			// undefined expiresAt goes to the end
+			const remaining = ingredient.quantities
+				.map((q) => ({ ...q }))
+				.sort((a, b) => {
+					if (!a.expiresAt && !b.expiresAt) return 0;
+					if (!a.expiresAt) return 1;
+					if (!b.expiresAt) return -1;
+					return a.expiresAt - b.expiresAt;
+				});
+
+			for (const needed of neededQuantities) {
+				// Track remainder in the needed unit throughout
+				let amountLeftInNeededUnit = needed.amount;
+
+				for (const slot of remaining) {
+					if (amountLeftInNeededUnit <= 0) break;
+
+					const slotUnit = slot.unit ?? null;
+					const neededUnit = needed.unit ?? null;
+
+					if (slotUnit === neededUnit) {
+						// Same unit — direct deduction
+						const deduct = Math.min(slot.amount, amountLeftInNeededUnit);
+						slot.amount = round(slot.amount - deduct);
+						amountLeftInNeededUnit = round(amountLeftInNeededUnit - deduct);
+					} else if (slotUnit !== null && neededUnit !== null) {
+						// Different units — convert needed → slot unit, deduct in slot unit
+						const neededInSlotUnit = convertIngredientUnits(
+							neededUnit,
+							slotUnit,
+							amountLeftInNeededUnit,
+						);
+						if (neededInSlotUnit === null) continue; // incompatible units
+
+						const deductInSlotUnit = Math.min(slot.amount, round(neededInSlotUnit.value));
+						slot.amount = round(slot.amount - deductInSlotUnit);
+
+						// Convert the actually-deducted amount back to needed unit
+						// to keep amountLeftInNeededUnit accurate
+						const deductedInNeededUnit = convertIngredientUnits(
+							slotUnit,
+							neededUnit,
+							deductInSlotUnit,
+						);
+						if (deductedInNeededUnit !== null) {
+							amountLeftInNeededUnit = round(amountLeftInNeededUnit - deductedInNeededUnit.value);
+						}
+					}
+					// If one side has no unit (scalar) and the other does, skip — incompatible
+				}
+			}
+
+			const updatedQuantities = remaining.filter((q) => q.amount > 0);
+
+			await ctx.db.patch("ingredients", ingredientId, {
+				quantities: updatedQuantities,
+				updatedBy: userId,
+				updatedAt: now,
+			});
+
+			results.push({ name: ingredient.name, quantities: updatedQuantities });
+		}
+
+		return results;
+	},
+});
 
 // #region helpers
 const getHouseholdIngredients = (

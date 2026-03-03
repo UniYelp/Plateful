@@ -108,11 +108,7 @@ export const stats = householdQuery({
 	handler: async (ctx, args) => {
 		const now = new Date();
 
-		const utcMidnightNow = Date.UTC(
-			now.getUTCFullYear(),
-			now.getUTCMonth(),
-			now.getUTCDate(),
-		);
+		const twentyFourHoursAgo = now.getTime() - 24 * 60 * 60 * 1000;
 
 		const maxDailyGen = 5;
 
@@ -122,7 +118,7 @@ export const stats = householdQuery({
 				q
 					.eq("householdId", args.householdId)
 					.eq(...notDeletedIndex)
-					.gte("_creationTime", utcMidnightNow),
+					.gte("_creationTime", twentyFourHoursAgo),
 			)
 			.order("desc")
 			.take(maxDailyGen);
@@ -422,22 +418,36 @@ export const generateRecipe = internalAction({
 
 		const ingredients = args.ingredients.flatMap<
 			RecipeGenInput["ingredients"][number]
-		>(({ name, quantities }) =>
-			Array.isArray(quantities)
-				? quantities.map(({ /**state, */ amount, unit }) => ({
-						name,
-						// state: state || null,
-						quantity: {
-							value: amount,
-							unit: (unit as IngredientUnit) || null,
-						},
-					}))
-				: {
-						name,
-						// state: null,
-						quantity: "unlimited",
+		>(({ name, quantities }) => {
+			if (!Array.isArray(quantities)) {
+				return {
+					name,
+					quantity: "unlimited",
+				};
+			}
+
+			const amountByUnit = new Map<string | null, number>();
+
+			for (const { amount, unit } of quantities) {
+				const standardizedUnit = unit || null;
+				const existing = amountByUnit.get(standardizedUnit) || 0;
+				amountByUnit.set(standardizedUnit, existing + amount);
+			}
+
+			const result: RecipeGenInput["ingredients"][number][] = [];
+			
+			for (const [unit, value] of amountByUnit.entries()) {
+				result.push({
+					name,
+					quantity: {
+						value,
+						unit: unit as IngredientUnit | null,
 					},
-		);
+				});
+			}
+
+			return result;
+		});
 
 		if (!hasWater) {
 			ingredients.push({
