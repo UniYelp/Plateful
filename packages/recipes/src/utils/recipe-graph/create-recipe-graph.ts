@@ -15,6 +15,7 @@ import type {
 	StartNode,
 } from "../../types";
 import { isInputKindMaterial, isOutputKindMaterial } from "../guards";
+import { isDefined } from "@plateful/utils";
 
 export type RecipeGraphInput = {
 	ingredients: RecipeIngredient[];
@@ -76,7 +77,7 @@ export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
 				for (const output of outputs) {
 					const outputNodeId = nodeByName[output.name];
 
-					if (!outputNodeId) {
+					if (!isDefined(outputNodeId)) {
 						console.warn("Unexpected:", "Material not found in graph", {
 							output,
 						});
@@ -93,7 +94,7 @@ export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
 					for (const input of inputs) {
 						const inputNodeId = nodeByName[input.name];
 
-						if (!inputNodeId) {
+						if (!isDefined(inputNodeId)) {
 							console.warn("Unexpected:", "Material not found in graph", {
 								input,
 							});

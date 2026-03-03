@@ -23,5 +23,5 @@ Recipe creation flow:
 - all input or derived-input materials were made out of ingredients or derived-outputs respectively (e.g there are no extra input/derived-input materials not present in the ingredients/derived-outputs respectively)  
 - all derived-output materials have been used (e.g appear later as a derived-input)  
 - a derived-input material has not appeared before its derived-output variant  
-- an output-kind material (output, derived-output) has not appeared before all of its required input-kind materials (inoput, derived-input)  
-- input-kind quantity values are not above the ingredient's/derived-output's espective quantity (if the ingredient has an "unlimited quantity" this validation can be skipped & the units match
+- an output-kind material (output, derived-output) has not appeared before all of its required input-kind materials (input, derived-input)  
+- input-kind quantity values are not above the ingredient's/derived-output's respective quantity (if the ingredient has an "unlimited quantity" this validation can be skipped & the units match
