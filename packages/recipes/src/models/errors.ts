@@ -85,7 +85,7 @@ export type RecipeValidationIssue =
 	| MaterialQuantityExceededError;
 
 export class RecipeValidationError<
-	T extends RecipeValidationIssue,
+	T extends RecipeValidationIssue = RecipeValidationIssue,
 > extends Error {
 	static readonly _tag = "RecipeValidationError";
 	readonly _tag = RecipeValidationError._tag;

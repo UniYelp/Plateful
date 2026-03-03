@@ -13,7 +13,7 @@ export const validateRecipeHasOutput = (
 			edge.type === "material" && edge.kind === RecipeMaterialKind.Output,
 	);
 
-	if (outputMaterials.length) return true;
+	if (outputMaterials.length) return null;
 
 	return new RecipeValidationError([new NoOutputError()]);
 };

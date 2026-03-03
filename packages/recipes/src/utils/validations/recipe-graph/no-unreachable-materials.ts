@@ -16,7 +16,7 @@ export const validateNoUnreachableMaterials = (
 		source.type === "start" ? [] : source,
 	);
 
-	if (!unreachableMaterials.length) return true;
+	if (!unreachableMaterials.length) return null;
 
 	const issues = unreachableMaterials.map(
 		(material) => new UnreachableMaterialError(material.name),
