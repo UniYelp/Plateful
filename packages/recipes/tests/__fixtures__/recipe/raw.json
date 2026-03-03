@@ -1,376 +1,108 @@
 {
-    "title": "Healthy Roasted Chicken & Potatoes with Fresh Salad, Rice, and Black Beans",
-    "description": "A balanced meal featuring safely prepared roasted chicken and potatoes, accompanied by fluffy white rice, savory black beans, and a refreshing fresh salad, ensuring all safety guidelines are met.",
-    "tags": [
-        "healthy"
-    ],
+    "title": "Banana Orange Smoothie",
+    "description": "A refreshing and simple smoothie made with fresh bananas and oranges.",
+    "tags": [],
     "steps": [
         [
             {
                 "type": "text",
-                "text": "Before handling any raw chicken, wash your hands thoroughly with soap and warm water. Ensure all surfaces, cutting boards, and utensils that will come into contact with raw chicken are clean. Do NOT wash the raw chicken."
+                "text": "Peel and slice the"
+            },
+            {
+                "type": "material",
+                "name": "Banana",
+                "quantity": {
+                    "value": 6
+                },
+                "kind": "input"
+            },
+            {
+                "type": "text",
+                "text": "and"
+            },
+            {
+                "type": "material",
+                "name": "Orange",
+                "quantity": {
+                    "value": 2
+                },
+                "kind": "input"
+            },
+            {
+                "type": "text",
+                "text": "into smaller pieces."
+            },
+            {
+                "type": "duration",
+                "kind": "prep",
+                "duration": "PT5M"
             }
         ],
         [
             {
                 "type": "text",
-                "text": "Wash and peel the "
+                "text": "Combine the sliced"
             },
             {
                 "type": "material",
-                "name": "Potato",
+                "name": "Banana",
                 "quantity": {
-                    "value": 15,
+                    "value": 6
+                },
+                "kind": "derived-input"
+            },
+            {
+                "type": "text",
+                "text": ","
+            },
+            {
+                "type": "material",
+                "name": "Orange",
+                "quantity": {
+                    "value": 2
+                },
+                "kind": "derived-input"
+            },
+            {
+                "type": "text",
+                "text": ", and"
+            },
+            {
+                "type": "material",
+                "name": "water",
+                "quantity": {
+                    "value": 1,
                     "unit": "cup"
                 },
                 "kind": "input"
             },
             {
                 "type": "text",
-                "text": ". Cut them into wedges. Wash and core 2 of the "
-            },
-            {
-                "type": "material",
-                "name": "Pepper bells",
-                "quantity": {
-                    "value": 2,
-                    "unit": "cup"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": ". Cut these bell peppers into strips. In a large "
+                "text": "in a"
             },
             {
                 "type": "tool",
-                "name": "mixing bowl"
+                "name": "Blender"
             },
             {
                 "type": "text",
-                "text": ", toss the potato wedges and bell pepper strips with "
-            },
-            {
-                "type": "material",
-                "name": "olive oil",
-                "quantity": {
-                    "value": 0.05,
-                    "unit": "liter"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": ". Set aside."
-            }
-        ],
-        [
-            {
-                "type": "text",
-                "text": "Preheat your "
-            },
-            {
-                "type": "tool",
-                "name": "oven"
-            },
-            {
-                "type": "text",
-                "text": " to "
-            },
-            {
-                "type": "temperature",
-                "value": 200,
-                "unit": "celsius"
-            },
-            {
-                "type": "text",
-                "text": ". Pat dry the "
-            },
-            {
-                "type": "material",
-                "name": "Chicken breast",
-                "quantity": {
-                    "value": 2,
-                    "unit": "kilogram"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": ". Place chicken breasts on a clean "
-            },
-            {
-                "type": "tool",
-                "name": "baking sheet"
-            },
-            {
-                "type": "text",
-                "text": ". Drizzle with "
-            },
-            {
-                "type": "material",
-                "name": "olive oil",
-                "quantity": {
-                    "value": 0.02,
-                    "unit": "liter"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": "."
-            }
-        ],
-        [
-            {
-                "type": "text",
-                "text": "Add the seasoned potato wedges and the 2 bell pepper strips to the same baking sheet with the chicken. Roast in the preheated oven for "
+                "text": ". Blend until completely smooth."
             },
             {
                 "type": "duration",
                 "kind": "cook",
-                "duration": "PT30M"
-            },
-            {
-                "type": "text",
-                "text": ". Flip the chicken and vegetables halfway through cooking. Cook until the internal temperature of the chicken reaches at least "
-            },
-            {
-                "type": "temperature",
-                "value": 74,
-                "unit": "celsius"
-            },
-            {
-                "type": "text",
-                "text": " (165 °F) when measured with a "
-            },
-            {
-                "type": "tool",
-                "name": "food thermometer"
-            },
-            {
-                "type": "text",
-                "text": " in the thickest part of the breast. Ensure potatoes are tender and golden."
-            }
-        ],
-        [
-            {
-                "type": "text",
-                "text": "After removing the cooked chicken and vegetables from the oven, immediately clean the "
-            },
-            {
-                "type": "tool",
-                "name": "baking sheet"
-            },
-            {
-                "type": "text",
-                "text": " and any other utensils that came into contact with raw chicken. Thoroughly wash your hands with soap and warm water before handling other ingredients."
-            }
-        ],
-        [
-            {
-                "type": "text",
-                "text": "While the chicken and vegetables are roasting, rinse "
+                "duration": "PT2M"
             },
             {
                 "type": "material",
-                "name": "White Rice",
-                "quantity": {
-                    "value": 1,
-                    "unit": "kilogram"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": " under cold "
-            },
-            {
-                "type": "material",
-                "name": "water",
-                "quantity": {
-                    "value": 1,
-                    "unit": "liter"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": " until the water runs clear. Combine the rinsed rice with "
-            },
-            {
-                "type": "material",
-                "name": "water",
-                "quantity": {
-                    "value": 2,
-                    "unit": "liter"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": " in a "
-            },
-            {
-                "type": "tool",
-                "name": "saucepan"
-            },
-            {
-                "type": "text",
-                "text": " or "
-            },
-            {
-                "type": "tool",
-                "name": "rice cooker"
-            },
-            {
-                "type": "text",
-                "text": ". Bring to a boil, then reduce heat to low, cover, and simmer for "
-            },
-            {
-                "type": "duration",
-                "kind": "cook",
-                "duration": "PT18M"
-            },
-            {
-                "type": "text",
-                "text": ", or until all water is absorbed. Fluff with a fork."
-            }
-        ],
-        [
-            {
-                "type": "text",
-                "text": "Rinse the "
-            },
-            {
-                "type": "material",
-                "name": "black beans",
-                "quantity": {
-                    "value": 0.5,
-                    "unit": "kilogram"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": " under cold "
-            },
-            {
-                "type": "material",
-                "name": "water",
-                "quantity": {
-                    "value": 1,
-                    "unit": "liter"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": ". Place the rinsed beans in a "
-            },
-            {
-                "type": "tool",
-                "name": "saucepan"
-            },
-            {
-                "type": "text",
-                "text": " with enough "
-            },
-            {
-                "type": "material",
-                "name": "water",
-                "quantity": {
-                    "value": 1,
-                    "unit": "liter"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": " to cover by at least an inch. Bring to a boil, then reduce heat and simmer for "
-            },
-            {
-                "type": "duration",
-                "kind": "cook",
-                "duration": "PT45M"
-            },
-            {
-                "type": "text",
-                "text": ", or until tender. Drain any excess water."
-            }
-        ],
-        [
-            {
-                "type": "text",
-                "text": "Wash the "
-            },
-            {
-                "type": "material",
-                "name": "Cucumber",
-                "quantity": {
-                    "value": 8,
-                    "unit": "slice"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": " and "
-            },
-            {
-                "type": "material",
-                "name": "Tometos",
+                "name": "Banana Orange Smoothie",
                 "quantity": {
                     "value": 4,
-                    "unit": "slice"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": ". Dice the cucumber and tomatoes. Wash and cut the remaining "
-            },
-            {
-                "type": "material",
-                "name": "Pepper bells",
-                "quantity": {
-                    "value": 2,
                     "unit": "cup"
                 },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": " into strips for the fresh salad. In a clean "
-            },
-            {
-                "type": "tool",
-                "name": "salad bowl"
-            },
-            {
-                "type": "text",
-                "text": ", combine the diced cucumber, tomatoes, and fresh bell pepper strips. Drizzle with "
-            },
-            {
-                "type": "material",
-                "name": "olive oil",
-                "quantity": {
-                    "value": 0.03,
-                    "unit": "liter"
-                },
-                "kind": "input"
-            },
-            {
-                "type": "text",
-                "text": " and toss gently. Do NOT use bell peppers that were roasted with chicken in the fresh salad."
-            }
-        ],
-        [
-            {
-                "type": "text",
-                "text": "Portion the roasted chicken breast, potato wedges, white rice, and black beans onto plates. Serve with a generous side of the fresh cucumber, tomato, and bell pepper salad."
+                "kind": "output"
             }
         ]
     ],
-    "notes": "The goose breast was not used to maintain a consistent healthy profile focused on chicken as the primary protein, and to ensure simplicity and manageability of food safety protocols within the recipe. Approximately 1 kilogram of white rice and 1.9 liters of olive oil remain unused. The quantity units for Potato, Cucumber, Pepper bells, and Tomatoes were assumed as 'cup' or 'slice' for the purpose of ensuring a reasonable amount for a meal, despite the input showing a null unit for these items, to make the recipe functionally consistent with a typical serving size."
+    "notes": "All provided ingredients were used in this recipe."
 }

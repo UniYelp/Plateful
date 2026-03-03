@@ -1,12 +1,12 @@
 import { Graph } from "effect";
 
 import { RecipeMaterialKind } from "../../../enums";
-import { NoOutputError, RecipeValidationError } from "../../../models";
+import { RecipeHasNoOutputError, RecipeValidationError } from "../../../models";
 import type { RecipeGraph, RecipeValidationResult } from "../../../types";
 
 export const validateRecipeHasOutput = (
 	graph: RecipeGraph,
-): RecipeValidationResult<NoOutputError> => {
+): RecipeValidationResult<RecipeHasNoOutputError> => {
 	const outputMaterials = Graph.findEdges(
 		graph,
 		(edge) =>
@@ -15,5 +15,5 @@ export const validateRecipeHasOutput = (
 
 	if (outputMaterials.length) return null;
 
-	return new RecipeValidationError([new NoOutputError()]);
+	return new RecipeValidationError([new RecipeHasNoOutputError()]);
 };

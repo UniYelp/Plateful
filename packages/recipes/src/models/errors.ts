@@ -18,9 +18,9 @@ export class UnreachableMaterialError extends Error {
 	}
 }
 
-export class NoOutputError extends Error {
-	static readonly _tag = "NoOutputError";
-	readonly _tag = NoOutputError._tag;
+export class RecipeHasNoOutputError extends Error {
+	static readonly _tag = "RecipeHasNoOutputError";
+	readonly _tag = RecipeHasNoOutputError._tag;
 
 	constructor() {
 		super(`Recipe does not have an output`);
@@ -78,7 +78,7 @@ export class MaterialQuantityExceededError extends Error {
 
 export type RecipeValidationIssue =
 	| UnreachableMaterialError
-	| NoOutputError
+	| RecipeHasNoOutputError
 	| UnusedDerivedOutputError
 	| MaterialUsedBeforeProducedError
 	| MaterialProducedBeforeInputsError
