@@ -18,6 +18,9 @@ catalogs:
     '@hono/zod-validator':
       specifier: ^0.7.3
       version: 0.7.6
+    '@opentelemetry/api':
+      specifier: ^1.9.0
+      version: 1.9.0
     ai:
       specifier: 6.0.94
       version: 6.0.94
@@ -140,6 +143,9 @@ importers:
       '@langfuse/tracing':
         specifier: ^4.5.1
         version: 4.5.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/api':
+        specifier: 'catalog:'
+        version: 1.9.0
       '@opentelemetry/sdk-node':
         specifier: ^0.210.0
         version: 0.210.0(@opentelemetry/api@1.9.0)
@@ -491,6 +497,9 @@ importers:
       '@ai-sdk/openai':
         specifier: 'catalog:'
         version: 3.0.30(zod@4.3.5)
+      '@opentelemetry/api':
+        specifier: 'catalog:'
+        version: 1.9.0
       '@pinecone-database/pinecone':
         specifier: ^7.1.0
         version: 7.1.0

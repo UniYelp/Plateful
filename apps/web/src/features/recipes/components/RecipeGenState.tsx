@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, ChefHat, ExternalLink, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
 
 import { api } from "@backend/api";
 import type { RecipeGenDoc } from "@backend/recipeGens";
@@ -16,7 +17,6 @@ import {
 	RecipeGenStatusSmall,
 	stageStatusDetails,
 } from "./loaders/recipe-gen-status";
-
 
 type Props = {
 	gen: RecipeGenDoc;
@@ -36,7 +36,13 @@ export const RecipeGenState = (props: Props) => {
 		generationsStats.today.total >= generationsStats.today.max;
 
 	const handleRetry = async () => {
-		await retryGen({ genId: gen._id, householdId: gen.householdId });
+		try {
+			await retryGen({ genId: gen._id, householdId: gen.householdId });
+		} catch (error) {
+			toast.error(
+				error instanceof Error ? error.message : "Failed to retry generation",
+			);
+		}
 	};
 
 	return (
@@ -44,105 +50,106 @@ export const RecipeGenState = (props: Props) => {
 			<CardContent className="flex flex-col gap-3 px-6">
 				<div className="flex items-center gap-4">
 					{isGeneratingRecipe(gen) && (
-					<>
-						<div className="relative shrink-0">
-							<RecipeGenStatusSmall currentStep={gen.state.status} />
-						</div>
-						<div className="flex w-full items-center justify-between">
-							<div className="mb-1 flex w-full flex-col justify-center">
-								<h3 className="font-semibold text-base">Generating Recipe</h3>
-								<h5 className="text-muted-foreground text-sm">
-									{
-										stageStatusDetails.find((s) => s.id === gen.state.status)
-											?.description
-									}
-								</h5>
+						<>
+							<div className="relative shrink-0">
+								<RecipeGenStatusSmall currentStep={gen.state.status} />
 							</div>
-							<div className="flex justify-end">
-								<span className="whitespace-nowrap text-muted-foreground text-xs">
-									{new Date(gen._creationTime).toLocaleDateString()}
-								</span>
-							</div>
-						</div>
-						
-					</>
-				)}
-
-				{isFailedRecipeGen(gen) && (
-					<>
-						<div className="flex h-15 w-15 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
-							<AlertCircle className="h-5 w-5 text-destructive" />
-						</div>
-
-						<div className="min-w-0 flex-1">
-							<div className="mb-2 flex items-start justify-between gap-4">
-								<div className="min-w-0 flex-1 flex flex-col justify-center">
-									<div className="mb-1 mt-2 flex items-center gap-2">
-										<h3 className="font-semibold text-base">
-											Generation Failed
-										</h3>
-										<Badge variant="destructive" className="text-xs">
-											Error
-										</Badge>
-									</div>
-									<p className="text-destructive/80 text-sm italic">
-										{gen.state.reason}
-									</p>
+							<div className="flex w-full items-center justify-between">
+								<div className="mb-1 flex w-full flex-col justify-center">
+									<h3 className="font-semibold text-base">Generating Recipe</h3>
+									<h5 className="text-muted-foreground text-sm">
+										{
+											stageStatusDetails.find((s) => s.id === gen.state.status)
+												?.description
+										}
+									</h5>
 								</div>
-								
-								<div className="min-w-max self-center flex flex-col gap-2">
-									<div className="flex justify-end">
-										<span className="whitespace-nowrap text-muted-foreground text-xs">
-											{new Date(gen._creationTime).toLocaleDateString()}
-										</span>
-									</div>
-									<Button 
-										onClick={handleRetry} 
-										size="sm" 
-										variant="outline" 
-										className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
-										disabled={isQuotaReached}
-									>
-										<RotateCcw className="mr-2 h-3 w-3" />
-										Retry
-									</Button>
-									{isQuotaReached && (
-										<p className="text-destructive text-[10px] text-right">Quota Reached</p>
-									)}
-								</div>
-							</div>
-						</div>
-					</>
-				)}
-
-				{isCompletedRecipeGen(gen) && (
-					<>
-						<div className="flex h-15 w-15 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
-							<ChefHat className="h-5 w-5" />
-						</div>
-						<div className="flex w-full justify-between">
-							<div className="mt-4">{title}</div>
-
-							<div className="min-w-max flex flex-col gap-2">
 								<div className="flex justify-end">
 									<span className="whitespace-nowrap text-muted-foreground text-xs">
 										{new Date(gen._creationTime).toLocaleDateString()}
 									</span>
 								</div>
-								<Button size="sm" asChild>
-									<Link
-										to={`/dashboard/recipes/$id`}
-										params={{ id: gen.state.recipeId }}
-									>
-										<ExternalLink className="mr-2 h-3 w-3" />
-										View Recipe
-									</Link>
-								</Button>
 							</div>
-						</div>
-					</>
-				)}
-			</div>
+						</>
+					)}
+
+					{isFailedRecipeGen(gen) && (
+						<>
+							<div className="flex h-15 w-15 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
+								<AlertCircle className="h-5 w-5 text-destructive" />
+							</div>
+
+							<div className="min-w-0 flex-1">
+								<div className="mb-2 flex items-start justify-between gap-4">
+									<div className="flex min-w-0 flex-1 flex-col justify-center">
+										<div className="mt-2 mb-1 flex items-center gap-2">
+											<h3 className="font-semibold text-base">
+												Generation Failed
+											</h3>
+											<Badge variant="destructive" className="text-xs">
+												Error
+											</Badge>
+										</div>
+										<p className="text-destructive/80 text-sm italic">
+											{gen.state.reason}
+										</p>
+									</div>
+
+									<div className="flex min-w-max flex-col gap-2 self-center">
+										<div className="flex justify-end">
+											<span className="whitespace-nowrap text-muted-foreground text-xs">
+												{new Date(gen._creationTime).toLocaleDateString()}
+											</span>
+										</div>
+										<Button
+											onClick={handleRetry}
+											size="sm"
+											variant="outline"
+											className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+											disabled={isQuotaReached}
+										>
+											<RotateCcw className="mr-2 h-3 w-3" />
+											Retry
+										</Button>
+										{isQuotaReached && (
+											<p className="text-right text-[10px] text-destructive">
+												Quota Reached
+											</p>
+										)}
+									</div>
+								</div>
+							</div>
+						</>
+					)}
+
+					{isCompletedRecipeGen(gen) && (
+						<>
+							<div className="flex h-15 w-15 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+								<ChefHat className="h-5 w-5" />
+							</div>
+							<div className="flex w-full justify-between">
+								<div className="mt-4">{title}</div>
+
+								<div className="flex min-w-max flex-col gap-2">
+									<div className="flex justify-end">
+										<span className="whitespace-nowrap text-muted-foreground text-xs">
+											{new Date(gen._creationTime).toLocaleDateString()}
+										</span>
+									</div>
+									<Button size="sm" asChild>
+										<Link
+											to={`/dashboard/recipes/$id`}
+											params={{ id: gen.state.recipeId }}
+										>
+											<ExternalLink className="mr-2 h-3 w-3" />
+											View Recipe
+										</Link>
+									</Button>
+								</div>
+							</div>
+						</>
+					)}
+				</div>
 			</CardContent>
 		</Card>
 	);

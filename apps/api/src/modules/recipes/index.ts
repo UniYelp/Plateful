@@ -1,3 +1,4 @@
+import { context, trace } from "@opentelemetry/api";
 import Elysia, { sse } from "elysia";
 
 import { LockedError } from "../../models/errors/locked";
@@ -51,67 +52,92 @@ export const recipes = new Elysia({
 				});
 
 				// Criticizer-optimizer loop
-				const MAX_ATTEMPTS = 5;
-				const SAFETY_THRESHOLD = 0.8;
-				let finalRecipe: RecipesModel.GenerateRecipeCompleteEventData | null =
-					null;
-				let finalSafetyScore: number | null = null;
-				let currentBody = body;
+				const tracer = trace.getTracer("recipe-generation");
+				const span = tracer.startSpan("generate-recipe-flow");
+				const activeContext = trace.setSpan(context.active(), span);
 
-				for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-					// Generate recipe
-					yield sse({
-						event: "working"
-					});
+				try {
+					span.setAttribute("householdId", householdId);
+					const MAX_ATTEMPTS = 5;
+					const SAFETY_THRESHOLD = 0.8;
+					let finalRecipe: RecipesModel.GenerateRecipeCompleteEventData | null =
+						null;
+					let finalSafetyScore: number | null = null;
+					let currentBody = body;
 
-					const recipeResult = await RecipeService.generateRecipe(currentBody);
-					finalRecipe = recipeResult;
+					for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+						// Generate recipe
+						yield sse({
+							event: "working",
+						});
 
-					// Critique with safety agent
-					yield sse({
-						event: "safety-check"
-					});
+						const recipeResult = await context.with(activeContext, () =>
+							RecipeService.generateRecipe(currentBody),
+						);
+						finalRecipe = recipeResult;
 
-					const safetyResult = await RecipeService.safetyCheck(JSON.stringify(recipeResult));
-					finalSafetyScore = safetyResult.score ?? null;
+						// Critique with safety agent
+						yield sse({
+							event: "safety-check",
+						});
 
-					// Check if safety score is acceptable
+						const safetyResult = await context.with(activeContext, () =>
+							RecipeService.safetyCheck(JSON.stringify(recipeResult)),
+						);
+
+						const rawScore = safetyResult.score;
+						finalSafetyScore =
+							typeof rawScore === "number" &&
+							Number.isFinite(rawScore) &&
+							rawScore >= 0 &&
+							rawScore <= 1
+								? rawScore
+								: null;
+
+						// Check if safety score is acceptable
+						if (
+							finalSafetyScore !== null &&
+							finalSafetyScore >= SAFETY_THRESHOLD
+						) {
+							break;
+						}
+
+						// If not acceptable and we have more attempts, prepare for retry
+						if (attempt < MAX_ATTEMPTS) {
+							currentBody = {
+								...body,
+								safetyCritique: safetyResult.text,
+								previouslyGenerated: JSON.stringify(recipeResult),
+							};
+						}
+					}
+
+					if (finalRecipe === null || finalSafetyScore === null) {
+						throw new Error("Failed to generate a recipe");
+					}
+
 					if (
 						finalSafetyScore !== null &&
-						finalSafetyScore >= SAFETY_THRESHOLD
+						finalSafetyScore < SAFETY_THRESHOLD
 					) {
-						break;
+						yield sse({
+							event: "failed",
+							data: {
+								error:
+									"Unable to generate a safe recipe after multiple attempts",
+								safetyScore: finalSafetyScore,
+							},
+						});
+						return;
 					}
 
-					// If not acceptable and we have more attempts, prepare for retry
-					if (attempt < MAX_ATTEMPTS) {
-						currentBody = {
-							...body,
-							safetyCritique: safetyResult.text,
-							previouslyGenerated: JSON.stringify(recipeResult),
-						};
-					}
-				}
-
-				if (finalRecipe === null || finalSafetyScore === null) {
-					throw new Error("Failed to generate a recipe");
-				}
-
-				if (finalSafetyScore !== null && finalSafetyScore < SAFETY_THRESHOLD) {
 					yield sse({
-						event: "failed",
-						data: {
-							error: "Unable to generate a safe recipe after multiple attempts",
-							safetyScore: finalSafetyScore,
-						},
+						event: "done",
+						data: finalRecipe,
 					});
-					return;
+				} finally {
+					span.end();
 				}
-
-				yield sse({
-					event: "done",
-					data: finalRecipe,
-				});
 			} catch (err) {
 				let error: Error;
 

@@ -1,19 +1,25 @@
+import { trace } from "@opentelemetry/api";
+
 import { recipeAgent } from "./agent";
 import { generateRecipePrompt } from "./prompt";
 import type { RecipeGenInput } from "./schemas";
 
-export const generateRecipe = async (input: RecipeGenInput) => {
-	const {
-		output,
-		text,
-		steps,
-	} = await recipeAgent.generate({
-		prompt: generateRecipePrompt(input),
-	});
+const tracer = trace.getTracer("recipe-generation");
 
-	return {
-		output,
-		text,
-		steps,
-	};
+export const generateRecipe = async (input: RecipeGenInput) => {
+	return tracer.startActiveSpan("recipe-generator", async (span) => {
+		try {
+			const { output, text, steps } = await recipeAgent.generate({
+				prompt: generateRecipePrompt(input),
+			});
+
+			return {
+				output,
+				text,
+				steps,
+			};
+		} finally {
+			span.end();
+		}
+	});
 };
