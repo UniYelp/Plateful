@@ -7,7 +7,7 @@
 		"build": "tsdown",
 		"dev": "dotenvx run -- tsx watch src/dev.ts",
 		"dev:proxy": "dotenvx run -- node --experimental-strip-types scripts/local-proxy.js",
-		"start": "NODE_ENV=production node dist/index.js",
+		"start": "NODE_ENV=production node dist/index.mjs",
 		"test": "vitest run --typecheck --passWithNoTests",
 		"test:w": "vitest --typecheck --passWithNoTests",
 		"test:agent": "dotenvx run -- tsx ./tests/langfuse/evaluate.ts",
