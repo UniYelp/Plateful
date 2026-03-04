@@ -164,6 +164,9 @@ importers:
       '@plateful/time':
         specifier: workspace:*
         version: link:../../packages/time
+      '@plateful/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@plateful/units':
         specifier: workspace:*
         version: link:../../packages/units
@@ -222,9 +225,6 @@ importers:
       '@langfuse/client':
         specifier: ^4.6.1
         version: 4.6.1(@opentelemetry/api@1.9.0)
-      '@plateful/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       tsx:
         specifier: ^4.7.1
         version: 4.21.0
