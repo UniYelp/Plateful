@@ -29,7 +29,7 @@ export const getMaterialNodeByEdgeIndex = (
 
 	const { data: edgeData } = edge;
 
-	if (edgeData.type !== "material" || edgeData.kind !== edgeKind) {
+	if (edgeData.kind !== edgeKind) {
 		return null;
 	}
 

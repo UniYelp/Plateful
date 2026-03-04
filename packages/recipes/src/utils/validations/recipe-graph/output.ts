@@ -63,13 +63,16 @@ const isUsedOutputMaterial = (graph: RecipeGraph, edgeIndex: EdgeIndex) => {
 
 	const { index: nodeIndex } = res;
 
-	const neighbors = new Set(Graph.neighbors(graph, nodeIndex));
+	const neighbors = Graph.neighbors(graph, nodeIndex);
 
 	/**
-	 *? Material nodes with output-kind edges are self-referential,
-	 *? so they'll have at least one neighbor, themselves
+	 * ? Material nodes with "output-kind" edges are self-referential,
+	 * ? so they'll have at least one neighbor, themselves
+	 *
+	 * ! Checking `length` instead of converting to a `Set`
+     * ! in-case there are other self-referential nodes which shouldn't be there
 	 */
-	if (neighbors.size > 1) return true;
+	if (neighbors.length > 1) return true;
 
 	return false;
 };

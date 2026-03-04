@@ -1,3 +1,4 @@
+import type { RecipeMaterialKind } from "../enums";
 import type { Quantity } from "../types";
 
 export class InternalRecipeGraphError extends Error {
@@ -6,6 +7,18 @@ export class InternalRecipeGraphError extends Error {
 
 	constructor(public override message: string) {
 		super(`Internal Recipe Graph Error: ${message}`);
+	}
+}
+
+export class IngredientNotUsedOnlyAsInputError extends Error {
+	static readonly _tag = "IngredientNotUsedOnlyAsInputError";
+	readonly _tag = IngredientNotUsedOnlyAsInputError._tag;
+
+	constructor(
+		public id: string,
+		public kinds: RecipeMaterialKind[],
+	) {
+		super(`Ingredient ${id} was also used as ${kinds.join(", ")}`);
 	}
 }
 
@@ -86,6 +99,7 @@ export class MaterialQuantityExceededError extends Error {
 }
 
 export type RecipeValidationIssue =
+	| IngredientNotUsedOnlyAsInputError
 	| UnreachableMaterialError
 	| RecipeHasNoOutputError
 	| UsedOutputMaterialError
