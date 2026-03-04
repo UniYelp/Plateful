@@ -1,54 +1,35 @@
 {
-    "$schema": "https://turborepo.com/schema.json",
-    "ui": "tui",
-    "globalDependencies": [
-        ".env*"
-    ],
-    "tasks": {
-        "_transit": {
-            "dependsOn": [
-                "^_transit"
-            ]
-        },
-        "build": {
-            "dependsOn": [
-                "^build"
-                // "test"
-            ],
-            "inputs": [
-                "$TURBO_DEFAULT$",
-                ".env*"
-            ],
-            "outputs": [
-                "dist/**"
-            ]
-        },
-        "dev": {
-            "cache": false,
-            "persistent": true,
-            "interactive": true,
-            "dependsOn": [
-                "^build"
-            ]
-        },
-        "test": {
-            "with": [
-                "test:eval",
-                "test:types"
-            ],
-            "dependsOn": [
-                "_transit"
-            ]
-        },
-        "test:types": {
-            "dependsOn": [
-                "_transit"
-            ]
-        },
-        "test:eval": {
-            "dependsOn": [
-                "_transit"
-            ]
-        }
-    }
+	"$schema": "https://turborepo.com/schema.json",
+	"ui": "tui",
+	"globalDependencies": [".env*"],
+	"envMode": "loose",
+	"tasks": {
+		"_transit": {
+			"dependsOn": ["^_transit"]
+		},
+		"build": {
+			"dependsOn": [
+				"^build"
+				// "test"
+			],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": ["dist/**"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true,
+			"interactive": true,
+			"dependsOn": ["^build"]
+		},
+		"test": {
+			"with": ["test:eval", "test:types"],
+			"dependsOn": ["_transit"]
+		},
+		"test:types": {
+			"dependsOn": ["_transit"]
+		},
+		"test:eval": {
+			"dependsOn": ["_transit"]
+		}
+	}
 }

@@ -43,21 +43,17 @@ function EditIngredientPage() {
 	});
 
 	const onSubmit = async (value: IngredientFormOutput) => {
-		const expiryDate = value.expiryDate
-			? new Date(value.expiryDate).getTime()
-			: undefined;
+		const quantities = value.quantities.map((q) => ({
+			unit: q.unit,
+			expiresAt: q.expiryDate ? new Date(q.expiryDate).getTime() : undefined,
+			amount: q.amount,
+		}));
 
 		const ingredientId = await editIngredient({
 			ingredientId: paramIngredientId as Id<"ingredients">,
 			name: value.name,
 			description: value.description,
-			quantities: [
-				{
-					unit: value.unit,
-					expiresAt: expiryDate,
-					amount: value.amount,
-				},
-			],
+			quantities,
 			householdId,
 			category: value.category,
 			tags: [],
@@ -110,13 +106,15 @@ function EditIngredientPage() {
 								name: ingredient?.name,
 								description: ingredient?.description,
 								category: ingredient?.category,
-								amount: ingredient?.quantities[0]?.amount,
-								unit: ingredient?.quantities[0]?.unit,
-								expiryDate: ingredient?.quantities[0]?.expiresAt
-									? new Date(ingredient?.quantities[0]?.expiresAt)
-											.toISOString()
-											.split("T")[0]
-									: undefined,
+								quantities: ingredient?.quantities?.length
+									? ingredient.quantities.map((q) => ({
+											amount: q.amount,
+											unit: q.unit,
+											expiryDate: q.expiresAt
+												? new Date(q.expiresAt).toISOString().split("T")[0]
+												: undefined,
+										}))
+									: [{ amount: NaN }],
 							}}
 							submitAction="Edit"
 							onSubmit={onSubmit}

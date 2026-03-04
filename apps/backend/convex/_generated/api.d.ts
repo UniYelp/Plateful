@@ -24,6 +24,8 @@ import type * as ingredients from "../ingredients.js";
 import type * as migrations from "../migrations.js";
 import type * as migrations_index from "../migrations/index.js";
 import type * as recipeGens from "../recipeGens.js";
+import type * as recipeGens_enums_gen_status from "../recipeGens/enums/gen_status.js";
+import type * as recipeGens_types from "../recipeGens/types.js";
 import type * as recipeIngredients from "../recipeIngredients.js";
 import type * as recipes from "../recipes.js";
 import type * as routes_webhooks from "../routes/webhooks.js";
@@ -59,6 +61,8 @@ declare const fullApi: ApiFromModules<{
   migrations: typeof migrations;
   "migrations/index": typeof migrations_index;
   recipeGens: typeof recipeGens;
+  "recipeGens/enums/gen_status": typeof recipeGens_enums_gen_status;
+  "recipeGens/types": typeof recipeGens_types;
   recipeIngredients: typeof recipeIngredients;
   recipes: typeof recipes;
   "routes/webhooks": typeof routes_webhooks;

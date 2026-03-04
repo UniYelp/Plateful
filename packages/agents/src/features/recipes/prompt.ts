@@ -22,10 +22,40 @@ export const generateRecipeSystemPrompt = dedent`
     Your goal is to produce a clear, consistent recipe that can be rendered as human-readable instructions while allowing reliable extraction of ingredient usage and time information.
 `;
 
-export const generateRecipePrompt = (input: RecipeGenInput) => dedent`
-    ${generateRecipeSystemPrompt}
+export const generateRecipePrompt = (input: RecipeGenInput) => {
+	const { safetyCritique, previouslyGenerated, ...inputWithoutCritique } =
+		input as RecipeGenInput & {
+			safetyCritique?: string;
+			previouslyGenerated?: string;
+		};
 
-    ---
+	const safetySection =
+		previouslyGenerated && safetyCritique
+			? dedent`
+                <previous_attempt>
+                <previously_generated_recipe>
+                ${previouslyGenerated}
+                </previously_generated_recipe>
 
-    ${JSON.stringify(input, null, 2)}
-`;
+                <safety_critique>
+                ${safetyCritique}
+                </safety_critique>
+
+                Please review the safety critique and improve the recipe to address all concerns while maintaining quality and appeal.
+                </previous_attempt>
+            `
+			: "";
+
+	const prompt = dedent`
+        <system>
+        ${generateRecipeSystemPrompt}
+        ${safetySection}
+        </system>
+
+        <user_input>
+        ${JSON.stringify(inputWithoutCritique, null, 2)}
+        </user_input>
+    `;
+
+	return prompt;
+};

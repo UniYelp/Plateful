@@ -126,11 +126,7 @@ export const GenerateRecipeForm = (props: Props) => {
 																		.map((quantity) =>
 																			`${quantity.amount} ${ingredientSymbolToDisplay(
 																				quantity.unit ?? "",
-																			)} ${
-																				quantity.state
-																					? ` (${quantity.state})`
-																					: ""
-																			}`.trim(),
+																			)}`.trim(),
 																		)
 																		.join(", ")}
 																</span>

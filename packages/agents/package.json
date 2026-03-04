@@ -19,12 +19,17 @@
             "@plateful/dev-src": "./src/features/recipes/index.ts",
             "default": "./dist/recipes/index.js"
         },
+        "./safety": {
+            "@plateful/dev-src": "./src/features/safety/index.ts",
+            "default": "./dist/safety/index.js"
+        },
         "./package.json": "./package.json"
     },
     "publishConfig": {
         "exports": {
             ".": "./dist/index.js",
             "./recipes": "./dist/recipes/index.js",
+            "./safety": "./dist/safety/index.js",
             "./package.json": "./package.json"
         }
     },
@@ -38,13 +43,15 @@
         "test:types": "tsc --noEmit --project tsconfig.build.json"
     },
     "dependencies": {
-        "@ai-sdk/google": "2.0.46",
-        "@ai-sdk/openai": "^3.0.11",
+        "@ai-sdk/google": "catalog:",
+        "@ai-sdk/openai": "catalog:",
+        "@opentelemetry/api": "catalog:",
+        "@pinecone-database/pinecone": "^7.1.0",
         "@plateful/ingredients": "workspace:*",
         "@plateful/recipes": "workspace:*",
         "@plateful/units": "workspace:*",
         "@plateful/utils": "workspace:*",
-        "ai": "5.0.113",
+        "ai": "catalog:",
         "dedent": "^1.7.1",
         "effect": "catalog:",
         "zod": "catalog:"

@@ -6,6 +6,6 @@ export const INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH = 200;
 
 export const addIngredientFormDefaultValues: IngredientFormInput = {
 	name: "",
-	amount: NaN,
 	category: "",
+	quantities: [{ amount: NaN }],
 };

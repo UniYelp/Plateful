@@ -1,4 +1,5 @@
-import { bool } from "@plateful/utils";
+import { RecipeMaterialKind } from "@plateful/recipes";
+import { Arr, bool } from "@plateful/utils";
 import type { Id } from "@backend/dataModel";
 import type {
 	MaterialBlock,
@@ -60,6 +61,15 @@ const formatMaterialBlock = (
 	data: MaterialBlock,
 	nameById: Record<Id<"ingredients">, string | undefined>,
 ) => {
+	if (
+		Arr.includes(
+			[RecipeMaterialKind.DerivedOutput, RecipeMaterialKind.Output],
+			data.kind,
+		)
+	) {
+		return "";
+	}
+
 	const userLocale = undefined;
 
 	const name =
@@ -100,5 +110,5 @@ const formatMaterialBlock = (
 		type: "unit",
 	}).format(parts);
 
-	return ` ${formattedStr} `;
+	return formattedStr;
 };

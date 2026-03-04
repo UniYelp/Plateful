@@ -1,11 +1,18 @@
 import { google } from "@ai-sdk/google";
-import { Experimental_Agent as Agent, Output, stepCountIs } from "ai";
+import { type DeepPartial, Output, stepCountIs, ToolLoopAgent } from "ai";
 
-import { RecipeGenOutputSchema } from "./schemas";
+import { type RecipeGenOutput, RecipeGenOutputSchema } from "./schemas";
 
-export const recipeAgent = new Agent({
+/**
+ * @see {@link https://ai.google.dev/gemini/docs/agent-tool-specs|Agent Tool Specs} for details on the available options
+ */
+export const recipeAgent: ToolLoopAgent<
+	never,
+	{},
+	Output.Output<RecipeGenOutput, DeepPartial<RecipeGenOutput>, never>
+> = new ToolLoopAgent({
 	model: google("gemini-2.5-flash"),
-	experimental_output: Output.object({
+	output: Output.object({
 		schema: RecipeGenOutputSchema,
 	}),
 	// tools: {
