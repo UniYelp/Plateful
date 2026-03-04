@@ -49,8 +49,9 @@ const LoadAgentSecrets = Effect.gen(function* () {
 		Config.array(Config.nonEmptyString(), "PROVIDERS"),
 	);
 
-	const providersConfig = yield* Effect.forEach(providers, (provider) =>
-		Effect.gen(function* () {
+	const providersConfig = yield* Effect.forEach(
+		providers,
+		Effect.fnUntraced(function* (provider) {
 			const providerConfigKey = provider.toLocaleUpperCase();
 
 			const keys = yield* ProviderKeysConfig(providerConfigKey);
