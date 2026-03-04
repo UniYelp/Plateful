@@ -58,6 +58,7 @@ export const recipes = new Elysia({
 
 				try {
 					span.setAttribute("householdId", householdId);
+					span.setAttribute("langfuse.trace.input", JSON.stringify(body));
 					const MAX_ATTEMPTS = 5;
 					const SAFETY_THRESHOLD = 0.8;
 					let finalRecipe: RecipesModel.GenerateRecipeCompleteEventData | null =
@@ -130,6 +131,11 @@ export const recipes = new Elysia({
 						});
 						return;
 					}
+
+					span.setAttribute(
+						"langfuse.trace.output",
+						JSON.stringify(finalRecipe),
+					);
 
 					yield sse({
 						event: "done",
