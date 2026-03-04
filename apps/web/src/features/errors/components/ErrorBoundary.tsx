@@ -11,13 +11,12 @@ import {
 } from "@/components/ui/card";
 
 export function ErrorBoundary({
-	error,
+	error: _error,
 	reset,
 }: {
 	error: Error & { digest?: string };
 	reset: () => void;
 }) {
-
 	return (
 		<div className="flex h-[80vh] items-center justify-center to-destructive/5 p-4">
 			<Card className="w-full max-w-lg border-2 border-destructive/20">

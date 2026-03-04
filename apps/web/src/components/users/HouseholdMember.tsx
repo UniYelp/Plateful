@@ -1,4 +1,4 @@
-import type { MemberRole } from "@backend/schema";
+import type { MemberRole } from "@backend/values";
 import { Badge } from "../ui/badge";
 
 type HouseholdMemberProps = {

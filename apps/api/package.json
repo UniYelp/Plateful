@@ -4,6 +4,7 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
+		"build": "tsdown",
 		"dev": "dotenvx run -- tsx watch src/dev.ts",
 		"dev:proxy": "dotenvx run -- node --experimental-strip-types scripts/local-proxy.js",
 		"start": "NODE_ENV=production node dist/index.mjs",
