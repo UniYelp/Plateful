@@ -18,3 +18,10 @@ Recipe creation flow:
 3. the user can choose quick tags like vegan, low effort, snack, healthy etc
 4. until the recipe is done, the user will be shown a loader
 5. the recipe page will be shown after it is created
+#### Recipe Graph
+##### Requirements:  
+- all input or derived-input materials were made out of ingredients or derived-outputs respectively (e.g there are no extra input/derived-input materials not present in the ingredients/derived-outputs respectively)  
+- all derived-output materials have been used (e.g appear later as a derived-input)  
+- a derived-input material has not appeared before its derived-output variant  
+- an output-kind material (output, derived-output) has not appeared before all of its required input-kind materials (input, derived-input)  
+- input-kind quantity values are not above the ingredient's/derived-output's respective quantity (if the ingredient has an "unlimited quantity" this validation can be skipped & the units match

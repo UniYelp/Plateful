@@ -1,5 +1,7 @@
 import z from "zod";
 
+import type { Recipe, RecipeIngredient } from "@plateful/recipes";
+import type { Satisfies } from "@plateful/types";
 import {
 	MaterialUnitSchema,
 	SpiceLevelSchema,
@@ -39,6 +41,11 @@ const IngredientInputSchema = z
 		title: "Available Ingredient",
 	});
 
+export type IngredientInput = Satisfies<
+	z.infer<typeof IngredientInputSchema>,
+	RecipeIngredient
+>;
+
 const ToolsInputSchema = z
 	.union([
 		z.literal("unlimited").meta({
@@ -72,6 +79,9 @@ export const RecipeGenInputSchema = z.object({
 	}),
 });
 
-export type RecipeGenInput = z.infer<typeof RecipeGenInputSchema>;
+export type RecipeGenInput = Satisfies<
+	z.infer<typeof RecipeGenInputSchema>,
+	Pick<Recipe, "ingredients">
+>;
 
 export const RecipeGenInputJsonSchema = z.toJSONSchema(RecipeGenInputSchema);

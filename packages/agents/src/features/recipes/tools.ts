@@ -26,7 +26,6 @@ export const convertMeasurementUnits = tool({
 	}),
 	execute: ({ value, from, to }) => {
 		const result = convertIngredientUnits(from, to, value);
-
 		return { result: result ? result.value : result };
 	},
 });

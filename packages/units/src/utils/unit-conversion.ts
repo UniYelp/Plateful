@@ -1,4 +1,5 @@
 import { Graph, Option } from "effect";
+import type { NodeIndex } from "effect/Graph";
 
 import type { SuggestStr } from "@plateful/types";
 import { isDefined } from "@plateful/utils";
@@ -56,7 +57,7 @@ export const unitConversion = <
 		(conversion) => conversion.from,
 	);
 
-	const nodeByUnit = {} as Record<Unit, number>;
+	const nodeByUnit = {} as Record<Unit, NodeIndex>;
 
 	const graph = Graph.directed<Unit, Conversion>((mutable) => {
 		for (const unit of units) {
@@ -123,9 +124,7 @@ export const unitConversion = <
 		if (!isDefined(start)) return [];
 
 		const walker = Graph.bfs(graph, { start: [start] });
-		return Array.from(Graph.indices(walker)).flatMap(
-			(node) => graph.nodes.get(node) ?? [],
-		);
+		return Array.from(Graph.values(walker));
 	};
 
 	return { convertUnits, getConversions };

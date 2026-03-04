@@ -34,6 +34,7 @@ export type * from "./replace";
 export type * from "./result";
 export type * from "./reverse";
 export type * from "./safe-record";
+export type * from "./satisfies";
 export type * from "./strict-omit";
 export type * from "./stringifiable";
 export type * from "./suggest";

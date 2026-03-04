@@ -4,6 +4,9 @@
         "composite": true,
         "target": "es2024",
         "module": "esnext",
+        "lib": [
+            "ESNext"
+        ],
         "moduleResolution": "bundler",
         "isolatedDeclarations": false,
         "esModuleInterop": true,
@@ -20,7 +23,7 @@
         "noUncheckedIndexedAccess": true,
         "allowUnreachableCode": false,
         "noImplicitOverride": true,
-        "noImplicitAny": true
+        "noImplicitAny": true,
     },
     "references": [
         {
