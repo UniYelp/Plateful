@@ -1,11 +1,11 @@
 import type { UnNest } from "@plateful/types";
-import type { RecipeGenShape } from "@backend/recipeGens";
+import type { RecipeGenShape, RecipeGenStatus } from "@backend/recipeGens";
 
 export type QuickTag = {label: string; value: string; icon: string}
 
 
 export type RecipeGenState<
-    Status extends RecipeGenShape["state"]["status"],
+    Status extends RecipeGenStatus,
     Gen extends RecipeGenShape = RecipeGenShape,
 > = Extract<
     UnNest<Gen, "state">,

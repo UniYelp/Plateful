@@ -191,48 +191,9 @@ export function IngredientForm({
 						</form.AppField>
 					</div>
 					<div className="flex-1 space-y-4">
-						<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-							<form.AppField name="amount">
-								{(field) => (
-									<div className="space-y-2">
-										<Label htmlFor="amount">Amount *</Label>
-										<Input
-											type="number"
-											placeholder="e.g., 50, 1, 0.5"
-											value={
-												Number.isFinite(field.state.value)
-													? field.state.value
-													: ""
-											}
-											aria-invalid={isInvalidTouched(field)}
-											onChange={(e) =>
-												field.handleChange(e.target.valueAsNumber)
-											}
-										/>
-										<field.FieldError />
-									</div>
-								)}
-							</form.AppField>
-							<form.AppField name="unit">
-								{(field) => (
-									<div className="space-y-2">
-										<Label htmlFor="unit">Unit</Label>
-										<Combobox<string>
-											value={field.state.value ?? ""}
-											onChange={(value) =>
-												field.handleChange(value || undefined)
-											}
-											groups={ingredientUnitGroups}
-										/>
-
-										<field.FieldError />
-									</div>
-								)}
-							</form.AppField>
-						</div>
 						<form.AppField name="category">
 							{(field) => (
-								<div className="space-y-2">
+								<div className="space-y-2 pb-2">
 									<Label htmlFor="category">Category *</Label>
 									<Select
 										value={field.state.value ?? ""}
@@ -259,22 +220,116 @@ export function IngredientForm({
 								</div>
 							)}
 						</form.AppField>
-						<form.AppField name="expiryDate">
-							{(field) => (
-								<div className="space-y-2">
-									<Label htmlFor="expiryDate">Expiry Date</Label>
-									<Input
-										type="date"
-										value={field.state.value ?? ""}
-										aria-invalid={isInvalidTouched(field)}
-										onChange={(e) =>
-											field.handleChange(e.target.value || undefined)
-										}
-									/>
-									<field.FieldError />
+						<form.Subscribe selector={(state) => state.values.quantities}>
+							{(quantities) => (
+								<div className="space-y-6">
+									<div className="flex items-center justify-between">
+										<Label className="text-base font-semibold">Quantities</Label>
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() =>
+												form.pushFieldValue("quantities", { amount: NaN })
+											}
+										>
+											Add Quantity
+										</Button>
+									</div>
+
+									{quantities?.map((_, index) => (
+										<div
+											key={`quantity-${index}`}
+											className="relative rounded-lg border p-4 shadow-sm"
+										>
+											{quantities.length > 1 && (
+												<Button
+													type="button"
+													variant="ghost"
+													size="sm"
+													className="absolute top-2 right-2 h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+													onClick={() =>
+														form.removeFieldValue("quantities", index)
+													}
+												>
+													<span className="sr-only">Remove</span>
+													&times;
+												</Button>
+											)}
+
+											<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+												<form.AppField
+													name={`quantities[${index}].amount`}
+												>
+													{(field) => (
+														<div className="space-y-2">
+															<Label htmlFor={`amount-${index}`}>Amount *</Label>
+															<Input
+																id={`amount-${index}`}
+																type="number"
+																placeholder="e.g., 50, 1, 0.5"
+																value={
+																	Number.isFinite(field.state.value)
+																		? field.state.value
+																		: ""
+																}
+																aria-invalid={isInvalidTouched(field)}
+																onChange={(e) =>
+																	field.handleChange(e.target.valueAsNumber)
+																}
+															/>
+															<field.FieldError />
+														</div>
+													)}
+												</form.AppField>
+												<form.AppField
+													name={`quantities[${index}].unit`}
+												>
+													{(field) => (
+														<div className="space-y-2">
+															<Label htmlFor={`unit-${index}`}>Unit</Label>
+															<Combobox<string>
+																value={field.state.value ?? ""}
+																onChange={(value) =>
+																	field.handleChange(value || undefined)
+																}
+																groups={ingredientUnitGroups}
+															/>
+															<field.FieldError />
+														</div>
+													)}
+												</form.AppField>
+											</div>
+											<div className="mt-4">
+												<form.AppField
+													name={`quantities[${index}].expiryDate`}
+												>
+													{(field) => (
+														<div className="space-y-2">
+															<Label htmlFor={`expiryDate-${index}`}>
+																Expiry Date
+															</Label>
+															<Input
+																id={`expiryDate-${index}`}
+																type="date"
+																value={field.state.value ?? ""}
+																aria-invalid={isInvalidTouched(field)}
+																onChange={(e) =>
+																	field.handleChange(e.target.value || undefined)
+																}
+															/>
+															<field.FieldError />
+														</div>
+													)}
+												</form.AppField>
+											</div>
+										</div>
+									))}
 								</div>
 							)}
-						</form.AppField>
+						</form.Subscribe>
+
+						
 					</div>
 				</div>
 

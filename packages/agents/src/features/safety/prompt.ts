@@ -21,6 +21,7 @@ export const generateSafetyInstructionsPrompt = dedent`
 
     If you identify a safety concern in the recipe, return a clear statement of the concern along with the relevant safety instructions retrieved from the database. If no safety concerns are identified, return a statement indicating that the recipe appears to be safe based on the information provided.
     In addition, give the recipe a safety score between 0 and 1, where 0 indicates that the recipe is very unsafe and 1 indicates that the recipe is very safe. Consider all potential safety concerns and the relevance of the retrieved safety instructions when assigning the safety score.
+    Make sure to provide the score in the following format: "Safety Score: X", where X is the score you have assigned to the recipe.
     `;
 
 export const generateSafetyPrompt = (recipe: string) => dedent`

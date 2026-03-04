@@ -3,6 +3,9 @@ import { type DeepPartial, Output, stepCountIs, ToolLoopAgent } from "ai";
 
 import { type RecipeGenOutput, RecipeGenOutputSchema } from "./schemas";
 
+/**
+ * @see {@link https://ai.google.dev/gemini/docs/agent-tool-specs|Agent Tool Specs} for details on the available options
+ */
 export const recipeAgent: ToolLoopAgent<
 	never,
 	{},

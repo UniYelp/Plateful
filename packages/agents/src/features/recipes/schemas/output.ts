@@ -54,7 +54,10 @@ export const MaterialBlockSchema = z
 		name: z.string(),
 		quantity: z.object({
 			value: z.number(),
-			unit: z.optional(MaterialUnitSchema),
+			unit: z.nullable(MaterialUnitSchema).optional().meta({
+				description:
+					"The unit of the material. Must be null if the ingredient inherently lacks one (e.g. '5 tomatoes' -> unit: null, value: 5). Do not hallucinate a unit here.",
+			}),
 		}),
 		// state: z.optional(z.string()).meta({
 		// 	description: "The state of the material.",
@@ -170,7 +173,7 @@ const RecipeStepSchema = z
 		title: "Recipe Step",
 		description: dedent`
             - Material blocks must appear at the point in the step where the ingredient is used.
-            - Duration blocks must appear in the step they apply to.
+            - Duration blocks must be logically and naturally embedded within the textual instructions (e.g., 'Roast the potatoes for [DURATION] until golden' instead of 'Roast the potatoes until golden. [DURATION]'). Do NOT simply append time blocks at the end of a sentence.
             - Do NOT include in plain text that which can be expressed as a structured object.
             - Do NOT introduce any additional structured block types.
             - Steps must be readable as-is by a human when rendered sequentially.

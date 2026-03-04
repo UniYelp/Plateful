@@ -1,3 +1,4 @@
+import { context, trace } from "@opentelemetry/api";
 import Elysia, { sse } from "elysia";
 
 import { LockedError } from "../../models/errors/locked";
@@ -50,12 +51,99 @@ export const recipes = new Elysia({
 					event: "started",
 				});
 
-				const result = await RecipeService.generateRecipe(body);
+				// Criticizer-optimizer loop
+				const tracer = trace.getTracer("recipe-generation");
+				const span = tracer.startSpan("generate-recipe-flow");
+				const activeContext = trace.setSpan(context.active(), span);
 
-				yield sse({
-					event: "done",
-					data: result,
-				});
+				try {
+					span.setAttribute("householdId", householdId);
+					span.setAttribute("langfuse.trace.input", JSON.stringify(body));
+					const MAX_ATTEMPTS = 5;
+					const SAFETY_THRESHOLD = 0.8;
+					let finalRecipe: RecipesModel.GenerateRecipeCompleteEventData | null =
+						null;
+					let finalSafetyScore: number | null = null;
+					let currentBody = body;
+
+					for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+						// Generate recipe
+						yield sse({
+							event: "working",
+						});
+
+						const recipeResult = await context.with(activeContext, () =>
+							RecipeService.generateRecipe(currentBody),
+						);
+						finalRecipe = recipeResult;
+
+						// Critique with safety agent
+						yield sse({
+							event: "safety-check",
+						});
+
+						const safetyResult = await context.with(activeContext, () =>
+							RecipeService.safetyCheck(JSON.stringify(recipeResult)),
+						);
+
+						const rawScore = safetyResult.score;
+						finalSafetyScore =
+							typeof rawScore === "number" &&
+							Number.isFinite(rawScore) &&
+							rawScore >= 0 &&
+							rawScore <= 1
+								? rawScore
+								: null;
+
+						// Check if safety score is acceptable
+						if (
+							finalSafetyScore !== null &&
+							finalSafetyScore >= SAFETY_THRESHOLD
+						) {
+							break;
+						}
+
+						// If not acceptable and we have more attempts, prepare for retry
+						if (attempt < MAX_ATTEMPTS) {
+							currentBody = {
+								...body,
+								safetyCritique: safetyResult.text,
+								previouslyGenerated: JSON.stringify(recipeResult),
+							};
+						}
+					}
+
+					if (finalRecipe === null || finalSafetyScore === null) {
+						throw new Error("Failed to generate a recipe");
+					}
+
+					if (
+						finalSafetyScore !== null &&
+						finalSafetyScore < SAFETY_THRESHOLD
+					) {
+						yield sse({
+							event: "failed",
+							data: {
+								error:
+									"Unable to generate a safe recipe after multiple attempts",
+								safetyScore: finalSafetyScore,
+							},
+						});
+						return;
+					}
+
+					span.setAttribute(
+						"langfuse.trace.output",
+						JSON.stringify(finalRecipe),
+					);
+
+					yield sse({
+						event: "done",
+						data: finalRecipe,
+					});
+				} finally {
+					span.end();
+				}
 			} catch (err) {
 				let error: Error;
 

@@ -24,6 +24,7 @@
         "@elysiajs/server-timing": "^1.4.0",
         "@langfuse/otel": "^4.5.1",
         "@langfuse/tracing": "^4.5.1",
+        "@opentelemetry/api": "catalog:",
         "@opentelemetry/sdk-node": "^0.210.0",
         "@plateful/agents": "workspace:*",
         "@plateful/http": "workspace:*",

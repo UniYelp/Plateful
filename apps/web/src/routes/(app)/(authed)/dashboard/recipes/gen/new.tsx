@@ -94,13 +94,12 @@ function GenerateNewRecipePage() {
 				if (!selectedIngredients.has(ing.id)) return [];
 
 				const quantities = ing.availableQuantities.flatMap(
-					({ amount, unit, state, expiresAt, expiry }) =>
+					({ amount, unit, expiresAt, expiry }) =>
 						expiry?.status === "expired" //? Not really a valid state
 							? []
 							: {
 									amount,
 									unit,
-									state,
 									expiresAt,
 								},
 				);

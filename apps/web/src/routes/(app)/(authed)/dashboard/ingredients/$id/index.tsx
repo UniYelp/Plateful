@@ -1,33 +1,53 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft, BookOpen, Edit2, Package2, Trash2 } from "lucide-react";
+import { ArrowLeft, BookOpen, Combine, Edit2, Package2, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 import {
 	type ExpiryDetails,
 	getExpiryDetailsFromExpiryDates,
+	IngredientSymbol,
+	ingredientUnitsByCategory,
 } from "@plateful/ingredients";
+import { entriesOf } from "@plateful/utils";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
 import {
 	colorByExpiryStatus,
 	ingredientImgByCategory,
 } from "&/ingredients/constants";
+import { IngredientQuantitySchema } from "&/ingredients/forms/schemas";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { submitFormHandler } from "&/forms/utils/submission";
+import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Combobox } from "@/components/ui/combobox";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import { useAppForm } from "@/lib/form";
+import { z } from "zod";
+
+const ingredientUnitGroups = entriesOf(ingredientUnitsByCategory).map(
+	([label, units]) => ({
+		label,
+		options: units.map((unit) => {
+			const symbol = IngredientSymbol[unit];
+			return {
+				value: unit as string,
+				label: `${unit}${symbol !== unit ? ` (${symbol})` : ""}`,
+			};
+		}),
+	}),
+);
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/ingredients/$id/",
@@ -63,20 +83,58 @@ export function IngredientDetailPage() {
 			: "skip",
 	);
 
-	const deleteIngredient = useMutation(api.ingredients.deleteIngredient);
+	const addQuantity = useMutation(api.ingredients.addQuantity);
+	const removeQuantityAt = useMutation(api.ingredients.removeQuantityAt);
+	const mergeQuantities = useMutation(api.ingredients.mergeQuantities);
+
+	const [addOpen, setAddOpen] = useState(false);
+
+	const form = useAppForm({
+		defaultValues: {
+			amount: NaN,
+			unit: undefined,
+			expiryDate: undefined,
+		} as z.infer<typeof IngredientQuantitySchema>,
+		validators: {
+			onChange: IngredientQuantitySchema,
+		},
+		onSubmitInvalid: focusInvalid,
+		onSubmit: async ({ value }) => {
+			if (!household || !ingredient) return;
+			await addQuantity({
+				householdId: household._id,
+				ingredientId: ingredient._id,
+				amount: value.amount,
+				unit: value.unit,
+				expiresAt: value.expiryDate ? new Date(value.expiryDate).getTime() : undefined,
+			});
+			setAddOpen(false);
+			form.reset();
+		},
+	});
 
 	if (!household || !ingredient) return "Loading...";
 
 	const totalAmount = getTotalAmount(ingredient.quantities);
 
-	const deleteIngredientHandler = async () => {
-		await deleteIngredient({
+
+
+	const handleRemoveQuantity = async (index: number) => {
+		await removeQuantityAt({
+			householdId: household._id,
+			ingredientId: ingredient._id,
+			index,
+		});
+	};
+
+	const handleMergeQuantities = async () => {
+		await mergeQuantities({
 			ingredientId: ingredient._id,
 			householdId: household._id,
 		});
-
-		navigate({ to: "/dashboard/ingredients" });
 	};
+
+
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -117,7 +175,7 @@ export function IngredientDetailPage() {
 										<Badge variant="outline">{ingredient.category}</Badge>
 										<span className="text-muted-foreground text-sm">
 											Total:{" "}
-											<span className="font-semibold">{totalAmount}</span>
+											<span className="font-semibold">{totalAmount || "0"}</span>
 										</span>
 									</div>
 								</div>
@@ -128,9 +186,100 @@ export function IngredientDetailPage() {
 								<h3 className="font-semibold">
 									Quantities ({ingredient.quantities.length})
 								</h3>
+								<div className="flex gap-2">
+									{ingredient.quantities.length > 1 && (
+										<Button
+											size="sm"
+											variant="secondary"
+											onClick={handleMergeQuantities}
+										>
+											<Combine className="mr-1 h-3 w-3" />
+											Merge Quantities
+										</Button>
+									)}
+								<Popover open={addOpen} onOpenChange={(open) => {
+									setAddOpen(open);
+									if (!open) form.reset();
+								}}>
+									<PopoverTrigger asChild>
+										<Button size="sm" variant="outline">
+											<Plus className="mr-1 h-3 w-3" />
+											Add Quantity
+										</Button>
+									</PopoverTrigger>
+									<PopoverContent className="w-64 p-4" align="end">
+										<p className="mb-3 font-medium text-sm">Add a quantity slot</p>
+										<form onSubmit={submitFormHandler(form)} className="space-y-3">
+											<form.AppForm>
+												<form.AppField name="amount">
+													{(field) => (
+														<div>
+															<Label className="mb-1 text-xs">Amount *</Label>
+															<Input
+																type="number"
+																min="0"
+																step="any"
+																placeholder="e.g. 500"
+																value={Number.isFinite(field.state.value) ? field.state.value : ""}
+																aria-invalid={isInvalidTouched(field)}
+																onChange={(e) => field.handleChange(e.target.valueAsNumber)}
+															/>
+															<field.FieldError />
+														</div>
+													)}
+												</form.AppField>
+												<form.AppField name="unit">
+													{(field) => (
+														<div>
+															<Label className="mb-1 text-xs">Unit (optional)</Label>
+															<Combobox<string>
+																value={field.state.value ?? ""}
+																onChange={(value) => field.handleChange(value || undefined)}
+																groups={ingredientUnitGroups}
+															/>
+															<field.FieldError />
+														</div>
+													)}
+												</form.AppField>
+												<form.AppField name="expiryDate">
+													{(field) => (
+														<div>
+															<Label className="mb-1 text-xs">Expiry Date (optional)</Label>
+															<Input
+																type="date"
+																value={field.state.value ?? ""}
+																aria-invalid={isInvalidTouched(field)}
+																onChange={(e) => field.handleChange(e.target.value || undefined)}
+															/>
+															<field.FieldError />
+														</div>
+													)}
+												</form.AppField>
+												<form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+													{([canSubmit, isSubmitting]) => (
+														<Button
+															type="submit"
+															size="sm"
+															className="w-full"
+															disabled={!canSubmit || isSubmitting}
+														>
+															Add
+														</Button>
+													)}
+												</form.Subscribe>
+											</form.AppForm>
+										</form>
+									</PopoverContent>
+								</Popover>
+								</div>
 							</div>
 
 							<div className="space-y-2">
+								{ingredient.quantities.length === 0 && (
+									<p className="text-center text-muted-foreground text-sm py-4">
+										No quantities — add one above.
+									</p>
+								)}
 								{ingredient.quantities.map((q, index) => {
 									const status: ExpiryDetails | null = q.expiresAt
 										? getExpiryDetailsFromExpiryDates([
@@ -138,15 +287,14 @@ export function IngredientDetailPage() {
 											])
 										: { status: "good", text: "No Expiry date" };
 									return (
-										<button
+										<div
 											key={`quantity-${index}-${q.amount}-${q.unit}-${q.expiresAt}`}
-											type="button"
-											className="flex w-full items-center justify-between rounded-lg border p-3 text-left transition-colors hover:bg-muted/50"
+											className="flex w-full items-center justify-between rounded-lg border p-3"
 										>
 											<div className="flex-1">
 												<span className="font-medium">
 													{q.amount}
-													{q.unit}
+													{q.unit ? ` ${q.unit}` : ""}
 												</span>
 											</div>
 											<div className="flex items-center gap-3">
@@ -158,8 +306,16 @@ export function IngredientDetailPage() {
 														{status.text}
 													</Badge>
 												)}
+												<Button
+													size="sm"
+													variant="ghost"
+													className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+													onClick={() => handleRemoveQuantity(index)}
+												>
+													<Trash2 className="h-3.5 w-3.5" />
+												</Button>
 											</div>
-										</button>
+										</div>
 									);
 								})}
 							</div>
@@ -217,6 +373,7 @@ export function IngredientDetailPage() {
 								<Button
 									variant="outline"
 									className="w-full justify-start bg-transparent"
+									asChild
 								>
 									<Link
 										to="/dashboard/ingredients/$id/edit"
@@ -227,34 +384,13 @@ export function IngredientDetailPage() {
 										Edit Ingredient
 									</Link>
 								</Button>
-								<AlertDialog>
-									<AlertDialogTrigger asChild>
-										<Button
-											variant="outline"
-											className="w-full justify-start bg-transparent text-destructive hover:text-destructive"
-										>
-											<Trash2 className="mr-2 h-4 w-4" />
-											Delete Ingredient
-										</Button>
-									</AlertDialogTrigger>
-									<AlertDialogContent>
-										<AlertDialogHeader>
-											<AlertDialogTitle>
-												Are you absolutely sure?
-											</AlertDialogTitle>
-											<AlertDialogDescription>
-												This action cannot be undone. You won't be able to
-												restore the ingredient data after deletion.
-											</AlertDialogDescription>
-										</AlertDialogHeader>
-										<AlertDialogFooter>
-											<AlertDialogCancel>Cancel</AlertDialogCancel>
-											<AlertDialogAction onClick={deleteIngredientHandler}>
-												Continue
-											</AlertDialogAction>
-										</AlertDialogFooter>
-									</AlertDialogContent>
-								</AlertDialog>
+
+								<DeleteIngredientButton
+									variant="full"
+									ingredientId={ingredient._id}
+									householdId={household._id}
+									onDeleted={() => navigate({ to: "/dashboard/ingredients" })}
+								/>
 							</CardContent>
 						</Card>
 					</div>

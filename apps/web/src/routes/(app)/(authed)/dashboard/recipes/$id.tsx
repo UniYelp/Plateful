@@ -20,6 +20,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
@@ -113,11 +114,6 @@ function RecipeDetailPage() {
 								</span>
 							</div>
 						)}
-
-						{/* <div className="flex items-center gap-2">
-							<Users className="h-4 w-4 text-muted-foreground" />
-							<span className="text-sm">{recipe.servings} servings</span>
-						</div> */}
 					</div>
 
 					<div className="mb-6 flex flex-wrap gap-2">
@@ -128,29 +124,17 @@ function RecipeDetailPage() {
 						))}
 					</div>
 
-					<div className="flex gap-3">
-						<Button
-							size="lg"
-							className="flex-1"
-							disabled={!canCook}
-							asChild={canCook}
-						>
-							{canCook ? (
-								<Link to="/dashboard/recipes/$id" params={{ id: recipeId }}>
-									<Play className="mr-2 h-4 w-4" />
-									Start Cooking
-								</Link>
-							) : (
-								<>
-									<Play className="mr-2 h-4 w-4" />
-									Start Cooking
-								</>
-							)}
-						</Button>
-						{/* <Button variant="outline" size="lg">
-							<Edit className="mr-2 h-4 w-4" />
-							Edit
-						</Button> */}
+					<div className="flex gap-4">
+						<CookNowDialog householdId={household._id} ingredients={ingredients}>
+							<Button
+								size="lg"
+								className="flex-1"
+								disabled={!canCook}
+							>
+								<Play className="mr-2 h-4 w-4" />
+								Start Cooking
+							</Button>
+						</CookNowDialog>
 					</div>
 
 					{!canCook && (

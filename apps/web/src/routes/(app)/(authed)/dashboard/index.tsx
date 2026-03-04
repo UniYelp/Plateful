@@ -57,9 +57,17 @@ function DashboardPage() {
 		householdId: household._id,
 	});
 
+	const generationsStats = useQuery(api.recipeGens.stats, {
+		householdId: household._id,
+	});
+
 	if (!isLoaded || !user) {
 		return <div>Loading...</div>;
 	}
+
+	const isQuotaReached =
+		generationsStats &&
+		generationsStats.today.total >= generationsStats.today.max;
 
 	return (
 		<>
@@ -144,13 +152,29 @@ function DashboardPage() {
 								</Button>
 
 								<Button
-									className="h-auto flex-col gap-2 bg-transparent p-4"
+									className="relative h-auto flex-col gap-2 bg-transparent p-4 group"
 									variant="outline"
 									asChild
+									disabled={isQuotaReached}
 								>
-									<Link to="/dashboard/recipes/gen/new">
+									<Link
+										to="/dashboard/recipes/gen/new"
+										disabled={isQuotaReached}
+										aria-disabled={isQuotaReached}
+										className={isQuotaReached ? "pointer-events-none text-neutral-400" : ""}
+										onClick={(e) => {
+											if (isQuotaReached) {
+												e.preventDefault();
+											}
+										}}
+									>
 										<Sparkles className="h-6 w-6" />
 										<span>Generate Recipe</span>
+										{isQuotaReached && (
+											<span className="absolute -top-3 right-[-10px] rounded-full bg-destructive px-2 py-0.5 text-[10px] text-destructive-foreground">
+												Quota Reached
+											</span>
+										)}
 									</Link>
 								</Button>
 							</div>
@@ -223,7 +247,7 @@ function DashboardPage() {
 								className="mt-4 w-full bg-transparent"
 								asChild
 							>
-								<Link to="/dashboard/ingredients">View All</Link>
+								<Link to="/dashboard/ingredients" search={{ expiringOnly: true }}>View All</Link>
 							</Button>
 						</CardContent>
 					</Card>

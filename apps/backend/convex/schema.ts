@@ -207,6 +207,9 @@ export const recipeGenV0MetadataFields = {
 	version: v.literal("v0"),
 	tags: v.array(v.string()),
 	ingredients: v.array(v.id("ingredients")),
+	allergens: v.optional(v.array(v.string())),
+	likedFoods: v.optional(v.string()),
+	dislikedFoods: v.optional(v.string()),
 };
 
 export const recipeGensFields = {
@@ -214,7 +217,7 @@ export const recipeGensFields = {
 
 	state: v.union(
 		v.object({
-			status: v.union(v.literal("pending"), v.literal("generating")),
+			status: v.union(v.literal("pending"), v.literal("generating"), v.literal("validating")),
 		}),
 		v.object({
 			status: v.literal("completed"),
