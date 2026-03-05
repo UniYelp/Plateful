@@ -40,11 +40,11 @@
         "test:w": "vitest --typecheck --passWithNoTests",
         "test:types": "tsc --noEmit --project tsconfig.build.json",
         "eval": "evalite",
-        "eval:dev": "evalite watch"
+        "eval:dev": "evalite watch",
+        "eval:ui": "evalite serve"
     },
     "dependencies": {
         "@ai-sdk/google": "catalog:",
-        "@ai-sdk/openai": "catalog:",
         "@opentelemetry/api": "catalog:",
         "@pinecone-database/pinecone": "^7.1.0",
         "@plateful/ingredients": "workspace:*",

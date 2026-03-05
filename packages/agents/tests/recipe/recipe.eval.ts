@@ -20,6 +20,7 @@ import bananaSmoothieOutput from "../__fixtures__/Banana-Orange-Smoothie/output.
 	type: "json",
 };
 import {
+	RecipeGenIngredientsUsageScorer,
 	RecipeGenIngredientUsedAsOnlyInputScorer,
 	RecipeGenNoMaterialProducedBeforeInputsScorer,
 	RecipeGenNoMaterialUsedBeforeProducedScorer,
@@ -27,7 +28,6 @@ import {
 	RecipeGenNoUnusedDerivedMaterialsScorer,
 	RecipeGenOutputScorer,
 } from "./scorers";
-import { RecipeGenIngredientsUsageScorer } from "./scorers/ingredients-usage";
 import type { RecipeGenEvalVariant } from "./types";
 
 const isOnlyDummy = process.env.EVAL_DUMMY_ONLY === "true";

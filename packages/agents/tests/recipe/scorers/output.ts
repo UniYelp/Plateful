@@ -73,7 +73,7 @@ export const RecipeGenOutputScorer = createScorer<
 		const issueTag = UsedOutputMaterialError._tag;
 
 		return {
-			score: usedOutputsScore,
+			score: Math.max(0, Math.min(1, usedOutputsScore)),
 			metadata: {
 				issues: [
 					{
