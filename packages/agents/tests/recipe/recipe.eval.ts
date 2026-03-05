@@ -28,24 +28,14 @@ import {
 	RecipeGenNoUnusedDerivedMaterialsScorer,
 	RecipeGenOutputScorer,
 } from "./scorers";
-import type { RecipeGenEvalVariant } from "./types";
+import type { EvalVariant, RecipeGenEvalVariant } from "./types";
 
-const isOnlyDummy = process.env.EVAL_DUMMY_ONLY === "true";
-const runBadDummy = isOnlyDummy && process.env.EVAL_BAD_DUMMY_OUTPUT === "true";
+const isDummyOnly = process.env.EVAL_RUN_DUMMY_ONLY === "true";
+const runDummy = process.env.EVAL_RUN_DUMMY === "true";
+const runBadDummy = process.env.EVAL_RUN_BAD_DUMMY === "true";
+const runLiveModel = process.env.EVAL_RUN_LIVE_MODEL === "true";
 
-evalite.each<RecipeGenEvalVariant>([
-	{
-		name: "Dummy",
-		input: {
-			isDummy: true,
-			res: {
-				text: "",
-				steps: [],
-				recipe: bananaSmoothieOutput as RecipeGenOutput,
-			},
-		},
-		only: isOnlyDummy,
-	},
+const badDummyVariant: EvalVariant[] = [
 	{
 		name: "Dummy - No Output",
 		input: {
@@ -56,14 +46,38 @@ evalite.each<RecipeGenEvalVariant>([
 				recipe: bananaSmoothieNoOutput as RecipeGenOutput,
 			},
 		},
-		only: runBadDummy,
+		only: isDummyOnly,
 	},
+];
+
+const dummyVariants: EvalVariant[] = [
+	{
+		name: "Dummy",
+		input: {
+			isDummy: true,
+			res: {
+				text: "",
+				steps: [],
+				recipe: bananaSmoothieOutput as RecipeGenOutput,
+			},
+		},
+		only: isDummyOnly,
+	},
+];
+
+const liveVariants: EvalVariant[] = [
 	{
 		name: "Gemini-2.5-flash",
 		input: { model: google("gemini-2.5-flash") },
 	},
+];
+
+evalite.each<RecipeGenEvalVariant>([
+	...(runDummy ? dummyVariants : []),
+	...(runBadDummy ? badDummyVariant : []),
+	...(runLiveModel ? liveVariants : []),
 ])("Recipe Generation/Prompt Embed", {
-	data: [{ input: bananaSmoothieInput as RecipeGenInput, only: isOnlyDummy }],
+	data: [{ input: bananaSmoothieInput as RecipeGenInput, only: isDummyOnly }],
 	task: async (input, variant) => {
 		if (variant.isDummy) {
 			const { res } = variant;

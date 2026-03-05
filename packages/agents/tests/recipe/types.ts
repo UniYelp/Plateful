@@ -31,6 +31,12 @@ export type RecipeGenEvalVariant =
 			res: RecipeModelResponse;
 	  };
 
+export type EvalVariant = {
+	name: string;
+	input: RecipeGenEvalVariant;
+	only?: boolean;
+};
+
 type BaseScoreIssueMetadata<Issue extends string = string> = {
 	title: Issue;
 	description: string;
