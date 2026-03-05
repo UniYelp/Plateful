@@ -19,13 +19,19 @@ import bananaSmoothieNoOutput from "../__fixtures__/Banana-Orange-Smoothie/no-ou
 import bananaSmoothieOutput from "../__fixtures__/Banana-Orange-Smoothie/output.json" with {
 	type: "json",
 };
-import { RecipeGenOutputScorer } from "./scorers/output";
+import {
+	RecipeGenIngredientUsedAsOnlyInputScorer,
+	RecipeGenNoMaterialProducedBeforeInputsScorer,
+	RecipeGenNoMaterialUsedBeforeProducedScorer,
+	RecipeGenNoUnreachableMaterialsScorer,
+	RecipeGenNoUnusedDerivedMaterialsScorer,
+	RecipeGenOutputScorer,
+} from "./scorers";
+import { RecipeGenIngredientsUsageScorer } from "./scorers/ingredients-usage";
 import type { RecipeGenEvalVariant } from "./types";
 
 const isOnlyDummy = process.env.EVAL_DUMMY_ONLY === "true";
 const runBadDummy = isOnlyDummy && process.env.EVAL_BAD_DUMMY_OUTPUT === "true";
-
-console.log(process.env.EVAL_DUMMY_ONLY);
 
 evalite.each<RecipeGenEvalVariant>([
 	{
@@ -34,8 +40,8 @@ evalite.each<RecipeGenEvalVariant>([
 			isDummy: true,
 			res: {
 				text: "",
-				output: bananaSmoothieOutput as RecipeGenOutput,
 				steps: [],
+				recipe: bananaSmoothieOutput as RecipeGenOutput,
 			},
 		},
 		only: isOnlyDummy,
@@ -46,15 +52,15 @@ evalite.each<RecipeGenEvalVariant>([
 			isDummy: true,
 			res: {
 				text: "",
-				output: bananaSmoothieNoOutput as RecipeGenOutput,
 				steps: [],
+				recipe: bananaSmoothieNoOutput as RecipeGenOutput,
 			},
 		},
 		only: runBadDummy,
 	},
 	{
 		name: "Gemini-2.5-flash",
-		input: { isDummy: false, model: google("gemini-2.5-flash") },
+		input: { model: google("gemini-2.5-flash") },
 	},
 ])("Recipe Generation/Prompt Embed", {
 	data: [{ input: bananaSmoothieInput as RecipeGenInput, only: isOnlyDummy }],
@@ -64,7 +70,7 @@ evalite.each<RecipeGenEvalVariant>([
 
 			const recipeGraph = createRecipeGraph({
 				ingredients: input.ingredients,
-				steps: res.output.steps,
+				steps: res.recipe.steps,
 			});
 
 			return {
@@ -92,12 +98,20 @@ evalite.each<RecipeGenEvalVariant>([
 
 		return {
 			text,
-			output,
+			recipe: output,
 			steps,
 			recipeGraph,
 		};
 	},
-	scorers: [RecipeGenOutputScorer],
+	scorers: [
+		RecipeGenOutputScorer,
+		RecipeGenIngredientsUsageScorer,
+		RecipeGenNoUnreachableMaterialsScorer,
+		RecipeGenIngredientUsedAsOnlyInputScorer,
+		RecipeGenNoMaterialProducedBeforeInputsScorer,
+		RecipeGenNoMaterialUsedBeforeProducedScorer,
+		RecipeGenNoUnusedDerivedMaterialsScorer,
+	],
 	columns: ({ input, output, scores, traces }) => [
 		{
 			label: "Input",

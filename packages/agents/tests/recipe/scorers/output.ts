@@ -21,7 +21,9 @@ export const RecipeGenOutputScorer = createScorer<
 >({
 	name: "Recipe Gen Output",
 	description: "Checks if the generated recipe's output is valid.",
-	scorer: ({ output }): RecipeGenScore<RecipeHasNoOutputError | UsedOutputMaterialError> => {
+	scorer: ({
+		output,
+	}): RecipeGenScore<RecipeHasNoOutputError | UsedOutputMaterialError> => {
 		const { recipeGraph } = output;
 
 		const res = validateRecipeOutput(recipeGraph);
@@ -44,10 +46,12 @@ export const RecipeGenOutputScorer = createScorer<
 			return {
 				score: 0,
 				metadata: {
-					issue: {
-						title: issueTag,
-						description: errorMessageByErrorTag[issueTag],
-					},
+					issues: [
+						{
+							title: issueTag,
+							description: errorMessageByErrorTag[issueTag],
+						},
+					],
 				},
 			};
 		}
@@ -71,13 +75,15 @@ export const RecipeGenOutputScorer = createScorer<
 		return {
 			score: usedOutputsScore,
 			metadata: {
-				issue: {
-					title: issueTag,
-					description: errorMessageByErrorTag[issueTag],
-					count: usedOutputsIssues.length,
-					outputs: outputNodes.length,
-					materials: usedOutputsIssues.map((issue) => issue.id),
-				},
+				issues: [
+					{
+						title: issueTag,
+						description: errorMessageByErrorTag[issueTag],
+						count: usedOutputsIssues.length,
+						outputs: outputNodes.length,
+						materials: usedOutputsIssues.map((issue) => issue.id),
+					},
+				],
 			},
 		};
 	},

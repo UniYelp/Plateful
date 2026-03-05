@@ -4,6 +4,7 @@ import type { Evalite } from "evalite";
 import type {
 	RecipeGraph,
 	RecipeValidationIssue,
+	UnreachableMaterialError,
 	UsedOutputMaterialError,
 } from "@plateful/recipes";
 import type { Satisfies, SuggestStr } from "@plateful/types";
@@ -16,15 +17,15 @@ export type RecipeGenEvalInput = RecipeGenInput;
 
 type RecipeModelResponse = {
 	text: string;
-	output: RecipeGenOutput;
 	steps: StepResult<ToolSet>[];
+	recipe: RecipeGenOutput;
 };
 export type RecipeGenEvalOutput = RecipeModelResponse & {
 	recipeGraph: RecipeGraph;
 };
 
 export type RecipeGenEvalVariant =
-	| { isDummy: false; model: LanguageModel }
+	| { isDummy?: false; model: LanguageModel }
 	| {
 			isDummy: true;
 			res: RecipeModelResponse;
@@ -43,6 +44,20 @@ type ScoreMetadataByIssue = Satisfies<
 			outputs: number;
 			materials: string[];
 		};
+		[UnreachableMaterialError._tag]: {
+			count: number;
+			materials: string[];
+		};
+		UnusedIngredients: {
+			ingredients: {
+				count: number;
+				unused: {
+					count: number;
+					names: string[];
+				};
+			};
+			agentNotes: string | null;
+		};
 		[x: string]: unknown;
 	},
 	Partial<{
@@ -57,10 +72,6 @@ export type RecipeGenScore<
 	T extends string | RecipeValidationIssue = string | RecipeValidationIssue,
 > = Evalite.UserProvidedScoreWithMetadata & {
 	metadata?: {
-		issue?: ScoreMetadata<
-			T extends RecipeValidationIssue
-				? T["_tag"]
-				: string
-		>;
+		issues?: ScoreMetadata<T extends RecipeValidationIssue ? T["_tag"] : T>[];
 	};
 };
