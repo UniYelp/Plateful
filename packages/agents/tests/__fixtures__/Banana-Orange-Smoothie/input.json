@@ -1,0 +1,26 @@
+{
+    "ingredients": [
+        {
+            "name": "Banana",
+            "quantity": {
+                "value": 6,
+                "unit": null
+            }
+        },
+        {
+            "name": "Orange",
+            "quantity": {
+                "value": 2,
+                "unit": null
+            }
+        },
+        {
+            "name": "water",
+            "quantity": "unlimited"
+        }
+    ],
+    "tools": "unlimited",
+    "tags": [],
+    "temperatureUnit": "celsius",
+    "toleratedSpiceLevel": "no-preference"
+}
