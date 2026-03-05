@@ -10,6 +10,8 @@ node_modules
 .env.local
 .env.development.local
 .env.test.local
+.env.eval
+.env.eval.local
 .env.production.local
 
 # Testing

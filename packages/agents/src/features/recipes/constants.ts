@@ -1,15 +1,21 @@
 import {
+	IngredientNotUsedOnlyAsInputError,
 	MaterialProducedBeforeInputsError,
 	MaterialQuantityExceededError,
 	MaterialUsedBeforeProducedError,
-	NoOutputError,
+	RecipeHasNoOutputError,
 	type RecipeValidationIssue,
 	UnreachableMaterialError,
 	UnusedDerivedOutputError,
+	UsedOutputMaterialError,
 } from "@plateful/recipes";
 
 export const errorMessageByErrorTag = {
-	[NoOutputError._tag]: "Recipe does not have an output",
+	[RecipeHasNoOutputError._tag]: "Recipe does not have an output",
+	[UsedOutputMaterialError._tag]:
+		"Recipe has an output material that is also used as an input",
+	[IngredientNotUsedOnlyAsInputError._tag]:
+		"Recipe has an ingredient that is also treated as an 'output-kind' material",
 	[UnreachableMaterialError._tag]:
 		"Recipe has materials that could not be traced back to a source ingredient",
 	[UnusedDerivedOutputError._tag]: "Recipe has an unused derived output",
