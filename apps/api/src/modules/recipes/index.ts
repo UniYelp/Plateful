@@ -6,6 +6,7 @@ import { RateLimitError } from "../../models/errors/rate-limit";
 import { auth } from "../../plugins/auth.plugin";
 import { logger } from "../../plugins/logger.plugin";
 import { redis } from "../../plugins/redis.plugin";
+import { RedisKeys } from "../../redis/keys";
 import { RedisLocks } from "../../redis/locks";
 import { RecipesModel } from "./model";
 import * as RecipeService from "./service";
@@ -33,16 +34,19 @@ export const recipes = new Elysia({
 					throw new LockedError("You may only generate one recipe at a time");
 				}
 
-				const rphLock = RedisLocks.recipes.gen.household.rph(
-					redis,
-					householdId,
-				);
+				const rphLock = RedisLocks.recipes.gen.household.rph(redis);
 
-				const { acquired: hasRemaining, resetAt } = await rphLock.tryAcquire();
+				const {
+					success: hasRemaining,
+					limit,
+					reset,
+				} = await rphLock.limit(
+					RedisKeys.recipes.gen.household.rph(householdId),
+				);
 
 				if (!hasRemaining) {
 					throw new RateLimitError(
-						{ limit: rphLock.limit, resetAt },
+						{ limit, resetAt: reset },
 						"Household requests limit exceeded",
 					);
 				}

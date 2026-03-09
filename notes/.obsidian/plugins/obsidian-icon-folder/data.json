@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiServer",
+      "LiLogs",
+      "SiE",
       "AsEvaliteIconWhite",
-      "AsPineconeIconWhite",
-      "AsPineconeIcon",
-      "AsLangfuseIcon",
-      "SiGooglegemini"
+      "AsPineconeIconWhite"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
