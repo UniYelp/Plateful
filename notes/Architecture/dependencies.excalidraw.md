@@ -33,7 +33,7 @@ tags: [excalidraw]
 
 [[Architecture/Services/Convex]] ^A6nHYA61
 
-[[Api Gateway]] ^PDtYh3sy
+[[Api]] ^PDtYh3sy
 
 
 Api ^vL9lyPOW
