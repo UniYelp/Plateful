@@ -5,6 +5,9 @@ export { useLogger } from "evlog/elysia";
 
 export const LoggerPluginName = "logger.Plugin";
 
+/**
+ * @see {@link https://www.evlog.dev/frameworks/elysia}
+ */
 export const logger = () =>
 	new Elysia({ name: LoggerPluginName })
 		.use(evlog())
