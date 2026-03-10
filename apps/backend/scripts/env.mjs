@@ -53,7 +53,7 @@ export const ENV = createEnv({
 	emptyStringAsUndefined: true,
 });
 
-const envPath = join(__dirname, "../.env.defaults");
+const envPath = join(import.meta.dirname, "../.env.defaults");
 
 writeFileSync(
 	envPath,
