@@ -85,5 +85,8 @@
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "[lua]": {
         "editor.defaultFormatter": "yinfei.luahelper"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "biomejs.biome"
     }
 }
