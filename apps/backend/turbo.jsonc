@@ -3,14 +3,10 @@
         "//"
     ],
     "tasks": {
-        "env": {
-            "cache": false
-        },
         "deploy": {
             "cache": false,
             "dependsOn": [
-                "^build",
-                "env"
+                "^build"
             ]
         }
     }
