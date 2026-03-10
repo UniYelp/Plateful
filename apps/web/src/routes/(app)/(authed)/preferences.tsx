@@ -11,7 +11,7 @@ export const Route = createFileRoute("/(app)/(authed)/preferences")({
 	loader: async ({ context }) => {
 		const { queryClient } = context;
 
-		const userPreferences = await queryClient.ensureQueryData(
+		await queryClient.ensureQueryData(
 			convexQuery(api.userPreferences.byActiveUser),
 		);
 

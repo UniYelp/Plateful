@@ -199,7 +199,11 @@ export const retry = householdMutation({
 
 		const recipeGen = await ctx.db.get("recipeGens", genId);
 
-		if (!recipeGen || recipeGen.householdId !== householdId || isSoftDeleted(recipeGen)) {
+		if (
+			!recipeGen ||
+			recipeGen.householdId !== householdId ||
+			isSoftDeleted(recipeGen)
+		) {
 			throw notFound({ entity: "recipe generation", by: "household" });
 		}
 
@@ -435,7 +439,7 @@ export const generateRecipe = internalAction({
 			}
 
 			const result: RecipeGenInput["ingredients"][number][] = [];
-			
+
 			for (const [unit, value] of amountByUnit.entries()) {
 				result.push({
 					name,
@@ -700,7 +704,7 @@ export const generateRecipe = internalAction({
 						throw new InternalError(error, { cause: error });
 					}
 					default: {
-						const _exhaustive: never = chunk;
+						chunk satisfies never;
 						continue;
 					}
 				}

@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "vite",
         "start": "vite",
-        "build": "vite build && tsc",
+        "build": "tsc -b && vite build",
         "serve": "vite preview",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",

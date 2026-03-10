@@ -6,6 +6,7 @@ import { redis } from "../../configs/redis.config";
 import { RedisKeys } from "../../redis/keys";
 
 export const health = new Elysia({ prefix: "/health" })
+	.get("/", "healthy")
 	.use(
 		cron({
 			name: "heartbeat",

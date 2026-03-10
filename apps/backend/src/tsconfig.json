@@ -1,18 +1,14 @@
 {
-    "extends": "../../tsconfig.base.json",
+    "extends": "../../../tsconfig.base.json",
     "compilerOptions": {
         "target": "ES2024",
         "module": "ESNext",
         "lib": [
             "ES2024",
-            "ESNext",
             "ESNext.Intl",
             "ESNext.Iterator",
             "DOM",
             "DOM.Iterable"
-        ],
-        "types": [
-            "vite/client"
         ],
         "skipLibCheck": true,
         /* Bundler mode */
@@ -27,26 +23,8 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true,
-        "baseUrl": ".",
-        "paths": {
-            "&/*": [
-                "./src/features/*"
-            ],
-            "@/*": [
-                "./src/*"
-            ],
-            "@backend/*": [
-                "../backend/convex/_generated/*",
-                "../backend/convex/*.exports.ts"
-            ],
-            "@api/*": [
-                "../api/src/exports/*"
-            ]
-        }
     },
     "include": [
-        "**/*.ts",
-        "**/*.tsx",
-        "../backend/convex/_generated"
+        "./server.ts"
     ]
 }
