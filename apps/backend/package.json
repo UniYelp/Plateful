@@ -5,8 +5,7 @@
     "type": "module",
     "files": [],
     "scripts": {
-        "preenv": "node scripts/env.mjs",
-        "env": "convex env set --from-file .env.defaults",
+        "env": "node scripts/env.mjs",
         "deploy": "convex deploy",
         "predev": "convex dev --until-success && convex dashboard",
         "dev": "convex dev",
