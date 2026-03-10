@@ -37,7 +37,6 @@
         "zod": "catalog:"
     },
     "devDependencies": {
-        "@dotenvx/dotenvx": "^1.50.1",
         "@edge-runtime/vm": "^5.0.0",
         "@plateful/types": "workspace:*",
         "@types/luxon": "^3.7.1",

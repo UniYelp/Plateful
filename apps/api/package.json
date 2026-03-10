@@ -3,6 +3,22 @@
 	"version": "0.0.0",
 	"type": "module",
 	"private": true,
+	"main": "./dist/index.mjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
+	"exports": {
+		".": {
+			"@plateful/dev-src": "./src/index.ts",
+			"default": "./dist/index.mjs"
+		},
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			".": "./dist/index.mjs",
+			"./package.json": "./package.json"
+		}
+	},
 	"scripts": {
 		"build": "tsdown",
 		"dev": "dotenvx run -- tsx watch src/dev.ts",
@@ -55,21 +71,5 @@
 		"@plateful/types": "workspace:*",
 		"tsx": "^4.7.1",
 		"vite": "^7.3.1"
-	},
-	"main": "./dist/index.mjs",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.mts",
-	"exports": {
-		".": {
-			"@plateful/dev-src": "./src/index.ts",
-			"default": "./dist/index.mjs"
-		},
-		"./package.json": "./package.json"
-	},
-	"publishConfig": {
-		"exports": {
-			".": "./dist/index.mjs",
-			"./package.json": "./package.json"
-		}
 	}
 }

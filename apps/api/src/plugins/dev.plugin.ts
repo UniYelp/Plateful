@@ -17,8 +17,8 @@ export const dev = ({ mode = "manual" }: DevPluginOptions = {}) => {
 		.use(logger())
 		.use(env())
 		.macro("dev", {
-			async resolve({ env, logger }) {
-				logger.info("[dev] route accessed", "{via macro}");
+			async resolve({ env, log }) {
+				log.set({ dev: true });
 
 				if (env.NODE_ENV !== "development") {
 					throw new NotFoundError();
@@ -29,13 +29,11 @@ export const dev = ({ mode = "manual" }: DevPluginOptions = {}) => {
 		});
 
 	if (mode === "always") {
-		plugin = plugin.onBeforeHandle(({ env, logger }) => {
-			if (mode === "always") {
-				logger.info("[dev] route accessed", "{via onBeforeHandle}");
+		plugin = plugin.onBeforeHandle(({ env, log }) => {
+			log.set({ dev: true });
 
-				if (env.NODE_ENV !== "development") {
-					throw new NotFoundError();
-				}
+			if (env.NODE_ENV !== "development") {
+				throw new NotFoundError();
 			}
 		});
 	}

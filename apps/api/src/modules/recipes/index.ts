@@ -13,13 +13,15 @@ import * as RecipeService from "./service";
 export const recipes = new Elysia({
 	prefix: "recipes",
 })
+	.use(logger())
 	.use(auth())
 	.use(redis())
-	.use(logger())
 	.post(
 		"generate",
-		async function* ({ query: { householdId }, body, getRedis }) {
+		async function* ({ query: { householdId }, body, getRedis, log }) {
 			const redis = getRedis();
+
+			log.set({ household: { id: householdId } });
 
 			const householdLock = RedisLocks.recipes.gen.household.lock(
 				redis,
@@ -28,6 +30,8 @@ export const recipes = new Elysia({
 
 			try {
 				const acquired = await householdLock.acquire();
+
+				log.set({ lock: { household: { acquired } } });
 
 				if (!acquired) {
 					throw new LockedError("You may only generate one recipe at a time");
@@ -40,6 +44,8 @@ export const recipes = new Elysia({
 
 				const { acquired: hasRemaining, resetAt } = await rphLock.tryAcquire();
 
+				log.set({ lock: { rph: { hasRemaining, resetAt } } });
+
 				if (!hasRemaining) {
 					throw new RateLimitError(
 						{ limit: rphLock.limit, resetAt },
@@ -51,6 +57,8 @@ export const recipes = new Elysia({
 					event: "started",
 				});
 
+				log.set({ event: { started: true } });
+
 				// Criticizer-optimizer loop
 				const tracer = trace.getTracer("recipe-generation");
 				const span = tracer.startSpan("generate-recipe-flow");
@@ -59,8 +67,10 @@ export const recipes = new Elysia({
 				try {
 					span.setAttribute("householdId", householdId);
 					span.setAttribute("langfuse.trace.input", JSON.stringify(body));
+
 					const MAX_ATTEMPTS = 5;
 					const SAFETY_THRESHOLD = 0.8;
+
 					let finalRecipe: RecipesModel.GenerateRecipeCompleteEventData | null =
 						null;
 					let finalSafetyScore: number | null = null;
@@ -68,6 +78,8 @@ export const recipes = new Elysia({
 
 					for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
 						// Generate recipe
+						log.set({ event: { working: { attempt } } });
+
 						yield sse({
 							event: "working",
 						});
@@ -75,9 +87,12 @@ export const recipes = new Elysia({
 						const recipeResult = await context.with(activeContext, () =>
 							RecipeService.generateRecipe(currentBody),
 						);
+
 						finalRecipe = recipeResult;
 
 						// Critique with safety agent
+						log.set({ event: { safetyCheck: { attempt } } });
+
 						yield sse({
 							event: "safety-check",
 						});
@@ -87,6 +102,9 @@ export const recipes = new Elysia({
 						);
 
 						const rawScore = safetyResult.score;
+
+						log.set({ event: { safetyCheck: { [attempt]: { rawScore } } } });
+
 						finalSafetyScore =
 							typeof rawScore === "number" &&
 							Number.isFinite(rawScore) &&
@@ -121,6 +139,8 @@ export const recipes = new Elysia({
 						finalSafetyScore !== null &&
 						finalSafetyScore < SAFETY_THRESHOLD
 					) {
+						log.set({ event: { failed: { safetyScore: finalSafetyScore } } });
+
 						yield sse({
 							event: "failed",
 							data: {
@@ -129,6 +149,7 @@ export const recipes = new Elysia({
 								safetyScore: finalSafetyScore,
 							},
 						});
+
 						return;
 					}
 
@@ -136,6 +157,8 @@ export const recipes = new Elysia({
 						"langfuse.trace.output",
 						JSON.stringify(finalRecipe),
 					);
+
+					log.set({ event: { done: true } });
 
 					yield sse({
 						event: "done",

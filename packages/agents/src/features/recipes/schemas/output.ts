@@ -1,7 +1,13 @@
 import dedent from "dedent";
 import z from "zod";
 
-import { RecipeMaterialKind, RecipeStepBlockType } from "@plateful/recipes";
+import {
+	type Recipe,
+	type RecipeMaterialBlock,
+	RecipeMaterialKind,
+	RecipeStepBlockType,
+} from "@plateful/recipes";
+import type { Satisfies, StrictOmit } from "@plateful/types";
 import { MaterialUnitSchema, TemperatureUnitSchema } from "./literals";
 
 const InputMaterialKindSchema = z.literal(RecipeMaterialKind.Input).meta({
@@ -96,6 +102,11 @@ export const MaterialBlockSchema = z
             - Multiple output materials are allowed.
         `,
 	});
+
+export type MaterialBlock = Satisfies<
+	z.infer<typeof MaterialBlockSchema>,
+	RecipeMaterialBlock
+>;
 
 export const DurationBlockSchema = z
 	.object({
@@ -196,4 +207,7 @@ export const RecipeGenOutputSchema = z
 			"The output should be formattable into plaintext. Mind that when structuring the blocks",
 	});
 
-export type RecipeGenOutput = z.infer<typeof RecipeGenOutputSchema>;
+export type RecipeGenOutput = Satisfies<
+	z.infer<typeof RecipeGenOutputSchema>,
+	StrictOmit<Recipe, "ingredients">
+>;

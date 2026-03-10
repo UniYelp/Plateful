@@ -1,0 +1,108 @@
+{
+    "title": "Banana Orange Smoothie",
+    "description": "A refreshing and simple smoothie made with fresh bananas and oranges.",
+    "tags": [],
+    "steps": [
+        [
+            {
+                "type": "text",
+                "text": "Peel and slice the"
+            },
+            {
+                "type": "material",
+                "name": "Banana",
+                "quantity": {
+                    "value": 6
+                },
+                "kind": "input"
+            },
+            {
+                "type": "text",
+                "text": "and"
+            },
+            {
+                "type": "material",
+                "name": "Orange",
+                "quantity": {
+                    "value": 2
+                },
+                "kind": "input"
+            },
+            {
+                "type": "text",
+                "text": "into smaller pieces."
+            },
+            {
+                "type": "duration",
+                "kind": "prep",
+                "duration": "PT5M"
+            }
+        ],
+        [
+            {
+                "type": "text",
+                "text": "Combine the sliced"
+            },
+            {
+                "type": "material",
+                "name": "Banana",
+                "quantity": {
+                    "value": 6
+                },
+                "kind": "derived-input"
+            },
+            {
+                "type": "text",
+                "text": ","
+            },
+            {
+                "type": "material",
+                "name": "Orange",
+                "quantity": {
+                    "value": 2
+                },
+                "kind": "derived-input"
+            },
+            {
+                "type": "text",
+                "text": ", and"
+            },
+            {
+                "type": "material",
+                "name": "water",
+                "quantity": {
+                    "value": 1,
+                    "unit": "cup"
+                },
+                "kind": "input"
+            },
+            {
+                "type": "text",
+                "text": "in a"
+            },
+            {
+                "type": "tool",
+                "name": "Blender"
+            },
+            {
+                "type": "text",
+                "text": ". Blend until completely smooth."
+            },
+            {
+                "type": "duration",
+                "kind": "cook",
+                "duration": "PT2M"
+            },
+            {
+                "type": "material",
+                "name": "Banana Orange Smoothie",
+                "quantity": {
+                    "value": 4,
+                    "unit": "cup"
+                },
+                "kind": "output"
+            }
+        ]
+    ],
+    "notes": "All provided ingredients were used in this recipe."
+}

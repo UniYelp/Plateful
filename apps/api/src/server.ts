@@ -5,6 +5,7 @@ import { node } from "@elysiajs/node";
 import { openapi } from "@elysiajs/openapi";
 import { serverTiming } from "@elysiajs/server-timing";
 import { Elysia } from "elysia";
+import { initLogger } from "evlog";
 import z from "zod";
 
 import { appConfig } from "./configs/app.config";
@@ -17,10 +18,18 @@ import { recipes } from "./modules/recipes";
 import { logger } from "./plugins/logger.plugin";
 import { requestId } from "./plugins/request-id.plugin";
 
+initLogger({
+	env: {
+		service: appConfig.name,
+	},
+});
+
 /**
  * @see {@link https://elysiajs.com/essential/best-practice}
  */
 export const app = new Elysia({ adapter: node() })
+	.use(requestId())
+	.use(logger())
 	.use(
 		cors({
 			origin: ENV.ALLOWED_ORIGINS,
@@ -38,8 +47,7 @@ export const app = new Elysia({ adapter: node() })
 		LockedError,
 		RateLimitError,
 	})
-	.onError(({ code, error, status }) => {
-		console.log({ code, error, status });
+	.onError(({ code, error }) => {
 		switch (code) {
 			case "RateLimitError": {
 				return error.toResponse();
@@ -47,8 +55,6 @@ export const app = new Elysia({ adapter: node() })
 		}
 	})
 	.use(serverTiming())
-	.use(requestId())
-	.use(logger({ name: appConfig.name }))
 	.get("/", () => `Welcome to ${appConfig.name}`)
 	.use(health)
 	.use(recipes)

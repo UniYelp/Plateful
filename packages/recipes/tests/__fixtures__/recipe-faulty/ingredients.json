@@ -1,0 +1,83 @@
+[
+    {
+        "name": "Butter",
+        "quantity": {
+            "value": 250,
+            "unit": "gram"
+        }
+    },
+    {
+        "name": "Chicken Hearts",
+        "quantity": {
+            "value": 0.5,
+            "unit": "kilogram"
+        }
+    },
+    {
+        "name": "Chicken breast",
+        "quantity": {
+            "value": 2,
+            "unit": "kilogram"
+        }
+    },
+    {
+        "name": "Cucumber",
+        "quantity": {
+            "value": 8,
+            "unit": null
+        }
+    },
+    {
+        "name": "Goose breast",
+        "quantity": {
+            "value": 1,
+            "unit": "kilogram"
+        }
+    },
+    {
+        "name": "Milk",
+        "quantity": {
+            "value": 12,
+            "unit": "liter"
+        }
+    },
+    {
+        "name": "Pepper bells",
+        "quantity": {
+            "value": 4,
+            "unit": null
+        }
+    },
+    {
+        "name": "Potato",
+        "quantity": {
+            "value": 15,
+            "unit": null
+        }
+    },
+    {
+        "name": "Tometos",
+        "quantity": {
+            "value": 4,
+            "unit": null
+        }
+    },
+    {
+        "name": "White Rice",
+        "quantity": {
+            "value": 2,
+            "unit": "kilogram"
+        }
+    },
+    {
+        "name": "black beans",
+        "quantity": {
+            "value": 0.5,
+            "unit": "kilogram"
+        }
+    },
+    {
+        "name": "water",
+        "quantity": "unlimited"
+    }
+]

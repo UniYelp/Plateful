@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiServer",
+      "LiLogs",
+      "SiE",
       "AsEvaliteIconWhite",
-      "AsPineconeIconWhite",
-      "AsPineconeIcon",
-      "AsLangfuseIcon",
-      "SiGooglegemini"
+      "AsPineconeIconWhite"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -87,5 +87,8 @@
   "Architecture/Stack/PrismaORM.md": "SiPrisma",
   "Architecture/Services/Google AI.md": "SiGooglegemini",
   "Architecture/Services/Langfuse.md": "AsLangfuseIcon",
-  "Architecture/Services/Pinecone.md": "AsPineconeIconWhite"
+  "Architecture/Services/Pinecone.md": "AsPineconeIconWhite",
+  "Architecture/Stack/Errore.md": "SiE",
+  "Architecture/Stack/Evlog.md": "LiLogs",
+  "Architecture/Stack/Elysia.md": "LiServer"
 }

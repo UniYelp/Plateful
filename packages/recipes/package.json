@@ -31,9 +31,10 @@
         "test:types": "tsc --noEmit --project tsconfig.build.json"
     },
     "dependencies": {
-        "@plateful/units": "workspace:*",
         "@plateful/ingredients": "workspace:*",
+        "@plateful/units": "workspace:*",
         "@plateful/utils": "workspace:*",
+        "effect": "catalog:",
         "zod": "catalog:"
     },
     "devDependencies": {

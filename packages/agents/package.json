@@ -38,13 +38,13 @@
         "dev": "tsdown --watch",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",
-        "test:eval": "evalite",
-        "test:eval:dev": "evalite watch",
-        "test:types": "tsc --noEmit --project tsconfig.build.json"
+        "test:types": "tsc --noEmit --project tsconfig.build.json",
+        "eval": "evalite",
+        "eval:dev": "evalite watch",
+        "eval:ui": "evalite serve"
     },
     "dependencies": {
         "@ai-sdk/google": "catalog:",
-        "@ai-sdk/openai": "catalog:",
         "@opentelemetry/api": "catalog:",
         "@pinecone-database/pinecone": "^7.1.0",
         "@plateful/ingredients": "workspace:*",
@@ -53,6 +53,7 @@
         "@plateful/utils": "workspace:*",
         "ai": "catalog:",
         "dedent": "^1.7.1",
+        "effect": "catalog:",
         "zod": "catalog:"
     },
     "devDependencies": {
