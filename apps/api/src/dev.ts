@@ -9,7 +9,7 @@ const {
 } = appConfig;
 
 app
-	.get("/favicon.ico", file("public/api_logo_bg.png"))
+	.get("/favicon.ico", file("public/favicon.png"))
 	.listen(port, ({ hostname, port }) => {
 		console.log(`${name} is running at ${hostname}:${port}`);
 	});

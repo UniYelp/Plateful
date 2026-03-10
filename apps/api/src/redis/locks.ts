@@ -1,10 +1,10 @@
 import { Lock } from "@upstash/lock";
+import { Ratelimit } from "@upstash/ratelimit";
 import type { Redis } from "@upstash/redis";
 
-import { DAY, MINUTE } from "@plateful/time";
+import { MINUTE } from "@plateful/time";
 import type { DeepDict } from "@plateful/types";
 import { RedisKeys } from "./keys";
-import { RateLimitLock } from "./models/rate-limit";
 import type { LockFactory } from "./types/locks";
 
 export const RedisLocks = {
@@ -13,15 +13,14 @@ export const RedisLocks = {
 			household: {
 				lock: (redis: Redis, householdId: string) =>
 					new Lock({
+						redis,
 						id: RedisKeys.recipes.gen.household.lock(householdId),
 						lease: 5 * MINUTE,
-						redis,
 					}),
-				rph: (redis: Redis, householdId: string) =>
-					new RateLimitLock(redis, {
-						key: RedisKeys.recipes.gen.household.rph(householdId),
-						limit: 5,
-						windowMs: DAY,
+				rph: (redis: Redis) =>
+					new Ratelimit({
+						redis,
+						limiter: Ratelimit.slidingWindow(5, "1d"),
 					}),
 			},
 		},

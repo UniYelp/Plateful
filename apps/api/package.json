@@ -52,6 +52,7 @@
 		"@t3-oss/env-core": "^0.13.8",
 		"@upstash/lock": "^0.2.1",
 		"@upstash/query": "^0.0.2",
+		"@upstash/ratelimit": "^2.0.8",
 		"@upstash/realtime": "^1.0.0",
 		"@upstash/redis": "^1.36.0",
 		"ai": "catalog:",

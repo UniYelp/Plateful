@@ -1,5 +1,4 @@
 import type { DeepDict } from "@plateful/types";
-import type { RateLimitLockValue } from "./models/rate-limit";
 import type { RedisKeyLike, TypedRedisKey } from "./types/keys";
 
 const redisKey = <const K extends RedisKeyLike>(key: K) =>
@@ -22,7 +21,7 @@ export const RedisKeys = {
 				rph: redisKey(
 					(householdId: string) =>
 						`recipes:gen:household:${householdId}:rph` as const,
-				).$type<RateLimitLockValue>(),
+				),
 			},
 		},
 	},
