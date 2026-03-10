@@ -48,7 +48,7 @@ export const recipes = new Elysia({
 					RedisKeys.recipes.gen.household.rph(householdId),
 				);
 
-				log.set({ lock: { rph: { hasRemaining, resetAt } } });
+				log.set({ lock: { rph: { hasRemaining, resetAt: reset } } });
 
 				if (!hasRemaining) {
 					throw new RateLimitError(
