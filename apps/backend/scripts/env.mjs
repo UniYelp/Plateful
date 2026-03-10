@@ -5,11 +5,14 @@ import { join } from "node:path";
 import { createEnv } from "@t3-oss/env-core";
 import z from "zod";
 
+import {withRelatedProject} from "@vercel/related-projects";
+
+
 export const ENV = createEnv({
 	extends: [],
 	server: {
 		//? Api
-		API_URL: z.url(),
+		API_URL: z.url().optional(),
 		//? Auth
 		/**
 		 * ? The api key from the api service
@@ -53,7 +56,19 @@ export const ENV = createEnv({
 	emptyStringAsUndefined: true,
 });
 
+
+const apiHost = withRelatedProject({
+  projectName: 'plateful-api',
+  /**
+   * Specify a default host that will be used for my-api-project if the related project
+   * data cannot be parsed or is missing.
+   */
+  defaultHost: ENV.API_URL,
+});
+
 const envPath = join(import.meta.dirname, "../.env.defaults");
+
+ENV.API_URL = apiHost;
 
 writeFileSync(
 	envPath,
