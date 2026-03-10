@@ -5,10 +5,10 @@
     "type": "module",
     "files": [],
     "scripts": {
+        "deploy": "convex deploy",
         "predev": "convex dev --until-success && convex dashboard",
         "dev": "convex dev",
         "logs": "convex logs",
-        "setup": "convex dev --once && convex env set VALIDATE_ENV=true",
         "migrate:dev": "convex run convex/migrations.ts:runAll",
         "seed": "convex dev --once && convex run init",
         "test": "vitest run --typecheck",
