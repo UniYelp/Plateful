@@ -2,7 +2,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Eye, Package, Plus, Search } from "lucide-react";
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import { z } from "zod";
 
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
@@ -74,7 +74,7 @@ function IngredientsPage() {
 					(q) => q.expiresAt ?? [],
 				);
 				const expiryStatusDetails = getExpiryDetailsFromExpiryDates(expirations);
-				
+
 				if (!expiryStatusDetails) return false;
 				if (
 					expiryStatusDetails.status !== "expired" &&
@@ -168,20 +168,24 @@ function IngredientsPage() {
 						>
 							<CardContent className="px-4">
 								<div className="mb-3 flex items-start gap-3">
-									<img
-										src={
-											ingredientImgByCategory[
-												ingredient.category as keyof typeof ingredientImgByCategory
-											]
-										}
-										alt={ingredient.name}
-										className="h-16 w-16 rounded-lg bg-muted object-cover"
-									/>
+									<ViewTransition name={`ingredient-img-${ingredient._id}`}>
+										<img
+											src={
+												ingredientImgByCategory[
+													ingredient.category as keyof typeof ingredientImgByCategory
+												]
+											}
+											alt={ingredient.name}
+											className="h-16 w-16 rounded-lg bg-muted object-cover"
+										/>
+									</ViewTransition>
 									<div className="min-w-0 flex-1">
 										<div className="flex items-start justify-between">
-											<h3 className="truncate font-semibold">
-												{ingredient.name}
-											</h3>
+											<ViewTransition name={`ingredient-name-${ingredient._id}`}>
+												<h3 className="truncate font-semibold">
+													{ingredient.name}
+												</h3>
+											</ViewTransition>
 											{expiryStatusDetails && (
 												<Badge
 													variant={
@@ -210,6 +214,7 @@ function IngredientsPage() {
 										className="flex-1 bg-transparent"
 									>
 										<Link
+											viewTransition
 											to="/dashboard/ingredients/$id"
 											params={{ id: ingredient._id }}
 										>

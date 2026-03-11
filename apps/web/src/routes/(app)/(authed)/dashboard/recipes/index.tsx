@@ -1,6 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
 import { parse } from "iso8601-duration";
 import {
 	BookOpen,
@@ -10,10 +11,10 @@ import {
 	Sparkles,
 	Utensils,
 } from "lucide-react";
-import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useState, ViewTransition } from "react";
 
 import { api } from "@backend/api";
+import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/")({
 	component: RouteComponent,
@@ -49,8 +49,12 @@ function RecipesPage() {
 
 	const { household } = Route.useLoaderData();
 
-	const genStats = useQuery(api.recipeGens.stats, { householdId: household._id });
-	const generationsLeft = genStats ? genStats.today.max - genStats.today.total : null;
+	const genStats = useQuery(api.recipeGens.stats, {
+		householdId: household._id,
+	});
+	const generationsLeft = genStats
+		? genStats.today.max - genStats.today.total
+		: null;
 	const atQuota = generationsLeft !== null && generationsLeft <= 0;
 
 	const { data: fullRecipes } = useSuspenseQuery(
@@ -113,7 +117,8 @@ function RecipesPage() {
 				<div className="flex items-center gap-3">
 					{generationsLeft !== null && (
 						<span className="text-muted-foreground text-sm">
-							{generationsLeft} generation{generationsLeft !== 1 ? "s" : ""} left today
+							{generationsLeft} generation{generationsLeft !== 1 ? "s" : ""}{" "}
+							left today
 						</span>
 					)}
 					<Button asChild={!atQuota} disabled={atQuota}>
@@ -175,11 +180,13 @@ function RecipesPage() {
 						>
 							<div className="relative">
 								{imgGen?.imageUrl ? (
-									<img
-										src={imgGen?.imageUrl || undefined}
-										alt={recipe.title}
-										className="h-48 w-full object-cover"
-									/>
+									<ViewTransition name={`recipe-img-${recipe._id}`}>
+										<img
+											src={imgGen?.imageUrl || undefined}
+											alt={recipe.title}
+											className="h-48 w-full object-cover"
+										/>
+									</ViewTransition>
 								) : imgGen?.status === "generating" ? (
 									<Skeleton className="h-48 w-full rounded-xl" />
 								) : (
@@ -192,9 +199,11 @@ function RecipesPage() {
 							<CardContent className="flex h-full flex-col justify-between p-4">
 								<div>
 									<div className="mb-2 flex items-start justify-between">
-										<h3 className="font-semibold text-lg leading-tight">
-											{recipe.title}
-										</h3>
+										<ViewTransition name={`recipe-title-${recipe._id}`}>
+											<h3 className="font-semibold text-lg leading-tight">
+												{recipe.title}
+											</h3>
+										</ViewTransition>
 									</div>
 
 									<p className="mb-3 line-clamp-2 text-muted-foreground text-sm">
@@ -274,6 +283,7 @@ function RecipesPage() {
 									)}
 									<Button variant="outline" size="sm" asChild>
 										<Link
+											viewTransition
 											to="/dashboard/recipes/$id"
 											params={{ id: recipe._id }}
 										>

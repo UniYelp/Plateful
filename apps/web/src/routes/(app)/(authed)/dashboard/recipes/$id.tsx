@@ -2,10 +2,12 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Clock, Play, Utensils } from "lucide-react";
+import { ViewTransition } from "react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
+import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
 import { formatDuration } from "&/recipes/utils/format-duration";
@@ -20,7 +22,6 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
@@ -91,7 +92,9 @@ function RecipeDetailPage() {
 				<div>
 					<div className="mb-4 flex items-start justify-between">
 						<div>
-							<h1 className="mb-2 font-bold text-3xl">{recipe.title}</h1>
+							<ViewTransition name={`recipe-title-${recipe._id}`}>
+								<h1 className="mb-2 font-bold text-3xl">{recipe.title}</h1>
+							</ViewTransition>
 						</div>
 					</div>
 
@@ -125,12 +128,11 @@ function RecipeDetailPage() {
 					</div>
 
 					<div className="flex gap-4">
-						<CookNowDialog householdId={household._id} ingredients={ingredients}>
-							<Button
-								size="lg"
-								className="flex-1"
-								disabled={!canCook}
-							>
+						<CookNowDialog
+							householdId={household._id}
+							ingredients={ingredients}
+						>
+							<Button size="lg" className="flex-1" disabled={!canCook}>
 								<Play className="mr-2 h-4 w-4" />
 								Start Cooking
 							</Button>
@@ -149,11 +151,13 @@ function RecipeDetailPage() {
 					)}
 				</div>
 				{imgGen?.imageUrl ? (
-					<img
-						src={imgGen.imageUrl}
-						alt={recipe.title}
-						className="h-68 w-full rounded-lg object-cover"
-					/>
+					<ViewTransition name={`recipe-img-${recipe._id}`}>
+						<img
+							src={imgGen.imageUrl}
+							alt={recipe.title}
+							className="h-68 w-full rounded-lg object-cover"
+						/>
+					</ViewTransition>
 				) : imgGen?.status === "generating" ? (
 					<Skeleton className="h-68 w-full rounded-xl" />
 				) : (

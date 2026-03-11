@@ -1,7 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft, BookOpen, Combine, Edit2, Package2, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import {
+	ArrowLeft,
+	BookOpen,
+	Combine,
+	Edit2,
+	Package2,
+	Plus,
+	Trash2,
+} from "lucide-react";
+import { useState, ViewTransition } from "react";
+import type { z } from "zod";
 
 import {
 	type ExpiryDetails,
@@ -12,6 +21,8 @@ import {
 import { entriesOf } from "@plateful/utils";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
+import { submitFormHandler } from "&/forms/utils/submission";
+import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
 import {
@@ -20,21 +31,18 @@ import {
 } from "&/ingredients/constants";
 import { IngredientQuantitySchema } from "&/ingredients/forms/schemas";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
-import { submitFormHandler } from "&/forms/utils/submission";
-import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Combobox } from "@/components/ui/combobox";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAppForm } from "@/lib/form";
-import { z } from "zod";
 
 const ingredientUnitGroups = entriesOf(ingredientUnitsByCategory).map(
 	([label, units]) => ({
@@ -106,7 +114,9 @@ export function IngredientDetailPage() {
 				ingredientId: ingredient._id,
 				amount: value.amount,
 				unit: value.unit,
-				expiresAt: value.expiryDate ? new Date(value.expiryDate).getTime() : undefined,
+				expiresAt: value.expiryDate
+					? new Date(value.expiryDate).getTime()
+					: undefined,
 			});
 			setAddOpen(false);
 			form.reset();
@@ -116,8 +126,6 @@ export function IngredientDetailPage() {
 	if (!household || !ingredient) return "Loading...";
 
 	const totalAmount = getTotalAmount(ingredient.quantities);
-
-
 
 	const handleRemoveQuantity = async (index: number) => {
 		await removeQuantityAt({
@@ -133,8 +141,6 @@ export function IngredientDetailPage() {
 			householdId: household._id,
 		});
 	};
-
-
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -154,20 +160,24 @@ export function IngredientDetailPage() {
 						<CardHeader>
 							<div className="flex items-start gap-4">
 								{/* TODO: const getProperty = <T extends object>(obj: T, key: SuggestStr<keyof T>, defaultValue: ValueOf<T>) => key in obj ? obj[key] : defaultValue; */}
-								<img
-									src={
-										ingredientImgByCategory[
-											ingredient.category as keyof typeof ingredientImgByCategory
-										]
-									}
-									alt={ingredient.name}
-									className="h-24 w-24 rounded-lg bg-muted object-cover"
-								/>
+								<ViewTransition name={`ingredient-img-${ingredientId}`}>
+									<img
+										src={
+											ingredientImgByCategory[
+												ingredient.category as keyof typeof ingredientImgByCategory
+											]
+										}
+										alt={ingredient.name}
+										className="h-24 w-24 rounded-lg bg-muted object-cover"
+									/>
+								</ViewTransition>
 
 								<div className="flex-1">
-									<CardTitle className="mb-2 text-2xl">
-										{ingredient.name}
-									</CardTitle>
+									<ViewTransition name={`ingredient-name-${ingredientId}`}>
+										<CardTitle className="mb-2 text-2xl">
+											{ingredient.name}
+										</CardTitle>
+									</ViewTransition>
 									<p className="mb-2 text-muted-foreground">
 										{ingredient.description}
 									</p>
@@ -175,7 +185,9 @@ export function IngredientDetailPage() {
 										<Badge variant="outline">{ingredient.category}</Badge>
 										<span className="text-muted-foreground text-sm">
 											Total:{" "}
-											<span className="font-semibold">{totalAmount || "0"}</span>
+											<span className="font-semibold">
+												{totalAmount || "0"}
+											</span>
 										</span>
 									</div>
 								</div>
@@ -197,86 +209,115 @@ export function IngredientDetailPage() {
 											Merge Quantities
 										</Button>
 									)}
-								<Popover open={addOpen} onOpenChange={(open) => {
-									setAddOpen(open);
-									if (!open) form.reset();
-								}}>
-									<PopoverTrigger asChild>
-										<Button size="sm" variant="outline">
-											<Plus className="mr-1 h-3 w-3" />
-											Add Quantity
-										</Button>
-									</PopoverTrigger>
-									<PopoverContent className="w-64 p-4" align="end">
-										<p className="mb-3 font-medium text-sm">Add a quantity slot</p>
-										<form onSubmit={submitFormHandler(form)} className="space-y-3">
-											<form.AppForm>
-												<form.AppField name="amount">
-													{(field) => (
-														<div>
-															<Label className="mb-1 text-xs">Amount *</Label>
-															<Input
-																type="number"
-																min="0"
-																step="any"
-																placeholder="e.g. 500"
-																value={Number.isFinite(field.state.value) ? field.state.value : ""}
-																aria-invalid={isInvalidTouched(field)}
-																onChange={(e) => field.handleChange(e.target.valueAsNumber)}
-															/>
-															<field.FieldError />
-														</div>
-													)}
-												</form.AppField>
-												<form.AppField name="unit">
-													{(field) => (
-														<div>
-															<Label className="mb-1 text-xs">Unit (optional)</Label>
-															<Combobox<string>
-																value={field.state.value ?? ""}
-																onChange={(value) => field.handleChange(value || undefined)}
-																groups={ingredientUnitGroups}
-															/>
-															<field.FieldError />
-														</div>
-													)}
-												</form.AppField>
-												<form.AppField name="expiryDate">
-													{(field) => (
-														<div>
-															<Label className="mb-1 text-xs">Expiry Date (optional)</Label>
-															<Input
-																type="date"
-																value={field.state.value ?? ""}
-																aria-invalid={isInvalidTouched(field)}
-																onChange={(e) => field.handleChange(e.target.value || undefined)}
-															/>
-															<field.FieldError />
-														</div>
-													)}
-												</form.AppField>
-												<form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-													{([canSubmit, isSubmitting]) => (
-														<Button
-															type="submit"
-															size="sm"
-															className="w-full"
-															disabled={!canSubmit || isSubmitting}
-														>
-															Add
-														</Button>
-													)}
-												</form.Subscribe>
-											</form.AppForm>
-										</form>
-									</PopoverContent>
-								</Popover>
+									<Popover
+										open={addOpen}
+										onOpenChange={(open) => {
+											setAddOpen(open);
+											if (!open) form.reset();
+										}}
+									>
+										<PopoverTrigger asChild>
+											<Button size="sm" variant="outline">
+												<Plus className="mr-1 h-3 w-3" />
+												Add Quantity
+											</Button>
+										</PopoverTrigger>
+										<PopoverContent className="w-64 p-4" align="end">
+											<p className="mb-3 font-medium text-sm">
+												Add a quantity slot
+											</p>
+											<form
+												onSubmit={submitFormHandler(form)}
+												className="space-y-3"
+											>
+												<form.AppForm>
+													<form.AppField name="amount">
+														{(field) => (
+															<div>
+																<Label className="mb-1 text-xs">Amount *</Label>
+																<Input
+																	type="number"
+																	min="0"
+																	step="any"
+																	placeholder="e.g. 500"
+																	value={
+																		Number.isFinite(field.state.value)
+																			? field.state.value
+																			: ""
+																	}
+																	aria-invalid={isInvalidTouched(field)}
+																	onChange={(e) =>
+																		field.handleChange(e.target.valueAsNumber)
+																	}
+																/>
+																<field.FieldError />
+															</div>
+														)}
+													</form.AppField>
+													<form.AppField name="unit">
+														{(field) => (
+															<div>
+																<Label className="mb-1 text-xs">
+																	Unit (optional)
+																</Label>
+																<Combobox<string>
+																	value={field.state.value ?? ""}
+																	onChange={(value) =>
+																		field.handleChange(value || undefined)
+																	}
+																	groups={ingredientUnitGroups}
+																/>
+																<field.FieldError />
+															</div>
+														)}
+													</form.AppField>
+													<form.AppField name="expiryDate">
+														{(field) => (
+															<div>
+																<Label className="mb-1 text-xs">
+																	Expiry Date (optional)
+																</Label>
+																<Input
+																	type="date"
+																	value={field.state.value ?? ""}
+																	aria-invalid={isInvalidTouched(field)}
+																	onChange={(e) =>
+																		field.handleChange(
+																			e.target.value || undefined,
+																		)
+																	}
+																/>
+																<field.FieldError />
+															</div>
+														)}
+													</form.AppField>
+													<form.Subscribe
+														selector={(state) => [
+															state.canSubmit,
+															state.isSubmitting,
+														]}
+													>
+														{([canSubmit, isSubmitting]) => (
+															<Button
+																type="submit"
+																size="sm"
+																className="w-full"
+																disabled={!canSubmit || isSubmitting}
+															>
+																Add
+															</Button>
+														)}
+													</form.Subscribe>
+												</form.AppForm>
+											</form>
+										</PopoverContent>
+									</Popover>
 								</div>
 							</div>
 
 							<div className="space-y-2">
 								{ingredient.quantities.length === 0 && (
-									<p className="text-center text-muted-foreground text-sm py-4">
+									<p className="py-4 text-center text-muted-foreground text-sm">
 										No quantities — add one above.
 									</p>
 								)}
