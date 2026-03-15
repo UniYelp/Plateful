@@ -23,6 +23,7 @@ import type * as http from "../http.js";
 import type * as ingredients from "../ingredients.js";
 import type * as migrations from "../migrations.js";
 import type * as migrations_index from "../migrations/index.js";
+import type * as recipeFeedbacks from "../recipeFeedbacks.js";
 import type * as recipeGens from "../recipeGens.js";
 import type * as recipeGens_enums_gen_status from "../recipeGens/enums/gen_status.js";
 import type * as recipeGens_types from "../recipeGens/types.js";
@@ -60,6 +61,7 @@ declare const fullApi: ApiFromModules<{
   ingredients: typeof ingredients;
   migrations: typeof migrations;
   "migrations/index": typeof migrations_index;
+  recipeFeedbacks: typeof recipeFeedbacks;
   recipeGens: typeof recipeGens;
   "recipeGens/enums/gen_status": typeof recipeGens_enums_gen_status;
   "recipeGens/types": typeof recipeGens_types;

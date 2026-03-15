@@ -42,6 +42,11 @@ function EditIngredientPage() {
 		ingredientId: paramIngredientId as Id<"ingredients">,
 	});
 
+	const recipeIngredients = useQuery(api.recipeIngredients.fullByIngredient, {
+		householdId,
+		ingredientId: paramIngredientId as Id<"ingredients">,
+	});
+
 	const onSubmit = async (value: IngredientFormOutput) => {
 		const quantities = value.quantities.map((q) => ({
 			unit: q.unit,
@@ -102,6 +107,7 @@ function EditIngredientPage() {
 					<CardContent>
 						<IngredientForm
 							householdId={householdId}
+							relatedRecipes={recipeIngredients?.map((ri) => ri.recipe)}
 							defaultValues={{
 								name: ingredient?.name,
 								description: ingredient?.description,
