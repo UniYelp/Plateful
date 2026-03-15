@@ -43,6 +43,7 @@ import type { SelectGroup, SelectOption } from "@/types/ui/select";
 
 type Props = {
 	householdId: Id<"households">;
+	relatedRecipes?: { _id: string; title: string }[];
 	defaultValues?: Partial<IngredientFormInput>;
 	submitAction: string;
 	onSubmit: (value: IngredientFormOutput) => Promise<void>;
@@ -67,6 +68,7 @@ const ingredientUnitGroups = entriesOf(ingredientUnitsByCategory).map(
 
 export function IngredientForm({
 	householdId,
+	relatedRecipes,
 	defaultValues,
 	submitAction,
 	onSubmit,
@@ -99,28 +101,71 @@ export function IngredientForm({
 
 	return (
 		<form onSubmit={submitFormHandler(form)} className="space-y-6">
-			<form.Subscribe selector={(state) => [state.fieldMeta.name?.errors]}>
-				{([nameFieldErrors]) =>
-					nameFieldErrors?.some((error) => error === NameConflict) && (
-						<Card className="mb-6 border-amber-200 bg-amber-50 py-2">
-							<CardContent className="p-4">
-								<div className="flex items-start gap-3">
-									<AlertCircle className="mt-0.5 h-5 w-5 text-amber-600" />
-									<div>
-										<h4 className="font-medium text-amber-800">
-											Similar ingredient found
-										</h4>
-										<p className="mt-1 text-amber-700 text-sm">
-											We found similar ingredients in your inventory. Please
-											choose another name for your ingredient to avoid
-											duplicates.
-										</p>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					)
+			<form.Subscribe
+				selector={(state) =>
+					[state.fieldMeta.name?.errors, state.values.name] as const
 				}
+			>
+				{([nameFieldErrors, nameValue]) => {
+					const showConflict = nameFieldErrors?.some(
+						(error) => error === NameConflict,
+					);
+					const showRelatedRecipes =
+						!showConflict &&
+						relatedRecipes &&
+						relatedRecipes.length > 0 &&
+						defaultValues?.name &&
+						nameValue &&
+						nameValue !== defaultValues.name;
+
+					return (
+						<>
+							{showConflict && (
+								<Card className="mb-6 border-amber-200 bg-amber-50 py-2">
+									<CardContent className="p-4">
+										<div className="flex items-start gap-3">
+											<AlertCircle className="mt-0.5 h-5 w-5 text-amber-600" />
+											<div>
+												<h4 className="font-medium text-amber-800">
+													Similar ingredient found
+												</h4>
+												<p className="mt-1 text-amber-700 text-sm">
+													We found similar ingredients in your inventory. Please
+													choose another name for your ingredient to avoid
+													duplicates.
+												</p>
+											</div>
+										</div>
+									</CardContent>
+								</Card>
+							)}
+
+							{showRelatedRecipes && (
+								<Card className="mb-6 border-blue-200 bg-blue-50 py-2">
+									<CardContent className="p-4">
+										<div className="flex items-start gap-3">
+											<AlertCircle className="mt-0.5 h-5 w-5 text-blue-600" />
+											<div>
+												<h4 className="font-medium text-blue-800">
+													Update Related Recipes
+												</h4>
+												<div className="mt-1 text-blue-700 text-sm">
+													Changing the name of this ingredient will also update
+													it in the following recipes:
+													<ul className="mt-2 list-inside list-disc">
+														{relatedRecipes.map((recipe) => (
+															<li key={recipe._id}>{recipe.title}</li>
+														))}
+													</ul>
+												</div>
+											</div>
+										</div>
+									</CardContent>
+								</Card>
+							)}
+						</>
+					);
+				}}
 			</form.Subscribe>
 
 			<form.AppForm>
@@ -224,7 +269,9 @@ export function IngredientForm({
 							{(quantities) => (
 								<div className="space-y-6">
 									<div className="flex items-center justify-between">
-										<Label className="text-base font-semibold">Quantities</Label>
+										<Label className="font-semibold text-base">
+											Quantities
+										</Label>
 										<Button
 											type="button"
 											variant="outline"
@@ -258,12 +305,12 @@ export function IngredientForm({
 											)}
 
 											<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-												<form.AppField
-													name={`quantities[${index}].amount`}
-												>
+												<form.AppField name={`quantities[${index}].amount`}>
 													{(field) => (
 														<div className="space-y-2">
-															<Label htmlFor={`amount-${index}`}>Amount *</Label>
+															<Label htmlFor={`amount-${index}`}>
+																Amount *
+															</Label>
 															<Input
 																id={`amount-${index}`}
 																type="number"
@@ -282,9 +329,7 @@ export function IngredientForm({
 														</div>
 													)}
 												</form.AppField>
-												<form.AppField
-													name={`quantities[${index}].unit`}
-												>
+												<form.AppField name={`quantities[${index}].unit`}>
 													{(field) => (
 														<div className="space-y-2">
 															<Label htmlFor={`unit-${index}`}>Unit</Label>
@@ -301,9 +346,7 @@ export function IngredientForm({
 												</form.AppField>
 											</div>
 											<div className="mt-4">
-												<form.AppField
-													name={`quantities[${index}].expiryDate`}
-												>
+												<form.AppField name={`quantities[${index}].expiryDate`}>
 													{(field) => (
 														<div className="space-y-2">
 															<Label htmlFor={`expiryDate-${index}`}>
@@ -315,7 +358,9 @@ export function IngredientForm({
 																value={field.state.value ?? ""}
 																aria-invalid={isInvalidTouched(field)}
 																onChange={(e) =>
-																	field.handleChange(e.target.value || undefined)
+																	field.handleChange(
+																		e.target.value || undefined,
+																	)
 																}
 															/>
 															<field.FieldError />
@@ -328,8 +373,6 @@ export function IngredientForm({
 								</div>
 							)}
 						</form.Subscribe>
-
-						
 					</div>
 				</div>
 

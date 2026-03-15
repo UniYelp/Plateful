@@ -1,6 +1,7 @@
 import { context, trace } from "@opentelemetry/api";
 import Elysia, { sse } from "elysia";
 
+import { validateRecipe } from "@plateful/recipes";
 import { LockedError } from "../../models/errors/locked";
 import { RateLimitError } from "../../models/errors/rate-limit";
 import { auth } from "../../plugins/auth.plugin";
@@ -117,19 +118,36 @@ export const recipes = new Elysia({
 								? rawScore
 								: null;
 
-						// Check if safety score is acceptable
-						if (
-							finalSafetyScore !== null &&
-							finalSafetyScore >= SAFETY_THRESHOLD
-						) {
+						// Static validation
+						const validationResult = validateRecipe({
+							...recipeResult,
+							ingredients: currentBody.ingredients,
+						});
+
+						const hasStaticErrors = validationResult !== null;
+						const isSafe =
+							finalSafetyScore !== null && finalSafetyScore >= SAFETY_THRESHOLD;
+
+						// Check if both safety score and static validation are acceptable
+						if (isSafe && !hasStaticErrors) {
 							break;
 						}
 
 						// If not acceptable and we have more attempts, prepare for retry
 						if (attempt < MAX_ATTEMPTS) {
+							let combinedCritique = safetyResult.text;
+
+							if (hasStaticErrors) {
+								const staticErrorMessages = validationResult.issues
+									.map((issue) => `- ${issue.message}`)
+									.join("\n");
+
+								combinedCritique += `\n\nAdditionally, the recipe failed the following static validations which you must fix:\n${staticErrorMessages}`;
+							}
+
 							currentBody = {
 								...body,
-								safetyCritique: safetyResult.text,
+								safetyCritique: combinedCritique,
 								previouslyGenerated: JSON.stringify(recipeResult),
 							};
 						}
@@ -139,17 +157,39 @@ export const recipes = new Elysia({
 						throw new Error("Failed to generate a recipe");
 					}
 
-					if (
-						finalSafetyScore !== null &&
-						finalSafetyScore < SAFETY_THRESHOLD
-					) {
-						log.set({ event: { failed: { safetyScore: finalSafetyScore } } });
+					// We yield failed if either safety score is too low, or if static errors remain after max attempts
+					const finalValidationResult = validateRecipe({
+						...finalRecipe,
+						ingredients: currentBody.ingredients,
+					});
+
+					const finalHasStaticErrors = finalValidationResult !== null;
+					const finalIsUnsafe = finalSafetyScore < SAFETY_THRESHOLD;
+
+					if (finalIsUnsafe || finalHasStaticErrors) {
+						log.set({
+							event: {
+								failed: {
+									safetyScore: finalSafetyScore,
+									hasStaticErrors: finalHasStaticErrors,
+								},
+							},
+						});
+
+						let errorMsg =
+							"Unable to generate a safe and valid recipe after multiple attempts.";
+						if (finalHasStaticErrors) {
+							errorMsg +=
+								"\n\nValidation issues:\n" +
+								finalValidationResult.issues
+									.map((i) => `- ${i.message}`)
+									.join("\n");
+						}
 
 						yield sse({
 							event: "failed",
 							data: {
-								error:
-									"Unable to generate a safe recipe after multiple attempts",
+								error: errorMsg,
 								safetyScore: finalSafetyScore,
 							},
 						});
