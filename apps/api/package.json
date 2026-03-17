@@ -59,7 +59,7 @@
 		"croner": "^6.0.7",
 		"dedent": "^1.7.0",
 		"effect": "catalog:",
-		"elysia": "^1.4.25",
+		"elysia": "^1.4.27",
 		"elysia-clerk": "^0.13.2",
 		"evlog": "^2.4.1",
 		"exact-mirror": "^0.2.6",
