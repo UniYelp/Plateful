@@ -2,6 +2,7 @@ import type { LanguageModel, StepResult, ToolSet } from "ai";
 import type { Evalite } from "evalite";
 
 import type {
+	MaterialQuantityExceededError,
 	RecipeGraph,
 	RecipeValidationIssue,
 	UnreachableMaterialError,
@@ -51,6 +52,10 @@ type ScoreMetadataByIssue = Satisfies<
 			materials: string[];
 		};
 		[UnreachableMaterialError._tag]: {
+			count: number;
+			materials: string[];
+		};
+		[MaterialQuantityExceededError._tag]: {
 			count: number;
 			materials: string[];
 		};

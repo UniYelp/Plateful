@@ -85,12 +85,12 @@ export class MaterialQuantityExceededError extends Error {
 	constructor(
 		public id: string,
 		public used: Quantity,
-		public available?: Quantity,
+		public available?: Quantity[],
 	) {
 		const usedQuantity = `${used.value} ${used.unit}`.trim();
 		const availableQuantity = available
-			? `${available.value} ${available.unit}`.trim()
-			: 0;
+			? available.map((q) => `${q.value} ${q.unit}`.trim()).join(", ")
+			: NaN;
 
 		super(
 			`Material ${id} usage has exceeded the maximum quantity (Used: ${usedQuantity}, Available: ${availableQuantity})`,
@@ -106,7 +106,8 @@ export type RecipeValidationIssue =
 	| UnusedDerivedOutputError
 	| MaterialUsedBeforeProducedError
 	| MaterialProducedBeforeInputsError
-	| MaterialQuantityExceededError;
+	| MaterialQuantityExceededError
+	| InternalRecipeGraphError;
 
 export class RecipeValidationError<
 	T extends RecipeValidationIssue = RecipeValidationIssue,

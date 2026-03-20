@@ -1,5 +1,6 @@
 import {
 	IngredientNotUsedOnlyAsInputError,
+	InternalRecipeGraphError,
 	MaterialProducedBeforeInputsError,
 	MaterialQuantityExceededError,
 	MaterialUsedBeforeProducedError,
@@ -25,6 +26,7 @@ export const errorMessageByErrorTag = {
 		"Recipe has materials that were produced before their inputs were utilized",
 	[MaterialQuantityExceededError._tag]:
 		"Recipe has materials that exceeded their maximum quantity",
+	[InternalRecipeGraphError._tag]: "Internal recipe graph error",
 } as const satisfies {
 	[Tag in RecipeValidationIssue["_tag"]]: string;
 };

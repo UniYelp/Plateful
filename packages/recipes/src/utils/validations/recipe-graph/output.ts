@@ -27,7 +27,7 @@ export const validateRecipeOutput = (
 		(edgeIndex) => isUsedOutputMaterial(graph, edgeIndex),
 	);
 
-	if (usedOutputMaterialEdgeIndices) {
+	if (usedOutputMaterialEdgeIndices.length) {
 		const usedOutputMaterialIssues = usedOutputMaterialEdgeIndices.flatMap(
 			(edgeIndex) => {
 				const res = getMaterialNodeByEdgeIndex(graph, {
@@ -70,7 +70,7 @@ const isUsedOutputMaterial = (graph: RecipeGraph, edgeIndex: EdgeIndex) => {
 	 * ? so they'll have at least one neighbor, themselves
 	 *
 	 * ! Checking `length` instead of converting to a `Set`
-     * ! in-case there are other self-referential nodes which shouldn't be there
+	 * ! in-case there are other self-referential nodes which shouldn't be there
 	 */
 	if (neighbors.length > 1) return true;
 

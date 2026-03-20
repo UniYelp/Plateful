@@ -1,5 +1,6 @@
 export * from "./ingredient-used-as-only-input";
-export * from './ingredients-usage';
+export * from "./ingredients-usage";
+export * from "./no-exceeding-ingredients";
 export * from "./no-material-produced-before-inputs";
 export * from "./no-material-used-before-produced";
 export * from "./no-unreachable-materials";
