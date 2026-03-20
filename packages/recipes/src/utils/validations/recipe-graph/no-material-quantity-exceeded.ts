@@ -36,8 +36,6 @@ export const validateNoMaterialQuantityExceeded = (
 		UnlimitedQuantity | Map<IngredientUnit | typeof SCALAR_UNIT, number>
 	>();
 
-	const ignoreNodes = new Set<NodeIndex>();
-
 	const startNodeIdx = getStartNodeIndex(graph);
 
 	if (startNodeIdx instanceof Error) {
@@ -49,9 +47,6 @@ export const validateNoMaterialQuantityExceeded = (
 
 	for (const [nodeIdx, node] of walker) {
 		if (node.type === "start") continue;
-		if (ignoreNodes.has(nodeIdx)) continue;
-
-		ignoreNodes.add(nodeIdx);
 
 		const incomingEdgeIndices = getEdgeIndicesByNodeIndex(
 			graph,
@@ -89,7 +84,7 @@ export const validateNoMaterialQuantityExceeded = (
 			const unit = quantity.unit ?? SCALAR_UNIT;
 			const amount = quantities.get(unit) ?? 0;
 
-			quantities.set(unit, amount);
+			quantities.set(unit, amount + quantity.value);
 		}
 
 		const outgoingEdgeIndices = getEdgeIndicesByNodeIndex(
@@ -138,21 +133,40 @@ export const validateNoMaterialQuantityExceeded = (
 							})),
 						),
 					);
-
-					continue;
 				}
 			}
 
-			const availableUnits = quantities.keys();
+			// const availableUnits = quantities.keys();
 
-			const closestUnit = getIngredientUnitConversions();
+			// const closestUnit = getIngredientUnitConversions();
 
-			const amount = quantities.get(unit) ?? 0;
+			// const amount = quantities.get(unit) ?? 0;
 
-			quantities.set(unit, amount);
+			// quantities.set(unit, amount);
+
+			// TODO: continue & write better unit consumption
 		}
 
 		const outputEdges = materialEdges.filter((m) => isOutputKindMaterial(m));
+
+		for (const outputEdge of outputEdges) {
+			const { quantity } = outputEdge;
+
+			let quantities = materialQuantities.get(node.name);
+
+			//? This is technically an internal issue
+			if (quantities === UNLIMITED_QUANTITY) continue;
+
+			if (!isDefined(quantities)) {
+				quantities = new Map();
+				materialQuantities.set(node.name, quantities);
+			}
+
+			const unit = quantity.unit ?? SCALAR_UNIT;
+			const amount = quantities.get(unit) ?? 0;
+
+			quantities.set(unit, amount + quantity.value);
+		}
 	}
 
 	return null;
