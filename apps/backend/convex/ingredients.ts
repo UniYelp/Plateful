@@ -413,7 +413,7 @@ export const consumeForRecipe = householdMutation({
 				availableMap = res;
 			}
 
-			for (const slot of remaining) {
+			for (const slot of remaining.toReversed()) {
 				const unit = slot.unit ?? SCALAR_UNIT;
 				const available = availableMap.get(unit as RecipeIngredientUnit) ?? 0;
 				const amountToKeep = Math.min(slot.amount, available);
