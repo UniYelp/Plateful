@@ -1,10 +1,8 @@
 import { notFound } from "./errors";
-import { validateUserInHouseholdOrThrow } from "./households";
+import { householdMutation, householdQuery } from "./households";
 import { recipeFeedbackFields } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
-import { authedMutation, authedQuery } from "./with_auth";
-
-export const submit = authedMutation({
+export const submit = householdMutation({
 	args: {
 		recipeId: recipeFeedbackFields.recipeId,
 		value: recipeFeedbackFields.value,
@@ -12,22 +10,14 @@ export const submit = authedMutation({
 	handler: async (ctx, args) => {
 		const { user } = ctx;
 
-		if (!user) {
-			throw notFound({
-				entity: "user"
-			});
-		}
-
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		if (!recipe || isSoftDeleted(recipe)) {
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
 			throw notFound({
 				entity: "recipe",
-				by: "household"
+				by: "household",
 			});
 		}
-
-		await validateUserInHouseholdOrThrow(ctx, user._id, recipe.householdId);
 
 		const existing = await ctx.db
 			.query("recipeFeedbacks")
@@ -60,29 +50,21 @@ export const submit = authedMutation({
 	},
 });
 
-export const getByRecipeAndUser = authedQuery({
+export const getByRecipeAndUser = householdQuery({
 	args: {
 		recipeId: recipeFeedbackFields.recipeId,
 	},
 	handler: async (ctx, args) => {
 		const { user } = ctx;
 
-		if (!user) {
-			throw notFound({
-				entity: "user"
-			});
-		}
-
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		if (!recipe || isSoftDeleted(recipe)) {
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
 			throw notFound({
 				entity: "recipe",
 				by: "household",
 			});
 		}
-
-		await validateUserInHouseholdOrThrow(ctx, user._id, recipe.householdId);
 
 		return await ctx.db
 			.query("recipeFeedbacks")
