@@ -2,6 +2,7 @@ import { context, trace } from "@opentelemetry/api";
 import Elysia, { sse } from "elysia";
 
 import { validateRecipe } from "@plateful/recipes";
+import { ENV } from "../../configs/env.config";
 import { LockedError } from "../../models/errors/locked";
 import { RateLimitError } from "../../models/errors/rate-limit";
 import { auth } from "../../plugins/auth.plugin";
@@ -176,9 +177,12 @@ export const recipes = new Elysia({
 							},
 						});
 
+						const isDev = ENV.NODE_ENV === "development";
+
 						let errorMsg =
 							"Unable to generate a safe and valid recipe after multiple attempts.";
-						if (finalHasStaticErrors) {
+
+						if (isDev && finalHasStaticErrors) {
 							errorMsg +=
 								"\n\nValidation issues:\n" +
 								finalValidationResult.issues
@@ -189,7 +193,9 @@ export const recipes = new Elysia({
 						yield sse({
 							event: "failed",
 							data: {
-								error: errorMsg,
+								error: isDev
+									? errorMsg
+									: "Unable to generate a safe and valid recipe.",
 								safetyScore: finalSafetyScore,
 							},
 						});
@@ -220,10 +226,12 @@ export const recipes = new Elysia({
 					error = new Error(JSON.stringify(err));
 				}
 
+				const isDev = ENV.NODE_ENV === "development";
+
 				yield sse({
 					event: "failed",
 					data: {
-						error: error.message,
+						error: isDev ? error.message : "Failed to generate recipe.",
 					},
 				});
 			} finally {
