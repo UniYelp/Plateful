@@ -84,16 +84,43 @@ export class MaterialQuantityExceededError extends Error {
 
 	constructor(
 		public id: string,
-		public used: Quantity,
+		public required: Quantity,
 		public available?: Quantity[],
 	) {
-		const usedQuantity = `${used.value} ${used.unit}`.trim();
+		const requiredQuantity = `${required.value} ${required.unit}`.trim();
 		const availableQuantity = available
 			? available.map((q) => `${q.value} ${q.unit}`.trim()).join(", ")
 			: NaN;
 
 		super(
-			`Material ${id} usage has exceeded the maximum quantity (Used: ${usedQuantity}, Available: ${availableQuantity})`,
+			`Material ${id} usage has exceeded the maximum quantity (Required: ${requiredQuantity}, Available: ${availableQuantity})`,
+		);
+	}
+
+	static from(error: QuantityExceededError, id: string) {
+		return new MaterialQuantityExceededError(
+			id,
+			error.required,
+			error.available,
+		);
+	}
+}
+
+export class QuantityExceededError extends Error {
+	static readonly _tag = "QuantityExceededError";
+	readonly _tag = QuantityExceededError._tag;
+
+	constructor(
+		public required: Quantity,
+		public available?: Quantity[],
+	) {
+		const requiredQuantity = `${required.value} ${required.unit}`.trim();
+		const availableQuantity = available
+			? available.map((q) => `${q.value} ${q.unit}`.trim()).join(", ")
+			: NaN;
+
+		super(
+			`Usage has exceeded the maximum quantity (Required: ${requiredQuantity}, Available: ${availableQuantity})`,
 		);
 	}
 }

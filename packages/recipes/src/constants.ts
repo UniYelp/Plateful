@@ -13,3 +13,5 @@ export const MaterialOutputKinds = new Set<RecipeMaterialKind>(
 );
 
 export const UNLIMITED_QUANTITY = "unlimited";
+
+export const SCALAR_UNIT = "__scalar__";

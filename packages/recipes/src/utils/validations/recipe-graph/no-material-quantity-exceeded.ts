@@ -1,31 +1,24 @@
 import { Graph, Option } from "effect";
-import type { NodeIndex } from "effect/Graph";
 
-import type { IngredientUnit } from "@plateful/ingredients";
-import { getIngredientUnitConversions } from "@plateful/ingredients";
 import { isDefined } from "@plateful/utils";
-import { UNLIMITED_QUANTITY } from "../../../constants";
-import { RecipeMaterialKind } from "../../../enums";
+import { SCALAR_UNIT, UNLIMITED_QUANTITY } from "../../../constants";
 import {
 	type InternalRecipeGraphError,
 	MaterialQuantityExceededError,
+	QuantityExceededError,
 	RecipeValidationError,
 } from "../../../models";
 import type {
-	IngredientEdge,
-	MaterialEdge,
-	Quantity,
 	RecipeGraph,
 	RecipeValidationResult,
 	UnlimitedQuantity,
 } from "../../../types";
+import type { RecipeIngredientUnit } from "../../../types/units";
 import { getEdgeIndicesByNodeIndex } from "../../graph";
 import { isInputKindMaterial, isOutputKindMaterial } from "../../guards";
+import { consumeQuantity } from "../../ingredients";
 import { getStartNodeIndex } from "../../recipe-graph";
 
-const SCALAR_UNIT = "__scalar__";
-
-// TODO: continue & write better unit consumption
 export const validateNoMaterialQuantityExceeded = (
 	graph: RecipeGraph,
 ): RecipeValidationResult<
@@ -33,7 +26,7 @@ export const validateNoMaterialQuantityExceeded = (
 > => {
 	const materialQuantities = new Map<
 		string,
-		UnlimitedQuantity | Map<IngredientUnit | typeof SCALAR_UNIT, number>
+		UnlimitedQuantity | Map<RecipeIngredientUnit, number>
 	>();
 
 	const startNodeIdx = getStartNodeIndex(graph);
@@ -103,50 +96,6 @@ export const validateNoMaterialQuantityExceeded = (
 			),
 		);
 
-		const inputEdges = materialEdges.filter((m) => isInputKindMaterial(m));
-
-		for (const inputEdge of inputEdges) {
-			const { quantity } = inputEdge;
-
-			const quantities = materialQuantities.get(node.name);
-
-			if (quantities === UNLIMITED_QUANTITY) continue;
-
-			if (!isDefined(quantities)) {
-				issues.push(new MaterialQuantityExceededError(node.name, quantity));
-				continue;
-			}
-
-			const { unit } = quantity;
-
-			if (!unit) {
-				const amount = quantities.get(SCALAR_UNIT) ?? 0;
-
-				if (amount < quantity.value) {
-					issues.push(
-						new MaterialQuantityExceededError(
-							node.name,
-							quantity,
-							Array.from(quantities.entries()).map(([unit, amount]) => ({
-								unit: unit === SCALAR_UNIT ? undefined : unit,
-								value: amount,
-							})),
-						),
-					);
-				}
-			}
-
-			// const availableUnits = quantities.keys();
-
-			// const closestUnit = getIngredientUnitConversions();
-
-			// const amount = quantities.get(unit) ?? 0;
-
-			// quantities.set(unit, amount);
-
-			// TODO: continue & write better unit consumption
-		}
-
 		const outputEdges = materialEdges.filter((m) => isOutputKindMaterial(m));
 
 		for (const outputEdge of outputEdges) {
@@ -167,6 +116,37 @@ export const validateNoMaterialQuantityExceeded = (
 
 			quantities.set(unit, amount + quantity.value);
 		}
+
+		const inputEdges = materialEdges.filter((m) => isInputKindMaterial(m));
+
+		for (const inputEdge of inputEdges) {
+			const { quantity } = inputEdge;
+
+			const quantities = materialQuantities.get(node.name);
+
+			if (quantities === UNLIMITED_QUANTITY) continue;
+
+			if (!isDefined(quantities)) {
+				issues.push(new MaterialQuantityExceededError(node.name, quantity));
+				continue;
+			}
+
+			const remaining = consumeQuantity({
+				available: quantities,
+				consume: quantity,
+			});
+
+			if (remaining instanceof QuantityExceededError) {
+				issues.push(MaterialQuantityExceededError.from(remaining, node.name));
+				continue;
+			}
+
+			materialQuantities.set(node.name, remaining);
+		}
+	}
+
+	if (issues.length > 0) {
+		return new RecipeValidationError(issues);
 	}
 
 	return null;
