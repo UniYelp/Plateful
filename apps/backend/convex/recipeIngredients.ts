@@ -40,10 +40,11 @@ export const fullByRecipe = householdQuery({
 					recipeIngredient.ingredientId,
 				);
 
+				ctx.validateHousehold(ingredient);
+
 				if (
 					!ingredient ||
-					isSoftDeleted(ingredient) ||
-					ingredient.householdId !== recipe.householdId
+					isSoftDeleted(ingredient)
 				)
 					return;
 

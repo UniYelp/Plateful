@@ -107,7 +107,15 @@ function EditIngredientPage() {
 					<CardContent>
 						<IngredientForm
 							householdId={householdId}
-							relatedRecipes={recipeIngredients?.map((ri) => ri.recipe)}
+							relatedRecipes={
+								recipeIngredients
+									? Array.from(
+											new Map(
+												recipeIngredients.map((ri) => [ri.recipe._id, ri.recipe]),
+											).values(),
+										)
+									: undefined
+							}
 							defaultValues={{
 								name: ingredient?.name,
 								description: ingredient?.description,

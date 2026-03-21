@@ -90,7 +90,7 @@ export class MaterialQuantityExceededError extends Error {
 		const usedQuantity = `${used.value} ${used.unit}`.trim();
 		const availableQuantity = available
 			? available.map((q) => `${q.value} ${q.unit}`.trim()).join(", ")
-			: NaN;
+			: "N/A";
 
 		super(
 			`Material ${id} usage has exceeded the maximum quantity (Used: ${usedQuantity}, Available: ${availableQuantity})`,
