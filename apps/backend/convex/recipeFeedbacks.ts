@@ -12,10 +12,10 @@ export const submit = householdMutation({
 
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		if (!recipe || isSoftDeleted(recipe)) {
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
 			throw notFound({
 				entity: "recipe",
-				by: "household"
+				by: "household",
 			});
 		}
 
@@ -59,7 +59,7 @@ export const getByRecipeAndUser = householdQuery({
 
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		if (!recipe || isSoftDeleted(recipe)) {
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
 			throw notFound({
 				entity: "recipe",
 				by: "household",
