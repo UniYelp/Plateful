@@ -1,8 +1,7 @@
 import { bool } from "@plateful/utils";
 import type { Id } from "./_generated/dataModel";
-import type { QueryCtx } from "./_generated/server";
 import { notFound } from "./errors";
-import { householdQuery } from "./households";
+import { type HouseholdQueryCtx, householdQuery } from "./households";
 import { vv } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
 
@@ -25,13 +24,15 @@ export const fullByRecipe = householdQuery({
 	handler: async (ctx, args) => {
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		ctx.validateHousehold(recipe);
-
-		if (!recipe || isSoftDeleted(recipe)) {
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
 			throw notFound({ entity: "Recipe", in: "Household" });
 		}
 
-		const recipeIngredients = await getRecipeIngredients(ctx, args.recipeId);
+		const recipeIngredients = await getRecipeIngredients(
+			ctx,
+			args.recipeId,
+			recipe,
+		);
 
 		const ingredients = await Promise.all(
 			recipeIngredients.map(async (recipeIngredient) => {
@@ -43,7 +44,7 @@ export const fullByRecipe = householdQuery({
 				if (
 					!ingredient ||
 					isSoftDeleted(ingredient) ||
-					ingredient.householdId !== recipe.householdId
+					!ctx.isHousehold(ingredient)
 				)
 					return;
 
@@ -72,6 +73,16 @@ export const fullByIngredient = householdQuery({
 		ingredientId: vv.id("ingredients"),
 	},
 	handler: async (ctx, args) => {
+		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
+
+		if (
+			!ingredient ||
+			isSoftDeleted(ingredient) ||
+			!ctx.isHousehold(ingredient)
+		) {
+			throw notFound({ entity: "Ingredient", in: "Household" });
+		}
+
 		const recipeIngredients = await ctx.db
 			.query("recipeIngredients")
 			.withIndex("by_ingredient_deletedAt_recipe", (q) =>
@@ -102,9 +113,18 @@ export const fullByIngredient = householdQuery({
 
 // #region Helpers
 export async function getRecipeIngredients(
-	ctx: QueryCtx,
+	ctx: HouseholdQueryCtx,
 	recipeId: Id<"recipes">,
+	/** Pre-validated recipe to avoid redundant fetch */
+	validatedRecipe?: { _id: Id<"recipes">; householdId: Id<"households"> },
 ) {
+	if (!validatedRecipe) {
+		const recipe = await ctx.db.get("recipes", recipeId);
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
+			throw notFound({ entity: "Recipe", in: "Household" });
+		}
+	}
+
 	const recipes = await ctx.db
 		.query("recipeIngredients")
 		.withIndex("by_recipe_deletedAt_ingredient", (q) =>

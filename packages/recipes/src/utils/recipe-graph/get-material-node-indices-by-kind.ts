@@ -15,16 +15,13 @@ export const getMaterialNodeIndicesByKind = (
 		Graph.findEdges(graph, (edge) => edge.kind === kind),
 	);
 
-	const edges = edgeIndices
-		.values()
+	const edges = Array.from(edgeIndices)
 		.map((edgeIndex) => Graph.getEdge(graph, edgeIndex).pipe(Option.getOrNull))
 		.filter((edge) => isDefined(edge));
 
-	const nodeIndices = new Set(
-		edges.map((edge) => getNodeIndexByEdge(edge, direction)),
-	)
-		.values()
-		.toArray();
+	const nodeIndices = Array.from(
+		new Set(edges.map((edge) => getNodeIndexByEdge(edge, direction))),
+	);
 
 	return nodeIndices;
 };

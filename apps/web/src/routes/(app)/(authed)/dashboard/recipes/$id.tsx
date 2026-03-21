@@ -1,13 +1,15 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Play, Utensils } from "lucide-react";
+import { ArrowLeft, Check, Clock, Play, Utensils, X } from "lucide-react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
+import { CookNowDialog } from "&/recipes/components/CookNowDialog";
+import { Feedback } from "&/recipes/components/Feedback";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
-import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
+import { isIngredientSufficient } from "&/recipes/utils/available-ingredients";
 import { formatDuration } from "&/recipes/utils/format-duration";
 import { formatStep } from "&/recipes/utils/format-step";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +22,6 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
@@ -125,12 +126,11 @@ function RecipeDetailPage() {
 					</div>
 
 					<div className="flex gap-4">
-						<CookNowDialog householdId={household._id} ingredients={ingredients}>
-							<Button
-								size="lg"
-								className="flex-1"
-								disabled={!canCook}
-							>
+						<CookNowDialog
+							householdId={household._id}
+							ingredients={ingredients}
+						>
+							<Button size="lg" className="flex-1" disabled={!canCook}>
 								<Play className="mr-2 h-4 w-4" />
 								Start Cooking
 							</Button>
@@ -184,20 +184,37 @@ function RecipeDetailPage() {
 									return (
 										<div
 											key={ingredient.ingredient._id}
-											className="flex items-center justify-between"
+											className="flex items-start justify-between gap-3"
 										>
-											<div
-												className={`flex-1 ${!isAvailable ? "text-muted-foreground line-through" : ""}`}
-											>
-												<span className="font-medium">
-													{ingredient?.ingredient.name}
+											<div className="flex flex-1 items-start gap-2">
+												{!isAvailable ? (
+													<X
+														className="mt-1 h-4 w-4 shrink-0 text-destructive"
+														aria-hidden="true"
+													/>
+												) : (
+													<Check
+														className="mt-1 h-4 w-4 shrink-0 text-green-500"
+														aria-hidden="true"
+													/>
+												)}
+												<span className="sr-only">
+													{isAvailable ? "Available" : "Missing"}
 												</span>
-												<p className="text-muted-foreground text-sm">
-													{getTotalAmount(ingredient?.quantities)}
-												</p>
+												<div
+													className={`flex-1 ${!isAvailable ? "text-muted-foreground" : ""}`}
+												>
+													<span className="font-medium">
+														{ingredient?.ingredient.name}
+													</span>
+													<p className="text-muted-foreground text-sm">
+														{getTotalAmount(ingredient?.quantities)}
+													</p>
+												</div>
 											</div>
 											<div
-												className={`h-3 w-3 rounded-full ${isAvailable ? "bg-green-500" : "bg-red-500"}`}
+												className={`mt-1.5 h-3 w-3 shrink-0 rounded-full ${isAvailable ? "bg-green-500" : "bg-red-500"}`}
+												aria-hidden="true"
 											/>
 										</div>
 									);
@@ -231,6 +248,8 @@ function RecipeDetailPage() {
 							</div>
 						</CardContent>
 					</Card>
+
+					<Feedback recipeId={recipeId} />
 				</div>
 			</div>
 		</>

@@ -6,6 +6,7 @@ import type { Recipe, RecipeValidationResult } from "../../types";
 import { createRecipeGraph } from "../recipe-graph";
 import { validateIngredientsUsedOnlyAsInputs } from "./recipe-graph/ingredient-used-as-only-input";
 import { validateNoMaterialProducedBeforeInputs } from "./recipe-graph/no-material-produced-before-inputs";
+import { validateNoMaterialQuantityExceeded } from "./recipe-graph/no-material-quantity-exceeded";
 import { validateNoMaterialUsedBeforeProduced } from "./recipe-graph/no-material-used-before-produced";
 import { validateNoUnreachableMaterials } from "./recipe-graph/no-unreachable-materials";
 import { validateUnusedDerivedMaterials } from "./recipe-graph/no-unused-derived-materials";
@@ -53,6 +54,12 @@ export const validateRecipe = (recipe: Recipe): RecipeValidationResult => {
 
 	if (unusedDerivedMaterialsRes) {
 		issues.push(...unusedDerivedMaterialsRes.issues);
+	}
+
+	const quantityExceededRes = validateNoMaterialQuantityExceeded(recipeGraph);
+
+	if (quantityExceededRes) {
+		issues.push(...quantityExceededRes.issues);
 	}
 
 	if (!issues.length) return null;

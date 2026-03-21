@@ -19,6 +19,14 @@ import {
 	internalAuthedMutation,
 } from "./with_auth";
 
+type AuthedCtx<Ctx> = Ctx & {
+	validateHousehold: ReturnType<typeof getHouseholdEntityValidator>;
+	isHousehold: ReturnType<typeof getHouseholdEntityGuard>;
+};
+
+export type HouseholdQueryCtx = AuthedCtx<AuthedQueryCtx>;
+export type HouseholdMutationCtx = AuthedCtx<AuthedMutationCtx>;
+
 // #region Validators
 
 const vHousehold = vv.doc("households");
@@ -39,9 +47,14 @@ export const householdQuery = customQuery(authedQuery, {
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		const validateHousehold = getHouseholdEntityValidator(args.householdId);
+		const isHousehold = getHouseholdEntityGuard(args.householdId);
 
 		return {
-			ctx: { user, validateHousehold }, //? Convex don't propagate the extensions by other extended custom functions
+			ctx: {
+				user,
+				validateHousehold,
+				isHousehold,
+			} satisfies Partial<HouseholdQueryCtx>, //? Convex don't propagate the extensions by other extended custom functions
 			args,
 		};
 	},
@@ -58,9 +71,14 @@ export const householdMutation = customMutation(authedMutation, {
 		await validateUserInHouseholdOrThrow(ctx, userId, args.householdId);
 
 		const validateHousehold = getHouseholdEntityValidator(args.householdId);
+		const isHousehold = getHouseholdEntityGuard(args.householdId);
 
 		return {
-			ctx: { user, validateHousehold }, //? Convex don't propagate the extensions by other extended custom functions
+			ctx: {
+				user,
+				validateHousehold,
+				isHousehold,
+			} satisfies Partial<HouseholdMutationCtx>, //? Convex don't propagate the extensions by other extended custom functions
 			args,
 		};
 	},
@@ -239,15 +257,34 @@ export async function validateUserInHouseholdOrThrow(
 	}
 }
 
+export function isHouseholdEntity<
+	T extends { _id: string; householdId: Id<"households"> },
+>(entity: T, householdId: Id<"households">) {
+	return entity.householdId === householdId;
+}
+
 /**
  * @throws
  */
 export function validateHouseholdEntity<
-	T extends { householdId: Id<"households"> },
+	T extends { _id: string; householdId: Id<"households"> },
 >(entity: T, householdId: Id<"households">) {
-	if (entity.householdId === householdId) return;
+	if (isHouseholdEntity(entity, householdId)) return;
 
-	throw forbidden();
+	throw forbidden(
+		`Entity with ID ${entity._id} is not in household with ID ${householdId}.`,
+	);
+}
+
+function getHouseholdEntityGuard(householdId: Id<"households">) {
+	/**
+	 * @description Returns true if the entity is defined and belongs to the household, false otherwise
+	 */
+	return <T extends { _id: string; householdId: Id<"households"> }>(
+		entity?: Maybe<T>,
+	) => {
+		return entity && isHouseholdEntity(entity, householdId);
+	};
 }
 
 function getHouseholdEntityValidator(householdId: Id<"households">) {
@@ -255,7 +292,9 @@ function getHouseholdEntityValidator(householdId: Id<"households">) {
 	 * @description if the entity is defined, validates that the entity's household matches
 	 * @throws
 	 */
-	return <T extends { householdId: Id<"households"> }>(entity?: Maybe<T>) => {
+	return <T extends { _id: string; householdId: Id<"households"> }>(
+		entity?: Maybe<T>,
+	) => {
 		if (!entity) return;
 		validateHouseholdEntity(entity, householdId);
 	};

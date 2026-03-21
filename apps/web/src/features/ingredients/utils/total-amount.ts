@@ -1,6 +1,6 @@
-import { entriesOf } from "@plateful/utils";
-
-export const SCALAR_QUANTITY_KEY = "__scalar__";
+import type { IngredientUnit } from "@plateful/ingredients";
+import { buildQuantitiesMap, SCALAR_UNIT } from "@plateful/recipes";
+import { formatQuantity } from "&/recipes/utils/format-quantity";
 
 export const getTotalAmount = (
 	quantities: Array<{
@@ -10,31 +10,26 @@ export const getTotalAmount = (
 ) => {
 	const quantityByUnit = getGroupedTotalAmount(quantities);
 
-	const parts: string[] = [];
-
-	for (const [unit, amount] of entriesOf(quantityByUnit)) {
-		if (unit === SCALAR_QUANTITY_KEY) {
-			parts.push(`${amount}`);
-		} else {
-			parts.push(`${amount}${unit}`);
-		}
-	}
+	const parts = Array.from(quantityByUnit.entries()).map(([unit, amount]) =>
+		formatQuantity({
+			unit: unit === SCALAR_UNIT ? undefined : unit,
+			amount,
+		}),
+	);
 
 	return parts.join(", ");
 };
 
-
-export const getGroupedTotalAmount = (quantities: Array<{
+export const getGroupedTotalAmount = (
+	quantities: Array<{
 		unit?: string | undefined;
 		amount: number;
-	}>,) => {
-	return quantities.reduce(
-		(acc, q) => {
-			const unit = q.unit ?? SCALAR_QUANTITY_KEY;
-			if (!acc[unit]) acc[unit] = 0;
-			acc[unit] += q.amount;
-			return acc;
-		},
-		{} as Record<string, number>,
+	}>,
+): Map<string, number> => {
+	return buildQuantitiesMap(
+		quantities.map((q) => ({
+			value: q.amount,
+			unit: q.unit === SCALAR_UNIT ? undefined : (q.unit as IngredientUnit),
+		})),
 	);
-}
+};

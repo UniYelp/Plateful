@@ -7,6 +7,7 @@ import type {
 	RecipeStepBlock,
 } from "@backend/recipes";
 import { formatDuration } from "./format-duration";
+import { formatQuantity } from "./format-quantity";
 
 export const formatStep = (
 	step: RecipeStep,
@@ -77,27 +78,10 @@ const formatMaterialBlock = (
 			? data.ingredient.name
 			: nameById[data.ingredient.id];
 
-	let qtyStr = "";
-	if (typeof data.quantity === "string") {
-		// These strings should ideally be pulled from a translation file
-		// e.g., i18next.t(data.quantity)
-		qtyStr = data.quantity;
-	} else {
-		const { amount, unit } = data.quantity;
-		try {
-			qtyStr = new Intl.NumberFormat(userLocale, {
-				style: unit ? "unit" : "decimal",
-				...(unit && { unit: unit.toLowerCase() }),
-				unitDisplay: "narrow",
-			}).format(amount);
-		} catch (_e) {
-			const numberPart = new Intl.NumberFormat(userLocale, {
-				style: "decimal",
-			}).format(amount);
-
-			qtyStr = unit ? `${numberPart} ${unit}` : numberPart;
-		}
-	}
+	const qtyStr =
+		typeof data.quantity === "string"
+			? data.quantity
+			: formatQuantity(data.quantity);
 
 	const parts = [
 		qtyStr,

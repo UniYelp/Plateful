@@ -217,7 +217,11 @@ export const recipeGensFields = {
 
 	state: v.union(
 		v.object({
-			status: v.union(v.literal("pending"), v.literal("generating"), v.literal("validating")),
+			status: v.union(
+				v.literal("pending"),
+				v.literal("generating"),
+				v.literal("validating"),
+			),
 		}),
 		v.object({
 			status: v.literal("completed"),
@@ -231,6 +235,12 @@ export const recipeGensFields = {
 	),
 
 	metadata: v.union(v.object(recipeGenV0MetadataFields)),
+};
+
+export const recipeFeedbackFields = {
+	recipeId: v.id("recipes"),
+	userId: v.id("users"),
+	value: v.union(v.literal("positive"), v.literal("negative")),
 };
 
 export const userPreferencesFields = {
@@ -317,6 +327,10 @@ const schema = defineSchema({
 		...recipeGensFields,
 		...stampsFields,
 	}).index("by_household_deletedAt", ["householdId", "deletedAt"]),
+	recipeFeedbacks: defineTable({
+		...recipeFeedbackFields,
+		...stampsFields,
+	}).index("by_recipe_and_user", ["recipeId", "userId"]),
 	// #endregion
 });
 

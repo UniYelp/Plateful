@@ -117,8 +117,6 @@ export function IngredientDetailPage() {
 
 	const totalAmount = getTotalAmount(ingredient.quantities);
 
-
-
 	const handleRemoveQuantity = async (index: number) => {
 		await removeQuantityAt({
 			householdId: household._id,
