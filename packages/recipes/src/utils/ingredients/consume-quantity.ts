@@ -4,6 +4,7 @@ import { QuantityExceededError } from "../../models";
 import type { Quantity } from "../../types";
 import type { RecipeIngredientUnit } from "../../types/units";
 import { convertRecipeIngredientsUnits } from "./convert-recipe-ingredients-units";
+import { buildQuantitiesArray } from "./quantities";
 
 type Params = Readonly<{
 	available: ReadonlyMap<RecipeIngredientUnit, number>;
@@ -17,7 +18,9 @@ export const consumeQuantity = (
 
 	const remaining = new Map(available);
 
-	if (consume.value === 0) return remaining;
+	if (consume.value === 0) {
+		return remaining;
+	}
 
 	const consumeCopy = structuredClone(consume);
 	const unitToConsume = consumeCopy.unit ?? SCALAR_UNIT;
@@ -60,13 +63,7 @@ export const consumeQuantity = (
 	}
 
 	if (remainingAmountToConsume > 0) {
-		return new QuantityExceededError(
-			consume,
-			Array.from(available.entries()).map(([unit, amount]) => ({
-				unit: unit === SCALAR_UNIT ? undefined : unit,
-				value: amount,
-			})),
-		);
+		return new QuantityExceededError(consume, buildQuantitiesArray(available));
 	}
 
 	return remaining;
