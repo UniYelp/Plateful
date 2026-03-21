@@ -1,13 +1,5 @@
 import type { ExpiryStatus } from "@plateful/ingredients";
 import type { BadgeProps } from "@/components/ui/badge";
-import cerealsImg from "/assets/ingredientsCategories/cereals.png";
-import chickenImg from "/assets/ingredientsCategories/chicken.png";
-import freshProduceImg from "/assets/ingredientsCategories/fresh-produce.png";
-import milkImg from "/assets/ingredientsCategories/milk.png";
-import oilImg from "/assets/ingredientsCategories/oil.png";
-import saladImg from "/assets/ingredientsCategories/salad.png";
-import teaImg from "/assets/ingredientsCategories/tea.png";
-import vegetableImg from "/assets/ingredientsCategories/vegetable.png";
 
 export const colorByExpiryStatus = {
 	expired: "destructive",
