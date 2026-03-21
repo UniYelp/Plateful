@@ -9,7 +9,7 @@ import { getTotalAmount } from "&/ingredients/utils/total-amount";
 import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 import { Feedback } from "&/recipes/components/Feedback";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
-import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
+import { isIngredientSufficient } from "&/recipes/utils/available-ingredients";
 import { formatDuration } from "&/recipes/utils/format-duration";
 import { formatStep } from "&/recipes/utils/format-step";
 import { Badge } from "@/components/ui/badge";

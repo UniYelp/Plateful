@@ -1,6 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
 import { parse } from "iso8601-duration";
 import {
 	BookOpen,
@@ -11,17 +12,16 @@ import {
 	Utensils,
 } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "convex/react";
 
 import { api } from "@backend/api";
+import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
-import { isIngredientSufficient } from "&/recipes/utils/availableIngredients";
+import { isIngredientSufficient } from "&/recipes/utils/available-ingredients";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/")({
 	component: RouteComponent,
@@ -49,8 +49,14 @@ function RecipesPage() {
 
 	const { household } = Route.useLoaderData();
 
-	const genStats = useQuery(api.recipeGens.stats, { householdId: household._id });
-	const generationsLeft = genStats ? genStats.today.max - genStats.today.total : null;
+	const genStats = useQuery(api.recipeGens.stats, {
+		householdId: household._id,
+	});
+
+	const generationsLeft = genStats
+		? genStats.today.max - genStats.today.total
+		: null;
+
 	const atQuota = generationsLeft !== null && generationsLeft <= 0;
 
 	const { data: fullRecipes } = useSuspenseQuery(
@@ -113,7 +119,8 @@ function RecipesPage() {
 				<div className="flex items-center gap-3">
 					{generationsLeft !== null && (
 						<span className="text-muted-foreground text-sm">
-							{generationsLeft} generation{generationsLeft !== 1 ? "s" : ""} left today
+							{generationsLeft} generation{generationsLeft !== 1 ? "s" : ""}{" "}
+							left today
 						</span>
 					)}
 					<Button asChild={!atQuota} disabled={atQuota}>
