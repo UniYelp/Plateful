@@ -15,9 +15,7 @@ import {
 export function DesktopNav() {
 	const matches = useMatches();
 
-	const links = matches.flatMap(
-		(match) => match.staticData.links?.map((linkProps) => linkProps) ?? [],
-	);
+	const links = matches.flatMap((match) => match.staticData.links ?? []);
 
 	return (
 		<nav className="hidden items-center gap-6 md:flex">
@@ -51,7 +49,10 @@ export function MobileNav() {
 						<Menu className="h-5 w-5" />
 					</Button>
 				</SheetTrigger>
-				<SheetContent side="left" className="w-[300px] sm:w-[400px] sm:max-w-[400px]">
+				<SheetContent
+					side="left"
+					className="w-[300px] sm:w-[400px] sm:max-w-[400px]"
+				>
 					<SheetHeader>
 						<SheetTitle>Menu</SheetTitle>
 						<SheetDescription className="sr-only">

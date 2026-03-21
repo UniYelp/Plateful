@@ -1,9 +1,8 @@
 import { bool } from "@plateful/utils";
 import type { Id } from "./_generated/dataModel";
-import type { QueryCtx } from "./_generated/server";
 import { nanoBanana } from "./configs/nano-banana.config";
 import { notFound } from "./errors";
-import { householdQuery } from "./households";
+import { type HouseholdQueryCtx, householdQuery } from "./households";
 import { getRecipeIngredients } from "./recipeIngredients";
 import { vv } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
@@ -32,9 +31,8 @@ export const byIdAndHousehold = householdQuery({
 	},
 	handler: async (ctx, args) => {
 		const recipe = await ctx.db.get("recipes", args.recipeId);
-		ctx.validateHousehold(recipe);
 
-		if (!recipe || isSoftDeleted(recipe)) {
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
 			throw notFound({
 				entity: "recipe",
 				in: "household",
@@ -56,13 +54,15 @@ export const fullById = householdQuery({
 	handler: async (ctx, args) => {
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		ctx.validateHousehold(recipe);
-
-		if (!recipe || isSoftDeleted(recipe)) {
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
 			throw notFound({ entity: "Recipe", in: "Household" });
 		}
 
-		const recipeIngredients = await getRecipeIngredients(ctx, args.recipeId);
+		const recipeIngredients = await getRecipeIngredients(
+			ctx,
+			args.recipeId,
+			recipe,
+		);
 
 		const ingredients = await Promise.all(
 			recipeIngredients.map(async (recipeIngredient) => {
@@ -112,7 +112,7 @@ export const fullById = householdQuery({
 // #region Helpers
 
 async function getHouseholdRecipes(
-	ctx: QueryCtx,
+	ctx: HouseholdQueryCtx,
 	householdId: Id<"households">,
 ) {
 	const recipes = await ctx.db
@@ -124,7 +124,11 @@ async function getHouseholdRecipes(
 
 	const fullRecipes = await Promise.all(
 		recipes.map(async (recipe) => {
-			const recipeIngredients = await getRecipeIngredients(ctx, recipe._id);
+			const recipeIngredients = await getRecipeIngredients(
+				ctx,
+				recipe._id,
+				recipe,
+			);
 
 			const ingredients = await Promise.all(
 				recipeIngredients.map(async (recipeIngredient) => {
@@ -169,13 +173,13 @@ async function getHouseholdRecipes(
 }
 
 async function getRecipeGenImage(
-	ctx: QueryCtx,
+	ctx: HouseholdQueryCtx,
 	genId: Id<"recipeGens">,
 	shouldThrow = false,
 ) {
 	const recipeGen = await ctx.db.get("recipeGens", genId);
 
-	if (!recipeGen || isSoftDeleted(recipeGen)) {
+	if (!recipeGen || isSoftDeleted(recipeGen) || !ctx.isHousehold(recipeGen)) {
 		if (shouldThrow) {
 			throw notFound({ entity: "recipe generation", by: "generation" });
 		}

@@ -54,7 +54,7 @@ function GenerateNewRecipePage() {
 				? getExpiryDetailsFromExpiryDate(quantity.expiresAt)
 				: null;
 
-			if (expiryDetails?.status === "expired") return [];
+			// if (expiryDetails?.status === "expired") return [];
 
 			return {
 				...quantity,
@@ -93,15 +93,12 @@ function GenerateNewRecipePage() {
 			ingredients: ingredientsDetails.flatMap((ing) => {
 				if (!selectedIngredients.has(ing.id)) return [];
 
-				const quantities = ing.availableQuantities.flatMap(
-					({ amount, unit, expiresAt, expiry }) =>
-						expiry?.status === "expired" //? Not really a valid state
-							? []
-							: {
-									amount,
-									unit,
-									expiresAt,
-								},
+				const quantities = ing.availableQuantities.map(
+					({ amount, unit, expiresAt }) => ({
+						amount,
+						unit,
+						expiresAt,
+					}),
 				);
 
 				return {
