@@ -58,7 +58,11 @@ export const fullById = householdQuery({
 			throw notFound({ entity: "Recipe", in: "Household" });
 		}
 
-		const recipeIngredients = await getRecipeIngredients(ctx, args.recipeId);
+		const recipeIngredients = await getRecipeIngredients(
+			ctx,
+			args.recipeId,
+			recipe,
+		);
 
 		const ingredients = await Promise.all(
 			recipeIngredients.map(async (recipeIngredient) => {
@@ -120,7 +124,11 @@ async function getHouseholdRecipes(
 
 	const fullRecipes = await Promise.all(
 		recipes.map(async (recipe) => {
-			const recipeIngredients = await getRecipeIngredients(ctx, recipe._id);
+			const recipeIngredients = await getRecipeIngredients(
+				ctx,
+				recipe._id,
+				recipe,
+			);
 
 			const ingredients = await Promise.all(
 				recipeIngredients.map(async (recipeIngredient) => {

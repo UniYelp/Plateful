@@ -247,7 +247,7 @@ export const addQuantity = householdMutation({
 		if (
 			!ingredient ||
 			isSoftDeleted(ingredient) ||
-			ingredient.householdId !== args.householdId
+			!ctx.isHousehold(ingredient)
 		) {
 			throw notFound({ entity: "Ingredient", in: "Household" });
 		}
@@ -276,7 +276,7 @@ export const removeQuantityAt = householdMutation({
 		if (
 			!ingredient ||
 			isSoftDeleted(ingredient) ||
-			ingredient.householdId !== args.householdId
+			!ctx.isHousehold(ingredient)
 		) {
 			throw notFound({ entity: "Ingredient", in: "Household" });
 		}
@@ -302,7 +302,7 @@ export const mergeQuantities = householdMutation({
 		if (
 			!ingredient ||
 			isSoftDeleted(ingredient) ||
-			ingredient.householdId !== args.householdId
+			!ctx.isHousehold(ingredient)
 		) {
 			throw notFound({ entity: "Ingredient", in: "Household" });
 		}
@@ -348,7 +348,7 @@ export const consumeForRecipe = householdMutation({
 	},
 	handler: async (ctx, args) => {
 		const { _id: userId } = ctx.user;
-		const { householdId, ingredients } = args;
+		const { ingredients } = args;
 		const now = Date.now();
 
 		const results: {
@@ -356,15 +356,20 @@ export const consumeForRecipe = householdMutation({
 			quantities: { amount: number; unit?: string }[];
 		}[] = [];
 
+		const updates: Array<{
+			ingredientId: Doc<"ingredients">["_id"];
+			quantities: Doc<"ingredients">["quantities"];
+		}> = [];
+
 		for (const { ingredientId, quantities: neededQuantities } of ingredients) {
 			const ingredient = await ctx.db.get("ingredients", ingredientId);
 
 			if (
 				!ingredient ||
 				isSoftDeleted(ingredient) ||
-				ingredient.householdId !== householdId
+				!ctx.isHousehold(ingredient)
 			) {
-				continue;
+				throw notFound({ entity: "Ingredient", in: "Household" });
 			}
 
 			// Mutable copy of quantities, sorted by expiry date ascending (soonest first)
@@ -397,16 +402,22 @@ export const consumeForRecipe = householdMutation({
 					},
 				});
 
-				if (!(res instanceof Error)) {
-					// TODO: throw???
-					availableMap = res;
+				if (res instanceof Error) {
+					throw conflict({
+						entity: "Ingredient",
+						field: "quantities",
+						message: `Not enough ${ingredient.name} to consume`,
+					});
 				}
+
+				availableMap = res;
 			}
 
 			for (const slot of remaining) {
 				const unit = slot.unit ?? SCALAR_UNIT;
 				const available = availableMap.get(unit as RecipeIngredientUnit) ?? 0;
 				const amountToKeep = Math.min(slot.amount, available);
+
 				slot.amount = amountToKeep;
 				availableMap.set(
 					unit as RecipeIngredientUnit,
@@ -416,13 +427,16 @@ export const consumeForRecipe = householdMutation({
 
 			const updatedQuantities = remaining.filter((q) => q.amount > 0);
 
-			await ctx.db.patch("ingredients", ingredientId, {
-				quantities: updatedQuantities,
+			updates.push({ ingredientId, quantities: updatedQuantities });
+			results.push({ name: ingredient.name, quantities: updatedQuantities });
+		}
+
+		for (const update of updates) {
+			await ctx.db.patch("ingredients", update.ingredientId, {
+				quantities: update.quantities,
 				updatedBy: userId,
 				updatedAt: now,
 			});
-
-			results.push({ name: ingredient.name, quantities: updatedQuantities });
 		}
 
 		return results;

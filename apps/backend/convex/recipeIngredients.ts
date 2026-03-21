@@ -28,7 +28,11 @@ export const fullByRecipe = householdQuery({
 			throw notFound({ entity: "Recipe", in: "Household" });
 		}
 
-		const recipeIngredients = await getRecipeIngredients(ctx, args.recipeId);
+		const recipeIngredients = await getRecipeIngredients(
+			ctx,
+			args.recipeId,
+			recipe,
+		);
 
 		const ingredients = await Promise.all(
 			recipeIngredients.map(async (recipeIngredient) => {
@@ -111,11 +115,14 @@ export const fullByIngredient = householdQuery({
 export async function getRecipeIngredients(
 	ctx: HouseholdQueryCtx,
 	recipeId: Id<"recipes">,
+	/** Pre-validated recipe to avoid redundant fetch */
+	validatedRecipe?: { _id: Id<"recipes">; householdId: Id<"households"> },
 ) {
-	const recipe = await ctx.db.get("recipes", recipeId);
-
-	if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
-		throw notFound({ entity: "Recipe", in: "Household" });
+	if (!validatedRecipe) {
+		const recipe = await ctx.db.get("recipes", recipeId);
+		if (!recipe || isSoftDeleted(recipe) || !ctx.isHousehold(recipe)) {
+			throw notFound({ entity: "Recipe", in: "Household" });
+		}
 	}
 
 	const recipes = await ctx.db

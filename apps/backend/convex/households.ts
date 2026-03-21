@@ -278,8 +278,7 @@ export function validateHouseholdEntity<
 
 function getHouseholdEntityGuard(householdId: Id<"households">) {
 	/**
-	 * @description if the entity is defined, validates that the entity's household matches
-	 * @throws
+	 * @description Returns true if the entity is defined and belongs to the household, false otherwise
 	 */
 	return <T extends { _id: string; householdId: Id<"households"> }>(
 		entity?: Maybe<T>,

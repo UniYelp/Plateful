@@ -22,10 +22,9 @@ export const consumeQuantity = (
 		return remaining;
 	}
 
-	const consumeCopy = structuredClone(consume);
-	const unitToConsume = consumeCopy.unit ?? SCALAR_UNIT;
+	const unitToConsume = consume.unit ?? SCALAR_UNIT;
 
-	let remainingAmountToConsume = consumeCopy.value;
+	let remainingAmountToConsume = consume.value;
 
 	const conversions = getIngredientUnitConversions(unitToConsume);
 
