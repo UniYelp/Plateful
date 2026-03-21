@@ -34,13 +34,23 @@ export const ingredientsCategoriesOptions = [
 	{ value: "other", label: "Other" },
 ] satisfies { value: IngredientCategory; label: string }[];
 
+import cerealsImg from "@/assets/ingredientsCategories/cereals.png";
+import chickenImg from "@/assets/ingredientsCategories/chicken.png";
+import freshProduceImg from "@/assets/ingredientsCategories/fresh-produce.png";
+import milkImg from "@/assets/ingredientsCategories/milk.png";
+import oilImg from "@/assets/ingredientsCategories/oil.png";
+import saladImg from "@/assets/ingredientsCategories/salad.png";
+import teaImg from "@/assets/ingredientsCategories/tea.png";
+import vegetableImg from "@/assets/ingredientsCategories/vegetable.png";
+
 export const ingredientImgByCategory = {
-	vegetables: "/ingredientsCategories/vegetable.png",
-	fruits: "/ingredientsCategories/fresh-produce.png",
-	meat: "/ingredientsCategories/chicken.png",
-	dairy: "/ingredientsCategories/milk.png",
-	herbs: "/ingredientsCategories/tea.png",
-	oils: "/ingredientsCategories/oil.png",
-	grains: "/ingredientsCategories/cereals.png",
-	other: "/ingredientsCategories/salad.png",
+	vegetables: vegetableImg,
+	fruits: freshProduceImg,
+	meat: chickenImg,
+	dairy: milkImg,
+	herbs: teaImg,
+	oils: oilImg,
+	grains: cerealsImg,
+	other: saladImg,
 } as const satisfies Record<IngredientCategory, string>;
+
