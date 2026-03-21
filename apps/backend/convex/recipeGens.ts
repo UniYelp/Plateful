@@ -198,12 +198,9 @@ export const retry = householdMutation({
 		const { householdId, genId } = args;
 
 		const recipeGen = await ctx.db.get("recipeGens", genId);
+		ctx.validateHousehold(recipeGen);
 
-		if (
-			!recipeGen ||
-			recipeGen.householdId !== householdId ||
-			isSoftDeleted(recipeGen)
-		) {
+		if (!recipeGen || isSoftDeleted(recipeGen)) {
 			throw notFound({ entity: "recipe generation", by: "household" });
 		}
 

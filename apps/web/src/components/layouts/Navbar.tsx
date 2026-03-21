@@ -51,7 +51,7 @@ export function MobileNav() {
 						<Menu className="h-5 w-5" />
 					</Button>
 				</SheetTrigger>
-				<SheetContent side="left" className="w-[300px] sm:w-[400px]">
+				<SheetContent side="left" className="w-[300px] sm:w-[400px] sm:max-w-[400px]">
 					<SheetHeader>
 						<SheetTitle>Menu</SheetTitle>
 						<SheetDescription className="sr-only">

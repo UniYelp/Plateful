@@ -1,6 +1,7 @@
-import { query } from "./_generated/server";
 import { notFound } from "./errors";
+import { validateUserInHouseholdOrThrow } from "./households";
 import { recipeFeedbackFields } from "./schema";
+import { isSoftDeleted } from "./utils/soft_delete";
 import { authedMutation, authedQuery } from "./with_auth";
 
 export const submit = authedMutation({
@@ -17,22 +18,16 @@ export const submit = authedMutation({
 			});
 		}
 
-		const userHouseholds = await ctx.db.query("householdMembers").withIndex("by_user_deletedAt", (q) => q.eq("userId", user._id)).collect();
-
-		if (userHouseholds.length === 0) {
-			throw notFound({
-				entity: "household"
-			});
-		}
-
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		if (!recipe || !userHouseholds.some((membership) => membership.householdId === recipe.householdId)) {
+		if (!recipe || isSoftDeleted(recipe)) {
 			throw notFound({
 				entity: "recipe",
 				by: "household"
 			});
 		}
+
+		await validateUserInHouseholdOrThrow(ctx, user._id, recipe.householdId);
 
 		const existing = await ctx.db
 			.query("recipeFeedbacks")
@@ -78,22 +73,16 @@ export const getByRecipeAndUser = authedQuery({
 			});
 		}
 
-		const userHouseholds = await ctx.db.query("householdMembers").withIndex("by_user_deletedAt", (q) => q.eq("userId", user._id)).collect();
-
-		if (userHouseholds.length === 0) {
-			throw notFound({
-				entity: "household"
-			});
-		}
-
 		const recipe = await ctx.db.get("recipes", args.recipeId);
 
-		if (!recipe || !userHouseholds.some((membership) => membership.householdId === recipe.householdId)) {
+		if (!recipe || isSoftDeleted(recipe)) {
 			throw notFound({
 				entity: "recipe",
-				by: "household"
+				by: "household",
 			});
 		}
+
+		await validateUserInHouseholdOrThrow(ctx, user._id, recipe.householdId);
 
 		return await ctx.db
 			.query("recipeFeedbacks")

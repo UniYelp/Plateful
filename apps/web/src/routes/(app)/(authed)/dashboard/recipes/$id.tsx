@@ -188,10 +188,19 @@ function RecipeDetailPage() {
 										>
 											<div className="flex flex-1 items-start gap-2">
 												{!isAvailable ? (
-													<X className="mt-1 h-4 w-4 shrink-0 text-destructive" />
+													<X
+														className="mt-1 h-4 w-4 shrink-0 text-destructive"
+														aria-hidden="true"
+													/>
 												) : (
-													<Check className="mt-1 h-4 w-4 shrink-0 text-green-500" />
+													<Check
+														className="mt-1 h-4 w-4 shrink-0 text-green-500"
+														aria-hidden="true"
+													/>
 												)}
+												<span className="sr-only">
+													{isAvailable ? "Available" : "Missing"}
+												</span>
 												<div
 													className={`flex-1 ${!isAvailable ? "text-muted-foreground" : ""}`}
 												>
@@ -205,6 +214,7 @@ function RecipeDetailPage() {
 											</div>
 											<div
 												className={`mt-1.5 h-3 w-3 shrink-0 rounded-full ${isAvailable ? "bg-green-500" : "bg-red-500"}`}
+												aria-hidden="true"
 											/>
 										</div>
 									);
