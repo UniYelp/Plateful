@@ -38,7 +38,7 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 
 		const { recipe } = fullRecipe;
 
-		return { household, recipeId: recipe._id };
+		return { householdId: household._id, recipeId: recipe._id };
 	},
 	pendingComponent: () => recipesLoader,
 });
@@ -48,12 +48,12 @@ function RouteComponent() {
 }
 
 function RecipeDetailPage() {
-	const { household, recipeId } = Route.useLoaderData();
+	const { householdId, recipeId } = Route.useLoaderData();
 
 	const { data: fullRecipe } = useSuspenseQuery(
 		convexQuery(api.recipes.fullById, {
 			recipeId,
-			householdId: household._id,
+			householdId,
 		}),
 	);
 
@@ -126,10 +126,7 @@ function RecipeDetailPage() {
 					</div>
 
 					<div className="flex gap-4">
-						<CookNowDialog
-							householdId={household._id}
-							ingredients={ingredients}
-						>
+						<CookNowDialog householdId={householdId} ingredients={ingredients}>
 							<Button size="lg" className="flex-1" disabled={!canCook}>
 								<Play className="mr-2 h-4 w-4" />
 								Start Cooking
@@ -249,7 +246,7 @@ function RecipeDetailPage() {
 						</CardContent>
 					</Card>
 
-					<Feedback recipeId={recipeId} />
+					<Feedback householdId={householdId} recipeId={recipeId} />
 				</div>
 			</div>
 		</>

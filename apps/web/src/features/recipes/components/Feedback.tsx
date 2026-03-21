@@ -7,23 +7,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAppForm } from "@/lib/form";
 
 interface FeedbackProps {
+	householdId: Id<"households">;
 	recipeId: Id<"recipes">;
 }
 
-export const Feedback = ({ recipeId }: FeedbackProps) => {
-	const submitFeedback = useMutation(api.recipeFeedbacks.submit);
+export const Feedback = ({ householdId, recipeId }: FeedbackProps) => {
 	const existingFeedback = useQuery(api.recipeFeedbacks.getByRecipeAndUser, {
+		householdId,
 		recipeId,
 	});
+
+	const submitFeedback = useMutation(api.recipeFeedbacks.submit);
 
 	const form = useAppForm({
 		defaultValues: { value: "" as "positive" | "negative" | "" },
 		onSubmit: async ({ value }) => {
 			if (!value.value) return;
-			await submitFeedback({ recipeId, value: value.value as "positive" | "negative" });
+			await submitFeedback({
+				householdId,
+				recipeId,
+				value: value.value as "positive" | "negative",
+			});
 		},
 	});
-
 
 	// Hide the feedback card completely if the user has already submitted feedback
 	// or if the query is still loading (existingFeedback === undefined)
