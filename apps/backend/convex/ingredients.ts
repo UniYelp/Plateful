@@ -41,7 +41,11 @@ export const byId = householdQuery({
 	handler: async (ctx, args) => {
 		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
 
-		if (!ingredient || isSoftDeleted(ingredient)) {
+		if (
+			!ingredient ||
+			isSoftDeleted(ingredient) ||
+			!ctx.isHousehold(ingredient)
+		) {
 			throw notFound({
 				entity: "Ingredient",
 				in: "Household",
@@ -57,7 +61,7 @@ export const uniqueByName = householdQuery({
 		name: vv.string(),
 	},
 	handler: async (ctx, args) => {
-		const ingredient = getHouseholdIngredients(
+		const ingredient = await getHouseholdIngredients(
 			ctx,
 			args.householdId,
 			args.name,
@@ -158,7 +162,7 @@ export const edit = householdMutation({
 		if (
 			!ingredient ||
 			isSoftDeleted(ingredient) ||
-			ingredient.householdId !== args.householdId
+			!ctx.isHousehold(ingredient)
 		) {
 			throw notFound({
 				entity: "Ingredient",
@@ -194,6 +198,7 @@ export const edit = householdMutation({
 			updatedBy: userId,
 			updatedAt: now,
 		});
+
 		return args.ingredientId;
 	},
 });
@@ -207,14 +212,15 @@ export const deleteIngredient = householdMutation({
 
 		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
 
-		if (!ingredient || isSoftDeleted(ingredient)) {
-			throw new Error("Ingredient Not Found");
-		}
-
-		if (ingredient.householdId !== args.householdId) {
-			throw new Error(
-				`Ingredient ${args.ingredientId} not in household ${args.householdId}`,
-			);
+		if (
+			!ingredient ||
+			isSoftDeleted(ingredient) ||
+			!ctx.isHousehold(ingredient)
+		) {
+			throw notFound({
+				entity: "Ingredient",
+				in: "Household",
+			});
 		}
 
 		const now = Date.now();
@@ -392,7 +398,7 @@ export const consumeForRecipe = householdMutation({
 				});
 
 				if (!(res instanceof Error)) {
-                    // TODO: throw???
+					// TODO: throw???
 					availableMap = res;
 				}
 			}
