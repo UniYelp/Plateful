@@ -1,13 +1,5 @@
 import type { ExpiryStatus } from "@plateful/ingredients";
 import type { BadgeProps } from "@/components/ui/badge";
-import cerealsImg from "/assets/ingredientsCategories/cereals.png";
-import chickenImg from "/assets/ingredientsCategories/chicken.png";
-import freshProduceImg from "/assets/ingredientsCategories/fresh-produce.png";
-import milkImg from "/assets/ingredientsCategories/milk.png";
-import oilImg from "/assets/ingredientsCategories/oil.png";
-import saladImg from "/assets/ingredientsCategories/salad.png";
-import teaImg from "/assets/ingredientsCategories/tea.png";
-import vegetableImg from "/assets/ingredientsCategories/vegetable.png";
 
 export const colorByExpiryStatus = {
 	expired: "destructive",
@@ -43,12 +35,12 @@ export const ingredientsCategoriesOptions = [
 ] satisfies { value: IngredientCategory; label: string }[];
 
 export const ingredientImgByCategory = {
-	vegetables: vegetableImg,
-	fruits: freshProduceImg,
-	meat: chickenImg,
-	dairy: milkImg,
-	herbs: teaImg,
-	oils: oilImg,
-	grains: cerealsImg,
-	other: saladImg,
+	vegetables: "/assets/ingredientsCategories/vegetable.png",
+	fruits: "/assets/ingredientsCategories/fresh-produce.png",
+	meat: "/assets/ingredientsCategories/chicken.png",
+	dairy: "/assets/ingredientsCategories/milk.png",
+	herbs: "/assets/ingredientsCategories/tea.png",
+	oils: "/assets/ingredientsCategories/oil.png",
+	grains: "/assets/ingredientsCategories/cereals.png",
+	other: "/assets/ingredientsCategories/salad.png",
 } as const satisfies Record<IngredientCategory, string>;
