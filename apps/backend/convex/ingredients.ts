@@ -68,10 +68,7 @@ export const uniqueByName = householdQuery({
 		).unique();
 
 		if (!ingredient) {
-			throw notFound({
-				entity: "Ingredient",
-				in: "Household",
-			});
+			return null;
 		}
 
 		return ingredient;
