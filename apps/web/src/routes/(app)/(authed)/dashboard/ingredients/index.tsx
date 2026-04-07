@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
 import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
+import { ReceiptScanner } from "&/ingredients/components/ReceiptScanner";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
 	validateSearch: z.object({
@@ -107,12 +108,15 @@ function IngredientsPage() {
 					<h1 className="mb-2 font-bold text-3xl">Ingredients</h1>
 					<p className="text-muted-foreground">Manage your kitchen inventory</p>
 				</div>
-				<Button asChild>
-					<Link to="/dashboard/ingredients/add">
-						<Plus className="mr-2 h-4 w-4" />
-						Add Ingredient
-					</Link>
-				</Button>
+				<div className="flex gap-2">
+					<ReceiptScanner householdId={household._id} />
+					<Button asChild>
+						<Link to="/dashboard/ingredients/add">
+							<Plus className="mr-2 h-4 w-4" />
+							Add Ingredient
+						</Link>
+					</Button>
+				</div>
 			</div>
 
 			{/* Search and Filter */}

@@ -16,7 +16,8 @@ import { ingredientFields, ingredientQuantityFields, vv } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
 
 /** Round to 10 decimal places to eliminate binary floating point drift. */
-const round = (n: number) => Math.round(n * 1e10) / 1e10;
+const ROUND_PRECISION = 1e10;
+const round = (n: number) => Math.round(n * ROUND_PRECISION) / ROUND_PRECISION;
 
 // #region Validators
 
@@ -228,6 +229,68 @@ export const deleteIngredient = householdMutation({
 			updatedBy: userId,
 			deletedAt: now,
 		});
+	},
+});
+
+export const upsertIngredients = householdMutation({
+	args: {
+		ingredients: vv.array(
+			vv.object({
+				name: vv.string(),
+				amount: vv.number(),
+				unit: vv.optional(vv.string()),
+				description: vv.optional(vv.string()),
+				category: vv.optional(vv.string()),
+				expiresAt: vv.optional(vv.number()),
+			}),
+		),
+	},
+	handler: async (ctx, args) => {
+		const { _id: userId } = ctx.user;
+		const { householdId, ingredients } = args;
+		const now = Date.now();
+
+		for (const ing of ingredients) {
+			const existing = await getHouseholdIngredients(
+				ctx,
+				householdId,
+				ing.name,
+			).unique();
+
+			if (existing) {
+				await ctx.db.patch(existing._id, {
+					quantities: [
+						...existing.quantities,
+						{
+							amount: ing.amount,
+							unit: ing.unit || undefined,
+							expiresAt: ing.expiresAt,
+						},
+					],
+					updatedBy: userId,
+					updatedAt: now,
+				});
+			} else {
+				await ctx.db.insert("ingredients", {
+					householdId,
+					name: ing.name,
+					description: ing.description,
+					category: ing.category || "Uncategorized",
+					tags: [],
+					quantities: [
+						{
+							amount: ing.amount,
+							unit: ing.unit || undefined,
+							expiresAt: ing.expiresAt,
+						},
+					],
+					images: [],
+					createdBy: userId,
+					updatedBy: userId,
+					updatedAt: now,
+				});
+			}
+		}
 	},
 });
 

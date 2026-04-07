@@ -15,6 +15,10 @@
             "@plateful/dev-src": "./src/index.ts",
             "default": "./dist/index.js"
         },
+        "./receipt-parser": {
+            "@plateful/dev-src": "./src/features/receipt-parser/index.ts",
+            "default": "./dist/receipt-parser/index.js"
+        },
         "./recipes": {
             "@plateful/dev-src": "./src/features/recipes/index.ts",
             "default": "./dist/recipes/index.js"
@@ -28,6 +32,7 @@
     "publishConfig": {
         "exports": {
             ".": "./dist/index.js",
+            "./receipt-parser": "./dist/receipt-parser/index.js",
             "./recipes": "./dist/recipes/index.js",
             "./safety": "./dist/safety/index.js",
             "./package.json": "./package.json"

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DevScannerRouteImport } from './routes/dev-scanner'
 import { Route as DevRouteImport } from './routes/dev'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -27,6 +28,11 @@ import { Route as appauthedDashboardRecipesGenNewRouteImport } from './routes/(a
 import { Route as appauthedDashboardRecipesGenIdRouteImport } from './routes/(app)/(authed)/dashboard/recipes/gen/$id'
 import { Route as appauthedDashboardIngredientsIdEditRouteImport } from './routes/(app)/(authed)/dashboard/ingredients/$id/edit'
 
+const DevScannerRoute = DevScannerRouteImport.update({
+  id: '/dev-scanner',
+  path: '/dev-scanner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DevRoute = DevRouteImport.update({
   id: '/dev',
   path: '/dev',
@@ -123,6 +129,7 @@ const appauthedDashboardIngredientsIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dev': typeof DevRoute
+  '/dev-scanner': typeof DevScannerRoute
   '/sign-in': typeof authSignInRoute
   '/dashboard': typeof appauthedDashboardRouteRouteWithChildren
   '/preferences': typeof appauthedPreferencesRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dev': typeof DevRoute
+  '/dev-scanner': typeof DevScannerRoute
   '/sign-in': typeof authSignInRoute
   '/preferences': typeof appauthedPreferencesRoute
   '/dashboard': typeof appauthedDashboardIndexRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
   '/dev': typeof DevRoute
+  '/dev-scanner': typeof DevScannerRoute
   '/(app)/(authed)': typeof appauthedRouteRouteWithChildren
   '/(auth)/sign-in': typeof authSignInRoute
   '/(app)/(authed)/dashboard': typeof appauthedDashboardRouteRouteWithChildren
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dev'
+    | '/dev-scanner'
     | '/sign-in'
     | '/dashboard'
     | '/preferences'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dev'
+    | '/dev-scanner'
     | '/sign-in'
     | '/preferences'
     | '/dashboard'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/'
     | '/(app)'
     | '/dev'
+    | '/dev-scanner'
     | '/(app)/(authed)'
     | '/(auth)/sign-in'
     | '/(app)/(authed)/dashboard'
@@ -232,11 +244,19 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
   DevRoute: typeof DevRoute
+  DevScannerRoute: typeof DevScannerRoute
   authSignInRoute: typeof authSignInRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/dev-scanner': {
+      id: '/dev-scanner'
+      path: '/dev-scanner'
+      fullPath: '/dev-scanner'
+      preLoaderRoute: typeof DevScannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dev': {
       id: '/dev'
       path: '/dev'
@@ -426,6 +446,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
   DevRoute: DevRoute,
+  DevScannerRoute: DevScannerRoute,
   authSignInRoute: authSignInRoute,
 }
 export const routeTree = rootRouteImport
