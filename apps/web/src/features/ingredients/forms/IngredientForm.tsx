@@ -84,7 +84,8 @@ export function IngredientForm({
 		onSubmitInvalid: focusInvalid,
 		onSubmit: async ({ value, formApi }) => {
 			try {
-				return await onSubmit(value);
+				const parsed = IngredientFormSchema.parse(value);
+				return await onSubmit(parsed);
 			} catch (err) {
 				const error = handleError(err);
 
