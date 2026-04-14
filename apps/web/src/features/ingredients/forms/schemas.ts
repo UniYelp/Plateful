@@ -19,7 +19,7 @@ export const IngredientFormSchema = z.object({
 		.max(INGREDIENT_MAXIMUM_NAME_LENGTH),
 	description: z.string().max(INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH).optional(),
 	category: z.string().min(1, "Please select a category"),
-	quantities: z.array(IngredientQuantitySchema).min(1, "At least one quantity is required"),
+	quantities: z.array(IngredientQuantitySchema),
 });
 
 export type IngredientFormInput = z.input<typeof IngredientFormSchema>;
