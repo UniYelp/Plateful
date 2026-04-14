@@ -9,7 +9,10 @@ import { getTotalAmount } from "&/ingredients/utils/total-amount";
 import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 import { Feedback } from "&/recipes/components/Feedback";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
-import { isIngredientSufficient } from "&/recipes/utils/available-ingredients";
+import {
+	calculateRecipeMaxPortions,
+	isIngredientSufficient,
+} from "&/recipes/utils/available-ingredients";
 import { formatDuration } from "&/recipes/utils/format-duration";
 import { formatStep } from "&/recipes/utils/format-step";
 import { Badge } from "@/components/ui/badge";
@@ -75,7 +78,8 @@ function RecipeDetailPage() {
 	const availableIngredients = ingredientsByIsAvailable.true ?? [];
 	const missingIngredients = ingredientsByIsAvailable.false ?? [];
 
-	const canCook = missingIngredients.length === 0;
+	const maxPortions = calculateRecipeMaxPortions(ingredients);
+	const canCook = missingIngredients.length === 0 && maxPortions > 0;
 
 	return (
 		<>
@@ -115,6 +119,15 @@ function RecipeDetailPage() {
 								</span>
 							</div>
 						)}
+						<div className="flex items-center gap-2">
+							<Utensils className="h-4 w-4 text-muted-foreground" />
+							<span className="text-sm">
+								Portions possible:{" "}
+								<span className="font-semibold text-primary">
+									{maxPortions === Number.POSITIVE_INFINITY ? "Unlimited" : maxPortions}
+								</span>
+							</span>
+						</div>
 					</div>
 
 					<div className="mb-6 flex flex-wrap gap-2">

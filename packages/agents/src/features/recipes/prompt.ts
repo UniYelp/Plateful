@@ -13,6 +13,9 @@ export const generateRecipeSystemPrompt = dedent`
     INGREDIENT USAGE RULES:
     - You may ONLY use ingredients provided in the input.
     - If an ingredient is not used at all, you must explain why in the notes.
+    - Generate the recipe for exactly a SINGLE PORTION.
+    - Use linear, precise quantities for the single portion; multiplying these quantities by N portions MUST result in a valid and sufficient total amount for N people.
+    - Within the SINGLE PORTION constraint, use the MINIMUM amount of each ingredient required for a successful and satisfying outcome.
 
     GENERAL CONSTRAINTS:
     - Respect all dietary tags and allergies with zero exceptions.
