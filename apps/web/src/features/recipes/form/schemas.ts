@@ -2,6 +2,7 @@ import z from "zod";
 
 export const RecipeGenFormSchema = z.object({
 	tags: z.array(z.string()),
+	tools: z.array(z.string()).optional(),
 	ingredients: z
 		.array(z.string())
 		.min(1, "Must select at least one ingredient"),

@@ -142,12 +142,13 @@ export const stats = householdQuery({
 export const start = householdMutation({
 	args: {
 		tags: vv.array(vv.string()),
+		tools: vv.array(vv.string()),
 		ingredients: vv.array(vRecipeGenIngredient),
 	},
 	handler: async (ctx, args) => {
 		const now = Date.now();
 		const { _id: userId } = ctx.user;
-		const { householdId, tags, ingredients } = args;
+		const { householdId, tags, tools, ingredients } = args;
 
 		const userPreferences = await ctx.db
 			.query("userPreferences")
@@ -162,6 +163,7 @@ export const start = householdMutation({
 			metadata: {
 				version: "v0",
 				tags,
+				tools,
 				ingredients: ingredients.map((ing) => ing.id),
 				allergens: userPreferences?.allergens,
 				likedFoods: userPreferences?.likedFoods || undefined,
@@ -176,6 +178,7 @@ export const start = householdMutation({
 			genId,
 			householdId,
 			tags,
+			tools,
 			ingredients,
 			allergens: userPreferences?.allergens,
 			likedFoods: userPreferences?.likedFoods || undefined,
@@ -245,6 +248,7 @@ export const retry = householdMutation({
 			genId,
 			householdId,
 			tags: metadata.tags,
+			tools: metadata.tools || [],
 			ingredients: ingredientsToProcess,
 			allergens: metadata.allergens,
 			likedFoods: metadata.likedFoods || undefined,
@@ -387,6 +391,7 @@ export const generateRecipe = internalAction({
 		householdId: vv.id("households"),
 		tags: vv.array(vv.string()),
 		ingredients: vv.array(vRecipeGenIngredient),
+		tools: vv.array(vv.string()),
 		allergens: vv.optional(vv.array(vv.string())),
 		likedFoods: vv.optional(vv.string()),
 		dislikedFoods: vv.optional(vv.string()),
@@ -402,7 +407,7 @@ export const generateRecipe = internalAction({
 			},
 		});
 
-		const { tags, allergens, likedFoods, dislikedFoods } = args;
+		const { tags, tools, allergens, likedFoods, dislikedFoods } = args;
 
 		const ingredientIdByName = Object.fromEntries(
 			args.ingredients.map((ing) => [ing.name, ing.id] as const),
@@ -467,7 +472,7 @@ export const generateRecipe = internalAction({
 					dislikedFoods,
 					temperatureUnit: TemperatureUnit.Celsius,
 					toleratedSpiceLevel: "no-preference",
-					tools: "unlimited",
+					tools: tools.length > 0 ? tools : "unlimited",
 				},
 				{
 					query: {

@@ -1,5 +1,5 @@
 import { useStore } from "@tanstack/react-form";
-import { Search, Sparkles, X } from "lucide-react";
+import { Plus, Search, Sparkles, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { submitFormHandler } from "&/forms/utils/submission";
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/input-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useAppForm } from "@/lib/form";
-import { quickTags } from "../../constants";
+import { commonAppliances, quickTags } from "../../constants";
 import { recipeGenDefaultValues } from "../constants";
 import { type RecipeGenForm, RecipeGenFormSchema } from "../schemas";
 import type { IngredientDetails } from "../types";
@@ -52,6 +52,7 @@ export const GenerateRecipeForm = (props: Props) => {
 
 	const [search, setSearch] = useState("");
 	const [category, setCategory] = useState<string | null>(null);
+	const [customToolInput, setCustomToolInput] = useState("");
 
 	const categories = useMemo(() => {
 		if (!ingredients) return [];
@@ -263,6 +264,102 @@ export const GenerateRecipeForm = (props: Props) => {
 											</div>
 										)}
 									</ToggleGroup>
+								</CardContent>
+							</Card>
+						)}
+					</form.AppField>
+					<form.AppField name="tools">
+						{(field) => (
+							<Card>
+								<CardHeader>
+									<CardTitle>Available Appliances</CardTitle>
+									<CardDescription>
+										Select the tools you have available to use
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<div className="flex flex-col gap-6">
+										<ToggleGroup
+											type="multiple"
+											variant="outline"
+											value={field.state.value}
+											disabled={isSubmitting}
+											onValueChange={field.handleChange}
+											aria-invalid={isInvalidTouched(field)}
+											className="flex flex-wrap justify-start gap-2.5"
+										>
+											{commonAppliances.map((tool) => (
+												<ToggleGroupItem
+													key={tool.value}
+													value={tool.value}
+													aria-label={`Toggle ${tool.value}`}
+													className="rounded-lg border-2 px-4 py-2 font-medium text-sm transition-all duration-200 data-[state=on]:scale-105 data-[state=off]:border-border data-[state=on]:border-primary data-[state=off]:bg-background data-[state=on]:bg-primary/10 data-[state=on]:text-primary data-[state=on]:shadow-sm data-[state=off]:hover:border-primary/50 data-[state=off]:hover:bg-muted data-[state=off]:hover:text-black"
+												>
+													<span>{tool.icon}</span> {tool.label}
+												</ToggleGroupItem>
+											))}
+											{field.state.value
+												?.filter(
+													(v) => !commonAppliances.some((c) => c.value === v),
+												)
+												.map((tool) => (
+													<ToggleGroupItem
+														key={tool}
+														value={tool}
+														aria-label={`Toggle ${tool}`}
+														className="rounded-lg border-2 px-4 py-2 font-medium text-sm transition-all duration-200 data-[state=on]:scale-105 data-[state=off]:border-border data-[state=on]:border-primary data-[state=off]:bg-background data-[state=on]:bg-primary/10 data-[state=on]:text-primary data-[state=on]:shadow-sm data-[state=off]:hover:border-primary/50 data-[state=off]:hover:bg-muted data-[state=off]:hover:text-black"
+													>
+														{tool}
+													</ToggleGroupItem>
+												))}
+										</ToggleGroup>
+
+										<div className="flex flex-col gap-2">
+											<p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
+												Add Custom appliances
+											</p>
+											<InputGroup>
+												<InputGroupInput
+													placeholder="e.g. Sous Vide, Pressure Cooker..."
+													value={customToolInput}
+													disabled={isSubmitting}
+													onChange={(e) => setCustomToolInput(e.target.value)}
+													onKeyDown={(e) => {
+														if (e.key === "Enter") {
+															e.preventDefault();
+															const tool = customToolInput.trim();
+															if (tool && !field.state.value?.includes(tool)) {
+																field.handleChange([
+																	...(field.state.value ?? []),
+																	tool,
+																]);
+																setCustomToolInput("");
+															}
+														}
+													}}
+												/>
+												<InputGroupAddon align="inline-end">
+													<InputGroupButton
+														size="icon-xs"
+														disabled={isSubmitting || !customToolInput.trim()}
+														onClick={(e) => {
+															e.preventDefault();
+															const tool = customToolInput.trim();
+															if (tool && !field.state.value?.includes(tool)) {
+																field.handleChange([
+																	...(field.state.value ?? []),
+																	tool,
+																]);
+																setCustomToolInput("");
+															}
+														}}
+													>
+														<Plus className="size-3" />
+													</InputGroupButton>
+												</InputGroupAddon>
+											</InputGroup>
+										</div>
+									</div>
 								</CardContent>
 							</Card>
 						)}

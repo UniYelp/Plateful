@@ -90,6 +90,7 @@ function GenerateNewRecipePage() {
 		const genId = await startGeneratingRecipe({
 			householdId: household._id,
 			tags: value.tags,
+			tools: value.tools || [],
 			ingredients: ingredientsDetails.flatMap((ing) => {
 				if (!selectedIngredients.has(ing.id)) return [];
 
