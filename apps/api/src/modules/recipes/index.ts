@@ -22,6 +22,7 @@ export const recipes = new Elysia({
 	.post(
 		"generate",
 		async function* ({ query: { householdId }, body, getRedis, log }) {
+			// TODO: change to queue implementation using redis to mitigate rpm quotas
 			const redis = getRedis();
 
 			log.set({ household: { id: householdId } });
@@ -120,10 +121,7 @@ export const recipes = new Elysia({
 								: null;
 
 						// Static validation
-						const validationResult = validateRecipe({
-							...recipeResult,
-							ingredients: currentBody.ingredients,
-						});
+						const validationResult = validateRecipe(recipeResult, currentBody);
 
 						const hasStaticErrors = validationResult !== null;
 						const isSafe =
@@ -159,10 +157,10 @@ export const recipes = new Elysia({
 					}
 
 					// We yield failed if either safety score is too low, or if static errors remain after max attempts
-					const finalValidationResult = validateRecipe({
-						...finalRecipe,
-						ingredients: currentBody.ingredients,
-					});
+					const finalValidationResult = validateRecipe(
+						finalRecipe,
+						currentBody,
+					);
 
 					const finalHasStaticErrors = finalValidationResult !== null;
 					const finalIsUnsafe = finalSafetyScore < SAFETY_THRESHOLD;

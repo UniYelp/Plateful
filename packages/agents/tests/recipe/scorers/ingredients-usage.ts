@@ -1,6 +1,6 @@
 import { createScorer } from "evalite";
 
-import { getUnusedIngredients } from "@plateful/recipes";
+import { getExtraIngredients, getUnusedIngredients } from "@plateful/recipes";
 import type {
 	RecipeGenEvalInput,
 	RecipeGenEvalOutput,
@@ -9,6 +9,7 @@ import type {
 
 const NO_NOTES_SCORE_PENALTY = 0.25;
 const NOTES_SCORE_DE_PENALTY = 0.15;
+const EXTRA_INGREDIENTS_PENALTY = 0.6;
 
 export const RecipeGenIngredientsUsageScorer = createScorer<
 	RecipeGenEvalInput,
@@ -17,48 +18,62 @@ export const RecipeGenIngredientsUsageScorer = createScorer<
 >({
 	name: "Recipe Gen Ingredients Usage",
 	description: "Checks the ingredients' usage",
-	scorer: ({ input, output }): RecipeGenScore<"UnusedIngredients"> => {
-		const { ingredients: flattenedIngredients } = input;
+	scorer: ({ input, output }): RecipeGenScore<"IngredientsUsage"> => {
+		const { ingredients: inputIngredients } = input;
 		const { recipe, recipeGraph } = output;
 
+		const extraIngredients = getExtraIngredients(recipe, input);
 		const unusedIngredients = getUnusedIngredients(recipeGraph);
 
-		// TODO: check if the notes include a reason why an ingredient wasn't used
-		if (!unusedIngredients.length) {
+		// TODO: check if the notes include a reason why an ingredient wasn't used and if the reason is valid
+		if (!unusedIngredients.length && !extraIngredients.length) {
 			return {
 				score: 1,
+				metadata: {
+					agentNotes: recipe.notes ?? undefined,
+				},
 			};
 		}
 
-		const ingredients = new Set(flattenedIngredients.map((ing) => ing.name));
+		const inputIngredientsSet = new Set(
+			inputIngredients.map((ing) => ing.name),
+		);
 
 		const unusedIngredientsPenalty =
-			unusedIngredients.length / ingredients.size;
+			unusedIngredients.length / inputIngredientsSet.size;
 
 		const score =
 			1 -
 			unusedIngredientsPenalty -
+			(extraIngredients.length ? EXTRA_INGREDIENTS_PENALTY : 0) -
 			(recipe.notes ? -NOTES_SCORE_DE_PENALTY : NO_NOTES_SCORE_PENALTY);
 
 		return {
 			score: Math.max(0, Math.min(1, score)),
 			metadata: {
+				agentNotes: recipe.notes ?? undefined,
 				issues: [
 					{
-						title: "UnusedIngredients",
+						title: "IngredientsUsage",
 						description: "Some ingredients have not been used",
 						ingredients: {
-							count: ingredients.size,
-							unused: {
-								count: unusedIngredients.length,
-								names: unusedIngredients.map((ing) => ing.name),
-							},
+							count: inputIngredientsSet.size,
+							unused: unusedIngredients.length
+								? {
+										count: unusedIngredients.length,
+										names: unusedIngredients.map((ing) => ing.name),
+									}
+								: null,
+							extra: extraIngredients.length
+								? {
+										count: extraIngredients.length,
+										names: extraIngredients,
+									}
+								: null,
 						},
-						agentNotes: recipe.notes,
 					},
 				],
 			},
 		};
 	},
 });
-

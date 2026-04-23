@@ -272,7 +272,7 @@ export const GenerateRecipeForm = (props: Props) => {
 						{(field) => (
 							<Card>
 								<CardHeader>
-									<CardTitle>Available Appliances</CardTitle>
+									<CardTitle>Available Tools</CardTitle>
 									<CardDescription className="flex flex-col">
 										Select the tools you have available to use.
 										<span className="text-muted-foreground text-xs">

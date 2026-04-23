@@ -7,7 +7,7 @@ import {
 	RecipeMaterialKind,
 	RecipeStepBlockType,
 } from "@plateful/recipes";
-import type { Satisfies, StrictOmit } from "@plateful/types";
+import type { Satisfies } from "@plateful/types";
 import { MaterialUnitSchema, TemperatureUnitSchema } from "./literals";
 
 const InputMaterialKindSchema = z.literal(RecipeMaterialKind.Input).meta({
@@ -209,5 +209,5 @@ export const RecipeGenOutputSchema = z
 
 export type RecipeGenOutput = Satisfies<
 	z.infer<typeof RecipeGenOutputSchema>,
-	StrictOmit<Recipe, "ingredients">
+	Recipe
 >;

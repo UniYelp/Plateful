@@ -59,15 +59,31 @@ type ScoreMetadataByIssue = Satisfies<
 			count: number;
 			materials: string[];
 		};
-		UnusedIngredients: {
+		IngredientsUsage: {
 			ingredients: {
 				count: number;
 				unused: {
 					count: number;
 					names: string[];
-				};
+				} | null;
+				extra: {
+					count: number;
+					names: string[];
+				} | null;
 			};
-			agentNotes: string | null;
+		};
+		ToolsUsage: {
+			tools: {
+				count: number;
+				unused: {
+					count: number;
+					names: string[];
+				} | null;
+				extra: {
+					count: number;
+					names: string[];
+				} | null;
+			};
 		};
 		[x: string]: unknown;
 	},
@@ -83,6 +99,7 @@ export type RecipeGenScore<
 	T extends string | RecipeValidationIssue = string | RecipeValidationIssue,
 > = Evalite.UserProvidedScoreWithMetadata & {
 	metadata?: {
+		agentNotes?: string;
 		issues?: ScoreMetadata<T extends RecipeValidationIssue ? T["_tag"] : T>[];
 	};
 };

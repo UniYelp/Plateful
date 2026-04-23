@@ -1,6 +1,7 @@
 import { Graph } from "effect";
 import type { NodeIndex } from "effect/Graph";
 
+import { isDefined } from "@plateful/utils";
 import { RecipeStepBlockType } from "../../enums";
 import type {
 	IngredientEdge,
@@ -11,18 +12,21 @@ import type {
 	RecipeGraphEdge,
 	RecipeGraphNode,
 	RecipeIngredient,
+	RecipeInputMetadata,
 	RecipeMaterial,
 	StartNode,
 } from "../../types";
 import { isInputKindMaterial, isOutputKindMaterial } from "../guards";
-import { isDefined } from "@plateful/utils";
 
 export type RecipeGraphInput = {
 	ingredients: RecipeIngredient[];
 	steps: RecipeMaterial[][];
 };
 
-export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
+export const createRecipeGraph = (
+	recipe: Recipe,
+	inputMetadata: RecipeInputMetadata,
+): RecipeGraph => {
 	let startNodeId: NodeIndex = -1;
 
 	const nodeByName = {} as Record<string, NodeIndex>;
@@ -35,7 +39,7 @@ export const createRecipeGraph = (recipe: Recipe): RecipeGraph => {
 			} satisfies StartNode);
 
 			//? Initialize the graph with the ingredients as the base nodes
-			for (const ing of recipe.ingredients) {
+			for (const ing of inputMetadata.ingredients) {
 				const ingNodeId = Graph.addNode(mutableGraph, {
 					type: "material",
 					name: ing.name,
