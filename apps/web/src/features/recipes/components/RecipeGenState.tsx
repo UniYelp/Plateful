@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DAY } from "@/constants";
 import {
 	RecipeGenStatusSmall,
 	stageStatusDetails,
@@ -23,8 +24,11 @@ type Props = {
 	title?: string;
 };
 
+const now = Date.now();
+
 export const RecipeGenState = (props: Props) => {
 	const { gen, title } = props;
+
 	const retryGen = useMutation(api.recipeGens.retry);
 
 	const generationsStats = useQuery(api.recipeGens.stats, {
@@ -34,6 +38,8 @@ export const RecipeGenState = (props: Props) => {
 	const isQuotaReached =
 		generationsStats &&
 		generationsStats.today.total >= generationsStats.today.max;
+
+	const isOutdated = gen._creationTime < now - DAY;
 
 	const handleRetry = async () => {
 		try {
@@ -101,16 +107,18 @@ export const RecipeGenState = (props: Props) => {
 												{new Date(gen._creationTime).toLocaleDateString()}
 											</span>
 										</div>
-										<Button
-											onClick={handleRetry}
-											size="sm"
-											variant="outline"
-											className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
-											disabled={isQuotaReached}
-										>
-											<RotateCcw className="mr-2 h-3 w-3" />
-											Retry
-										</Button>
+										{!isOutdated && (
+											<Button
+												onClick={handleRetry}
+												size="sm"
+												variant="outline"
+												className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+												disabled={isQuotaReached}
+											>
+												<RotateCcw className="mr-2 h-3 w-3" />
+												Retry
+											</Button>
+										)}
 										{isQuotaReached && (
 											<p className="text-right text-[10px] text-destructive">
 												Quota Reached

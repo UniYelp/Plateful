@@ -194,7 +194,7 @@ export const recipes = new Elysia({
 							event: "failed",
 							data: {
 								error: isDev
-									? errorMsg
+									? `[DEV] safety error: ${errorMsg}`
 									: "Unable to generate a safe and valid recipe.",
 								safetyScore: finalSafetyScore,
 							},
@@ -231,7 +231,9 @@ export const recipes = new Elysia({
 				yield sse({
 					event: "failed",
 					data: {
-						error: isDev ? error.message : "Failed to generate recipe.",
+						error: isDev
+							? `[DEV] agent error: ${error.message}\n${error.stack}`
+							: "Failed to generate recipe.",
 					},
 				});
 			} finally {
