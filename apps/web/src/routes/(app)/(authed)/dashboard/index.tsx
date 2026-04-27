@@ -152,7 +152,7 @@ function DashboardPage() {
 								</Button>
 
 								<Button
-									className="relative h-auto flex-col gap-2 bg-transparent p-4 group"
+									className="group relative h-auto flex-col gap-2 bg-transparent p-4"
 									variant="outline"
 									asChild
 									disabled={isQuotaReached}
@@ -161,7 +161,11 @@ function DashboardPage() {
 										to="/dashboard/recipes/gen/new"
 										disabled={isQuotaReached}
 										aria-disabled={isQuotaReached}
-										className={isQuotaReached ? "pointer-events-none text-neutral-400" : ""}
+										className={
+											isQuotaReached
+												? "pointer-events-none text-neutral-400"
+												: ""
+										}
 										onClick={(e) => {
 											if (isQuotaReached) {
 												e.preventDefault();
@@ -171,7 +175,7 @@ function DashboardPage() {
 										<Sparkles className="h-6 w-6" />
 										<span>Generate Recipe</span>
 										{isQuotaReached && (
-											<span className="absolute -top-3 right-[-10px] rounded-full bg-destructive px-2 py-0.5 text-[10px] text-destructive-foreground">
+											<span className="-top-3 absolute right-[-10px] rounded-full bg-destructive px-2 py-0.5 text-[10px] text-destructive-foreground">
 												Quota Reached
 											</span>
 										)}
@@ -247,7 +251,12 @@ function DashboardPage() {
 								className="mt-4 w-full bg-transparent"
 								asChild
 							>
-								<Link to="/dashboard/ingredients" search={{ expiringOnly: true }}>View All</Link>
+								<Link
+									to="/dashboard/ingredients"
+									search={{ expiringOnly: true }}
+								>
+									View All
+								</Link>
 							</Button>
 						</CardContent>
 					</Card>

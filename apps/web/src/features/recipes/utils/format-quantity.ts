@@ -1,3 +1,5 @@
+import { IngredientSymbol, type IngredientUnit } from "@plateful/ingredients";
+
 export const formatQuantity = (quantity: {
 	unit?: string | undefined;
 	amount: number;
@@ -10,13 +12,17 @@ export const formatQuantity = (quantity: {
 		return new Intl.NumberFormat(userLocale, {
 			style: unit ? "unit" : "decimal",
 			...(unit && { unit: unit.toLowerCase() }),
-			unitDisplay: "narrow",
+			unitDisplay: "short",
 		}).format(amount);
 	} catch (_e) {
 		const numberPart = new Intl.NumberFormat(userLocale, {
 			style: "decimal",
 		}).format(amount);
 
-		return unit ? `${numberPart} ${unit}` : numberPart;
+		const unitSymbol: IngredientSymbol | IngredientUnit | "" = unit
+			? (IngredientSymbol[unit.toLowerCase() as IngredientUnit] ?? unit)
+			: "";
+
+		return `${numberPart} ${unitSymbol}`.trim();
 	}
 };
