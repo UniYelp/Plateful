@@ -1,6 +1,7 @@
-import { google } from "@ai-sdk/google";
+import { type GoogleLanguageModelOptions, google } from "@ai-sdk/google";
 import { type DeepPartial, Output, stepCountIs, ToolLoopAgent } from "ai";
 
+import { safetySettings } from "./constants";
 import { type RecipeGenOutput, RecipeGenOutputSchema } from "./schemas";
 
 /**
@@ -19,6 +20,11 @@ export const recipeAgent: ToolLoopAgent<
 	// 	convertMeasurementUnits,
 	// 	convertTemperatures,
 	// },
+	providerOptions: {
+		google: {
+			safetySettings,
+		} satisfies GoogleLanguageModelOptions,
+	},
 	stopWhen: stepCountIs(20),
 	experimental_telemetry: { isEnabled: true },
 });
