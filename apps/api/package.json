@@ -32,7 +32,7 @@
 	"dependencies": {
 		"@ai-sdk/google": "catalog:",
 		"@clerk/backend": "catalog:",
-		"@clerk/shared": "^3.39.0",
+		"@clerk/shared": "^3.47.4",
 		"@elysiajs/cors": "^1.4.1",
 		"@elysiajs/cron": "^1.4.1",
 		"@elysiajs/node": "^1.4.5",
