@@ -4,27 +4,30 @@ import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, History, RotateCcw } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-
 import { api } from "@backend/api";
+import { append } from "&/aggregation";
 import { RecipeGenStatus } from "&/recipes/components/loaders/recipe-gen-status";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import {
 	isCompletedRecipeGen,
 	isGeneratingRecipe,
 } from "&/recipes/utils/status";
+import type { NavItem } from "@/components/layouts/Navbar";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/recipes/gen/$id",
 )({
 	staticData: {
-		links: [
-			{
-				to: "/dashboard/recipes/gen",
-				label: "History",
-				icon: <History className="mr-2 h-4 w-4" />,
-			},
-		],
+		navbar: {
+			items: append<NavItem>([
+				{
+					to: "/dashboard/recipes/gen",
+					label: "History",
+					icon: <History className="mr-2 h-4 w-4" />,
+				},
+			]),
+		},
 	},
 	loader: async ({ context, params }) => {
 		const { household, queryClient } = context;
@@ -86,14 +89,10 @@ function RecipeGenerationPage() {
 				<div className="relative z-10 mx-auto w-full max-w-lg px-6 pt-50">
 					<div className="flex flex-col items-center">
 						<div className="relative mb-10">
-							<div
-								className="-m-6 absolute inset-0 rounded-full border-2 border-destructive/20 border-dashed"
-							/>
+							<div className="-m-6 absolute inset-0 rounded-full border-2 border-destructive/20 border-dashed" />
 							<div className="-m-3 absolute inset-0 rounded-full bg-destructive/10" />
 
-							<div
-								className="relative flex h-24 w-24 items-center justify-center"
-							>
+							<div className="relative flex h-24 w-24 items-center justify-center">
 								<AlertCircle className="h-12 w-12 text-destructive-foreground" />
 							</div>
 						</div>
@@ -108,13 +107,23 @@ function RecipeGenerationPage() {
 							</p>
 						</div>
 
-						<div className="animate-fade-in-up-delayed-both" style={{ animationDelay: "0.4s" }}>
-							<Button onClick={handleRetry} size="lg" className="gap-2" disabled={isQuotaReached}>
+						<div
+							className="animate-fade-in-up-delayed-both"
+							style={{ animationDelay: "0.4s" }}
+						>
+							<Button
+								onClick={handleRetry}
+								size="lg"
+								className="gap-2"
+								disabled={isQuotaReached}
+							>
 								<RotateCcw className="h-4 w-4" />
 								Retry Generation
 							</Button>
 							{isQuotaReached && (
-								<p className="mt-2 text-destructive text-sm font-medium">Quota Reached</p>
+								<p className="mt-2 font-medium text-destructive text-sm">
+									Quota Reached
+								</p>
 							)}
 						</div>
 					</div>

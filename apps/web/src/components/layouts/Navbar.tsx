@@ -1,7 +1,8 @@
-import { Link, useMatches } from "@tanstack/react-router";
+import { Link, type LinkComponentProps } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 
+import { useAggregatedMatch } from "&/router/hooks/use-aggregated-matches";
 import { Button } from "@/components/ui/button";
 import {
 	Sheet,
@@ -12,14 +13,17 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 
-export function DesktopNav() {
-	const matches = useMatches();
+export type NavItem = LinkComponentProps & {
+	icon?: React.JSX.Element;
+	label: string;
+};
 
-	const links = matches.flatMap((match) => match.staticData.links ?? []);
+export function DesktopNav() {
+	const navItems = useAggregatedMatch((data) => data.navbar?.items);
 
 	return (
 		<nav className="hidden items-center gap-6 md:flex">
-			{links.map(({ icon, label, ...linkProps }) => (
+			{navItems.map(({ icon, label, ...linkProps }) => (
 				<Link
 					{...linkProps}
 					key={label}
@@ -34,12 +38,9 @@ export function DesktopNav() {
 }
 
 export function MobileNav() {
-	const matches = useMatches();
 	const [isOpen, setIsOpen] = useState(false);
 
-	const links = matches.flatMap(
-		(match) => match.staticData.links?.map((linkProps) => linkProps) ?? [],
-	);
+	const navItems = useAggregatedMatch((data) => data.navbar?.items);
 
 	return (
 		<nav className="flex md:hidden">
@@ -60,7 +61,7 @@ export function MobileNav() {
 						</SheetDescription>
 					</SheetHeader>
 					<div className="mt-8 flex flex-col gap-4">
-						{links.map(({ icon, label, ...linkProps }) => (
+						{navItems.map(({ icon, label, ...linkProps }) => (
 							<Link
 								{...linkProps}
 								key={label}

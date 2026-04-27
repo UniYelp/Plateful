@@ -27,6 +27,7 @@ import {
 	RecipeGenNoUnreachableMaterialsScorer,
 	RecipeGenNoUnusedDerivedMaterialsScorer,
 	RecipeGenOutputScorer,
+	RecipeGenToolsUsageScorer,
 } from "./scorers";
 import type { EvalVariant, RecipeGenEvalVariant } from "./types";
 
@@ -82,10 +83,12 @@ evalite.each<RecipeGenEvalVariant>([
 		if (variant.isDummy) {
 			const { res } = variant;
 
-			const recipeGraph = createRecipeGraph({
-				ingredients: input.ingredients,
-				steps: res.recipe.steps,
-			});
+			const recipeGraph = createRecipeGraph(
+				{
+					steps: res.recipe.steps,
+				},
+				input,
+			);
 
 			return {
 				...res,
@@ -105,10 +108,12 @@ evalite.each<RecipeGenEvalVariant>([
 
 		const { output, text, steps } = res;
 
-		const recipeGraph = createRecipeGraph({
-			ingredients: input.ingredients,
-			steps: output.steps,
-		});
+		const recipeGraph = createRecipeGraph(
+			{
+				steps: output.steps,
+			},
+			input,
+		);
 
 		return {
 			text,
@@ -125,6 +130,7 @@ evalite.each<RecipeGenEvalVariant>([
 		RecipeGenNoMaterialProducedBeforeInputsScorer,
 		RecipeGenNoMaterialUsedBeforeProducedScorer,
 		RecipeGenNoUnusedDerivedMaterialsScorer,
+		RecipeGenToolsUsageScorer,
 	],
 	columns: ({ input, output, scores, traces }) => [
 		{

@@ -16,13 +16,16 @@ export const formatStep = (
 	const { blocks } = step;
 
 	return blocks
-		.map((block) => formatStepBlock(block, ingredientNameById))
+		.map((block, idx) =>
+			formatStepBlock(block, ingredientNameById, idx === blocks.length - 1),
+		)
 		.join("");
 };
 
 const formatStepBlock = (
 	block: RecipeStepBlock,
 	ingredientNameById: Record<Id<"ingredients">, string>,
+	isLastBlock: boolean,
 ): string => {
 	if (typeof block === "string") return block;
 
@@ -37,7 +40,7 @@ const formatStepBlock = (
 			return block.name;
 		}
 		case "duration": {
-			if (block.kind === "prep") return "";
+			if (block.kind === "prep" && isLastBlock) return "";
 			return formatDuration(block.value);
 		}
 		case "temperature": {

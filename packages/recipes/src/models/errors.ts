@@ -125,6 +125,24 @@ export class QuantityExceededError extends Error {
 	}
 }
 
+export class ExtraIngredientsUsedError extends Error {
+	static readonly _tag = "ExtraIngredientsUsedError";
+	readonly _tag = ExtraIngredientsUsedError._tag;
+
+	constructor(public ingredient: string) {
+		super(`Extra ingredient ${ingredient} was used`);
+	}
+}
+
+export class ExtraToolsUsedError extends Error {
+	static readonly _tag = "ExtraToolsUsedError";
+	readonly _tag = ExtraToolsUsedError._tag;
+
+	constructor(public tool: string) {
+		super(`Extra tool ${tool} was used`);
+	}
+}
+
 export type RecipeValidationIssue =
 	| IngredientNotUsedOnlyAsInputError
 	| UnreachableMaterialError
@@ -134,6 +152,8 @@ export type RecipeValidationIssue =
 	| MaterialUsedBeforeProducedError
 	| MaterialProducedBeforeInputsError
 	| MaterialQuantityExceededError
+	| ExtraIngredientsUsedError
+	| ExtraToolsUsedError
 	| InternalRecipeGraphError;
 
 export class RecipeValidationError<

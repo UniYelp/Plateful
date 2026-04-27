@@ -2,20 +2,24 @@ import { convexQuery } from "@convex-dev/react-query";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { api } from "@backend/api";
+import { append } from "&/aggregation";
+import type { NavItem } from "@/components/layouts/Navbar";
 import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 	staticData: {
-		links: [
-			{
-				label: "Ingredients",
-				to: "/dashboard/ingredients",
-			},
-			{
-				label: "Recipes",
-				to: "/dashboard/recipes",
-			},
-		],
+		navbar: {
+			items: append<NavItem>([
+				{
+					label: "Ingredients",
+					to: "/dashboard/ingredients",
+				},
+				{
+					label: "Recipes",
+					to: "/dashboard/recipes",
+				},
+			]),
+		},
 	},
 	beforeLoad: async ({ context }) => {
 		const household = await context.queryClient.ensureQueryData(

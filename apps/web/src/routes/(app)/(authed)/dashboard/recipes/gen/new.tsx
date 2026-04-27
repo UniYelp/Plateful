@@ -9,11 +9,13 @@ import {
 import { isDefined } from "@plateful/utils";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
+import { append } from "&/aggregation";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import { GenerateRecipeForm } from "&/recipes/form/components/GenerateRecipeForm";
 import type { RecipeGenForm } from "&/recipes/form/schemas";
 import type { IngredientDetails } from "&/recipes/form/types";
+import type { NavItem } from "@/components/layouts/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -21,13 +23,15 @@ export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/recipes/gen/new",
 )({
 	staticData: {
-		links: [
-			{
-				to: "/dashboard/recipes/gen",
-				label: "History",
-				icon: <History className="mr-2 h-4 w-4" />,
-			},
-		],
+		navbar: {
+			items: append<NavItem>([
+				{
+					to: "/dashboard/recipes/gen",
+					label: "History",
+					icon: <History className="mr-2 h-4 w-4" />,
+				},
+			]),
+		},
 	},
 	component: RouteComponent,
 });
@@ -90,6 +94,7 @@ function GenerateNewRecipePage() {
 		const genId = await startGeneratingRecipe({
 			householdId: household._id,
 			tags: value.tags,
+			tools: value.tools || [],
 			ingredients: ingredientsDetails.flatMap((ing) => {
 				if (!selectedIngredients.has(ing.id)) return [];
 

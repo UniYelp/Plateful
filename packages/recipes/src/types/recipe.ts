@@ -18,15 +18,29 @@ export type RecipeMaterialBlock = {
 	type: typeof RecipeStepBlockType.Material;
 } & RecipeMaterial;
 
-export type RecipeBlock = {
+export type RecipeTool = {
+	name: string;
+};
+
+export type RecipeToolBlock = {
+	type: typeof RecipeStepBlockType.Tool;
+} & RecipeTool;
+
+export type AnyRecipeBlock = {
 	type: string;
 	[x: string]: unknown;
 };
 
-export type RecipeStepBlock = RecipeMaterialBlock | RecipeBlock;
+type TypedRecipeBlock = RecipeMaterialBlock | RecipeToolBlock;
+
+export type RecipeStepBlock = TypedRecipeBlock | AnyRecipeBlock;
 export type RecipeStep = RecipeStepBlock[];
 
 export type Recipe = {
-	ingredients: RecipeIngredient[];
 	steps: RecipeStep[];
+};
+
+export type RecipeInputMetadata = {
+	ingredients: RecipeIngredient[];
+	tools: "unlimited" | string[];
 };

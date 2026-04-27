@@ -6,7 +6,7 @@ import {
 	QueryCache,
 	QueryClient,
 } from "@tanstack/react-query";
-import { createRouter, type LinkComponentProps } from "@tanstack/react-router";
+import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 import { ErrorBoundary } from "&/errors/components/ErrorBoundary";
 import { NotFound } from "&/errors/components/NotFound";
+import type { StaticRouteData } from "&/router/types/static-data";
 import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
 import { Devtools } from "@/components/layouts/Devtools";
 import { ENV } from "@/configs/env.config";
@@ -104,13 +105,5 @@ declare module "@tanstack/react-router" {
 		router: ReturnType<typeof getRouter>;
 	}
 
-	interface StaticDataRouteOption {
-		// backLink: //TODO: add backLink logic
-		// TODO: add links merging logic
-		links?: (LinkComponentProps & {
-			icon?: React.JSX.Element;
-			label: string;
-		})[];
-		loader?: React.ReactElement;
-	}
+	interface StaticDataRouteOption extends StaticRouteData {}
 }
