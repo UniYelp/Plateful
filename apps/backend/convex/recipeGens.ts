@@ -489,7 +489,7 @@ export const generateRecipe = internalAction({
 			if (error) {
 				switch (error.status) {
 					default: {
-						console.error(error);
+						console.error(JSON.stringify(error, null, 2));
 						throw new InternalError("Internal Error", { cause: error });
 					}
 				}
@@ -722,7 +722,7 @@ export const generateRecipe = internalAction({
 				},
 			});
 
-			console.error(err);
+			console.error(JSON.stringify(err, null, 2));
 		}
 	},
 });
