@@ -14,7 +14,8 @@ posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 	api_host: ENV.VITE_PUBLIC_POSTHOG_HOST,
 	name: APP.platform,
 	person_profiles: "always",
-	defaults: "2025-05-24",
+	defaults: "2026-01-30",
+	enable_heatmaps: true,
 });
 
 // Create a new router instance
