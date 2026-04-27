@@ -24,6 +24,7 @@ export type * from "./non-empty-array";
 export type * from "./non-optional";
 export type * from "./omit-by";
 export type * from "./omit-functions";
+export type * from "./one-or-many";
 export type * from "./partial-deep";
 export type * from "./patch-union";
 export type * from "./pick-by";

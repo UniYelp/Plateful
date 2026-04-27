@@ -2,8 +2,10 @@ import { useUser } from "@clerk/clerk-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
+import { append } from "&/aggregation";
 import { Footer } from "@/components/layouts/Footer";
 import { Header } from "@/components/layouts/Header";
+import type { NavItem } from "@/components/layouts/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,18 +18,20 @@ export const Route = createFileRoute("/")({
 		links: [{ rel: "stylesheet", href: homeCss }],
 	}),
 	staticData: {
-		links: [
-			{
-				label: "Features",
-				to: ".",
-				hash: SectionHash.Features,
-			},
-			{
-				label: "How It Works",
-				to: ".",
-				hash: SectionHash.HowItWorks,
-			},
-		],
+		navbar: {
+			items: append<NavItem>([
+				{
+					label: "Features",
+					to: ".",
+					hash: SectionHash.Features,
+				},
+				{
+					label: "How It Works",
+					to: ".",
+					hash: SectionHash.HowItWorks,
+				},
+			]),
+		},
 	},
 	component: LandingPage,
 });
