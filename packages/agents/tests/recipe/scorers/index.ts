@@ -6,3 +6,4 @@ export * from "./no-material-used-before-produced";
 export * from "./no-unreachable-materials";
 export * from "./no-unused-derived-materials";
 export * from "./output";
+export * from "./tools-usage";

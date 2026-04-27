@@ -1,7 +1,8 @@
-import { SignInButton, UserButton } from "@clerk/clerk-react";
+import { SignInButton } from "@clerk/clerk-react";
 import { Link } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 
+import { UserProfile } from "../user-profile";
 import { Brand } from "./Brand";
 import { DesktopNav, MobileNav } from "./Navbar";
 
@@ -24,7 +25,7 @@ export function Header() {
 							<SignInButton />
 						</Unauthenticated>
 						<Authenticated>
-							<UserButton />
+							<UserProfile />
 						</Authenticated>
 						<AuthLoading>
 							<p>...</p>

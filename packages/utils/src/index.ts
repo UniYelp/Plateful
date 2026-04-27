@@ -7,4 +7,5 @@ export * from "./json";
 export * from "./noop";
 export * from "./obj";
 export * from "./str";
+export * from "./to-array";
 export * from "./toggle";
