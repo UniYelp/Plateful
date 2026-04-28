@@ -2,8 +2,8 @@ import { t } from "elysia";
 
 export namespace ReceiptsModel {
 	export const parseReceiptBody = t.Object({
-		image: t.String({
-			description: "Base64 encoded image or URL of the receipt",
+		image: t.File({
+			type: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
 		}),
 	});
 

@@ -1,9 +1,9 @@
-import { useMutation, useQuery } from "convex/react";
-import { Camera, Loader2, Plus, Trash2, X } from "lucide-react";
-import { type FormEvent, useState } from "react";
 import { useStore } from "@tanstack/react-form";
-import { z } from "zod";
+import { useMutation } from "convex/react";
+import { Camera, Loader2, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import {
 	IngredientSymbol,
@@ -13,6 +13,8 @@ import {
 import { entriesOf } from "@plateful/utils";
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
+import { submitFormHandler } from "&/forms/utils/submission";
+import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import {
@@ -35,10 +37,8 @@ import {
 } from "@/components/ui/select";
 import { apiClient } from "@/configs/api.config";
 import { ingredientsCategoriesOptions } from "@/features/ingredients/constants";
-import type { SelectGroup, SelectOption } from "@/types/ui/select";
 import { useAppForm } from "@/lib/form";
-import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
-import { submitFormHandler } from "&/forms/utils/submission";
+import type { SelectGroup, SelectOption } from "@/types/ui/select";
 
 const ScannedIngredientSchema = z.object({
 	name: z.string().min(1, "Name is required"),
@@ -70,7 +70,11 @@ const ingredientUnitGroups = entriesOf(ingredientUnitsByCategory).map(
 		}) satisfies SelectGroup<IngredientUnit>,
 );
 
-export function ReceiptScanner({ householdId }: { householdId: Id<"households"> }) {
+export function ReceiptScanner({
+	householdId,
+}: {
+	householdId: Id<"households">;
+}) {
 	const upsertIngredients = useMutation(api.ingredients.upsertIngredients);
 	const [open, setOpen] = useState(false);
 	const [isExtracting, setIsExtracting] = useState(false);
@@ -89,7 +93,9 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 			try {
 				const ingredientsToSubmit = value.ingredients.map((ing) => ({
 					...ing,
-					expiresAt: ing.expiresAt ? new Date(ing.expiresAt).getTime() : undefined,
+					expiresAt: ing.expiresAt
+						? new Date(ing.expiresAt).getTime()
+						: undefined,
 				}));
 
 				await upsertIngredients({
@@ -112,20 +118,14 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 
 		setIsExtracting(true);
 		try {
-			const reader = new FileReader();
-			const base64Promise = new Promise<string>((resolve, reject) => {
-				reader.onload = () => resolve(reader.result as string);
-				reader.onerror = reject;
-			});
-			reader.readAsDataURL(file);
-			const base64 = await base64Promise;
-
 			const { data, error } = await apiClient.receipts.parse.post({
-				image: base64,
+				image: file,
 			});
 
 			if (error) {
-				throw new Error(error.value?.message || "Failed to extract ingredients");
+				throw new Error(
+					error.value?.message || "Failed to extract ingredients",
+				);
 			}
 
 			if (data) {
@@ -140,12 +140,13 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 							category?: string;
 						}) => {
 							const rawCategory = ing.category?.toLowerCase() || "";
-							const matchedCategory = ingredientsCategoriesOptions.find(
-								(opt) =>
-									opt.value === rawCategory ||
-									opt.label.toLowerCase() === rawCategory ||
-									opt.value.startsWith(rawCategory), // Handle singular vs plural
-							)?.value || "other";
+							const matchedCategory =
+								ingredientsCategoriesOptions.find(
+									(opt) =>
+										opt.value === rawCategory ||
+										opt.label.toLowerCase() === rawCategory ||
+										opt.value.startsWith(rawCategory), // Handle singular vs plural
+								)?.value || "other";
 
 							return {
 								name: ing.name,
@@ -189,7 +190,8 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 				<DialogHeader>
 					<DialogTitle>Scan Receipt</DialogTitle>
 					<DialogDescription>
-						Upload an image of your receipt to automatically extract ingredients.
+						Upload an image of your receipt to automatically extract
+						ingredients.
 					</DialogDescription>
 				</DialogHeader>
 
@@ -228,27 +230,45 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 									<table className="w-full text-sm">
 										<thead className="border-b bg-muted/50">
 											<tr>
-												<th className="px-4 py-2 text-left font-medium">Name</th>
-												<th className="w-24 px-4 py-2 text-left font-medium">Amount</th>
-												<th className="w-32 px-4 py-2 text-left font-medium">Unit</th>
-												<th className="px-4 py-2 text-left font-medium">Category</th>
-												<th className="px-4 py-2 text-left font-medium">Description</th>
-												<th className="w-40 px-4 py-2 text-left font-medium">Expiry</th>
+												<th className="px-4 py-2 text-left font-medium">
+													Name
+												</th>
+												<th className="w-24 px-4 py-2 text-left font-medium">
+													Amount
+												</th>
+												<th className="w-32 px-4 py-2 text-left font-medium">
+													Unit
+												</th>
+												<th className="px-4 py-2 text-left font-medium">
+													Category
+												</th>
+												<th className="px-4 py-2 text-left font-medium">
+													Description
+												</th>
+												<th className="w-40 px-4 py-2 text-left font-medium">
+													Expiry
+												</th>
 												<th className="w-12 px-4 py-2 text-center"></th>
 											</tr>
 										</thead>
 										<tbody className="divide-y">
-											<form.Subscribe selector={(state) => state.values.ingredients}>
+											<form.Subscribe
+												selector={(state) => state.values.ingredients}
+											>
 												{(ingredients) => (
 													<>
 														{ingredients.map((_, idx) => (
 															<tr key={`ing-${idx}`}>
 																<td className="p-2">
-																	<form.AppField name={`ingredients[${idx}].name`}>
+																	<form.AppField
+																		name={`ingredients[${idx}].name`}
+																	>
 																		{(field) => (
 																			<Input
 																				value={field.state.value}
-																				onChange={(e) => field.handleChange(e.target.value)}
+																				onChange={(e) =>
+																					field.handleChange(e.target.value)
+																				}
 																				placeholder="Name"
 																				aria-invalid={isInvalidTouched(field)}
 																				className="h-8"
@@ -257,12 +277,18 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 																	</form.AppField>
 																</td>
 																<td className="p-2">
-																	<form.AppField name={`ingredients[${idx}].amount`}>
+																	<form.AppField
+																		name={`ingredients[${idx}].amount`}
+																	>
 																		{(field) => (
 																			<Input
 																				type="number"
 																				value={field.state.value}
-																				onChange={(e) => field.handleChange(parseFloat(e.target.value) || 0)}
+																				onChange={(e) =>
+																					field.handleChange(
+																						parseFloat(e.target.value) || 0,
+																					)
+																				}
 																				aria-invalid={isInvalidTouched(field)}
 																				className="h-8"
 																			/>
@@ -270,11 +296,15 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 																	</form.AppField>
 																</td>
 																<td className="p-2">
-																	<form.AppField name={`ingredients[${idx}].unit`}>
+																	<form.AppField
+																		name={`ingredients[${idx}].unit`}
+																	>
 																		{(field) => (
 																			<Combobox<string>
 																				value={field.state.value ?? ""}
-																				onChange={(value) => field.handleChange(value || "")}
+																				onChange={(value) =>
+																					field.handleChange(value || "")
+																				}
 																				groups={ingredientUnitGroups}
 																				className="h-8"
 																			/>
@@ -282,7 +312,9 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 																	</form.AppField>
 																</td>
 																<td className="p-2">
-																	<form.AppField name={`ingredients[${idx}].category`}>
+																	<form.AppField
+																		name={`ingredients[${idx}].category`}
+																	>
 																		{(field) => (
 																			<Select
 																				value={field.state.value}
@@ -292,35 +324,48 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 																					<SelectValue placeholder="Category" />
 																				</SelectTrigger>
 																				<SelectContent>
-																					{ingredientsCategoriesOptions.map((cat) => (
-																						<SelectItem key={cat.value} value={cat.value}>
-																							{cat.label}
-																						</SelectItem>
-																					))}
+																					{ingredientsCategoriesOptions.map(
+																						(cat) => (
+																							<SelectItem
+																								key={cat.value}
+																								value={cat.value}
+																							>
+																								{cat.label}
+																							</SelectItem>
+																						),
+																					)}
 																				</SelectContent>
 																			</Select>
 																		)}
 																	</form.AppField>
 																</td>
 																<td className="p-2">
-																	<form.AppField name={`ingredients[${idx}].description`}>
+																	<form.AppField
+																		name={`ingredients[${idx}].description`}
+																	>
 																		{(field) => (
 																			<Input
 																				value={field.state.value ?? ""}
-																				onChange={(e) => field.handleChange(e.target.value)}
+																				onChange={(e) =>
+																					field.handleChange(e.target.value)
+																				}
 																				className="h-8"
 																			/>
 																		)}
 																	</form.AppField>
 																</td>
 																<td className="p-2">
-																	<form.AppField name={`ingredients[${idx}].expiresAt`}>
+																	<form.AppField
+																		name={`ingredients[${idx}].expiresAt`}
+																	>
 																		{(field) => (
 																			<Input
 																				autoComplete="off"
 																				type="date"
 																				value={field.state.value ?? ""}
-																				onChange={(e) => field.handleChange(e.target.value)}
+																				onChange={(e) =>
+																					field.handleChange(e.target.value)
+																				}
 																				className="h-8"
 																			/>
 																		)}
@@ -331,7 +376,9 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 																		variant="ghost"
 																		size="icon"
 																		className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-																		onClick={() => form.removeFieldValue("ingredients", idx)}
+																		onClick={() =>
+																			form.removeFieldValue("ingredients", idx)
+																		}
 																	>
 																		<Trash2 className="h-4 w-4" />
 																	</Button>
@@ -344,7 +391,13 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 										</tbody>
 									</table>
 								</div>
-								<Button type="button" variant="outline" size="sm" className="w-full" onClick={handleAddRow}>
+								<Button
+									type="button"
+									variant="outline"
+									size="sm"
+									className="w-full"
+									onClick={handleAddRow}
+								>
 									<Plus className="mr-2 h-4 w-4" />
 									Add Item
 								</Button>
@@ -364,10 +417,19 @@ export function ReceiptScanner({ householdId }: { householdId: Id<"households"> 
 								Cancel
 							</Button>
 						)}
-						<form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+						<form.Subscribe
+							selector={(state) => [state.canSubmit, state.isSubmitting]}
+						>
 							{([canSubmit, isSubmitting]) => (
-								<Button type="submit" disabled={ingredients.length === 0 || !canSubmit || isSubmitting}>
-									{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+								<Button
+									type="submit"
+									disabled={
+										ingredients.length === 0 || !canSubmit || isSubmitting
+									}
+								>
+									{isSubmitting && (
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									)}
 									Add Ingredients
 								</Button>
 							)}
