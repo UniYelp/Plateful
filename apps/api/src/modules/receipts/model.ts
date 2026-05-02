@@ -5,6 +5,7 @@ import { ReceiptExtractionOutputSchema } from "@plateful/agents/receipt-parser";
 export namespace ReceiptsModel {
 	export const parseReceiptQuery = t.Object({
 		householdId: t.String(),
+		keepOriginalLanguage: t.Optional(t.Boolean()),
 	});
 
 	export const parseReceiptBody = t.Object({

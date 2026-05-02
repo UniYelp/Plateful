@@ -18,8 +18,13 @@ export const receipts = new Elysia({
 	.use(redis())
 	.post(
 		"parse",
-		async ({ query: { householdId }, body: { image }, getRedis, log }) => {
-			log.set({ event: { started: true } });
+		async ({
+			query: { householdId, keepOriginalLanguage },
+			body: { image },
+			getRedis,
+			log,
+		}) => {
+			log.set({ event: { started: true, keepOriginalLanguage } });
 			
 			const redis = getRedis();
 
@@ -69,7 +74,11 @@ export const receipts = new Elysia({
 
 				log.set({ event: { processing: { converted: true } } });
 
-				const result = await ReceiptService.parseReceipt(dataUrl);
+				const result = await ReceiptService.parseReceipt(
+					dataUrl,
+					keepOriginalLanguage === true ||
+						String(keepOriginalLanguage) === "true",
+				);
 				
 				log.set({ event: { done: true } });
 				return result;

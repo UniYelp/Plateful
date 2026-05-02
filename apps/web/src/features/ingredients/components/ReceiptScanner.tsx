@@ -27,6 +27,7 @@ import { focusInvalid } from "&/forms/utils/validation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -113,12 +114,16 @@ export function ReceiptScanner({
 			quantities: ExtractedIngredientQuantity[];
 		})[]
 	>([]);
+	const [keepOriginalLanguage, setKeepOriginalLanguage] = useState(true);
 
 	const parseReceiptMutation = useMutation({
-		mutationFn: async (file: File) => {
+		mutationFn: async ({
+			file,
+			keepOriginalLanguage,
+		}: { file: File; keepOriginalLanguage: boolean }) => {
 			const { data, error } = await apiClient.receipts.parse.post(
 				{ image: file },
-				{ query: { householdId } },
+				{ query: { householdId, keepOriginalLanguage } },
 			);
 
 			if (error) {
@@ -218,7 +223,7 @@ export function ReceiptScanner({
 	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (!file) return;
-		parseReceiptMutation.mutate(file);
+		parseReceiptMutation.mutate({ file, keepOriginalLanguage });
 	};
 
 	const handleAddRow = () => {
@@ -276,6 +281,23 @@ export function ReceiptScanner({
 									Snap a photo of your grocery receipt and let our AI do the
 									typing for you.
 								</p>
+								<div className="mb-8 flex items-center gap-2">
+									<Checkbox
+										id="keep-original-language"
+										checked={keepOriginalLanguage}
+										onCheckedChange={(checked) =>
+											setKeepOriginalLanguage(!!checked)
+										}
+										className="h-5 w-5 rounded-md border-primary/20 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+									/>
+									<Label
+										htmlFor="keep-original-language"
+										className="cursor-pointer font-medium text-muted-foreground text-sm"
+									>
+										Keep original language
+									</Label>
+								</div>
+
 								<Label htmlFor="receipt-upload" className="cursor-pointer">
 									<div className="inline-flex h-14 items-center justify-center rounded-full bg-primary px-10 font-bold text-lg text-primary-foreground shadow-primary/20 shadow-xl transition-all hover:scale-[1.02] hover:bg-primary/90 active:scale-95">
 										<Camera className="mr-3 h-6 w-6" />
