@@ -1,35 +1,43 @@
-import type { ReceiptExtractionOutput } from "./schemas";
+import { generateObject } from "ai";
+import { google } from "@ai-sdk/google";
+import {
+	type ReceiptExtractionOutput,
+	ReceiptExtractionOutputSchema,
+} from "./schemas";
 
 export const ReceiptParserAgent = {
 	parseReceipt: async (
-		_image: string | Buffer | URL,
+		image: string | Buffer | URL,
 	): Promise<ReceiptExtractionOutput> => {
-		// This is a stub for now as requested.
-		// It returns a predefined list of ingredients regardless of the image content.
-		return {
-			ingredients: [
+		let imageData: Buffer | string;
+		if (image instanceof URL) {
+			imageData = image.href;
+		} else if (Buffer.isBuffer(image)) {
+			imageData = image.toString("base64");
+		} else {
+			imageData = image;
+		}
+
+		const { object } = await generateObject({
+			model: google("gemini-2.5-flash"),
+			schema: ReceiptExtractionOutputSchema,
+			messages: [
 				{
-					name: "Milk",
-					amount: 1,
-					unit: "liter",
-					description: "Whole milk",
-					category: "dairy",
-				},
-				{
-					name: "Eggs",
-					amount: 500,
-					unit: "gram",
-					description: "Large brown eggs",
-					category: "dairy",
-				},
-				{
-					name: "Sourdough Bread",
-					amount: 1,
-					unit: "slice",
-					description: "Freshly baked sourdough",
-					category: "grains",
+					role: "user",
+					content: [
+						{
+							type: "text",
+							text: "Extract all items from this receipt. Group identical items with the same name and description into a single entry with multiple quantities if applicable. Strictly categorize each item into one of the provided categories. If an item is not a food ingredient (e.g. batteries, soap, toilet paper), categorize it as 'non-edible'.",
+						},
+						{
+							type: "image",
+							image: imageData,
+						},
+					],
 				},
 			],
-		};
+		});
+
+		return object;
 	},
 };

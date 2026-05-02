@@ -6,7 +6,6 @@
     "files": [],
     "scripts": {
         "deploy": "convex deploy",
-        "predev": "convex dev --until-success && convex dashboard",
         "dev": "convex dev",
         "logs": "convex logs",
         "migrate:dev": "convex run convex/migrations.ts:runAll",

@@ -234,11 +234,16 @@ export const upsertIngredients = householdMutation({
 		ingredients: vv.array(
 			vv.object({
 				name: vv.string(),
-				amount: vv.number(),
-				unit: vv.optional(vv.string()),
+				quantities: vv.array(
+					vv.object({
+						amount: vv.number(),
+						unit: vv.optional(vv.string()),
+						expiresAt: vv.optional(vv.number()),
+					}),
+				),
 				description: vv.optional(vv.string()),
 				category: vv.optional(vv.string()),
-				expiresAt: vv.optional(vv.number()),
+				notes: vv.optional(vv.string()),
 			}),
 		),
 	},
@@ -255,14 +260,14 @@ export const upsertIngredients = householdMutation({
 			).unique();
 
 			if (existing) {
-				await ctx.db.patch(existing._id, {
+				await ctx.db.patch("ingredients", existing._id, {
 					quantities: [
 						...existing.quantities,
-						{
-							amount: ing.amount,
-							unit: ing.unit || undefined,
-							expiresAt: ing.expiresAt,
-						},
+						...ing.quantities.map((q) => ({
+							amount: q.amount,
+							unit: q.unit || undefined,
+							expiresAt: q.expiresAt,
+						})),
 					],
 					updatedBy: userId,
 					updatedAt: now,
@@ -274,13 +279,12 @@ export const upsertIngredients = householdMutation({
 					description: ing.description,
 					category: ing.category || "Uncategorized",
 					tags: [],
-					quantities: [
-						{
-							amount: ing.amount,
-							unit: ing.unit || undefined,
-							expiresAt: ing.expiresAt,
-						},
-					],
+					notes: ing.notes,
+					quantities: ing.quantities.map((q) => ({
+						amount: q.amount,
+						unit: q.unit || undefined,
+						expiresAt: q.expiresAt,
+					})),
 					images: [],
 					createdBy: userId,
 					updatedBy: userId,
@@ -316,7 +320,11 @@ export const addQuantity = householdMutation({
 		await ctx.db.patch("ingredients", args.ingredientId, {
 			quantities: [
 				...ingredient.quantities,
-				{ amount: args.amount, unit: args.unit, expiresAt: args.expiresAt },
+				{
+					amount: args.amount,
+					unit: args.unit,
+					expiresAt: args.expiresAt,
+				},
 			],
 			updatedBy: userId,
 			updatedAt: now,

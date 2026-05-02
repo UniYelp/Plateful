@@ -1,21 +1,17 @@
 import { t } from "elysia";
 
+import { ReceiptExtractionOutputSchema } from "@plateful/agents/receipt-parser";
+
 export namespace ReceiptsModel {
+	export const parseReceiptQuery = t.Object({
+		householdId: t.String(),
+	});
+
 	export const parseReceiptBody = t.Object({
 		image: t.File({
 			type: ["image/png", "image/jpeg", "image/jpg", "image/webp"],
 		}),
 	});
 
-	export const parseReceiptResponse = t.Object({
-		ingredients: t.Array(
-			t.Object({
-				name: t.String(),
-				amount: t.Number(),
-				unit: t.Optional(t.String()),
-				description: t.Optional(t.String()),
-				category: t.Optional(t.String()),
-			}),
-		),
-	});
+	export const parseReceiptResponse = ReceiptExtractionOutputSchema;
 }
