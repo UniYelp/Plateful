@@ -10,7 +10,7 @@ export const Route = createFileRoute("/dev-scanner" as any)({
 });
 
 function DevScannerPage() {
-	const households = useQuery(api.households.all);
+	const households = useQuery(api.households.getUserHouseholds);
 
 	if (!households) {
 		return (
