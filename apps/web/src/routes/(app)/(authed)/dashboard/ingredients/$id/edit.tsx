@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { ArrowLeft, Package } from "lucide-react";
@@ -31,6 +32,8 @@ function RouteComponent() {
 
 function EditIngredientPage() {
 	const { householdId } = Route.useLoaderData();
+
+	const posthog = usePostHog();
 	const navigate = Route.useNavigate();
 
 	const editIngredient = useMutation(api.ingredients.edit);
@@ -63,6 +66,12 @@ function EditIngredientPage() {
 			category: value.category,
 			tags: [],
 			images: [],
+		});
+
+		posthog.capture("ingredient_update", {
+			id: ingredientId,
+			name: value.name,
+			...(ingredient?.name !== value.name && { oldName: ingredient?.name }),
 		});
 
 		navigate({
@@ -111,7 +120,10 @@ function EditIngredientPage() {
 								recipeIngredients
 									? Array.from(
 											new Map(
-												recipeIngredients.map((ri) => [ri.recipe._id, ri.recipe]),
+												recipeIngredients.map((ri) => [
+													ri.recipe._id,
+													ri.recipe,
+												]),
 											).values(),
 										)
 									: undefined

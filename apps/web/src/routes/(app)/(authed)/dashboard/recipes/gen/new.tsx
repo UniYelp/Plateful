@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { ArrowLeft, History, Package } from "lucide-react";
@@ -41,6 +42,7 @@ function RouteComponent() {
 }
 
 function GenerateNewRecipePage() {
+	const posthog = usePostHog();
 	const household = useCurrentHousehold();
 
 	const ingredients = useQuery(
@@ -91,27 +93,36 @@ function GenerateNewRecipePage() {
 			value.ingredients as Id<"ingredients">[],
 		);
 
+		const ingredients = ingredientsDetails.flatMap((ing) => {
+			if (!selectedIngredients.has(ing.id)) return [];
+
+			const quantities = ing.availableQuantities.map(
+				({ amount, unit, expiresAt }) => ({
+					amount,
+					unit,
+					expiresAt,
+				}),
+			);
+
+			return {
+				id: ing.id,
+				name: ing.name,
+				quantities: quantities.length ? quantities : "unlimited",
+			} as const;
+		});
+
 		const genId = await startGeneratingRecipe({
 			householdId: household._id,
 			tags: value.tags,
 			tools: value.tools || [],
-			ingredients: ingredientsDetails.flatMap((ing) => {
-				if (!selectedIngredients.has(ing.id)) return [];
+			ingredients,
+		});
 
-				const quantities = ing.availableQuantities.map(
-					({ amount, unit, expiresAt }) => ({
-						amount,
-						unit,
-						expiresAt,
-					}),
-				);
-
-				return {
-					id: ing.id,
-					name: ing.name,
-					quantities: quantities.length ? quantities : "unlimited",
-				};
-			}),
+		posthog.capture("recipe_generate", {
+			id: genId,
+			ingredients: ingredients.map((ing) => ing.name).join(","),
+			tools: value.tools?.length ? value.tools.join(",") : "unlimited",
+			tags: value.tags.join(","),
 		});
 
 		navigate({

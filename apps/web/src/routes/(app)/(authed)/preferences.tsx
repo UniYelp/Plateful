@@ -1,4 +1,5 @@
 import { convexQuery } from "@convex-dev/react-query";
+import { usePostHog } from "@posthog/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
@@ -38,17 +39,28 @@ function RouteComponent() {
 
 export function PreferencesPage() {
 	const navigate = Route.useNavigate();
+	const posthog = usePostHog();
 	const upsertUserPreferences = useMutation(api.userPreferences.upsert);
 
 	const { data: userPreferences } = useSuspenseQuery(
 		convexQuery(api.userPreferences.byActiveUser),
 	);
 
-	const [showWelcome, setShowWelcome] = useState(!userPreferences);
+	const isOnboarding = !userPreferences;
+
+	const [showWelcome, setShowWelcome] = useState(isOnboarding);
 
 	const onSubmit = async (value: PreferencesFormOutput) => {
 		// TODO: handle errors
 		await upsertUserPreferences(value);
+
+		if (isOnboarding) {
+			posthog.capture("onboarding:preferences_create");
+		} else {
+			posthog.capture("preferences_update", {
+				source: "web_page",
+			});
+		}
 
 		navigate({ to: "/dashboard" });
 	};
