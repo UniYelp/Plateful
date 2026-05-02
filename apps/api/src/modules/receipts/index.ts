@@ -16,6 +16,34 @@ export const receipts = new Elysia({
 	.use(logger())
 	.use(auth())
 	.use(redis())
+	.get(
+		"limits",
+		async ({ query: { householdId }, getRedis, log }) => {
+			log.set({ household: { id: householdId } });
+
+			const redis = getRedis();
+			const rphLock = RedisLocks.receipts.parse.household.rph(redis);
+
+			// We use weight 0 to peek at the current state without consuming a token.
+			const { limit, remaining, reset } = await rphLock.limit(
+				RedisKeys.receipts.parse.household.rph(householdId),
+				{ rate: 0 },
+			);
+
+			return {
+				today: {
+					total: limit - remaining,
+					max: limit,
+				},
+				remaining,
+				reset,
+			};
+		},
+		{
+			query: ReceiptsModel.getLimitsQuery,
+			response: ReceiptsModel.getLimitsResponse,
+		},
+	)
 	.post(
 		"parse",
 		async ({

@@ -15,4 +15,17 @@ export namespace ReceiptsModel {
 	});
 
 	export const parseReceiptResponse = ReceiptExtractionOutputSchema;
+
+	export const getLimitsQuery = t.Object({
+		householdId: t.String(),
+	});
+
+	export const getLimitsResponse = t.Object({
+		today: t.Object({
+			total: t.Number(),
+			max: t.Number(),
+		}),
+		remaining: t.Number(),
+		reset: t.Number(),
+	});
 }

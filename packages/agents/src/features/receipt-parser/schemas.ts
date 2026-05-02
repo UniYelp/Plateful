@@ -5,7 +5,7 @@ import { ingredientCategories, ingredientUnits } from "@plateful/ingredients";
 export const ExtractedIngredientSchema = z.object({
 	name: z.string().meta({
 		description:
-			"The name of the ingredient extracted from the receipt (a unique identifier). It should also include variant - e.g. if the receipt says Milk chocolate with hazelnuts, the name should be Milk chocolate with hazelnuts",
+			"The name of the ingredient extracted from the receipt (a unique identifier). It should also include variant - e.g. if the receipt says Milk chocolate with hazelnuts 200g single, the name should be Milk chocolate with hazelnuts",
 	}),
 	description: z.string().optional().meta({
 		description: "Any additional details like brand, size, or processing type",

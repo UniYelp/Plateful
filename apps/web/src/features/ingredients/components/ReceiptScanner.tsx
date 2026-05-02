@@ -1,5 +1,5 @@
 import { useStore } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMutation as useConvexMutation } from "convex/react";
 import {
 	AlertCircle,
@@ -26,8 +26,8 @@ import { submitFormHandler } from "&/forms/utils/submission";
 import { focusInvalid } from "&/forms/utils/validation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Combobox } from "@/components/ui/combobox";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Combobox } from "@/components/ui/combobox";
 import {
 	Dialog,
 	DialogContent,
@@ -46,6 +46,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { apiClient } from "@/configs/api.config";
 import { ingredientsCategoriesOptions } from "@/features/ingredients/constants";
 import { useAppForm } from "@/lib/form";
@@ -116,11 +122,28 @@ export function ReceiptScanner({
 	>([]);
 	const [keepOriginalLanguage, setKeepOriginalLanguage] = useState(true);
 
+	const { data: limits, refetch: refetchLimits } = useQuery({
+		queryKey: ["receipt-limits", householdId],
+		queryFn: async () => {
+			const { data, error } = await apiClient.receipts.limits.get({
+				query: { householdId },
+			});
+			if (error) throw new Error("Failed to fetch limits");
+			return data;
+		},
+		staleTime: 1000 * 60, // 1 minute cache
+	});
+
+	const isQuotaReached = limits && limits.today.total >= limits.today.max;
+
 	const parseReceiptMutation = useMutation({
 		mutationFn: async ({
 			file,
 			keepOriginalLanguage,
-		}: { file: File; keepOriginalLanguage: boolean }) => {
+		}: {
+			file: File;
+			keepOriginalLanguage: boolean;
+		}) => {
 			const { data, error } = await apiClient.receipts.parse.post(
 				{ image: file },
 				{ query: { householdId, keepOriginalLanguage } },
@@ -135,6 +158,7 @@ export function ReceiptScanner({
 			return data;
 		},
 		onSuccess: (data) => {
+			refetchLimits();
 			if (!data) return;
 
 			const edible: ReceiptScannerForm["ingredients"] = [];
@@ -240,15 +264,43 @@ export function ReceiptScanner({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button
-					variant="outline"
-					className="gap-2 rounded-full px-5 shadow-sm transition-all hover:shadow-md"
-				>
-					<Camera className="h-4 w-4" />
-					Scan Receipt
-				</Button>
+				<div className="inline-block">
+					<TooltipProvider>
+						<Tooltip delayDuration={0}>
+							<TooltipTrigger asChild>
+								<Button
+									variant="outline"
+									disabled={isQuotaReached}
+									className="group relative gap-2 rounded-full px-5 shadow-sm transition-all hover:shadow-md disabled:opacity-50"
+								>
+									<Camera className="h-4 w-4" />
+									Scan Receipt
+									{isQuotaReached && (
+										<span className="-top-2 absolute right-[-5px] rounded-full bg-destructive px-2 py-0.5 font-bold text-[8px] text-destructive-foreground uppercase tracking-wider shadow-sm">
+											Quota Reached
+										</span>
+									)}
+								</Button>
+							</TooltipTrigger>
+							{isQuotaReached && (
+								<TooltipContent side="top" className="max-w-xs text-center">
+									<p className="font-semibold">Daily limit reached</p>
+									<p className="text-xs opacity-80">
+										You have used all {limits.today.max} free scans for today.
+										{limits.reset && (
+											<>
+												<br />
+												Resets at: {new Date(limits.reset).toLocaleTimeString()}
+											</>
+										)}
+									</p>
+								</TooltipContent>
+							)}
+						</Tooltip>
+					</TooltipProvider>
+				</div>
 			</DialogTrigger>
-			<DialogContent className="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden p-0 sm:rounded-[2rem]">
+			<DialogContent className="flex h-fit max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden p-0 sm:rounded-4xl">
 				<DialogHeader className="border-b bg-muted/5 px-8 py-6">
 					<div className="flex items-center justify-between">
 						<div>
@@ -263,7 +315,7 @@ export function ReceiptScanner({
 					</div>
 				</DialogHeader>
 
-				<div className="custom-scrollbar flex-1 overflow-y-auto bg-background/50">
+				<div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto bg-background/50">
 					<form
 						id="receipt-scanner-form"
 						onSubmit={submitFormHandler(form)}
@@ -272,16 +324,16 @@ export function ReceiptScanner({
 						{ingredients.length === 0 &&
 						!parseReceiptMutation.isPending &&
 						!parseReceiptMutation.isError ? (
-							<div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-muted/20 py-24 text-center transition-all hover:bg-muted/30">
-								<div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-primary">
-									<Receipt className="h-12 w-12" />
+							<div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-muted/20 py-6 text-center transition-all hover:bg-muted/30">
+								<div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+									<Receipt className="h-10 w-10" />
 								</div>
 								<h3 className="mb-2 font-bold text-2xl">Upload Receipt</h3>
-								<p className="mb-10 max-w-sm text-lg text-muted-foreground">
+								<p className="mb-6 max-w-sm text-lg text-muted-foreground">
 									Snap a photo of your grocery receipt and let our AI do the
 									typing for you.
 								</p>
-								<div className="mb-8 flex items-center gap-2">
+								<div className="mb-4 flex items-center gap-2">
 									<Checkbox
 										id="keep-original-language"
 										checked={keepOriginalLanguage}
@@ -298,10 +350,13 @@ export function ReceiptScanner({
 									</Label>
 								</div>
 
-								<Label htmlFor="receipt-upload" className="cursor-pointer">
-									<div className="inline-flex h-14 items-center justify-center rounded-full bg-primary px-10 font-bold text-lg text-primary-foreground shadow-primary/20 shadow-xl transition-all hover:scale-[1.02] hover:bg-primary/90 active:scale-95">
-										<Camera className="mr-3 h-6 w-6" />
-										Choose Image
+								<Label
+									htmlFor="receipt-upload"
+									className={`cursor-pointer ${isQuotaReached ? "pointer-events-none opacity-50" : ""}`}
+								>
+									<div className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 font-bold text-lg text-primary-foreground shadow-primary/20 shadow-xl transition-all hover:scale-[1.02] hover:bg-primary/90 active:scale-95">
+										<Camera className="mr-2 h-5 w-5" />
+										{isQuotaReached ? "Quota Reached" : "Choose Image"}
 									</div>
 									<input
 										id="receipt-upload"
@@ -309,11 +364,17 @@ export function ReceiptScanner({
 										accept="image/*"
 										className="hidden"
 										onChange={handleFileChange}
+										disabled={isQuotaReached}
 									/>
 								</Label>
+								{isQuotaReached && (
+									<p className="mt-4 font-medium text-destructive text-sm">
+										Daily scan limit exceeded. Please try again tomorrow.
+									</p>
+								)}
 							</div>
 						) : parseReceiptMutation.isPending ? (
-							<div className="flex flex-col items-center justify-center space-y-8 py-32">
+							<div className="flex flex-col items-center justify-center space-y-8 py-16">
 								<div className="relative">
 									<div className="h-32 w-32 rounded-full border-4 border-primary/10" />
 									<div className="absolute inset-0 flex items-center justify-center">
@@ -328,7 +389,7 @@ export function ReceiptScanner({
 								</div>
 							</div>
 						) : parseReceiptMutation.isError ? (
-							<div className="flex flex-col items-center rounded-3xl border border-destructive/20 bg-destructive/5 p-12 text-center">
+							<div className="flex flex-col items-center rounded-3xl border border-destructive/20 bg-destructive/5 p-8 text-center">
 								<div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10 text-destructive">
 									<AlertCircle className="h-10 w-10" />
 								</div>
