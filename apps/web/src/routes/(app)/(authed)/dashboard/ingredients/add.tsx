@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { ArrowLeft, Package } from "lucide-react";
@@ -30,6 +31,7 @@ function RouteComponent() {
 
 function AddIngredientPage() {
 	const { householdId } = Route.useLoaderData();
+	const posthog = usePostHog();
 	const navigate = Route.useNavigate();
 
 	const addIngredient = useMutation(api.ingredients.add);
@@ -49,6 +51,11 @@ function AddIngredientPage() {
 			category: value.category,
 			tags: [],
 			images: [],
+		});
+
+		posthog.capture("ingredient_create", {
+			id: ingredientId,
+			name: value.name,
 		});
 
 		navigate({

@@ -340,6 +340,9 @@ importers:
       '@plateful/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@posthog/react':
+        specifier: ^1.9.0
+        version: 1.9.0(@types/react@19.2.14)(posthog-js@1.372.3)(react@19.2.5)
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -2150,6 +2153,16 @@ packages:
 
   '@posthog/core@1.27.7':
     resolution: {integrity: sha512-6rzOZajUkhuezgPeF+ReMMly0D9oiwIZtMQrsJtZcS/mwi5OtvuYgxeaohgP9PKOhkK1c7cvGskX0Y2YUtBYCw==}
+
+  '@posthog/react@1.9.0':
+    resolution: {integrity: sha512-lVdTsWT5+PtHBu44gSQ7QohbLjAYqHkFAIGAQ+HV8Eh9yj+OcnQ7mXCmyhaMlTBD3z7D0H1eWMp4vQaFnsIyWQ==}
+    peerDependencies:
+      '@types/react': '>=16.8.0'
+      posthog-js: '>=1.257.2'
+      react: '>=16.8.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@posthog/types@1.372.3':
     resolution: {integrity: sha512-4mkXC9AhsquJnvogWtWsCi+ReODj/jbK0d3fkwCNLLTOpaiAF125FJ6OJyRFax2u+dEKXAPA/dCTGx1S2WF0nw==}
@@ -8450,6 +8463,13 @@ snapshots:
   '@posthog/core@1.27.7':
     dependencies:
       '@posthog/types': 1.372.3
+
+  '@posthog/react@1.9.0(@types/react@19.2.14)(posthog-js@1.372.3)(react@19.2.5)':
+    dependencies:
+      posthog-js: 1.372.3
+      react: 19.2.5
+    optionalDependencies:
+      '@types/react': 19.2.14
 
   '@posthog/types@1.372.3': {}
 

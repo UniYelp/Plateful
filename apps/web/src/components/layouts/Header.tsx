@@ -2,6 +2,7 @@ import { SignInButton } from "@clerk/clerk-react";
 import { Link } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 
+import type { FileRouteTypes } from "@/routeTree.gen";
 import { UserProfile } from "../user-profile";
 import { Brand } from "./Brand";
 import { DesktopNav, MobileNav } from "./Navbar";
@@ -22,7 +23,11 @@ export function Header() {
 					<MobileNav />
 					<div className="flex min-w-7 items-center gap-3">
 						<Unauthenticated>
-							<SignInButton />
+							<SignInButton
+								forceRedirectUrl={
+									"/dashboard" satisfies FileRouteTypes["fullPaths"]
+								}
+							/>
 						</Unauthenticated>
 						<Authenticated>
 							<UserProfile />

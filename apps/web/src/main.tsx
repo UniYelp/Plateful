@@ -1,7 +1,7 @@
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { PostHogProvider } from "@posthog/react";
 import { RouterProvider } from "@tanstack/react-router";
 import posthog from "posthog-js";
-import { PostHogProvider } from "posthog-js/react";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
@@ -9,6 +9,7 @@ import { APP } from "@/configs/app.config";
 import { ENV } from "@/configs/env.config";
 import reportWebVitals from "./reportWebVitals";
 import { getRouter } from "./router";
+import type { FileRouteTypes } from "./routeTree.gen";
 
 posthog.init(ENV.VITE_PUBLIC_POSTHOG_KEY, {
 	api_host: ENV.VITE_PUBLIC_POSTHOG_HOST,
@@ -31,10 +32,14 @@ function App() {
 		<PostHogProvider client={posthog}>
 			<ClerkProvider
 				publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}
-				signInFallbackRedirectUrl="/dashboard"
-				signInUrl="/dashboard"
-				signUpFallbackRedirectUrl="/dashboard"
-				signUpUrl="/dashboard"
+				signInFallbackRedirectUrl={
+					"/dashboard" satisfies FileRouteTypes["fullPaths"]
+				}
+				signInUrl={"/sign-in" satisfies FileRouteTypes["fullPaths"]}
+				signUpForceRedirectUrl={
+					"/welcome" satisfies FileRouteTypes["fullPaths"]
+				}
+				signUpUrl={"/sign-up" satisfies FileRouteTypes["fullPaths"]}
 			>
 				<InnerApp />
 			</ClerkProvider>

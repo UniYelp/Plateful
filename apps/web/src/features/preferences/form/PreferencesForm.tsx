@@ -29,11 +29,13 @@ import { useAppForm } from "@/lib/form";
 // TODO: add "skip" button to the entire process
 
 type PreferencesFormProps = {
+	submitLabel?: string;
 	defaultValues?: Maybe<Partial<PreferencesFormInput>>;
 	onSubmit: (value: PreferencesFormOutput) => Promise<void>;
 };
 export function PreferencesForm({
 	defaultValues,
+	submitLabel = "save",
 	onSubmit,
 }: PreferencesFormProps) {
 	const [step, setStep] = useState(1);
@@ -536,7 +538,7 @@ export function PreferencesForm({
 									className="gap-2 bg-linear-to-r from-primary to-primary/80 shadow-lg"
 								>
 									<Sparkles className="h-4 w-4" />
-									Complete Setup
+									{submitLabel}
 									<Check className="h-4 w-4" />
 								</Button>
 							)}
