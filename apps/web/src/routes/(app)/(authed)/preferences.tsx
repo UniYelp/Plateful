@@ -81,8 +81,9 @@ export function PreferencesPage() {
 			<Card className="relative z-10 w-full max-w-3xl border-2 shadow-2xl">
 				<CardContent>
 					<PreferencesForm
-						onSubmit={onSubmit}
+						submitLabel={isOnboarding ? "Complete Setup" : "Save"}
 						defaultValues={userPreferences}
+						onSubmit={onSubmit}
 					/>
 				</CardContent>
 			</Card>
