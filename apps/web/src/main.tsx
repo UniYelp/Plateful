@@ -32,12 +32,12 @@ function App() {
 		<PostHogProvider client={posthog}>
 			<ClerkProvider
 				publishableKey={ENV.VITE_CLERK_PUBLISHABLE_KEY}
-				signInForceRedirectUrl={
+				signInFallbackRedirectUrl={
 					"/dashboard" satisfies FileRouteTypes["fullPaths"]
 				}
 				signInUrl={"/sign-in" satisfies FileRouteTypes["fullPaths"]}
 				signUpForceRedirectUrl={
-					"/preferences" satisfies FileRouteTypes["fullPaths"]
+					"/welcome" satisfies FileRouteTypes["fullPaths"]
 				}
 				signUpUrl={"/sign-up" satisfies FileRouteTypes["fullPaths"]}
 			>

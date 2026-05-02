@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as appauthedRouteRouteImport } from './routes/(app)/(authed)/route'
+import { Route as appauthedWelcomeRouteImport } from './routes/(app)/(authed)/welcome'
 import { Route as appauthedPreferencesRouteImport } from './routes/(app)/(authed)/preferences'
 import { Route as appauthedDashboardRouteRouteImport } from './routes/(app)/(authed)/dashboard/route'
 import { Route as appauthedDashboardIndexRouteImport } from './routes/(app)/(authed)/dashboard/index'
@@ -60,6 +61,11 @@ const authSignInRoute = authSignInRouteImport.update({
 const appauthedRouteRoute = appauthedRouteRouteImport.update({
   id: '/(authed)',
   getParentRoute: () => appRouteRoute,
+} as any)
+const appauthedWelcomeRoute = appauthedWelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => appauthedRouteRoute,
 } as any)
 const appauthedPreferencesRoute = appauthedPreferencesRouteImport.update({
   id: '/preferences',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof authSignUpRoute
   '/dashboard': typeof appauthedDashboardRouteRouteWithChildren
   '/preferences': typeof appauthedPreferencesRoute
+  '/welcome': typeof appauthedWelcomeRoute
   '/dashboard/': typeof appauthedDashboardIndexRoute
   '/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
   '/dashboard/recipes/$id': typeof appauthedDashboardRecipesIdRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/preferences': typeof appauthedPreferencesRoute
+  '/welcome': typeof appauthedWelcomeRoute
   '/dashboard': typeof appauthedDashboardIndexRoute
   '/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
   '/dashboard/recipes/$id': typeof appauthedDashboardRecipesIdRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/(auth)/sign-up': typeof authSignUpRoute
   '/(app)/(authed)/dashboard': typeof appauthedDashboardRouteRouteWithChildren
   '/(app)/(authed)/preferences': typeof appauthedPreferencesRoute
+  '/(app)/(authed)/welcome': typeof appauthedWelcomeRoute
   '/(app)/(authed)/dashboard/': typeof appauthedDashboardIndexRoute
   '/(app)/(authed)/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
   '/(app)/(authed)/dashboard/recipes/$id': typeof appauthedDashboardRecipesIdRoute
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard'
     | '/preferences'
+    | '/welcome'
     | '/dashboard/'
     | '/dashboard/ingredients/add'
     | '/dashboard/recipes/$id'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/preferences'
+    | '/welcome'
     | '/dashboard'
     | '/dashboard/ingredients/add'
     | '/dashboard/recipes/$id'
@@ -235,6 +246,7 @@ export interface FileRouteTypes {
     | '/(auth)/sign-up'
     | '/(app)/(authed)/dashboard'
     | '/(app)/(authed)/preferences'
+    | '/(app)/(authed)/welcome'
     | '/(app)/(authed)/dashboard/'
     | '/(app)/(authed)/dashboard/ingredients/add'
     | '/(app)/(authed)/dashboard/recipes/$id'
@@ -304,6 +316,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof appauthedRouteRouteImport
       parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(authed)/welcome': {
+      id: '/(app)/(authed)/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof appauthedWelcomeRouteImport
+      parentRoute: typeof appauthedRouteRoute
     }
     '/(app)/(authed)/preferences': {
       id: '/(app)/(authed)/preferences'
@@ -432,11 +451,13 @@ const appauthedDashboardRouteRouteWithChildren =
 interface appauthedRouteRouteChildren {
   appauthedDashboardRouteRoute: typeof appauthedDashboardRouteRouteWithChildren
   appauthedPreferencesRoute: typeof appauthedPreferencesRoute
+  appauthedWelcomeRoute: typeof appauthedWelcomeRoute
 }
 
 const appauthedRouteRouteChildren: appauthedRouteRouteChildren = {
   appauthedDashboardRouteRoute: appauthedDashboardRouteRouteWithChildren,
   appauthedPreferencesRoute: appauthedPreferencesRoute,
+  appauthedWelcomeRoute: appauthedWelcomeRoute,
 }
 
 const appauthedRouteRouteWithChildren = appauthedRouteRoute._addFileChildren(

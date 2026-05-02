@@ -1,32 +1,36 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { usePostHog } from "@posthog/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
-import { ArrowRight, ChefHat, Sparkles } from "lucide-react";
-import { useState } from "react";
+import z from "zod";
 
 import { api } from "@backend/api";
-import { QUICK_FEATURES } from "&/preferences/form/constants";
 import { PreferencesForm } from "&/preferences/form/PreferencesForm";
 import type { PreferencesFormOutput } from "&/preferences/form/schema";
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { APP } from "@/configs/app.config";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const Route = createFileRoute("/(app)/(authed)/preferences")({
-	loader: async ({ context }) => {
+	validateSearch: z.object({
+		onboarding: z.boolean().optional(),
+	}),
+	loaderDeps: ({ search: { onboarding } }) => ({ onboarding }),
+	loader: async ({ context, deps: { onboarding } }) => {
 		const { queryClient } = context;
 
-		await queryClient.ensureQueryData(
-			convexQuery(api.userPreferences.byActiveUser),
+		const hasPreferences = await queryClient.ensureQueryData(
+			convexQuery(api.userPreferences.exists, {}),
 		);
+
+		if (hasPreferences === onboarding) {
+			throw redirect({
+				to: "/preferences",
+				search: { onboarding: !hasPreferences },
+				mask: {
+					to: "/preferences",
+				},
+			});
+		}
 
 		return {};
 	},
@@ -38,6 +42,10 @@ function RouteComponent() {
 }
 
 export function PreferencesPage() {
+	const isOnboarding = Route.useSearch({
+		select: ({ onboarding }) => onboarding,
+	});
+
 	const navigate = Route.useNavigate();
 	const posthog = usePostHog();
 	const upsertUserPreferences = useMutation(api.userPreferences.upsert);
@@ -46,16 +54,13 @@ export function PreferencesPage() {
 		convexQuery(api.userPreferences.byActiveUser),
 	);
 
-	const isOnboarding = !userPreferences;
-
-	const [showWelcome, setShowWelcome] = useState(isOnboarding);
-
 	const onSubmit = async (value: PreferencesFormOutput) => {
 		// TODO: handle errors
 		await upsertUserPreferences(value);
 
 		if (isOnboarding) {
 			posthog.capture("onboarding:preferences_create");
+			posthog.capture("onboarding_complete");
 		} else {
 			posthog.capture("preferences_update", {
 				source: "web_page",
@@ -74,77 +79,12 @@ export function PreferencesPage() {
 			</div>
 
 			<Card className="relative z-10 w-full max-w-3xl border-2 shadow-2xl">
-				{showWelcome ? (
-					<>
-						<CardHeader className="space-y-2 pb-2 text-center">
-							<div className="relative mb-4 flex justify-center">
-								<div className="absolute inset-0 animate-pulse rounded-3xl bg-primary/20 blur-xl"></div>
-								<div className="relative flex h-20 w-20 transform items-center justify-center rounded-3xl bg-linear-to-br from-primary to-primary/70 shadow-2xl transition-transform duration-300 hover:scale-110">
-									<ChefHat className="h-12 w-12 animate-bounce-subtle text-primary-foreground" />
-								</div>
-							</div>
-							<div className="space-y-1">
-								<CardTitle className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text font-bold text-4xl text-transparent">
-									Welcome to {APP.name}!
-								</CardTitle>
-								<CardDescription className="flex items-center justify-center gap-2 text-lg">
-									<Sparkles className="h-4 w-4 text-primary" />
-									Let's personalize your cooking experience
-									<Sparkles className="h-4 w-4 text-primary" />
-								</CardDescription>
-							</div>
-						</CardHeader>
-						<CardContent className="space-y-6 pb-8">
-							<div className="fade-in slide-in-from-bottom-8 animate-in space-y-6 duration-700">
-								<div className="space-y-4 py-4 text-center">
-									<div className="space-y-3">
-										<p className="mx-auto max-w-xl text-lg text-muted-foreground leading-relaxed">
-											We'll help you discover amazing recipes tailored to your
-											tastes, dietary needs, and cooking style. This will only
-											take a minute!
-										</p>
-									</div>
-									<div className="grid grid-cols-3 gap-6 pt-8">
-										{QUICK_FEATURES.map((feature) => (
-											<div
-												key={feature.title}
-												className="flex flex-col items-center gap-3 rounded-2xl border-2 border-primary/20 bg-linear-to-br from-primary/10 to-primary/5 p-6 shadow-lg transition-transform duration-300 hover:scale-105"
-											>
-												<div className="animate-bounce-subtle text-5xl">
-													{feature.icon}
-												</div>
-												<p className="text-center font-semibold text-sm">
-													{feature.title}
-												</p>
-												<p className="text-center text-muted-foreground text-xs">
-													{feature.description}
-												</p>
-											</div>
-										))}
-									</div>
-								</div>
-								<div className="flex justify-end border-t-2 pt-6">
-									<Button
-										type="button"
-										onClick={() => setShowWelcome(false)}
-										size="lg"
-										className="gap-2 shadow-lg"
-									>
-										Get Started
-										<ArrowRight className="h-4 w-4" />
-									</Button>
-								</div>
-							</div>
-						</CardContent>
-					</>
-				) : (
-					<CardContent>
-						<PreferencesForm
-							onSubmit={onSubmit}
-							defaultValues={userPreferences}
-						/>
-					</CardContent>
-				)}
+				<CardContent>
+					<PreferencesForm
+						onSubmit={onSubmit}
+						defaultValues={userPreferences}
+					/>
+				</CardContent>
 			</Card>
 		</div>
 	);
