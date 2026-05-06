@@ -80,7 +80,7 @@ export const fullByIngredient = householdQuery({
 			isSoftDeleted(ingredient) ||
 			!ctx.isHousehold(ingredient)
 		) {
-			throw notFound({ entity: "Ingredient", in: "Household" });
+			return [];
 		}
 
 		const recipeIngredients = await ctx.db

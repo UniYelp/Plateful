@@ -25,4 +25,21 @@ export const RedisLocks = {
 			},
 		},
 	},
+	receipts: {
+		parse: {
+			household: {
+				lock: (redis: Redis, householdId: string) =>
+					new Lock({
+						redis,
+						id: RedisKeys.receipts.parse.household.lock(householdId),
+						lease: 5 * MINUTE,
+					}),
+				rph: (redis: Redis) =>
+					new Ratelimit({
+						redis,
+						limiter: Ratelimit.slidingWindow(5, "1d"),
+					}),
+			},
+		},
+	},
 } satisfies DeepDict<LockFactory>;

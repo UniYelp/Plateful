@@ -16,7 +16,8 @@ import { ingredientFields, ingredientQuantityFields, vv } from "./schema";
 import { isSoftDeleted } from "./utils/soft_delete";
 
 /** Round to 10 decimal places to eliminate binary floating point drift. */
-const round = (n: number) => Math.round(n * 1e10) / 1e10;
+const ROUND_PRECISION = 1e10;
+const round = (n: number) => Math.round(n * ROUND_PRECISION) / ROUND_PRECISION;
 
 // #region Validators
 
@@ -228,6 +229,72 @@ export const deleteIngredient = householdMutation({
 	},
 });
 
+export const upsertIngredients = householdMutation({
+	args: {
+		ingredients: vv.array(
+			vv.object({
+				name: vv.string(),
+				quantities: vv.array(
+					vv.object({
+						amount: vv.number(),
+						unit: vv.optional(vv.string()),
+						expiresAt: vv.optional(vv.number()),
+					}),
+				),
+				description: vv.optional(vv.string()),
+				category: vv.optional(vv.string()),
+				notes: vv.optional(vv.string()),
+			}),
+		),
+	},
+	handler: async (ctx, args) => {
+		const { _id: userId } = ctx.user;
+		const { householdId, ingredients } = args;
+		const now = Date.now();
+
+		for (const ing of ingredients) {
+			const existing = await getHouseholdIngredients(
+				ctx,
+				householdId,
+				ing.name,
+			).unique();
+
+			if (existing) {
+				await ctx.db.patch("ingredients", existing._id, {
+					quantities: [
+						...existing.quantities,
+						...ing.quantities.map((q) => ({
+							amount: q.amount,
+							unit: q.unit || undefined,
+							expiresAt: q.expiresAt,
+						})),
+					],
+					updatedBy: userId,
+					updatedAt: now,
+				});
+			} else {
+				await ctx.db.insert("ingredients", {
+					householdId,
+					name: ing.name,
+					description: ing.description,
+					category: ing.category || "Uncategorized",
+					tags: [],
+					notes: ing.notes,
+					quantities: ing.quantities.map((q) => ({
+						amount: q.amount,
+						unit: q.unit || undefined,
+						expiresAt: q.expiresAt,
+					})),
+					images: [],
+					createdBy: userId,
+					updatedBy: userId,
+					updatedAt: now,
+				});
+			}
+		}
+	},
+});
+
 // #endregion
 
 export const addQuantity = householdMutation({
@@ -253,7 +320,11 @@ export const addQuantity = householdMutation({
 		await ctx.db.patch("ingredients", args.ingredientId, {
 			quantities: [
 				...ingredient.quantities,
-				{ amount: args.amount, unit: args.unit, expiresAt: args.expiresAt },
+				{
+					amount: args.amount,
+					unit: args.unit,
+					expiresAt: args.expiresAt,
+				},
 			],
 			updatedBy: userId,
 			updatedAt: now,
