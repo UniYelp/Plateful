@@ -42,6 +42,8 @@ export function MobileNav() {
 
 	const navItems = useAggregatedMatch((data) => data.navbar?.items);
 
+	if (!navItems.length) return null;
+
 	return (
 		<nav className="flex md:hidden">
 			<Sheet open={isOpen} onOpenChange={setIsOpen}>
