@@ -53,7 +53,7 @@ export const receipts = new Elysia({
 			log,
 		}) => {
 			log.set({ event: { started: true, keepOriginalLanguage } });
-			
+
 			const redis = getRedis();
 
 			log.set({ household: { id: householdId } });
@@ -71,7 +71,7 @@ export const receipts = new Elysia({
 					log.set({ event: { lock: { failed: true } } });
 					throw new LockedError("You may only parse one receipt at a time");
 				}
-				
+
 				log.set({ event: { lock: { acquired: true } } });
 
 				const rphLock = RedisLocks.receipts.parse.household.rph(redis);
@@ -107,12 +107,14 @@ export const receipts = new Elysia({
 					keepOriginalLanguage === true ||
 						String(keepOriginalLanguage) === "true",
 				);
-				
-				log.set({ event: { done: true } });
+
+				log.set({ event: { done: true, result } });
 				return result;
 			} catch (error) {
 				log.set({
-					event: { error: error instanceof Error ? error.message : String(error) },
+					event: {
+						error: error instanceof Error ? error.message : String(error),
+					},
 				});
 				throw error;
 			} finally {
