@@ -56,6 +56,7 @@ import { apiClient } from "@/configs/api.config";
 import { ingredientsCategoriesOptions } from "@/features/ingredients/constants";
 import { useAppForm } from "@/lib/form";
 import type { SelectGroup, SelectOption } from "@/types/ui/select";
+import { usePostHog } from "@posthog/react";
 
 const ScannedIngredientSchema = z.object({
 	name: z.string().min(1, "Name is required"),
@@ -114,6 +115,7 @@ export function ReceiptScanner({
 	const upsertIngredients = useConvexMutation(
 		api.ingredients.upsertIngredients,
 	);
+	const posthog = usePostHog();
 	const [open, setOpen] = useState(false);
 	const [nonEdibleItems, setNonEdibleItems] = useState<
 		(Pick<ExtractedIngredient, "name" | "description"> & {
@@ -144,6 +146,10 @@ export function ReceiptScanner({
 			file: File;
 			keepOriginalLanguage: boolean;
 		}) => {
+			posthog?.capture("receipt_scan_upload", {
+				keepOriginalLanguage
+			});
+
 			const { data, error } = await apiClient.receipts.parse.post(
 				{ image: file },
 				{ query: { householdId, keepOriginalLanguage } },
@@ -214,6 +220,12 @@ export function ReceiptScanner({
 		onSubmitInvalid: focusInvalid,
 		onSubmit: async ({ value }) => {
 			if (value.ingredients.length === 0) return;
+
+			posthog?.capture("receipt_scan_submit", {
+				hasIngredients: value.ingredients.length > 0,
+				hasNonEdible: nonEdibleItems.length > 0,
+				keepOriginalLanguage,
+			});
 
 			try {
 				const ingredientsToSubmit = value.ingredients.map((ing) => ({

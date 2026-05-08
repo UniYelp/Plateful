@@ -1,6 +1,7 @@
 import { useMutation } from "convex/react";
 import { CheckCircle2, Package, Play, XCircle } from "lucide-react";
 import { useState } from "react";
+import { usePostHog } from "posthog-js/react";
 
 import { api } from "@backend/api";
 import type { Doc, Id } from "@backend/dataModel";
@@ -39,6 +40,7 @@ export function CookNowDialog({
 	ingredients,
 	children,
 }: CookNowDialogProps) {
+	const posthog = usePostHog();
 	const consumeForRecipe = useMutation(api.ingredients.consumeForRecipe);
 	const [open, setOpen] = useState(false);
 	const [step, setStep] = useState<CookStep>("confirm");
@@ -60,6 +62,7 @@ export function CookNowDialog({
 
 	const handleCook = async () => {
 		try {
+			posthog?.capture("recipe_cook", { portions, ingredientsCount: ingredients.length });
 			const result = await consumeForRecipe({
 				householdId,
 				ingredients: ingredients.map((ing) => ({

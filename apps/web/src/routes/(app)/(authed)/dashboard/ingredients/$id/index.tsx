@@ -10,6 +10,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import { usePostHog } from "posthog-js/react";
 import type { z } from "zod";
 
 import {
@@ -69,6 +70,7 @@ function RouteComponent() {
 
 export function IngredientDetailPage() {
 	const navigate = Route.useNavigate();
+	const posthog = usePostHog();
 
 	const household = useCurrentHousehold();
 
@@ -109,6 +111,7 @@ export function IngredientDetailPage() {
 		onSubmitInvalid: focusInvalid,
 		onSubmit: async ({ value }) => {
 			if (!household || !ingredient) return;
+			posthog?.capture("ingredient_quantity_add", { ingredientId: ingredient._id });
 			await addQuantity({
 				householdId: household._id,
 				ingredientId: ingredient._id,
@@ -128,6 +131,7 @@ export function IngredientDetailPage() {
 	const totalAmount = getTotalAmount(ingredient.quantities);
 
 	const handleRemoveQuantity = async (index: number) => {
+		posthog?.capture("ingredient_quantity_remove", { ingredientId: ingredient._id });
 		await removeQuantityAt({
 			householdId: household._id,
 			ingredientId: ingredient._id,
@@ -136,6 +140,7 @@ export function IngredientDetailPage() {
 	};
 
 	const handleMergeQuantities = async () => {
+		posthog?.capture("ingredient_quantity_merge", { ingredientId: ingredient._id });
 		await mergeQuantities({
 			ingredientId: ingredient._id,
 			householdId: household._id,

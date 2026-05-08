@@ -68,7 +68,7 @@ function EditIngredientPage() {
 			images: [],
 		});
 
-		posthog.capture("ingredient_update", {
+		posthog?.capture("ingredient_update", {
 			id: ingredientId,
 			name: value.name,
 			...(ingredient?.name !== value.name && { oldName: ingredient?.name }),

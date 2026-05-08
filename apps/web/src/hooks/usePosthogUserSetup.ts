@@ -9,13 +9,13 @@ export const usePosthogUserSetup = () => {
 
 	useEffect(() => {
 		if (user && posthog) {
-			posthog.identify(user.id, {
+			posthog?.identify(user.id, {
 				email: user.primaryEmailAddress?.emailAddress,
 				username: user.username,
 			});
 
 			// if (organization) {
-			// 	posthog.group("organization", organization.id);
+			// 	posthog?.group("organization", organization.id);
 			// }
 		}
 	}, [posthog, user]);

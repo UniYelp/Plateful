@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, History, RotateCcw } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
 
 import { api } from "@backend/api";
 import { append } from "&/aggregation";
@@ -51,6 +52,7 @@ function RouteComponent() {
 }
 
 function RecipeGenerationPage() {
+	const posthog = usePostHog();
 	const { household, genId } = Route.useLoaderData();
 
 	const { data: recipeGen } = useSuspenseQuery(
@@ -71,6 +73,7 @@ function RecipeGenerationPage() {
 	const retryGen = useMutation(api.recipeGens.retry);
 
 	const handleRetry = async () => {
+		posthog?.capture("recipe_gen_retry", { genId: recipeGen._id });
 		await retryGen({ genId: recipeGen._id, householdId: household._id });
 	};
 
