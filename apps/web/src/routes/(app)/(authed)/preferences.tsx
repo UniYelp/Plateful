@@ -59,10 +59,10 @@ export function PreferencesPage() {
 		await upsertUserPreferences(value);
 
 		if (isOnboarding) {
-			posthog.capture("onboarding:preferences_create");
-			posthog.capture("onboarding_complete");
+			posthog?.capture("onboarding:preferences_create");
+			posthog?.capture("onboarding_complete");
 		} else {
-			posthog.capture("preferences_update", {
+			posthog?.capture("preferences_update", {
 				source: "web_page",
 			});
 		}

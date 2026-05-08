@@ -53,7 +53,7 @@ function AddIngredientPage() {
 			images: [],
 		});
 
-		posthog.capture("ingredient_create", {
+		posthog?.capture("ingredient_create", {
 			id: ingredientId,
 			name: value.name,
 		});

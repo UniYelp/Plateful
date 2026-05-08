@@ -18,6 +18,7 @@ import {
 	RecipeGenStatusSmall,
 	stageStatusDetails,
 } from "./loaders/recipe-gen-status";
+import { usePostHog } from "@posthog/react";
 
 type Props = {
 	gen: RecipeGenDoc;
@@ -28,6 +29,7 @@ const now = Date.now();
 
 export const RecipeGenState = (props: Props) => {
 	const { gen, title } = props;
+	const posthog = usePostHog();
 
 	const retryGen = useMutation(api.recipeGens.retry);
 
@@ -42,6 +44,12 @@ export const RecipeGenState = (props: Props) => {
 	const isOutdated = gen._creationTime < now - DAY;
 
 	const handleRetry = async () => {
+		posthog?.capture("recipe_gen_retry", {
+			genId: gen._id,
+			hasQuota: !isQuotaReached,
+			isOutdated,
+		});
+
 		try {
 			await retryGen({ genId: gen._id, householdId: gen.householdId });
 		} catch (error) {

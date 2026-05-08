@@ -25,4 +25,18 @@ export const RedisKeys = {
 			},
 		},
 	},
+	receipts: {
+		parse: {
+			household: {
+				lock: redisKey(
+					(householdId: string) =>
+						`receipts:parse:household:${householdId}:lock` as const,
+				),
+				rph: redisKey(
+					(householdId: string) =>
+						`receipts:parse:household:${householdId}:rph` as const,
+				),
+			},
+		},
+	},
 } satisfies DeepDict<RedisKeyLike>;

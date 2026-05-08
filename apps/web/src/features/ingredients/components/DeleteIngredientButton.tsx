@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { BookOpen, Trash2 } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
@@ -35,6 +36,7 @@ export function DeleteIngredientButton({
 	variant = "icon",
 	onDeleted,
 }: DeleteIngredientButtonProps) {
+	const posthog = usePostHog();
 	const deleteIngredient = useMutation(api.ingredients.deleteIngredient);
 	const recipes = useQuery(api.recipeIngredients.fullByIngredient, {
 		householdId,
@@ -44,6 +46,7 @@ export function DeleteIngredientButton({
 	const isLinked = recipes && recipes.length > 0;
 
 	const handleDelete = async () => {
+		posthog?.capture("ingredient_delete", { ingredientId });
 		await deleteIngredient({ ingredientId, householdId });
 		if (onDeleted) onDeleted();
 	};

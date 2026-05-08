@@ -17,6 +17,7 @@ import { health } from "./modules/health";
 import { recipes } from "./modules/recipes";
 import { logger } from "./plugins/logger.plugin";
 import { requestId } from "./plugins/request-id.plugin";
+import { receipts } from "./modules/receipts";
 
 initLogger({
 	env: {
@@ -58,6 +59,7 @@ export const app = new Elysia({ adapter: node() })
 	.get("/", () => `Welcome to ${appConfig.name}`)
 	.use(health)
 	.use(recipes)
+	.use(receipts)
 	.use(devOnly);
 
 export type App = typeof app;

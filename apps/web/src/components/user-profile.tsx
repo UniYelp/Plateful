@@ -21,7 +21,7 @@ const UserPreferencesPage = () => {
 	const onSubmit = async (value: PreferencesFormOutput) => {
 		await upsertUserPreferences(value);
 
-		posthog.capture("preferences_update", {
+		posthog?.capture("preferences_update", {
 			source: "clerk_user_profile",
 		});
 	};

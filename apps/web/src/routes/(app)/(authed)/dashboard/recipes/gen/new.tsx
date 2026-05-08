@@ -118,7 +118,7 @@ function GenerateNewRecipePage() {
 			ingredients,
 		});
 
-		posthog.capture("recipe_generate", {
+		posthog?.capture("recipe_generate", {
 			id: genId,
 			ingredients: ingredients.map((ing) => ing.name).join(","),
 			tools: value.tools?.length ? value.tools.join(",") : "unlimited",

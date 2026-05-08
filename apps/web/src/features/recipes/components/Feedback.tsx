@@ -5,6 +5,7 @@ import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAppForm } from "@/lib/form";
+import { usePostHog } from "@posthog/react";
 
 interface FeedbackProps {
 	householdId: Id<"households">;
@@ -12,6 +13,7 @@ interface FeedbackProps {
 }
 
 export const Feedback = ({ householdId, recipeId }: FeedbackProps) => {
+	const posthog = usePostHog();
 	const existingFeedback = useQuery(api.recipeFeedbacks.getByRecipeAndUser, {
 		householdId,
 		recipeId,
@@ -23,6 +25,10 @@ export const Feedback = ({ householdId, recipeId }: FeedbackProps) => {
 		defaultValues: { value: "" as "positive" | "negative" | "" },
 		onSubmit: async ({ value }) => {
 			if (!value.value) return;
+			posthog?.capture("recipe_feedback", {
+				recipeId,
+				value: value.value,
+			});
 			await submitFeedback({
 				householdId,
 				recipeId,

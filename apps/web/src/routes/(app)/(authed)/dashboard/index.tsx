@@ -74,7 +74,7 @@ function DashboardPage() {
 			{/* Welcome Section */}
 			<div className="mb-8">
 				<h1 className="mb-2 font-bold text-3xl">
-					Welcome back, {user.firstName || "Chef"}!
+					Hello, {user.firstName || "Chef"}!
 				</h1>
 				<p className="text-muted-foreground">
 					Here's what's happening in your kitchen today.
@@ -91,7 +91,7 @@ function DashboardPage() {
 							</div>
 							<div>
 								<p className="font-bold text-2xl">
-									{ingredientsCount || "..."}
+									{ingredientsCount ?? "..."}
 								</p>
 								<p className="text-muted-foreground text-sm">Ingredients</p>
 							</div>
@@ -106,7 +106,7 @@ function DashboardPage() {
 								<BookOpen className="h-5 w-5 text-primary" />
 							</div>
 							<div>
-								<p className="font-bold text-2xl">{recipesCount || "..."}</p>
+								<p className="font-bold text-2xl">{recipesCount ?? "..."}</p>
 								<p className="text-muted-foreground text-sm">Recipes</p>
 							</div>
 						</div>
@@ -121,7 +121,7 @@ function DashboardPage() {
 							</div>
 							<div>
 								<p className="font-bold text-2xl text-destructive">
-									{expiringSoonIngredients?.length}
+									{expiringSoonIngredients?.length ?? "..."}
 								</p>
 								<p className="text-muted-foreground text-sm">Expiring Soon</p>
 							</div>

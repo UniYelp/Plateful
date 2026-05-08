@@ -36,7 +36,7 @@ function Welcome() {
 	const posthog = usePostHog();
 
 	const onGetStarted = () => {
-		posthog.capture("onboarding_start");
+		posthog?.capture("onboarding_start");
 	};
 
 	return (

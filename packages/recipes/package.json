@@ -32,10 +32,8 @@
     },
     "dependencies": {
         "@plateful/ingredients": "workspace:*",
-        "@plateful/units": "workspace:*",
         "@plateful/utils": "workspace:*",
-        "effect": "catalog:",
-        "zod": "catalog:"
+        "effect": "catalog:"
     },
     "devDependencies": {
         "@plateful/types": "workspace:*"
