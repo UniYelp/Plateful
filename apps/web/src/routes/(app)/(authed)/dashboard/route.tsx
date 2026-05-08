@@ -5,6 +5,7 @@ import { api } from "@backend/api";
 import { append } from "&/aggregation";
 import type { NavItem } from "@/components/layouts/Navbar";
 import { seo } from "@/utils/seo";
+import { useRecipeGenNotifications } from "&/recipes/hooks/useRecipeGenNotifications";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 	staticData: {
@@ -51,6 +52,8 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 });
 
 function RouteComponent() {
+	useRecipeGenNotifications();
+
 	return (
 		<div className="container mx-auto max-w-7xl px-4 py-8">
 			<Outlet />

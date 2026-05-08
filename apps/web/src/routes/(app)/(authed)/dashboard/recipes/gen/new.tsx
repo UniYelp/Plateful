@@ -19,6 +19,7 @@ import type { IngredientDetails } from "&/recipes/form/types";
 import type { NavItem } from "@/components/layouts/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { requestNotificationPermission } from "@/utils/notifications";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/recipes/gen/new",
@@ -111,12 +112,15 @@ function GenerateNewRecipePage() {
 			} as const;
 		});
 
-		const genId = await startGeneratingRecipe({
-			householdId: household._id,
-			tags: value.tags,
-			tools: value.tools || [],
-			ingredients,
-		});
+		const [genId] = await Promise.all([
+			startGeneratingRecipe({
+				householdId: household._id,
+				tags: value.tags,
+				tools: value.tools || [],
+				ingredients,
+			}),
+			requestNotificationPermission(),
+		]);
 
 		posthog?.capture("recipe_generate", {
 			id: genId,
