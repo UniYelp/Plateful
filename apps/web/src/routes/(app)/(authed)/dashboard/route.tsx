@@ -11,6 +11,10 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 		navbar: {
 			items: append<NavItem>([
 				{
+					label: "Dashboard",
+					to: "/dashboard",
+				},
+				{
 					label: "Ingredients",
 					to: "/dashboard/ingredients",
 				},
