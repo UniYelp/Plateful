@@ -74,7 +74,7 @@ function DashboardPage() {
 			{/* Welcome Section */}
 			<div className="mb-8">
 				<h1 className="mb-2 font-bold text-3xl">
-					Welcome back, {user.firstName || "Chef"}!
+					Hello, {user.firstName || "Chef"}!
 				</h1>
 				<p className="text-muted-foreground">
 					Here's what's happening in your kitchen today.
