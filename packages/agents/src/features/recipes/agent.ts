@@ -1,7 +1,7 @@
 import { type GoogleLanguageModelOptions, google } from "@ai-sdk/google";
 import { type DeepPartial, Output, stepCountIs, ToolLoopAgent } from "ai";
 
-import { safetySettings } from "./constants";
+// import { safetySettings } from "./constants";
 import { type RecipeGenOutput, RecipeGenOutputSchema } from "./schemas";
 
 /**
@@ -22,7 +22,7 @@ export const recipeAgent: ToolLoopAgent<
 	// },
 	providerOptions: {
 		google: {
-			safetySettings,
+			// safetySettings,
 		} satisfies GoogleLanguageModelOptions,
 	},
 	stopWhen: stepCountIs(20),
