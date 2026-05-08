@@ -224,14 +224,10 @@ export const recipes = new Elysia({
 					error = new Error(JSON.stringify(err));
 				}
 
-				const isDev = ENV.NODE_ENV === "development";
-
 				yield sse({
 					event: "failed",
 					data: {
-						error: isDev
-							? `[DEV] agent error: ${error.message}\n${error.stack}`
-							: "Failed to generate recipe.",
+						error: error.message,
 					},
 				});
 			} finally {
