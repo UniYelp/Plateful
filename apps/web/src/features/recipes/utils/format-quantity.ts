@@ -4,7 +4,8 @@ export const formatQuantity = (quantity: {
 	unit?: string | undefined;
 	amount: number;
 }) => {
-	const userLocale = undefined;
+	// TODO: change to undefined for the user's locale
+	const userLocale = "en-US";
 
 	const { amount, unit } = quantity;
 
