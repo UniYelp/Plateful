@@ -59,6 +59,7 @@ export const GenerateRecipeForm = (props: Props) => {
 
 	const [search, setSearch] = useState("");
 	const [category, setCategory] = useState<string | null>(null);
+	const [hideOutOfStock, setHideOutOfStock] = useState(false);
 	const [customToolInput, setCustomToolInput] = useState("");
 
 	const categories = useMemo(() => {
@@ -81,13 +82,25 @@ export const GenerateRecipeForm = (props: Props) => {
 				.toLowerCase()
 				.includes(search.toLowerCase());
 			const matchesCategory = !category || ing.category === category;
-			return matchesSearch && matchesCategory;
+			const matchesStock =
+				!hideOutOfStock || ing.availableQuantities.length > 0;
+			return matchesSearch && matchesCategory && matchesStock;
 		});
-	}, [ingredients, search, category]);
+	}, [ingredients, search, category, hideOutOfStock]);
+
+	// For select-all: respects the "hide out of stock" toggle, but ignores search/category filters
+	const selectableIngredients = useMemo(
+		() =>
+			hideOutOfStock
+				? ingredients.filter((ing) => ing.availableQuantities.length > 0)
+				: ingredients,
+		[ingredients, hideOutOfStock],
+	);
 
 	const resetFilters = () => {
 		setSearch("");
 		setCategory(null);
+		setHideOutOfStock(false);
 	};
 
 	return (
@@ -161,24 +174,29 @@ export const GenerateRecipeForm = (props: Props) => {
 										<Checkbox
 											id={ingredientsCheckboxId}
 											checked={
-												ingredients.length > 0 &&
-												ingredients.every((ing) =>
+												selectableIngredients.length > 0 &&
+												selectableIngredients.every((ing) =>
 													field.state.value.includes(ing.id),
 												)
 											}
-											disabled={isSubmitting || ingredients.length === 0}
+											disabled={
+												isSubmitting || selectableIngredients.length === 0
+											}
 											onCheckedChange={(checked) => {
-												const allIds = ingredients.map((i) => i.id);
+												const selectableIds = selectableIngredients.map(
+													(i) => i.id,
+												);
 												if (checked) {
 													field.handleChange(
 														Array.from(
-															new Set([...field.state.value, ...allIds]),
+															new Set([...field.state.value, ...selectableIds]),
 														),
 													);
 												} else {
 													field.handleChange(
 														field.state.value.filter(
-															(v) => !allIds.includes(v as Id<"ingredients">),
+															(v) =>
+																!selectableIds.includes(v as Id<"ingredients">),
 														),
 													);
 												}
@@ -228,10 +246,7 @@ export const GenerateRecipeForm = (props: Props) => {
 										<div className="flex flex-col gap-2">
 											<div className="flex items-baseline justify-between">
 												<p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
-													Filter by category
-												</p>
-												<p className="text-[10px] text-muted-foreground/60 italic">
-													Filters affect view only — the checkbox selects all
+													Filter
 												</p>
 											</div>
 											<ToggleGroup
@@ -258,6 +273,37 @@ export const GenerateRecipeForm = (props: Props) => {
 													</ToggleGroupItem>
 												))}
 											</ToggleGroup>
+											<button
+												type="button"
+												disabled={isSubmitting}
+												onClick={() => {
+													const next = !hideOutOfStock;
+													setHideOutOfStock(next);
+													if (next) {
+														// Deselect any selected out-of-stock ingredients
+														const outOfStockIds = new Set(
+															ingredients
+																.filter((ing) => ing.availableQuantities.length === 0)
+																.map((ing) => ing.id),
+														);
+														field.handleChange(
+															field.state.value.filter(
+																(v) => !outOfStockIds.has(v as typeof ingredients[number]["id"]),
+															),
+														);
+													}
+												}}
+												className={`flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 font-medium text-xs transition-colors ${
+													hideOutOfStock
+														? "border-primary bg-primary/10 text-primary"
+														: "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
+												}`}
+											>
+												<span
+													className={`inline-block h-2 w-2 rounded-full transition-colors ${hideOutOfStock ? "bg-primary" : "bg-muted-foreground/40"}`}
+												/>
+												Exclude out of stock
+											</button>
 										</div>
 									</div>
 
