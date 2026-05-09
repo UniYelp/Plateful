@@ -283,12 +283,17 @@ export const GenerateRecipeForm = (props: Props) => {
 														// Deselect any selected out-of-stock ingredients
 														const outOfStockIds = new Set(
 															ingredients
-																.filter((ing) => ing.availableQuantities.length === 0)
+																.filter(
+																	(ing) => ing.availableQuantities.length === 0,
+																)
 																.map((ing) => ing.id),
 														);
 														field.handleChange(
 															field.state.value.filter(
-																(v) => !outOfStockIds.has(v as typeof ingredients[number]["id"]),
+																(v) =>
+																	!outOfStockIds.has(
+																		v as (typeof ingredients)[number]["id"],
+																	),
 															),
 														);
 													}
@@ -343,7 +348,9 @@ export const GenerateRecipeForm = (props: Props) => {
 																	</span>
 																</>
 															) : (
-																"Unlimited"
+																<span className="font-mono font-semibold text-rose-300">
+																	Out of Stock
+																</span>
 															)}
 														</p>
 													</div>
