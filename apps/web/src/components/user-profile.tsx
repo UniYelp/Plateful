@@ -1,4 +1,4 @@
-import { UserButton } from "@clerk/clerk-react";
+import { UserButton, useClerk } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { usePostHog } from "@posthog/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ import type { PreferencesFormOutput } from "&/preferences/form/schema";
 const UserPreferencesPage = () => {
 	const posthog = usePostHog();
 	const upsertUserPreferences = useMutation(api.userPreferences.upsert);
+	const { closeUserProfile } = useClerk();
 
 	const { data: userPreferences } = useSuspenseQuery(
 		convexQuery(api.userPreferences.byActiveUser),
@@ -24,6 +25,8 @@ const UserPreferencesPage = () => {
 		posthog?.capture("preferences_update", {
 			source: "clerk_user_profile",
 		});
+
+		closeUserProfile();
 	};
 
 	return (

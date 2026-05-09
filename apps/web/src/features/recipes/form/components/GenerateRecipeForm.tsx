@@ -89,7 +89,7 @@ export const GenerateRecipeForm = (props: Props) => {
 				<div className="flex flex-col gap-8">
 					<form.AppField name="tags">
 						{(field) => (
-							<Card>
+							<Card aria-invalid={isInvalidTouched(field)}>
 								<CardHeader>
 									<CardTitle>Quick Tags</CardTitle>
 									<CardDescription>
@@ -102,7 +102,6 @@ export const GenerateRecipeForm = (props: Props) => {
 										variant="outline"
 										disabled={isSubmitting}
 										onValueChange={field.handleChange}
-										aria-invalid={isInvalidTouched(field)}
 										className="flex flex-wrap gap-2.5"
 									>
 										{quickTags.map((tag) => (
@@ -122,7 +121,7 @@ export const GenerateRecipeForm = (props: Props) => {
 					</form.AppField>
 					<form.AppField name="ingredients">
 						{(field) => (
-							<Card>
+							<Card aria-invalid={isInvalidTouched(field)}>
 								<CardHeader>
 									<CardTitle
 										className={`${isInvalidTouched(field) ? "text-red-500" : ""}`}
@@ -194,7 +193,6 @@ export const GenerateRecipeForm = (props: Props) => {
 										variant="outline"
 										disabled={isSubmitting}
 										onValueChange={field.handleChange}
-										aria-invalid={isInvalidTouched(field)}
 										className="flex flex-wrap gap-2.5"
 									>
 										{filteredIngredients.length > 0 ? (
@@ -270,7 +268,7 @@ export const GenerateRecipeForm = (props: Props) => {
 					</form.AppField>
 					<form.AppField name="tools">
 						{(field) => (
-							<Card>
+							<Card aria-invalid={isInvalidTouched(field)}>
 								<CardHeader>
 									<CardTitle>Available Tools</CardTitle>
 									<CardDescription className="flex flex-col">
@@ -289,7 +287,6 @@ export const GenerateRecipeForm = (props: Props) => {
 											value={field.state.value}
 											disabled={isSubmitting}
 											onValueChange={field.handleChange}
-											aria-invalid={isInvalidTouched(field)}
 											className="flex flex-wrap justify-start gap-2.5"
 										>
 											{commonAppliances.map((tool) => (

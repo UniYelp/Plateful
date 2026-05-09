@@ -378,7 +378,7 @@ export function IngredientForm({
 				</div>
 
 				{/* Submit Buttons */}
-				<div className="flex justify-end gap-3 pt-4">
+				<div className="sticky bottom-0 z-10 flex justify-start gap-3 py-4">
 					<form.SubmitButton>{submitAction} Ingredient</form.SubmitButton>
 					<Button type="button" variant="outline" asChild>
 						<Link to="/dashboard/ingredients">Cancel</Link>

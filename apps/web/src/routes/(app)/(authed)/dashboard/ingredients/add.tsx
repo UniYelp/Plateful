@@ -59,8 +59,7 @@ function AddIngredientPage() {
 		});
 
 		navigate({
-			to: "/dashboard/ingredients/$id",
-			params: { id: ingredientId },
+			to: "/dashboard/ingredients",
 		});
 	};
 

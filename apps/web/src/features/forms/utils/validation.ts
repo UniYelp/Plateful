@@ -10,5 +10,10 @@ export const focusInvalid = () => {
 		);
 
 		invalidInput?.focus();
+
+		invalidInput?.scrollIntoView({
+			behavior: "smooth",
+			block: "center",
+		});
 	});
 };

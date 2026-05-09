@@ -2,6 +2,7 @@ import { Link, type LinkComponentProps } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 
+import { useIsRouteActive } from "&/router/hooks/is-route-active";
 import { useAggregatedMatch } from "&/router/hooks/use-aggregated-matches";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,26 +13,38 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { cn } from "@/utils/ui";
 
 export type NavItem = LinkComponentProps & {
 	icon?: React.JSX.Element;
 	label: string;
 };
 
+function NavbarItem({ icon, label, ...props }: NavItem) {
+	const isActive = useIsRouteActive(props);
+
+	return (
+		<Link
+			{...props}
+			className={cn(
+				"flex items-center text-muted-foreground transition-colors hover:text-foreground",
+				isActive && "font-medium text-foreground",
+				props.className,
+			)}
+		>
+			{icon}
+			{label}
+		</Link>
+	);
+}
+
 export function DesktopNav() {
 	const navItems = useAggregatedMatch((data) => data.navbar?.items);
 
 	return (
 		<nav className="hidden items-center gap-6 md:flex">
-			{navItems.map(({ icon, label, ...linkProps }) => (
-				<Link
-					{...linkProps}
-					key={label}
-					className="flex items-center text-muted-foreground transition-colors hover:text-foreground"
-				>
-					{icon}
-					{label}
-				</Link>
+			{navItems.map((linkProps) => (
+				<NavbarItem {...linkProps} key={linkProps.label} />
 			))}
 		</nav>
 	);
@@ -63,16 +76,12 @@ export function MobileNav() {
 						</SheetDescription>
 					</SheetHeader>
 					<div className="mt-8 flex flex-col gap-4">
-						{navItems.map(({ icon, label, ...linkProps }) => (
-							<Link
+						{navItems.map((linkProps) => (
+							<NavbarItem
 								{...linkProps}
-								key={label}
+								key={linkProps.label}
 								onClick={() => setIsOpen(false)}
-								className="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-							>
-								{icon}
-								{label}
-							</Link>
+							/>
 						))}
 					</div>
 				</SheetContent>
