@@ -15,6 +15,7 @@ import "@/styles/globals.css";
 import type { useAuth } from "@clerk/clerk-react";
 
 import { getRouteErrorHandler } from "&/router/utils/handle-route-error";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 import globalsCss from "@/styles/globals.css?url";
 
@@ -72,11 +73,11 @@ function RootComponent() {
 	usePosthogUserSetup();
 
 	return (
-		<>
+		<TooltipProvider>
 			<HeadContent />
 			<Outlet />
 			<Toaster richColors position="bottom-right" />
 			<Scripts />
-		</>
+		</TooltipProvider>
 	);
 }

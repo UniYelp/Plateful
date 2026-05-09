@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMutation as useConvexMutation } from "convex/react";
@@ -49,14 +50,12 @@ import {
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { apiClient } from "@/configs/api.config";
 import { ingredientsCategoriesOptions } from "@/features/ingredients/constants";
 import { useAppForm } from "@/lib/form";
 import type { SelectGroup, SelectOption } from "@/types/ui/select";
-import { usePostHog } from "@posthog/react";
 
 const ScannedIngredientSchema = z.object({
 	name: z.string().min(1, "Name is required"),
@@ -147,7 +146,7 @@ export function ReceiptScanner({
 			keepOriginalLanguage: boolean;
 		}) => {
 			posthog?.capture("receipt_scan_upload", {
-				keepOriginalLanguage
+				keepOriginalLanguage,
 			});
 
 			const { data, error } = await apiClient.receipts.parse.post(
@@ -277,39 +276,37 @@ export function ReceiptScanner({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<div className="inline-block">
-					<TooltipProvider>
-						<Tooltip delayDuration={0}>
-							<TooltipTrigger asChild>
-								<Button
-									variant="outline"
-									disabled={isQuotaReached}
-									className="group relative gap-2 rounded-full px-5 shadow-sm transition-all hover:shadow-md disabled:opacity-50"
-								>
-									<Camera className="h-4 w-4" />
-									Scan Receipt
-									{isQuotaReached && (
-										<span className="-top-2 absolute right-[-5px] rounded-full bg-destructive px-2 py-0.5 font-bold text-[8px] text-destructive-foreground uppercase tracking-wider shadow-sm">
-											Quota Reached
-										</span>
+					<Tooltip delayDuration={0}>
+						<TooltipTrigger asChild>
+							<Button
+								variant="outline"
+								disabled={isQuotaReached}
+								className="group relative gap-2 rounded-full px-5 shadow-sm transition-all hover:shadow-md disabled:opacity-50"
+							>
+								<Camera className="h-4 w-4" />
+								Scan Receipt
+								{isQuotaReached && (
+									<span className="-top-2 absolute right-[-5px] rounded-full bg-destructive px-2 py-0.5 font-bold text-[8px] text-destructive-foreground uppercase tracking-wider shadow-sm">
+										Quota Reached
+									</span>
+								)}
+							</Button>
+						</TooltipTrigger>
+						{isQuotaReached && (
+							<TooltipContent side="top" className="max-w-xs text-center">
+								<p className="font-semibold">Daily limit reached</p>
+								<p className="text-xs opacity-80">
+									You have used all {limits.today.max} free scans for today.
+									{limits.reset && (
+										<>
+											<br />
+											Resets at: {new Date(limits.reset).toLocaleTimeString()}
+										</>
 									)}
-								</Button>
-							</TooltipTrigger>
-							{isQuotaReached && (
-								<TooltipContent side="top" className="max-w-xs text-center">
-									<p className="font-semibold">Daily limit reached</p>
-									<p className="text-xs opacity-80">
-										You have used all {limits.today.max} free scans for today.
-										{limits.reset && (
-											<>
-												<br />
-												Resets at: {new Date(limits.reset).toLocaleTimeString()}
-											</>
-										)}
-									</p>
-								</TooltipContent>
-							)}
-						</Tooltip>
-					</TooltipProvider>
+								</p>
+							</TooltipContent>
+						)}
+					</Tooltip>
 				</div>
 			</DialogTrigger>
 			<DialogContent className="flex h-fit max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden p-0 sm:rounded-4xl">

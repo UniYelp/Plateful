@@ -1,7 +1,8 @@
 import { useStore } from "@tanstack/react-form";
 import { Plus, Search, Sparkles, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 
+import type { Id } from "@backend/dataModel";
 import { submitFormHandler } from "&/forms/utils/submission";
 import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
 import {
@@ -17,6 +18,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -29,6 +31,7 @@ import { commonAppliances, quickTags } from "../../constants";
 import { recipeGenDefaultValues } from "../constants";
 import { type RecipeGenForm, RecipeGenFormSchema } from "../schemas";
 import type { IngredientDetails } from "../types";
+import { SmartToggleGroup } from "./SmartToggleGroup";
 
 type Props = {
 	ingredients: IngredientDetails[];
@@ -49,6 +52,10 @@ export const GenerateRecipeForm = (props: Props) => {
 	});
 
 	const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
+
+	const tagsCheckboxId = useId();
+	const ingredientsCheckboxId = useId();
+	const toolsCheckboxId = useId();
 
 	const [search, setSearch] = useState("");
 	const [category, setCategory] = useState<string | null>(null);
@@ -91,30 +98,55 @@ export const GenerateRecipeForm = (props: Props) => {
 						{(field) => (
 							<Card aria-invalid={isInvalidTouched(field)}>
 								<CardHeader>
-									<CardTitle>Quick Tags</CardTitle>
+									<CardTitle className="flex items-center gap-2">
+										<Checkbox
+											id={tagsCheckboxId}
+											checked={
+												quickTags.length > 0 &&
+												quickTags.every((t) =>
+													field.state.value.includes(t.value),
+												)
+											}
+											disabled={isSubmitting || quickTags.length === 0}
+											onCheckedChange={(checked) => {
+												const allTagValues = quickTags.map((t) => t.value);
+												if (checked) {
+													field.handleChange(
+														Array.from(
+															new Set([...field.state.value, ...allTagValues]),
+														),
+													);
+												} else {
+													field.handleChange(
+														field.state.value.filter(
+															(v) => !allTagValues.includes(v),
+														),
+													);
+												}
+											}}
+										/>
+										<label htmlFor={tagsCheckboxId} className="cursor-pointer">
+											Quick Tags
+										</label>
+									</CardTitle>
 									<CardDescription>
 										Select dietary preferences and meal characteristics
 									</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<ToggleGroup
-										type="multiple"
-										variant="outline"
-										disabled={isSubmitting}
+									<SmartToggleGroup
+										items={quickTags}
+										value={field.state.value}
 										onValueChange={field.handleChange}
-										className="flex flex-wrap gap-2.5"
-									>
-										{quickTags.map((tag) => (
-											<ToggleGroupItem
-												key={tag.value}
-												value={tag.value}
-												aria-label={`Toggle ${tag.value}`}
-												className="rounded-lg border-2 px-4 py-2 font-medium text-sm transition-all duration-200 data-[state=on]:scale-105 data-[state=off]:border-border data-[state=on]:border-primary data-[state=off]:bg-background data-[state=on]:bg-primary/10 data-[state=on]:text-primary data-[state=on]:shadow-sm data-[state=off]:hover:border-primary/50 data-[state=off]:hover:bg-muted data-[state=off]:hover:text-black"
-											>
+										disabled={isSubmitting}
+										getValue={(tag) => tag.value}
+										renderItem={(tag) => (
+											<>
 												<span>{tag.icon}</span> {tag.label}
-											</ToggleGroupItem>
-										))}
-									</ToggleGroup>
+											</>
+										)}
+										itemClassName="px-4 py-2"
+									/>
 								</CardContent>
 							</Card>
 						)}
@@ -124,12 +156,48 @@ export const GenerateRecipeForm = (props: Props) => {
 							<Card aria-invalid={isInvalidTouched(field)}>
 								<CardHeader>
 									<CardTitle
-										className={`${isInvalidTouched(field) ? "text-red-500" : ""}`}
+										className={`flex items-center gap-2 ${isInvalidTouched(field) ? "text-red-500" : ""}`}
 									>
-										Ingredients *
+										<Checkbox
+											id={ingredientsCheckboxId}
+											checked={
+												ingredients.length > 0 &&
+												ingredients.every((ing) =>
+													field.state.value.includes(ing.id),
+												)
+											}
+											disabled={isSubmitting || ingredients.length === 0}
+											onCheckedChange={(checked) => {
+												const allIds = ingredients.map((i) => i.id);
+												if (checked) {
+													field.handleChange(
+														Array.from(
+															new Set([...field.state.value, ...allIds]),
+														),
+													);
+												} else {
+													field.handleChange(
+														field.state.value.filter(
+															(v) => !allIds.includes(v as Id<"ingredients">),
+														),
+													);
+												}
+											}}
+										/>
+
+										<label
+											htmlFor={ingredientsCheckboxId}
+											className="cursor-pointer"
+										>
+											Ingredients *
+										</label>
 									</CardTitle>
-									<CardDescription>
-										Select the ingredients for the recipe
+									<CardDescription className="flex flex-col gap-1">
+										<span>Select the ingredients for the recipe.</span>
+										<span className="text-muted-foreground text-xs">
+											*Out-of-stock or expired ingredients can still be selected
+											— they'll be used in reasonable amounts.
+										</span>
 									</CardDescription>
 								</CardHeader>
 								<CardContent>
@@ -158,9 +226,14 @@ export const GenerateRecipeForm = (props: Props) => {
 										</InputGroup>
 
 										<div className="flex flex-col gap-2">
-											<p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
-												Categories
-											</p>
+											<div className="flex items-baseline justify-between">
+												<p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
+													Filter by category
+												</p>
+												<p className="text-[10px] text-muted-foreground/60 italic">
+													Filters affect view only — the checkbox selects all
+												</p>
+											</div>
 											<ToggleGroup
 												type="single"
 												variant="outline"
@@ -173,7 +246,7 @@ export const GenerateRecipeForm = (props: Props) => {
 													value=""
 													className="rounded-full px-4 py-1.5 text-xs transition-all data-[state=on]:bg-primary data-[state=on]:text-white"
 												>
-													All
+													All Categories
 												</ToggleGroupItem>
 												{categories.map((cat) => (
 													<ToggleGroupItem
@@ -188,22 +261,16 @@ export const GenerateRecipeForm = (props: Props) => {
 										</div>
 									</div>
 
-									<ToggleGroup
-										type="multiple"
-										variant="outline"
-										disabled={isSubmitting}
-										onValueChange={field.handleChange}
-										className="flex flex-wrap gap-2.5"
-									>
-										{filteredIngredients.length > 0 ? (
-											filteredIngredients.map((ing) => (
-												<ToggleGroupItem
-													key={ing.id}
-													value={ing.id}
-													disabled={isSubmitting}
-													aria-label={`Toggle ${ing.name}`}
-													className="flex items-center gap-3 rounded-lg border-2 px-2 py-3 font-medium text-sm transition-all duration-200 data-[state=on]:scale-105 data-[state=off]:border-border data-[state=on]:border-primary data-[state=off]:bg-background data-[state=on]:bg-primary/10 data-[state=on]:text-primary data-[state=on]:shadow-sm data-[state=off]:hover:border-primary/50 data-[state=off]:hover:bg-muted data-[state=off]:hover:text-black"
-												>
+									{filteredIngredients.length > 0 ? (
+										<SmartToggleGroup
+											items={filteredIngredients}
+											value={field.state.value}
+											onValueChange={field.handleChange}
+											disabled={isSubmitting}
+											getValue={(ing) => ing.id}
+											itemClassName="flex items-center gap-3 px-2 py-3"
+											renderItem={(ing) => (
+												<>
 													<img
 														src={
 															ingredientImgByCategory[
@@ -234,34 +301,34 @@ export const GenerateRecipeForm = (props: Props) => {
 															)}
 														</p>
 													</div>
-												</ToggleGroupItem>
-											))
-										) : (
-											<div className="fade-in zoom-in-95 flex w-full animate-in flex-col items-center justify-center py-12 text-center transition-all">
-												<div className="mb-4 rounded-full bg-muted p-4">
-													<Search className="h-8 w-8 text-muted-foreground opacity-50" />
-												</div>
-												<p className="mb-1 font-semibold text-lg">
-													No ingredients found
-												</p>
-												<p className="mb-6 max-w-xs text-muted-foreground text-sm">
-													We couldn't find any ingredients matching your search
-													or category filter.
-												</p>
-												{(search || category) && (
-													<Button
-														variant="outline"
-														size="sm"
-														onClick={resetFilters}
-														className="rounded-full"
-													>
-														<X className="mr-2 h-4 w-4" />
-														Clear all filters
-													</Button>
-												)}
+												</>
+											)}
+										/>
+									) : (
+										<div className="fade-in zoom-in-95 flex w-full animate-in flex-col items-center justify-center py-12 text-center transition-all">
+											<div className="mb-4 rounded-full bg-muted p-4">
+												<Search className="h-8 w-8 text-muted-foreground opacity-50" />
 											</div>
-										)}
-									</ToggleGroup>
+											<p className="mb-1 font-semibold text-lg">
+												No ingredients found
+											</p>
+											<p className="mb-6 max-w-xs text-muted-foreground text-sm">
+												We couldn't find any ingredients matching your search or
+												category filter.
+											</p>
+											{(search || category) && (
+												<Button
+													variant="outline"
+													size="sm"
+													onClick={resetFilters}
+													className="rounded-full"
+												>
+													<X className="mr-2 h-4 w-4" />
+													Clear all filters
+												</Button>
+											)}
+										</div>
+									)}
 								</CardContent>
 							</Card>
 						)}
@@ -270,7 +337,42 @@ export const GenerateRecipeForm = (props: Props) => {
 						{(field) => (
 							<Card aria-invalid={isInvalidTouched(field)}>
 								<CardHeader>
-									<CardTitle>Available Tools</CardTitle>
+									<CardTitle className="flex items-center gap-2">
+										<Checkbox
+											id={toolsCheckboxId}
+											checked={
+												commonAppliances.length > 0 &&
+												commonAppliances.every((c) =>
+													(field.state.value ?? []).includes(c.value),
+												)
+											}
+											disabled={isSubmitting || commonAppliances.length === 0}
+											onCheckedChange={(checked) => {
+												const allToolValues = commonAppliances.map(
+													(c) => c.value,
+												);
+												if (checked) {
+													field.handleChange(
+														Array.from(
+															new Set([
+																...(field.state.value ?? []),
+																...allToolValues,
+															]),
+														),
+													);
+												} else {
+													field.handleChange(
+														(field.state.value ?? []).filter(
+															(v) => !allToolValues.includes(v),
+														),
+													);
+												}
+											}}
+										/>
+										<label htmlFor={toolsCheckboxId} className="cursor-pointer">
+											Available Tools
+										</label>
+									</CardTitle>
 									<CardDescription className="flex flex-col">
 										Select the tools you have available to use.
 										<span className="text-muted-foreground text-xs">
@@ -281,39 +383,30 @@ export const GenerateRecipeForm = (props: Props) => {
 								</CardHeader>
 								<CardContent>
 									<div className="flex flex-col gap-6">
-										<ToggleGroup
-											type="multiple"
-											variant="outline"
-											value={field.state.value}
-											disabled={isSubmitting}
+										<SmartToggleGroup
+											items={[
+												...commonAppliances,
+												...(field.state.value
+													?.filter(
+														(v) => !commonAppliances.some((c) => c.value === v),
+													)
+													.map((v) => ({
+														value: v,
+														label: v,
+														icon: null,
+													})) ?? []),
+											]}
+											value={field.state.value ?? []}
 											onValueChange={field.handleChange}
-											className="flex flex-wrap justify-start gap-2.5"
-										>
-											{commonAppliances.map((tool) => (
-												<ToggleGroupItem
-													key={tool.value}
-													value={tool.value}
-													aria-label={`Toggle ${tool.value}`}
-													className="rounded-lg border-2 px-4 py-2 font-medium text-sm transition-all duration-200 data-[state=on]:scale-105 data-[state=off]:border-border data-[state=on]:border-primary data-[state=off]:bg-background data-[state=on]:bg-primary/10 data-[state=on]:text-primary data-[state=on]:shadow-sm data-[state=off]:hover:border-primary/50 data-[state=off]:hover:bg-muted data-[state=off]:hover:text-black"
-												>
-													<span>{tool.icon}</span> {tool.label}
-												</ToggleGroupItem>
-											))}
-											{field.state.value
-												?.filter(
-													(v) => !commonAppliances.some((c) => c.value === v),
-												)
-												.map((tool) => (
-													<ToggleGroupItem
-														key={tool}
-														value={tool}
-														aria-label={`Toggle ${tool}`}
-														className="rounded-lg border-2 px-4 py-2 font-medium text-sm transition-all duration-200 data-[state=on]:scale-105 data-[state=off]:border-border data-[state=on]:border-primary data-[state=off]:bg-background data-[state=on]:bg-primary/10 data-[state=on]:text-primary data-[state=on]:shadow-sm data-[state=off]:hover:border-primary/50 data-[state=off]:hover:bg-muted data-[state=off]:hover:text-black"
-													>
-														{tool}
-													</ToggleGroupItem>
-												))}
-										</ToggleGroup>
+											disabled={isSubmitting}
+											getValue={(tool) => tool.value}
+											itemClassName="px-4 py-2"
+											renderItem={(tool) => (
+												<>
+													{tool.icon && <span>{tool.icon}</span>} {tool.label}
+												</>
+											)}
+										/>
 
 										<div className="flex flex-col gap-2">
 											<p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
