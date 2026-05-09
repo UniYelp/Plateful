@@ -69,13 +69,13 @@ function LandingPage() {
 								<StartNowBtn />
 							</Link>
 						</Button>
-						<Button
+						{/* <Button
 							variant="outline"
 							size="lg"
 							className="bg-transparent px-8 text-lg"
 						>
 							Watch Demo
-						</Button>
+						</Button> */}
 					</div>
 
 					{/* <div className='relative'>
