@@ -20,6 +20,7 @@ import { Route as appauthedWelcomeRouteImport } from './routes/(app)/(authed)/we
 import { Route as appauthedPreferencesRouteImport } from './routes/(app)/(authed)/preferences'
 import { Route as appauthedDashboardRouteRouteImport } from './routes/(app)/(authed)/dashboard/route'
 import { Route as appauthedDashboardIndexRouteImport } from './routes/(app)/(authed)/dashboard/index'
+import { Route as appauthedDashboardRecipesRouteRouteImport } from './routes/(app)/(authed)/dashboard/recipes/route'
 import { Route as appauthedDashboardRecipesIndexRouteImport } from './routes/(app)/(authed)/dashboard/recipes/index'
 import { Route as appauthedDashboardIngredientsIndexRouteImport } from './routes/(app)/(authed)/dashboard/ingredients/index'
 import { Route as appauthedDashboardRecipesIdRouteImport } from './routes/(app)/(authed)/dashboard/recipes/$id'
@@ -82,11 +83,17 @@ const appauthedDashboardIndexRoute = appauthedDashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => appauthedDashboardRouteRoute,
 } as any)
+const appauthedDashboardRecipesRouteRoute =
+  appauthedDashboardRecipesRouteRouteImport.update({
+    id: '/recipes',
+    path: '/recipes',
+    getParentRoute: () => appauthedDashboardRouteRoute,
+  } as any)
 const appauthedDashboardRecipesIndexRoute =
   appauthedDashboardRecipesIndexRouteImport.update({
-    id: '/recipes/',
-    path: '/recipes/',
-    getParentRoute: () => appauthedDashboardRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => appauthedDashboardRecipesRouteRoute,
   } as any)
 const appauthedDashboardIngredientsIndexRoute =
   appauthedDashboardIngredientsIndexRouteImport.update({
@@ -96,9 +103,9 @@ const appauthedDashboardIngredientsIndexRoute =
   } as any)
 const appauthedDashboardRecipesIdRoute =
   appauthedDashboardRecipesIdRouteImport.update({
-    id: '/recipes/$id',
-    path: '/recipes/$id',
-    getParentRoute: () => appauthedDashboardRouteRoute,
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => appauthedDashboardRecipesRouteRoute,
   } as any)
 const appauthedDashboardIngredientsAddRoute =
   appauthedDashboardIngredientsAddRouteImport.update({
@@ -108,9 +115,9 @@ const appauthedDashboardIngredientsAddRoute =
   } as any)
 const appauthedDashboardRecipesGenIndexRoute =
   appauthedDashboardRecipesGenIndexRouteImport.update({
-    id: '/recipes/gen/',
-    path: '/recipes/gen/',
-    getParentRoute: () => appauthedDashboardRouteRoute,
+    id: '/gen/',
+    path: '/gen/',
+    getParentRoute: () => appauthedDashboardRecipesRouteRoute,
   } as any)
 const appauthedDashboardIngredientsIdIndexRoute =
   appauthedDashboardIngredientsIdIndexRouteImport.update({
@@ -120,15 +127,15 @@ const appauthedDashboardIngredientsIdIndexRoute =
   } as any)
 const appauthedDashboardRecipesGenNewRoute =
   appauthedDashboardRecipesGenNewRouteImport.update({
-    id: '/recipes/gen/new',
-    path: '/recipes/gen/new',
-    getParentRoute: () => appauthedDashboardRouteRoute,
+    id: '/gen/new',
+    path: '/gen/new',
+    getParentRoute: () => appauthedDashboardRecipesRouteRoute,
   } as any)
 const appauthedDashboardRecipesGenIdRoute =
   appauthedDashboardRecipesGenIdRouteImport.update({
-    id: '/recipes/gen/$id',
-    path: '/recipes/gen/$id',
-    getParentRoute: () => appauthedDashboardRouteRoute,
+    id: '/gen/$id',
+    path: '/gen/$id',
+    getParentRoute: () => appauthedDashboardRecipesRouteRoute,
   } as any)
 const appauthedDashboardIngredientsIdEditRoute =
   appauthedDashboardIngredientsIdEditRouteImport.update({
@@ -145,11 +152,12 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof appauthedDashboardRouteRouteWithChildren
   '/preferences': typeof appauthedPreferencesRoute
   '/welcome': typeof appauthedWelcomeRoute
+  '/dashboard/recipes': typeof appauthedDashboardRecipesRouteRouteWithChildren
   '/dashboard/': typeof appauthedDashboardIndexRoute
   '/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
   '/dashboard/recipes/$id': typeof appauthedDashboardRecipesIdRoute
   '/dashboard/ingredients': typeof appauthedDashboardIngredientsIndexRoute
-  '/dashboard/recipes': typeof appauthedDashboardRecipesIndexRoute
+  '/dashboard/recipes/': typeof appauthedDashboardRecipesIndexRoute
   '/dashboard/ingredients/$id/edit': typeof appauthedDashboardIngredientsIdEditRoute
   '/dashboard/recipes/gen/$id': typeof appauthedDashboardRecipesGenIdRoute
   '/dashboard/recipes/gen/new': typeof appauthedDashboardRecipesGenNewRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/(app)/(authed)/dashboard': typeof appauthedDashboardRouteRouteWithChildren
   '/(app)/(authed)/preferences': typeof appauthedPreferencesRoute
   '/(app)/(authed)/welcome': typeof appauthedWelcomeRoute
+  '/(app)/(authed)/dashboard/recipes': typeof appauthedDashboardRecipesRouteRouteWithChildren
   '/(app)/(authed)/dashboard/': typeof appauthedDashboardIndexRoute
   '/(app)/(authed)/dashboard/ingredients/add': typeof appauthedDashboardIngredientsAddRoute
   '/(app)/(authed)/dashboard/recipes/$id': typeof appauthedDashboardRecipesIdRoute
@@ -207,11 +216,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/preferences'
     | '/welcome'
+    | '/dashboard/recipes'
     | '/dashboard/'
     | '/dashboard/ingredients/add'
     | '/dashboard/recipes/$id'
     | '/dashboard/ingredients'
-    | '/dashboard/recipes'
+    | '/dashboard/recipes/'
     | '/dashboard/ingredients/$id/edit'
     | '/dashboard/recipes/gen/$id'
     | '/dashboard/recipes/gen/new'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/(app)/(authed)/dashboard'
     | '/(app)/(authed)/preferences'
     | '/(app)/(authed)/welcome'
+    | '/(app)/(authed)/dashboard/recipes'
     | '/(app)/(authed)/dashboard/'
     | '/(app)/(authed)/dashboard/ingredients/add'
     | '/(app)/(authed)/dashboard/recipes/$id'
@@ -345,12 +356,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appauthedDashboardIndexRouteImport
       parentRoute: typeof appauthedDashboardRouteRoute
     }
-    '/(app)/(authed)/dashboard/recipes/': {
-      id: '/(app)/(authed)/dashboard/recipes/'
+    '/(app)/(authed)/dashboard/recipes': {
+      id: '/(app)/(authed)/dashboard/recipes'
       path: '/recipes'
       fullPath: '/dashboard/recipes'
-      preLoaderRoute: typeof appauthedDashboardRecipesIndexRouteImport
+      preLoaderRoute: typeof appauthedDashboardRecipesRouteRouteImport
       parentRoute: typeof appauthedDashboardRouteRoute
+    }
+    '/(app)/(authed)/dashboard/recipes/': {
+      id: '/(app)/(authed)/dashboard/recipes/'
+      path: '/'
+      fullPath: '/dashboard/recipes/'
+      preLoaderRoute: typeof appauthedDashboardRecipesIndexRouteImport
+      parentRoute: typeof appauthedDashboardRecipesRouteRoute
     }
     '/(app)/(authed)/dashboard/ingredients/': {
       id: '/(app)/(authed)/dashboard/ingredients/'
@@ -361,10 +379,10 @@ declare module '@tanstack/react-router' {
     }
     '/(app)/(authed)/dashboard/recipes/$id': {
       id: '/(app)/(authed)/dashboard/recipes/$id'
-      path: '/recipes/$id'
+      path: '/$id'
       fullPath: '/dashboard/recipes/$id'
       preLoaderRoute: typeof appauthedDashboardRecipesIdRouteImport
-      parentRoute: typeof appauthedDashboardRouteRoute
+      parentRoute: typeof appauthedDashboardRecipesRouteRoute
     }
     '/(app)/(authed)/dashboard/ingredients/add': {
       id: '/(app)/(authed)/dashboard/ingredients/add'
@@ -375,10 +393,10 @@ declare module '@tanstack/react-router' {
     }
     '/(app)/(authed)/dashboard/recipes/gen/': {
       id: '/(app)/(authed)/dashboard/recipes/gen/'
-      path: '/recipes/gen'
+      path: '/gen'
       fullPath: '/dashboard/recipes/gen'
       preLoaderRoute: typeof appauthedDashboardRecipesGenIndexRouteImport
-      parentRoute: typeof appauthedDashboardRouteRoute
+      parentRoute: typeof appauthedDashboardRecipesRouteRoute
     }
     '/(app)/(authed)/dashboard/ingredients/$id/': {
       id: '/(app)/(authed)/dashboard/ingredients/$id/'
@@ -389,17 +407,17 @@ declare module '@tanstack/react-router' {
     }
     '/(app)/(authed)/dashboard/recipes/gen/new': {
       id: '/(app)/(authed)/dashboard/recipes/gen/new'
-      path: '/recipes/gen/new'
+      path: '/gen/new'
       fullPath: '/dashboard/recipes/gen/new'
       preLoaderRoute: typeof appauthedDashboardRecipesGenNewRouteImport
-      parentRoute: typeof appauthedDashboardRouteRoute
+      parentRoute: typeof appauthedDashboardRecipesRouteRoute
     }
     '/(app)/(authed)/dashboard/recipes/gen/$id': {
       id: '/(app)/(authed)/dashboard/recipes/gen/$id'
-      path: '/recipes/gen/$id'
+      path: '/gen/$id'
       fullPath: '/dashboard/recipes/gen/$id'
       preLoaderRoute: typeof appauthedDashboardRecipesGenIdRouteImport
-      parentRoute: typeof appauthedDashboardRouteRoute
+      parentRoute: typeof appauthedDashboardRecipesRouteRoute
     }
     '/(app)/(authed)/dashboard/ingredients/$id/edit': {
       id: '/(app)/(authed)/dashboard/ingredients/$id/edit'
@@ -411,36 +429,51 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface appauthedDashboardRouteRouteChildren {
-  appauthedDashboardIndexRoute: typeof appauthedDashboardIndexRoute
-  appauthedDashboardIngredientsAddRoute: typeof appauthedDashboardIngredientsAddRoute
+interface appauthedDashboardRecipesRouteRouteChildren {
   appauthedDashboardRecipesIdRoute: typeof appauthedDashboardRecipesIdRoute
-  appauthedDashboardIngredientsIndexRoute: typeof appauthedDashboardIngredientsIndexRoute
   appauthedDashboardRecipesIndexRoute: typeof appauthedDashboardRecipesIndexRoute
-  appauthedDashboardIngredientsIdEditRoute: typeof appauthedDashboardIngredientsIdEditRoute
   appauthedDashboardRecipesGenIdRoute: typeof appauthedDashboardRecipesGenIdRoute
   appauthedDashboardRecipesGenNewRoute: typeof appauthedDashboardRecipesGenNewRoute
-  appauthedDashboardIngredientsIdIndexRoute: typeof appauthedDashboardIngredientsIdIndexRoute
   appauthedDashboardRecipesGenIndexRoute: typeof appauthedDashboardRecipesGenIndexRoute
+}
+
+const appauthedDashboardRecipesRouteRouteChildren: appauthedDashboardRecipesRouteRouteChildren =
+  {
+    appauthedDashboardRecipesIdRoute: appauthedDashboardRecipesIdRoute,
+    appauthedDashboardRecipesIndexRoute: appauthedDashboardRecipesIndexRoute,
+    appauthedDashboardRecipesGenIdRoute: appauthedDashboardRecipesGenIdRoute,
+    appauthedDashboardRecipesGenNewRoute: appauthedDashboardRecipesGenNewRoute,
+    appauthedDashboardRecipesGenIndexRoute:
+      appauthedDashboardRecipesGenIndexRoute,
+  }
+
+const appauthedDashboardRecipesRouteRouteWithChildren =
+  appauthedDashboardRecipesRouteRoute._addFileChildren(
+    appauthedDashboardRecipesRouteRouteChildren,
+  )
+
+interface appauthedDashboardRouteRouteChildren {
+  appauthedDashboardRecipesRouteRoute: typeof appauthedDashboardRecipesRouteRouteWithChildren
+  appauthedDashboardIndexRoute: typeof appauthedDashboardIndexRoute
+  appauthedDashboardIngredientsAddRoute: typeof appauthedDashboardIngredientsAddRoute
+  appauthedDashboardIngredientsIndexRoute: typeof appauthedDashboardIngredientsIndexRoute
+  appauthedDashboardIngredientsIdEditRoute: typeof appauthedDashboardIngredientsIdEditRoute
+  appauthedDashboardIngredientsIdIndexRoute: typeof appauthedDashboardIngredientsIdIndexRoute
 }
 
 const appauthedDashboardRouteRouteChildren: appauthedDashboardRouteRouteChildren =
   {
+    appauthedDashboardRecipesRouteRoute:
+      appauthedDashboardRecipesRouteRouteWithChildren,
     appauthedDashboardIndexRoute: appauthedDashboardIndexRoute,
     appauthedDashboardIngredientsAddRoute:
       appauthedDashboardIngredientsAddRoute,
-    appauthedDashboardRecipesIdRoute: appauthedDashboardRecipesIdRoute,
     appauthedDashboardIngredientsIndexRoute:
       appauthedDashboardIngredientsIndexRoute,
-    appauthedDashboardRecipesIndexRoute: appauthedDashboardRecipesIndexRoute,
     appauthedDashboardIngredientsIdEditRoute:
       appauthedDashboardIngredientsIdEditRoute,
-    appauthedDashboardRecipesGenIdRoute: appauthedDashboardRecipesGenIdRoute,
-    appauthedDashboardRecipesGenNewRoute: appauthedDashboardRecipesGenNewRoute,
     appauthedDashboardIngredientsIdIndexRoute:
       appauthedDashboardIngredientsIdIndexRoute,
-    appauthedDashboardRecipesGenIndexRoute:
-      appauthedDashboardRecipesGenIndexRoute,
   }
 
 const appauthedDashboardRouteRouteWithChildren =
