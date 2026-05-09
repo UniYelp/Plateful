@@ -81,7 +81,7 @@ export function PreferencesForm({
 							<div className="fade-in slide-in-from-bottom-8 animate-in space-y-6 duration-700">
 								<div className="space-y-2 text-center">
 									<h2 className="font-bold text-2xl">
-										Do you have any food allergens?
+										Do you have any food allergies?
 									</h2>
 									<p className="text-muted-foreground">
 										Select common allergens or add your own. We'll keep you
