@@ -8,18 +8,18 @@ import { z } from "zod";
 import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { ingredientLoader } from "&/ingredients/component/loaders/ingredient";
+import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
+import { ReceiptScanner } from "&/ingredients/components/ReceiptScanner";
 import {
 	categories,
 	colorByExpiryStatus,
 	ingredientImgByCategory,
 } from "&/ingredients/constants";
+import { getTotalAmount } from "&/ingredients/utils/total-amount";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getTotalAmount } from "&/ingredients/utils/total-amount";
-import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
-import { ReceiptScanner } from "&/ingredients/components/ReceiptScanner";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/ingredients/")({
 	validateSearch: z.object({
@@ -44,8 +44,6 @@ function RouteComponent() {
 	return <IngredientsPage />;
 }
 
-
-
 function IngredientsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
@@ -64,7 +62,9 @@ function IngredientsPage() {
 		?.filter((ingredient) => {
 			const matchesSearch =
 				ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				ingredient.description?.toLowerCase().includes(searchTerm.toLowerCase());
+				ingredient.description
+					?.toLowerCase()
+					.includes(searchTerm.toLowerCase());
 			const matchesCategory =
 				selectedCategory === "all" || ingredient.category === selectedCategory;
 
@@ -74,8 +74,9 @@ function IngredientsPage() {
 				const expirations = ingredient.quantities.flatMap(
 					(q) => q.expiresAt ?? [],
 				);
-				const expiryStatusDetails = getExpiryDetailsFromExpiryDates(expirations);
-				
+				const expiryStatusDetails =
+					getExpiryDetailsFromExpiryDates(expirations);
+
 				if (!expiryStatusDetails) return false;
 				if (
 					expiryStatusDetails.status !== "expired" &&
@@ -94,8 +95,12 @@ function IngredientsPage() {
 			const expirationsA = a.quantities.flatMap((q) => q.expiresAt ?? []);
 			const expirationsB = b.quantities.flatMap((q) => q.expiresAt ?? []);
 
-			const minExpiryA = expirationsA.length ? Math.min(...expirationsA) : Infinity;
-			const minExpiryB = expirationsB.length ? Math.min(...expirationsB) : Infinity;
+			const minExpiryA = expirationsA.length
+				? Math.min(...expirationsA)
+				: Infinity;
+			const minExpiryB = expirationsB.length
+				? Math.min(...expirationsB)
+				: Infinity;
 
 			return minExpiryA - minExpiryB;
 		});
@@ -120,8 +125,8 @@ function IngredientsPage() {
 			</div>
 
 			{/* Search and Filter */}
-			<div className="mb-6 flex flex-col gap-4 sm:flex-row">
-				<div className="relative flex-1">
+			<div className="mb-6 flex flex-col gap-4">
+				<div className="relative max-w-md">
 					<Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-muted-foreground" />
 					<Input
 						placeholder="Search ingredients..."
@@ -130,13 +135,16 @@ function IngredientsPage() {
 						className="pl-10"
 					/>
 				</div>
-				<div className="flex gap-2 overflow-x-auto">
+				<div className="flex flex-wrap items-center gap-2">
 					<Button
 						variant={expiringOnly ? "destructive" : "outline"}
 						size="sm"
 						className="whitespace-nowrap"
 					>
-						<Link to="/dashboard/ingredients" search={(prev) => ({ ...prev, expiringOnly: !prev.expiringOnly })}>
+						<Link
+							to="/dashboard/ingredients"
+							search={(prev) => ({ ...prev, expiringOnly: !prev.expiringOnly })}
+						>
 							Expiring Soon
 						</Link>
 					</Button>

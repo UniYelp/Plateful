@@ -3,13 +3,14 @@ export const IngredientCategory = {
 	Fruits: "fruits",
 	Meat: "meat",
 	Seafood: "seafood",
+	Fish: "fish",
 	Dairy: "dairy",
 	Breads: "breads",
 	Canned: "canned",
 	Baking: "baking",
 	Sauces: "sauces",
 	Frozen: "frozen",
-	FrozenDesserts: "frozen-desserts",
+	Desserts: "desserts",
 	Snacks: "snacks",
 	Chocolate: "chocolate",
 	Candies: "candies",
@@ -21,6 +22,7 @@ export const IngredientCategory = {
 	Other: "other",
 } as const;
 
-export type IngredientCategory = typeof IngredientCategory[keyof typeof IngredientCategory];
+export type IngredientCategory =
+	(typeof IngredientCategory)[keyof typeof IngredientCategory];
 
 export const ingredientCategories = Object.values(IngredientCategory);
