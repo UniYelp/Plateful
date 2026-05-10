@@ -3,6 +3,7 @@ import { Enum } from "@plateful/utils";
 import { MassUnit } from "./unit.enum";
 
 export const MassSymbol = {
+	[MassUnit.Milligram]: "mg",
 	[MassUnit.Gram]: "g",
 	[MassUnit.Kilogram]: "kg",
 	[MassUnit.Ounce]: "oz",
