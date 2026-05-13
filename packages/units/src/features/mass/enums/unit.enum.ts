@@ -2,6 +2,7 @@ import type { ValueOf } from "@plateful/types";
 import { Enum } from "@plateful/utils";
 
 export const MassUnit = {
+	Milligram: "milligram",
 	Gram: "gram",
 	Kilogram: "kilogram",
 	Ounce: "ounce",

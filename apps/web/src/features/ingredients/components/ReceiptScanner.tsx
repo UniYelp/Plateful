@@ -170,7 +170,8 @@ export function ReceiptScanner({
 			const nonEdible: typeof nonEdibleItems = [];
 
 			for (const ing of data.ingredients) {
-				if (ing.category === "non-edible") {
+				if (ing.category === "inedible") {
+					// TODO: add a way to "add anyways" if the user wants to add non-edible items.
 					nonEdible.push({
 						name: ing.name,
 						description: ing.description,

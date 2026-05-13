@@ -3,6 +3,7 @@ import { VolumeUnit } from "./enums";
 
 export const aliasesByVolumeUnit = {
 	[VolumeUnit.Tablespoon]: ["tbs"],
+	[VolumeUnit.FluidOunce]: ["fl. oz.", "oz. fl."],
 } as const satisfies Partial<Record<VolumeUnit, string[]>>;
 
 /**
@@ -13,6 +14,12 @@ export const aliasesByVolumeUnit = {
 export const volumeUnitConversions: ScalarUnitConversion<VolumeUnit>[] = [
 	{ from: VolumeUnit.Liter, to: VolumeUnit.Milliliter, by: 1000 },
 	{
+		from: VolumeUnit.Teaspoon,
+		to: VolumeUnit.Pinch,
+		by: 16,
+		isLossy: true,
+	},
+	{
 		from: VolumeUnit.Dessertspoon,
 		to: VolumeUnit.Teaspoon,
 		by: 2 /** @note metric/imperial tsp | US tsp is by 4.93 */,
@@ -21,6 +28,11 @@ export const volumeUnitConversions: ScalarUnitConversion<VolumeUnit>[] = [
 		from: VolumeUnit.Tablespoon,
 		to: VolumeUnit.Teaspoon,
 		by: 3 /** @note metric/imperial tsp | US tsp is by 4.93 */,
+	},
+	{
+		from: VolumeUnit.FluidOunce,
+		to: VolumeUnit.Tablespoon,
+		by: 2,
 	},
 	{
 		from: VolumeUnit.Teaspoon,
@@ -35,6 +47,17 @@ export const volumeUnitConversions: ScalarUnitConversion<VolumeUnit>[] = [
 		by: 17.76 /** @note metric/imperial tsp | US tsp is by 14.79 */,
 	},
 	{
+		from: VolumeUnit.FluidOunce,
+		to: VolumeUnit.Milliliter,
+		isLossy: true,
+		by: 29.5735,
+	},
+	{
+		from: VolumeUnit.Cup,
+		to: VolumeUnit.FluidOunce,
+		by: 8,
+	},
+	{
 		from: VolumeUnit.Cup,
 		to: VolumeUnit.Tablespoon,
 		isLossy: true,
@@ -45,5 +68,20 @@ export const volumeUnitConversions: ScalarUnitConversion<VolumeUnit>[] = [
 		to: VolumeUnit.Milliliter,
 		isLossy: true,
 		by: 284.131 /** @note metric/imperial tsp | US tsp is by 4.93 */,
+	},
+	{
+		from: VolumeUnit.Pint,
+		to: VolumeUnit.Cup,
+		by: 2,
+	},
+	{
+		from: VolumeUnit.Quart,
+		to: VolumeUnit.Pint,
+		by: 2,
+	},
+	{
+		from: VolumeUnit.Gallon,
+		to: VolumeUnit.Quart,
+		by: 4,
 	},
 ];

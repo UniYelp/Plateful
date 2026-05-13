@@ -36,7 +36,7 @@ export const ReceiptParserAgent = {
 					content: [
 						{
 							type: "text",
-							text: `Extract all items from this receipt.${translationInstruction} Group identical items with the same name and description into a single entry with multiple quantities if applicable. Strictly categorize each item into one of the provided categories. If an item is not a food ingredient (e.g. batteries, soap, toilet paper), categorize it as 'non-edible'.`,
+							text: `Extract all items from this receipt.${translationInstruction} Group identical items with the same name and description into a single entry with multiple quantities if applicable. Strictly categorize each item into one of the provided categories. If an item is not a food ingredient (e.g. batteries, soap, toilet paper), categorize it as 'inedible'.`,
 						},
 						{
 							type: "image",

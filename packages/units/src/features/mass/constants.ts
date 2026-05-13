@@ -10,6 +10,11 @@ export const aliasesByMassUnit = {
  */
 export const massUnitConversions: ScalarUnitConversion<MassUnit>[] = [
 	{
+		from: MassUnit.Gram,
+		to: MassUnit.Milligram,
+		by: 1000,
+	},
+	{
 		from: MassUnit.Kilogram,
 		to: MassUnit.Gram,
 		by: 1000,

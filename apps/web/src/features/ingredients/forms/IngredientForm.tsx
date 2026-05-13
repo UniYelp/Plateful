@@ -14,7 +14,10 @@ import { ConflictError } from "&/errors/models/conflict";
 import { handleError } from "&/errors/utils/handle-error";
 import { submitFormHandler } from "&/forms/utils/submission";
 import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
-import { ingredientsCategoriesOptions } from "&/ingredients/constants";
+import {
+	ingredientImgByCategory,
+	ingredientsCategoriesOptions,
+} from "&/ingredients/constants";
 import {
 	addIngredientFormDefaultValues,
 	INGREDIENT_MAXIMUM_DESCRIPTION_LENGTH,
@@ -257,7 +260,18 @@ export function IngredientForm({
 										<SelectContent>
 											{ingredientsCategoriesOptions.map((category) => (
 												<SelectItem key={category.value} value={category.value}>
-													{category.label}
+													<span className="flex items-center justify-center gap-2">
+														<img
+															src={
+																ingredientImgByCategory[
+																	category.value as keyof typeof ingredientImgByCategory
+																]
+															}
+															alt={category.label}
+															className="h-5 w-5 rounded-lg object-cover"
+														/>
+														{category.label}
+													</span>
 												</SelectItem>
 											))}
 										</SelectContent>

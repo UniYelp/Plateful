@@ -10,9 +10,9 @@ export const ExtractedIngredientSchema = z.object({
 	description: z.string().optional().meta({
 		description: "Any additional details like brand, size, or processing type",
 	}),
-	category: z.enum([...ingredientCategories, "non-edible"]).meta({
+	category: z.enum(ingredientCategories).meta({
 		description:
-			"The category of the item. Use 'non-edible' for items that are not food ingredients (like batteries, soap, toilet paper). Use 'other' for food items that do not fit into other categories.",
+			"The category of the item. Use 'inedible' for items that are not food ingredients (like batteries, soap, toilet paper). Use 'other' for food items that do not fit into other categories.",
 	}),
 	quantities: z
 		.array(

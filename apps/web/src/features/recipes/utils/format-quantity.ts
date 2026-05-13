@@ -10,6 +10,7 @@ export const formatQuantity = (quantity: {
 	const { amount, unit } = quantity;
 
 	try {
+		// TODO: Intl.supportedValuesOf('unit');
 		return new Intl.NumberFormat(userLocale, {
 			style: unit ? "unit" : "decimal",
 			...(unit && { unit: unit.toLowerCase() }),
@@ -24,6 +25,6 @@ export const formatQuantity = (quantity: {
 			? (IngredientSymbol[unit.toLowerCase() as IngredientUnit] ?? unit)
 			: "";
 
-		return `${numberPart} ${unitSymbol}`.trim();
+		return `${numberPart}x ${unitSymbol}`.trim();
 	}
 };
