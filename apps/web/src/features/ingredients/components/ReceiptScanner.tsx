@@ -310,7 +310,7 @@ export function ReceiptScanner({
 					</Tooltip>
 				</div>
 			</DialogTrigger>
-			<DialogContent className="flex h-fit max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden p-0 sm:rounded-4xl">
+			<DialogContent className="grid max-h-[90dvh] w-full max-w-5xl grid-rows-[auto_1fr_auto] overflow-hidden p-0 sm:rounded-4xl">
 				<DialogHeader className="border-b bg-muted/5 px-8 py-6">
 					<div className="flex items-center justify-between">
 						<div>
@@ -325,7 +325,7 @@ export function ReceiptScanner({
 					</div>
 				</DialogHeader>
 
-				<div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto bg-background/50">
+				<div className="custom-scrollbar min-h-0 flex-0 overflow-y-auto bg-background/50">
 					<form
 						id="receipt-scanner-form"
 						onSubmit={submitFormHandler(form)}
