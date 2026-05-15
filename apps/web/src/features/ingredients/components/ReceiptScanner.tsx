@@ -325,7 +325,7 @@ export function ReceiptScanner({
 					</div>
 				</DialogHeader>
 
-				<div className="custom-scrollbar min-h-0 overflow-y-auto bg-background/50">
+				<div className="custom-scrollbar min-h-0 flex-0 overflow-y-auto bg-background/50">
 					<form
 						id="receipt-scanner-form"
 						onSubmit={submitFormHandler(form)}
