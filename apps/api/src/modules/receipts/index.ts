@@ -42,6 +42,7 @@ export const receipts = new Elysia({
 		{
 			query: ReceiptsModel.getLimitsQuery,
 			response: ReceiptsModel.getLimitsResponse,
+			auth: true,
 		},
 	)
 	.post(
@@ -125,5 +126,6 @@ export const receipts = new Elysia({
 			query: ReceiptsModel.parseReceiptQuery,
 			body: ReceiptsModel.parseReceiptBody,
 			response: ReceiptsModel.parseReceiptResponse,
+			auth: true,
 		},
 	);

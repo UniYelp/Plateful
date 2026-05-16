@@ -1,7 +1,8 @@
+import { useAuth } from "@clerk/clerk-react";
 import { usePostHog } from "@posthog/react";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useMutation as useConvexMutation } from "convex/react";
+import { useConvexAuth, useMutation as useConvexMutation } from "convex/react";
 import {
 	AlertCircle,
 	Camera,
@@ -111,23 +112,36 @@ export function ReceiptScanner({
 }: {
 	householdId: Id<"households">;
 }) {
+	const { getToken } = useAuth();
+
 	const upsertIngredients = useConvexMutation(
 		api.ingredients.upsertIngredients,
 	);
+
 	const posthog = usePostHog();
 	const [open, setOpen] = useState(false);
+
 	const [nonEdibleItems, setNonEdibleItems] = useState<
 		(Pick<ExtractedIngredient, "name" | "description"> & {
 			quantities: ExtractedIngredientQuantity[];
 		})[]
 	>([]);
+
 	const [keepOriginalLanguage, setKeepOriginalLanguage] = useState(true);
 
-	const { data: limits, refetch: refetchLimits } = useQuery({
+	const {
+		data: limits,
+		isLoading,
+		isError,
+		refetch: refetchLimits,
+	} = useQuery({
 		queryKey: ["receipt-limits", householdId],
 		queryFn: async () => {
 			const { data, error } = await apiClient.receipts.limits.get({
 				query: { householdId },
+				headers: {
+					Authorization: `Bearer ${await getToken()}`,
+				},
 			});
 			if (error) throw new Error("Failed to fetch limits");
 			return data;
@@ -151,12 +165,19 @@ export function ReceiptScanner({
 
 			const { data, error } = await apiClient.receipts.parse.post(
 				{ image: file },
-				{ query: { householdId, keepOriginalLanguage } },
+				{
+					query: { householdId, keepOriginalLanguage },
+					headers: {
+						Authorization: `Bearer ${await getToken()}`,
+					},
+				},
 			);
 
 			if (error) {
 				throw new Error(
-					error.value?.message || "Failed to extract ingredients",
+					typeof error.value === "string"
+						? error.value
+						: error.value.message || "Failed to extract ingredients",
 				);
 			}
 
@@ -278,10 +299,10 @@ export function ReceiptScanner({
 			<DialogTrigger asChild>
 				<div className="inline-block">
 					<Tooltip delayDuration={0}>
-						<TooltipTrigger asChild>
+						<TooltipTrigger asChild disabled={isLoading || isError}>
 							<Button
 								variant="outline"
-								disabled={isQuotaReached}
+								disabled={isQuotaReached || isLoading || isError}
 								className="group relative gap-2 rounded-full px-5 shadow-sm transition-all hover:shadow-md disabled:opacity-50"
 							>
 								<Camera className="h-4 w-4" />
