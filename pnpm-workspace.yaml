@@ -4,7 +4,7 @@ packages:
   - packages/*
 
 catalog:
-  '@clerk/backend': ^2.15.0
+  '@clerk/backend': ^2.33.3
   '@hono/zod-validator': ^0.7.3
   convex: ^1.37.0
   effect: ^3.19.14
