@@ -9,6 +9,7 @@ import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { ingredientLoader } from "&/ingredients/component/loaders/ingredient";
 import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
+import { OutOfStockButton } from "&/ingredients/components/OutOfStockButton";
 import { ReceiptScanner } from "&/ingredients/components/ReceiptScanner";
 import {
 	categories,
@@ -190,20 +191,27 @@ function IngredientsPage() {
 										className="h-16 w-16 rounded-lg bg-muted object-cover"
 									/>
 									<div className="min-w-0 flex-1">
-										<div className="flex items-start justify-between">
+										<div className="flex items-start justify-between gap-2">
 											<h3 className="truncate font-semibold">
 												{ingredient.name}
 											</h3>
-											{expiryStatusDetails && (
-												<Badge
-													variant={
-														colorByExpiryStatus[expiryStatusDetails.status]
-													}
-													className="text-nowrap text-xs"
-												>
-													{expiryStatusDetails.text}
-												</Badge>
-											)}
+											<div className="flex shrink-0 items-center gap-1">
+												{expiryStatusDetails && (
+													<Badge
+														variant={
+															colorByExpiryStatus[expiryStatusDetails.status]
+														}
+														className="text-nowrap text-xs"
+													>
+														{expiryStatusDetails.text}
+													</Badge>
+												)}
+												<OutOfStockButton
+													ingredientId={ingredient._id}
+													householdId={household._id}
+													isDisabled={ingredient.quantities.length === 0}
+												/>
+											</div>
 										</div>
 										<p className="truncate text-muted-foreground text-sm">
 											{ingredient.description}

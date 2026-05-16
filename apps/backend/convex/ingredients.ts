@@ -332,6 +332,32 @@ export const addQuantity = householdMutation({
 	},
 });
 
+export const setOutOfStock = householdMutation({
+	args: {
+		ingredientId: vv.id("ingredients"),
+	},
+	handler: async (ctx, args) => {
+		const { _id: userId } = ctx.user;
+		const ingredient = await ctx.db.get("ingredients", args.ingredientId);
+
+		if (
+			!ingredient ||
+			isSoftDeleted(ingredient) ||
+			!ctx.isHousehold(ingredient)
+		) {
+			throw notFound({ entity: "Ingredient", in: "Household" });
+		}
+
+		const now = Date.now();
+		await ctx.db.patch("ingredients", args.ingredientId, {
+			quantities: [],
+			updatedBy: userId,
+			updatedAt: now,
+		});
+	},
+});
+
+
 export const removeQuantityAt = householdMutation({
 	args: {
 		ingredientId: vv.id("ingredients"),

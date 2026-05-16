@@ -62,7 +62,7 @@ function DashboardPage() {
 	});
 
 	if (!isLoaded || !user) {
-		return <div>Loading...</div>;
+		return <HouseholdLoading />;
 	}
 
 	const isQuotaReached =

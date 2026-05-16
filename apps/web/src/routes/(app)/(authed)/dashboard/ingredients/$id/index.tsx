@@ -25,13 +25,16 @@ import type { Id } from "@backend/dataModel";
 import { submitFormHandler } from "&/forms/utils/submission";
 import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { ingredientLoader } from "&/ingredients/component/loaders/ingredient";
 import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
+import { OutOfStockButton } from "&/ingredients/components/OutOfStockButton";
 import {
 	colorByExpiryStatus,
 	ingredientImgByCategory,
 } from "&/ingredients/constants";
 import { IngredientQuantitySchema } from "&/ingredients/forms/schemas";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
+import { Loader } from "@/components/layouts/Loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -128,7 +131,7 @@ export function IngredientDetailPage() {
 		},
 	});
 
-	if (!household || !ingredient) return "Loading...";
+	if (!household || !ingredient) return ingredientLoader;
 
 	const totalAmount = getTotalAmount(ingredient.quantities);
 
@@ -382,7 +385,7 @@ export function IngredientDetailPage() {
 
 							<CardContent>
 								<div className="space-y-2">
-									{!recipes && "Loading..."}
+									{!recipes && <Loader />}
 									{recipes?.length === 0 && (
 										<p className="text-muted-foreground text-sm">
 											This ingredient is not used in any recipes.
@@ -444,7 +447,12 @@ export function IngredientDetailPage() {
 										Edit Ingredient
 									</Link>
 								</Button>
-
+								<OutOfStockButton
+									variant="full"
+									ingredientId={ingredient._id}
+									householdId={household._id}
+									isDisabled={ingredient.quantities.length === 0}
+								/>
 								<DeleteIngredientButton
 									variant="full"
 									ingredientId={ingredient._id}
