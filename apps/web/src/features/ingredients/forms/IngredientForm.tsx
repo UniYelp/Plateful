@@ -43,6 +43,8 @@ import {
 import { TextArea } from "@/components/ui/textarea";
 import { useAppForm } from "@/lib/form";
 import type { SelectGroup, SelectOption } from "@/types/ui/select";
+import { DescriptionHint } from "./DescriptionHind";
+import { ExpiryDateHint } from "./ExpiryDateHint";
 
 type Props = {
 	householdId: Id<"households">;
@@ -224,7 +226,20 @@ export function IngredientForm({
 						<form.AppField name="description">
 							{(field) => (
 								<div className="space-y-2">
-									<Label htmlFor="description">Description</Label>
+									<div className="relative flex items-center justify-between">
+										<Label htmlFor="description">Description</Label>
+										<form.Subscribe selector={(state) => [state.values.name]}>
+											{([ingredientName]) => (
+												<DescriptionHint
+													ingredientName={ingredientName}
+													isEmpty={!field.state.value}
+													onSelect={(description) =>
+														field.handleChange(description)
+													}
+												/>
+											)}
+										</form.Subscribe>
+									</div>
 									<TextArea
 										className="field-sizing-fixed"
 										placeholder="e.g., Organic fresh basil leaves from local farm"
@@ -280,8 +295,12 @@ export function IngredientForm({
 								</div>
 							)}
 						</form.AppField>
-						<form.Subscribe selector={(state) => state.values.quantities}>
-							{(quantities) => (
+						<form.Subscribe
+							selector={(state) =>
+								[state.values.quantities, state.values.name] as const
+							}
+						>
+							{([quantities, ingredientName]) => (
 								<div className="space-y-6">
 									<div className="flex items-center justify-between">
 										<Label className="font-semibold text-base">
@@ -367,17 +386,24 @@ export function IngredientForm({
 															<Label htmlFor={`expiryDate-${index}`}>
 																Expiry Date
 															</Label>
-															<Input
-																id={`expiryDate-${index}`}
-																type="date"
-																value={field.state.value ?? ""}
-																aria-invalid={isInvalidTouched(field)}
-																onChange={(e) =>
-																	field.handleChange(
-																		e.target.value || undefined,
-																	)
-																}
-															/>
+															<div className="relative">
+																<Input
+																	id={`expiryDate-${index}`}
+																	type="date"
+																	value={field.state.value ?? ""}
+																	aria-invalid={isInvalidTouched(field)}
+																	onChange={(e) =>
+																		field.handleChange(
+																			e.target.value || undefined,
+																		)
+																	}
+																/>
+																<ExpiryDateHint
+																	ingredientName={ingredientName}
+																	currentExpiry={field.state.value}
+																	onSelect={(val) => field.handleChange(val)}
+																/>
+															</div>
 															<field.FieldError />
 														</div>
 													)}
