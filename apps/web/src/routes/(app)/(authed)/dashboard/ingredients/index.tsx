@@ -1,7 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Eye, Package, Plus, Search } from "lucide-react";
+import { Edit2, Eye, Package, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -227,6 +227,32 @@ function IngredientsPage() {
 										>
 											<Eye className="mr-1 h-3 w-3" />
 											View
+										</Link>
+									</Button>
+									<Button
+										asChild
+										variant="outline"
+										size="sm"
+										className="bg-transparent"
+									>
+										<Link
+											to="/dashboard/ingredients/$id/edit"
+											params={{ id: ingredient._id }}
+											search={(search) => ({
+												...search,
+												origin: "main",
+											})}
+											mask={{
+												to: "/dashboard/ingredients/$id/edit",
+												params: { id: ingredient._id },
+												search: (search) => ({
+													...search,
+													origin: undefined,
+												}),
+											}}
+										>
+											<Edit2 className="h-4 w-4" />
+											<span className="sr-only">Edit</span>
 										</Link>
 									</Button>
 									<DeleteIngredientButton

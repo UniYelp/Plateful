@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkComponentProps } from "@tanstack/react-router";
 import { useConvex } from "convex/react";
 import { AlertCircle } from "lucide-react";
 
@@ -51,6 +51,7 @@ type Props = {
 	relatedRecipes?: { _id: string; title: string }[];
 	defaultValues?: Partial<IngredientFormInput>;
 	submitAction: string;
+	cancelLink: LinkComponentProps;
 	onSubmit: (value: IngredientFormOutput) => Promise<void>;
 };
 
@@ -76,6 +77,7 @@ export function IngredientForm({
 	relatedRecipes,
 	defaultValues,
 	submitAction,
+	cancelLink,
 	onSubmit,
 }: Props) {
 	const form = useAppForm({
@@ -421,7 +423,7 @@ export function IngredientForm({
 				<div className="sticky bottom-0 z-10 flex justify-start gap-3 py-4">
 					<form.SubmitButton>{submitAction} Ingredient</form.SubmitButton>
 					<Button type="button" variant="outline" asChild>
-						<Link to="/dashboard/ingredients">Cancel</Link>
+						<Link {...cancelLink}>Cancel</Link>
 					</Button>
 				</div>
 			</form.AppForm>

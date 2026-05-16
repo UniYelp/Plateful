@@ -9,8 +9,8 @@ import {
 	Plus,
 	Trash2,
 } from "lucide-react";
-import { useState } from "react";
 import { usePostHog } from "posthog-js/react";
+import { useState } from "react";
 import type { z } from "zod";
 
 import {
@@ -111,7 +111,9 @@ export function IngredientDetailPage() {
 		onSubmitInvalid: focusInvalid,
 		onSubmit: async ({ value }) => {
 			if (!household || !ingredient) return;
-			posthog?.capture("ingredient_quantity_add", { ingredientId: ingredient._id });
+			posthog?.capture("ingredient_quantity_add", {
+				ingredientId: ingredient._id,
+			});
 			await addQuantity({
 				householdId: household._id,
 				ingredientId: ingredient._id,
@@ -131,7 +133,9 @@ export function IngredientDetailPage() {
 	const totalAmount = getTotalAmount(ingredient.quantities);
 
 	const handleRemoveQuantity = async (index: number) => {
-		posthog?.capture("ingredient_quantity_remove", { ingredientId: ingredient._id });
+		posthog?.capture("ingredient_quantity_remove", {
+			ingredientId: ingredient._id,
+		});
 		await removeQuantityAt({
 			householdId: household._id,
 			ingredientId: ingredient._id,
@@ -140,7 +144,9 @@ export function IngredientDetailPage() {
 	};
 
 	const handleMergeQuantities = async () => {
-		posthog?.capture("ingredient_quantity_merge", { ingredientId: ingredient._id });
+		posthog?.capture("ingredient_quantity_merge", {
+			ingredientId: ingredient._id,
+		});
 		await mergeQuantities({
 			ingredientId: ingredient._id,
 			householdId: household._id,
@@ -420,6 +426,18 @@ export function IngredientDetailPage() {
 									<Link
 										to="/dashboard/ingredients/$id/edit"
 										params={{ id: ingredientId }}
+										search={(search) => ({
+											...search,
+											origin: "details",
+										})}
+										mask={{
+											to: "/dashboard/ingredients/$id/edit",
+											params: { id: ingredientId },
+											search: (search) => ({
+												...search,
+												origin: undefined,
+											}),
+										}}
 										className="flex items-center"
 									>
 										<Edit2 className="mr-2 h-4 w-4" />
