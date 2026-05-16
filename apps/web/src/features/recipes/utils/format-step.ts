@@ -74,7 +74,8 @@ const formatMaterialBlock = (
 		return "";
 	}
 
-	const userLocale = undefined;
+	// TODO: change to undefined for the user's locale
+	const userLocale = "en-US";
 
 	const name =
 		"name" in data.ingredient
