@@ -274,7 +274,7 @@ export function IngredientForm({
 										>
 											<SelectValue placeholder="Select category" />
 										</SelectTrigger>
-										<SelectContent>
+										<SelectContent side="bottom">
 											{ingredientsCategoriesOptions.map((category) => (
 												<SelectItem key={category.value} value={category.value}>
 													<span className="flex items-center justify-center gap-2">
