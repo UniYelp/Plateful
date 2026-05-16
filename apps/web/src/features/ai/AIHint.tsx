@@ -20,7 +20,7 @@ export function AIHint({ hint, title, onClick, className }: Props) {
 				className,
 			)}
 		>
-			<Sparkles className="h-3 w-3" />
+			<Sparkles className="h-3 w-3 shrink-0" />
 			<span className="block truncate">{hint}</span>
 		</button>
 	);
@@ -34,7 +34,7 @@ AIHint.Loading = function AIHintLoading({ className }: { className?: string }) {
 				className,
 			)}
 		>
-			<Sparkles className="h-3 w-3" />
+			<Sparkles className="h-3 w-3 shrink-0" />
 			<span className="h-3 w-full rounded bg-indigo-400/20"></span>
 		</div>
 	);
