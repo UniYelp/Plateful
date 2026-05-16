@@ -9,12 +9,12 @@ import { getTotalAmount } from "&/ingredients/utils/total-amount";
 import { CookNowDialog } from "&/recipes/components/CookNowDialog";
 import { Feedback } from "&/recipes/components/Feedback";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
+import { RecipeStepContent } from "&/recipes/components/RecipeStepContent";
 import {
 	calculateRecipeMaxPortions,
 	isIngredientSufficient,
 } from "&/recipes/utils/available-ingredients";
 import { formatDuration } from "&/recipes/utils/format-duration";
-import { formatStep } from "&/recipes/utils/format-step";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -124,7 +124,9 @@ function RecipeDetailPage() {
 							<span className="text-sm">
 								Portions possible:{" "}
 								<span className="font-semibold text-primary">
-									{maxPortions === Number.POSITIVE_INFINITY ? "Unlimited" : maxPortions}
+									{maxPortions === Number.POSITIVE_INFINITY
+										? "Unlimited"
+										: maxPortions}
 								</span>
 							</span>
 						</div>
@@ -246,13 +248,16 @@ function RecipeDetailPage() {
 						<CardContent>
 							<div className="space-y-4">
 								{steps.map((step) => (
-									<div key={step._id} className="flex items-center gap-4">
-										<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
+									<div key={step._id} className="flex items-start gap-4">
+										<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
 											{step.index + 1}
 										</div>
-										<p className="text-sm leading-relaxed">
-											{formatStep(step, ingredientNameById)}
-										</p>
+										<div className="flex-1 text-sm leading-relaxed">
+											<RecipeStepContent
+												step={step}
+												ingredientNameById={ingredientNameById}
+											/>
+										</div>
 									</div>
 								))}
 							</div>

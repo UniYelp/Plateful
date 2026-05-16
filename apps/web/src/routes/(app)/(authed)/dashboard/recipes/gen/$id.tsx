@@ -2,34 +2,21 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
-import { AlertCircle, History, RotateCcw } from "lucide-react";
+import { AlertCircle, RotateCcw } from "lucide-react";
 import { usePostHog } from "posthog-js/react";
 
 import { api } from "@backend/api";
-import { append } from "&/aggregation";
 import { RecipeGenStatus } from "&/recipes/components/loaders/recipe-gen-status";
 import { recipesLoader } from "&/recipes/components/loaders/recipes";
 import {
 	isCompletedRecipeGen,
 	isGeneratingRecipe,
 } from "&/recipes/utils/status";
-import type { NavItem } from "@/components/layouts/Navbar";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/recipes/gen/$id",
 )({
-	staticData: {
-		navbar: {
-			items: append<NavItem>([
-				{
-					to: "/dashboard/recipes/gen",
-					label: "History",
-					icon: <History className="mr-2 h-4 w-4" />,
-				},
-			]),
-		},
-	},
 	loader: async ({ context, params }) => {
 		const { household, queryClient } = context;
 		const { id } = params;
