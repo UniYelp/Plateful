@@ -2,7 +2,6 @@
 
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
-import { Sparkles } from "lucide-react";
 import z from "zod";
 
 import { AIHint } from "&/ai/AIHint";

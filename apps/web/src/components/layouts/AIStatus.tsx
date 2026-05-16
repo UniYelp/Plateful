@@ -5,7 +5,6 @@ import { configByStatus } from "&/ai/config.mapper";
 import { localAiEnabledStorageKey } from "&/ai/constants";
 import { aiStatusQueryOptions } from "&/ai/query";
 import { AIStatus } from "&/ai/status.enum";
-import { Progress } from "@/components/ui/progress";
 import {
 	Tooltip,
 	TooltipContent,
@@ -15,6 +14,7 @@ import {
 
 export function AIStatusIndicator() {
 	const queryClient = useQueryClient();
+
 	const { data, isLoading } = useQuery(aiStatusQueryOptions);
 
 	const status = isLoading ? AIStatus.Loading : data?.status || AIStatus.None;
@@ -61,15 +61,15 @@ export function AIStatusIndicator() {
 					<p className="text-muted-foreground text-xs">
 						{statusConfig.description}
 					</p>
-					{data?.status === AIStatus.Loading && (
+					{/* {status === AIStatus.Loading && (
 						<div className="space-y-1.5 pt-1">
-							<Progress value={data.progress ?? 0} className="h-1" />
+							<Progress value={progress ?? 0} className="h-1" />
 							<div className="flex justify-between font-medium text-[10px] text-muted-foreground uppercase tabular-nums tracking-wider">
 								<span>Downloading Model</span>
-								<span>{data.progress ?? 0}%</span>
+								<span>{progress ? Math.round(progress) : "0"}%</span>
 							</div>
 						</div>
-					)}
+					)} */}
 				</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>
