@@ -1,6 +1,8 @@
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 
+import { HouseholdLoading } from "&/households/components/loaders/HouseholdLoader";
+
 export const Route = createFileRoute("/(app)/(authed)")({
 	beforeLoad: async ({ context }) => {
 		const { auth } = context;
@@ -10,6 +12,7 @@ export const Route = createFileRoute("/(app)/(authed)")({
 		await auth.getToken();
 	},
 	component: AuthGuard,
+	pendingComponent: HouseholdLoading,
 });
 
 function AuthGuard() {

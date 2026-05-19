@@ -207,8 +207,8 @@ importers:
         specifier: ^1.4.25
         version: 1.4.25(@sinclair/typebox@0.34.47)(exact-mirror@0.2.6(@sinclair/typebox@0.34.47))(file-type@19.6.0)(openapi-types@12.1.3)(typescript@5.9.3)
       elysia-clerk:
-        specifier: ^0.13.2
-        version: 0.13.2(elysia@1.4.25(@sinclair/typebox@0.34.47)(exact-mirror@0.2.6(@sinclair/typebox@0.34.47))(file-type@19.6.0)(openapi-types@12.1.3)(typescript@5.9.3))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        specifier: ^1.0.1
+        version: 1.0.1(elysia@1.4.25(@sinclair/typebox@0.34.47)(exact-mirror@0.2.6(@sinclair/typebox@0.34.47))(file-type@19.6.0)(openapi-types@12.1.3)(typescript@5.9.3))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       evlog:
         specifier: ^2.4.1
         version: 2.4.1(elysia@1.4.25(@sinclair/typebox@0.34.47)(exact-mirror@0.2.6(@sinclair/typebox@0.34.47))(file-type@19.6.0)(openapi-types@12.1.3)(typescript@5.9.3))(fastify@5.6.2)(hono@4.11.4)(react@19.2.5)
@@ -394,6 +394,9 @@ importers:
       '@tanstack/react-form-devtools':
         specifier: ^0.2.11
         version: 0.2.11(@types/react@19.2.14)(csstype@3.2.3)(preact@10.28.2)(react@19.2.5)(solid-js@1.9.10)
+      '@tanstack/react-pacer':
+        specifier: ^0.22.1
+        version: 0.22.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@tanstack/react-query':
         specifier: ^5.90.16
         version: 5.90.16(react@19.2.5)
@@ -408,7 +411,7 @@ importers:
         version: 1.149.0(@tanstack/react-router@1.147.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@tanstack/router-core@1.147.1)(csstype@3.2.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@tanstack/react-router-ssr-query':
         specifier: ^1.136.11
-        version: 1.147.3(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.5))(@tanstack/react-router@1.147.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@tanstack/router-core@1.147.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 1.147.3(@tanstack/query-core@5.100.10)(@tanstack/react-query@5.90.16(react@19.2.5))(@tanstack/react-router@1.147.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@tanstack/router-core@1.147.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@tanstack/react-store':
         specifier: ^0.8.0
         version: 0.8.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -430,6 +433,9 @@ importers:
       convex:
         specifier: 'catalog:'
         version: 1.37.0(@clerk/clerk-react@5.59.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
+      dedent:
+        specifier: ^1.7.2
+        version: 1.7.2
       effect:
         specifier: 'catalog:'
         version: 3.19.14
@@ -473,6 +479,9 @@ importers:
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.1(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@types/dom-chromium-ai':
+        specifier: ^0.0.16
+        version: 0.0.16
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
@@ -874,6 +883,10 @@ packages:
     resolution: {integrity: sha512-HflWfWG0jfnOB++3bu1N0lzAgOuapJRmkfX1jdtF3M+Wn4QVHczLMt2To9VIGiTt62+kRUWLV4SONzVvCoOcsA==}
     engines: {node: '>=18.17.0'}
 
+  '@clerk/backend@3.4.9':
+    resolution: {integrity: sha512-2sbnGrHga3t/IFAkyvWO6H9QG1bnj7KUA13hpRB9utOYGCRdCn6oLxtiSdH6uGUzjX/km1dtw0uwZIxYgHbuVA==}
+    engines: {node: '>=20.9.0'}
+
   '@clerk/clerk-react@5.59.3':
     resolution: {integrity: sha512-r1gmAYxhXs+QkXjDwj5Eqvm0Io8PtJ4FKkA45khiAzIQXcaQLFq/wFy7d1K8OSIYAIdFbuO0bnIOU/FdgWOc+A==}
     engines: {node: '>=18.17.0'}
@@ -884,6 +897,18 @@ packages:
   '@clerk/shared@3.42.0':
     resolution: {integrity: sha512-sJUur/7jnHHlAsdoDosxpOmfV05VR7K5rvqlFskj3GaAMFEJrvdOztw0hmhBGVSWiCpjTZfdGITegton8mo7mQ==}
     engines: {node: '>=18.17.0'}
+    peerDependencies:
+      react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
+      react-dom: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  '@clerk/shared@4.12.0':
+    resolution: {integrity: sha512-LEe3lpi1r2DhFH9FuqzVrDQ2UkQJ3TA6XkkqnfHHRBfAJdh+jnYXYiivQpj3znMCihm3FVLOMXcpSqBz80XoQg==}
+    engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
       react-dom: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -3359,6 +3384,11 @@ packages:
     resolution: {integrity: sha512-RPfGuk2bDZgcu9bAJodvO2lnZeHuz4/71HjZ0bGb/SPg8+lyTA+RLSKQvo7fSmPSi8/vcH3aKQ8EM9ywf1olaw==}
     engines: {node: '>=18'}
 
+  '@tanstack/devtools-event-client@0.4.3':
+    resolution: {integrity: sha512-OZI6QyULw0FI0wjgmeYzCIfbgPsOEzwJtCpa69XrfLMtNXLGnz3d/dIabk7frg0TmHo+Ah49w5I4KC7Tufwsvw==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   '@tanstack/devtools-ui@0.4.4':
     resolution: {integrity: sha512-5xHXFyX3nom0UaNfiOM92o6ziaHjGo3mcSGe2HD5Xs8dWRZNpdZ0Smd0B9ddEhy0oB+gXyMzZgUJb9DmrZV0Mg==}
     engines: {node: '>=18'}
@@ -3418,6 +3448,13 @@ packages:
     resolution: {integrity: sha512-y/xtNPNt/YeyoVxE/JCx+T7yjEzpezmbb+toK8DDD1P4m7Kzs5YR956+7OKexG3f8aXgC3rLZl7b1V+yNUSy5w==}
     engines: {node: '>=18'}
 
+  '@tanstack/pacer@0.21.1':
+    resolution: {integrity: sha512-hB01dd4rlsYcTCNP7wK186jgAe6K5qimgM1Y5Jtvz+9PUaILvpmeLLjmQNUNSO1l23lIt+CeQR6mO1mjlPvRtQ==}
+    engines: {node: '>=18'}
+
+  '@tanstack/query-core@5.100.10':
+    resolution: {integrity: sha512-8UR0yJR+GiQ40m3lPhUr0xbfAupe6GSQiksSBSa9SM2NjezFyxXCIA69/lz8cSoNKZLrw1/PktIyQBJcVeMi3w==}
+
   '@tanstack/query-core@5.90.16':
     resolution: {integrity: sha512-MvtWckSVufs/ja463/K4PyJeqT+HMlJWtw6PrCpywznd2NSgO3m4KwO9RqbFqGg6iDE8vVMFWMeQI4Io3eEYww==}
 
@@ -3446,6 +3483,13 @@ packages:
     peerDependenciesMeta:
       '@tanstack/react-start':
         optional: true
+
+  '@tanstack/react-pacer@0.22.1':
+    resolution: {integrity: sha512-CenQqK0GluSPIrnsG1yuD7w5uMSQ/4lI9AcGEFxBrRd66r260boWcYRIsS5+eHtXb238FoZYhKmJPGlhRzmHRw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
 
   '@tanstack/react-query-devtools@5.91.2':
     resolution: {integrity: sha512-ZJ1503ay5fFeEYFUdo7LMNFzZryi6B0Cacrgr2h1JRkvikK1khgIq6Nq2EcblqEdIlgB/r7XDW8f8DQ89RuUgg==}
@@ -3486,6 +3530,12 @@ packages:
     peerDependencies:
       react: '>=18.0.0 || >=19.0.0'
       react-dom: '>=18.0.0 || >=19.0.0'
+
+  '@tanstack/react-store@0.11.0':
+    resolution: {integrity: sha512-tX4YXh3PDkmpvGQWkWqKpzs/MSqbtuwY9dWdWhtV9Q50PmO+jOkUKIWIX4G85dwt7lxdHLXsiaEKPdKmC8F41w==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   '@tanstack/react-store@0.8.0':
     resolution: {integrity: sha512-1vG9beLIuB7q69skxK9r5xiLN3ztzIPfSQSs0GfeqWGO2tGIyInZx0x1COhpx97RKaONSoAb8C3dxacWksm1ow==}
@@ -3542,6 +3592,9 @@ packages:
   '@tanstack/router-utils@1.143.11':
     resolution: {integrity: sha512-N24G4LpfyK8dOlnP8BvNdkuxg1xQljkyl6PcrdiPSA301pOjatRT1y8wuCCJZKVVD8gkd0MpCZ0VEjRMGILOtA==}
     engines: {node: '>=12'}
+
+  '@tanstack/store@0.11.0':
+    resolution: {integrity: sha512-WlzzCt3xi0G6pCAJu1U+2jiECwabETDpQDi3hfkFZvJii9AuZqEKbOiVarX1/bWhTNjU486yQtJCCasi/0q+Cw==}
 
   '@tanstack/store@0.7.7':
     resolution: {integrity: sha512-xa6pTan1bcaqYDS9BDpSiS63qa6EoDkPN9RsRaxHuDdVDNntzq3xNwR5YKTU/V3SkSyC9T4YVOPh2zRQN0nhIQ==}
@@ -3647,6 +3700,9 @@ packages:
 
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
+
+  '@types/dom-chromium-ai@0.0.16':
+    resolution: {integrity: sha512-Z0vOBWckovkc85zctYKGEUUBHaqt9Oz8AUhAVyoNLAsMGlBhMNl/8w1n8JG1y0g7TW03EzWt5RsdcDD70ra58g==}
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -4443,6 +4499,14 @@ packages:
       babel-plugin-macros:
         optional: true
 
+  dedent@1.7.2:
+    resolution: {integrity: sha512-WzMx3mW98SN+zn3hgemf4OzdmyNhhhKz5Ay0pUfQiMQ3e1g+xmTJWp/pKdwKVXhdSkAEGIIzqeuWrL3mV/AXbA==}
+    peerDependencies:
+      babel-plugin-macros: ^3.1.0
+    peerDependenciesMeta:
+      babel-plugin-macros:
+        optional: true
+
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
@@ -4545,10 +4609,10 @@ packages:
   electron-to-chromium@1.5.267:
     resolution: {integrity: sha512-0Drusm6MVRXSOJpGbaSVgcQsuB4hEkMpHXaVstcPmhu5LIedxs1xNK/nIxmQIU/RPC0+1/o0AVZfBTkTNJOdUw==}
 
-  elysia-clerk@0.13.2:
-    resolution: {integrity: sha512-f7C1+Fl7n1jEo8i8u3Is+fq+c63+EfAoqYEAFXBzDrcgE+vEBuRc9rDWeEjL9vBeRH1Uv/Jd9ku/08E7xoZ4vg==}
+  elysia-clerk@1.0.1:
+    resolution: {integrity: sha512-66IOrEoah2uDxzTiOOXosvxq4m2sSh35DrE5IrydSbkHa2v4CUeGq3qhXf93FRI+wE3MoGjsucZZiUxVA5OoRQ==}
     peerDependencies:
-      elysia: ^1.2.0
+      elysia: ^1.4.0
 
   elysia@1.4.25:
     resolution: {integrity: sha512-liKjavH99Gpzrv9cDil6uYWmPuqESfPFV1FIaFSd3iNqo3y7e29sN43VxFIK8tWWnyi6eDAmi2SZk8hNAMQMyg==}
@@ -7376,6 +7440,15 @@ snapshots:
       - react
       - react-dom
 
+  '@clerk/backend@3.4.9(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+    dependencies:
+      '@clerk/shared': 4.12.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      standardwebhooks: 1.0.0
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - react
+      - react-dom
+
   '@clerk/clerk-react@5.59.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@clerk/shared': 3.42.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -7391,6 +7464,17 @@ snapshots:
       js-cookie: 3.0.5
       std-env: 3.10.0
       swr: 2.3.4(react@19.2.5)
+    optionalDependencies:
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
+
+  '@clerk/shared@4.12.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+    dependencies:
+      '@tanstack/query-core': 5.100.10
+      dequal: 2.0.3
+      glob-to-regexp: 0.4.1
+      js-cookie: 3.0.5
+      std-env: 3.10.0
     optionalDependencies:
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
@@ -9408,6 +9492,8 @@ snapshots:
 
   '@tanstack/devtools-event-client@0.4.0': {}
 
+  '@tanstack/devtools-event-client@0.4.3': {}
+
   '@tanstack/devtools-ui@0.4.4(csstype@3.2.3)(solid-js@1.9.10)':
     dependencies:
       clsx: 2.1.1
@@ -9485,6 +9571,13 @@ snapshots:
 
   '@tanstack/pacer-lite@0.1.1': {}
 
+  '@tanstack/pacer@0.21.1':
+    dependencies:
+      '@tanstack/devtools-event-client': 0.4.3
+      '@tanstack/store': 0.11.0
+
+  '@tanstack/query-core@5.100.10': {}
+
   '@tanstack/query-core@5.90.16': {}
 
   '@tanstack/query-devtools@5.92.0': {}
@@ -9522,6 +9615,13 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
+  '@tanstack/react-pacer@0.22.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+    dependencies:
+      '@tanstack/pacer': 0.21.1
+      '@tanstack/react-store': 0.11.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
+
   '@tanstack/react-query-devtools@5.91.2(@tanstack/react-query@5.90.16(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@tanstack/query-devtools': 5.92.0
@@ -9544,12 +9644,12 @@ snapshots:
     transitivePeerDependencies:
       - csstype
 
-  '@tanstack/react-router-ssr-query@1.147.3(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.5))(@tanstack/react-router@1.147.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@tanstack/router-core@1.147.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@tanstack/react-router-ssr-query@1.147.3(@tanstack/query-core@5.100.10)(@tanstack/react-query@5.90.16(react@19.2.5))(@tanstack/react-router@1.147.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@tanstack/router-core@1.147.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@tanstack/query-core': 5.90.16
+      '@tanstack/query-core': 5.100.10
       '@tanstack/react-query': 5.90.16(react@19.2.5)
       '@tanstack/react-router': 1.147.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@tanstack/router-ssr-query-core': 1.147.1(@tanstack/query-core@5.90.16)(@tanstack/router-core@1.147.1)
+      '@tanstack/router-ssr-query-core': 1.147.1(@tanstack/query-core@5.100.10)(@tanstack/router-core@1.147.1)
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
     transitivePeerDependencies:
@@ -9565,6 +9665,13 @@ snapshots:
       react-dom: 19.2.5(react@19.2.5)
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
+
+  '@tanstack/react-store@0.11.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+    dependencies:
+      '@tanstack/store': 0.11.0
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
+      use-sync-external-store: 1.6.0(react@19.2.5)
 
   '@tanstack/react-store@0.8.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
@@ -9627,9 +9734,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-ssr-query-core@1.147.1(@tanstack/query-core@5.90.16)(@tanstack/router-core@1.147.1)':
+  '@tanstack/router-ssr-query-core@1.147.1(@tanstack/query-core@5.100.10)(@tanstack/router-core@1.147.1)':
     dependencies:
-      '@tanstack/query-core': 5.90.16
+      '@tanstack/query-core': 5.100.10
       '@tanstack/router-core': 1.147.1
 
   '@tanstack/router-utils@1.143.11':
@@ -9643,6 +9750,8 @@ snapshots:
       tinyglobby: 0.2.15
     transitivePeerDependencies:
       - supports-color
+
+  '@tanstack/store@0.11.0': {}
 
   '@tanstack/store@0.7.7': {}
 
@@ -9742,6 +9851,8 @@ snapshots:
       assertion-error: 2.0.1
 
   '@types/deep-eql@4.0.2': {}
+
+  '@types/dom-chromium-ai@0.0.16': {}
 
   '@types/estree@1.0.8': {}
 
@@ -10731,6 +10842,8 @@ snapshots:
 
   dedent@1.7.1: {}
 
+  dedent@1.7.2: {}
+
   deep-is@0.1.4: {}
 
   deepmerge-ts@7.1.5: {}
@@ -10821,10 +10934,10 @@ snapshots:
 
   electron-to-chromium@1.5.267: {}
 
-  elysia-clerk@0.13.2(elysia@1.4.25(@sinclair/typebox@0.34.47)(exact-mirror@0.2.6(@sinclair/typebox@0.34.47))(file-type@19.6.0)(openapi-types@12.1.3)(typescript@5.9.3))(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
+  elysia-clerk@1.0.1(elysia@1.4.25(@sinclair/typebox@0.34.47)(exact-mirror@0.2.6(@sinclair/typebox@0.34.47))(file-type@19.6.0)(openapi-types@12.1.3)(typescript@5.9.3))(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
-      '@clerk/backend': 2.29.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@clerk/shared': 3.42.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@clerk/backend': 3.4.9(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@clerk/shared': 4.12.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       elysia: 1.4.25(@sinclair/typebox@0.34.47)(exact-mirror@0.2.6(@sinclair/typebox@0.34.47))(file-type@19.6.0)(openapi-types@12.1.3)(typescript@5.9.3)
     transitivePeerDependencies:
       - react

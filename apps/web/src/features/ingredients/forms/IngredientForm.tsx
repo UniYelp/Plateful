@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkComponentProps } from "@tanstack/react-router";
 import { useConvex } from "convex/react";
 import { AlertCircle } from "lucide-react";
 
@@ -43,12 +43,15 @@ import {
 import { TextArea } from "@/components/ui/textarea";
 import { useAppForm } from "@/lib/form";
 import type { SelectGroup, SelectOption } from "@/types/ui/select";
+import { DescriptionHint } from "./DescriptionHind";
+import { ExpiryDateHint } from "./ExpiryDateHint";
 
 type Props = {
 	householdId: Id<"households">;
 	relatedRecipes?: { _id: string; title: string }[];
 	defaultValues?: Partial<IngredientFormInput>;
 	submitAction: string;
+	cancelLink: LinkComponentProps;
 	onSubmit: (value: IngredientFormOutput) => Promise<void>;
 };
 
@@ -74,6 +77,7 @@ export function IngredientForm({
 	relatedRecipes,
 	defaultValues,
 	submitAction,
+	cancelLink,
 	onSubmit,
 }: Props) {
 	const form = useAppForm({
@@ -224,7 +228,20 @@ export function IngredientForm({
 						<form.AppField name="description">
 							{(field) => (
 								<div className="space-y-2">
-									<Label htmlFor="description">Description</Label>
+									<div className="relative flex items-center justify-between">
+										<Label htmlFor="description">Description</Label>
+										<form.Subscribe selector={(state) => [state.values.name]}>
+											{([ingredientName]) => (
+												<DescriptionHint
+													ingredientName={ingredientName}
+													isEmpty={!field.state.value}
+													onSelect={(description) =>
+														field.handleChange(description)
+													}
+												/>
+											)}
+										</form.Subscribe>
+									</div>
 									<TextArea
 										className="field-sizing-fixed"
 										placeholder="e.g., Organic fresh basil leaves from local farm"
@@ -257,7 +274,7 @@ export function IngredientForm({
 										>
 											<SelectValue placeholder="Select category" />
 										</SelectTrigger>
-										<SelectContent>
+										<SelectContent side="bottom">
 											{ingredientsCategoriesOptions.map((category) => (
 												<SelectItem key={category.value} value={category.value}>
 													<span className="flex items-center justify-center gap-2">
@@ -280,8 +297,12 @@ export function IngredientForm({
 								</div>
 							)}
 						</form.AppField>
-						<form.Subscribe selector={(state) => state.values.quantities}>
-							{(quantities) => (
+						<form.Subscribe
+							selector={(state) =>
+								[state.values.quantities, state.values.name] as const
+							}
+						>
+							{([quantities, ingredientName]) => (
 								<div className="space-y-6">
 									<div className="flex items-center justify-between">
 										<Label className="font-semibold text-base">
@@ -367,17 +388,24 @@ export function IngredientForm({
 															<Label htmlFor={`expiryDate-${index}`}>
 																Expiry Date
 															</Label>
-															<Input
-																id={`expiryDate-${index}`}
-																type="date"
-																value={field.state.value ?? ""}
-																aria-invalid={isInvalidTouched(field)}
-																onChange={(e) =>
-																	field.handleChange(
-																		e.target.value || undefined,
-																	)
-																}
-															/>
+															<div className="relative">
+																<Input
+																	id={`expiryDate-${index}`}
+																	type="date"
+																	value={field.state.value ?? ""}
+																	aria-invalid={isInvalidTouched(field)}
+																	onChange={(e) =>
+																		field.handleChange(
+																			e.target.value || undefined,
+																		)
+																	}
+																/>
+																<ExpiryDateHint
+																	ingredientName={ingredientName}
+																	currentExpiry={field.state.value}
+																	onSelect={(val) => field.handleChange(val)}
+																/>
+															</div>
 															<field.FieldError />
 														</div>
 													)}
@@ -395,7 +423,7 @@ export function IngredientForm({
 				<div className="sticky bottom-0 z-10 flex justify-start gap-3 py-4">
 					<form.SubmitButton>{submitAction} Ingredient</form.SubmitButton>
 					<Button type="button" variant="outline" asChild>
-						<Link to="/dashboard/ingredients">Cancel</Link>
+						<Link {...cancelLink}>Cancel</Link>
 					</Button>
 				</div>
 			</form.AppForm>

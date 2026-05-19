@@ -1,7 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Eye, Package, Plus, Search } from "lucide-react";
+import { Edit2, Eye, Package, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -9,6 +9,7 @@ import { getExpiryDetailsFromExpiryDates } from "@plateful/ingredients";
 import { api } from "@backend/api";
 import { ingredientLoader } from "&/ingredients/component/loaders/ingredient";
 import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
+import { OutOfStockButton } from "&/ingredients/components/OutOfStockButton";
 import { ReceiptScanner } from "&/ingredients/components/ReceiptScanner";
 import {
 	categories,
@@ -190,20 +191,27 @@ function IngredientsPage() {
 										className="h-16 w-16 rounded-lg bg-muted object-cover"
 									/>
 									<div className="min-w-0 flex-1">
-										<div className="flex items-start justify-between">
+										<div className="flex items-start justify-between gap-2">
 											<h3 className="truncate font-semibold">
 												{ingredient.name}
 											</h3>
-											{expiryStatusDetails && (
-												<Badge
-													variant={
-														colorByExpiryStatus[expiryStatusDetails.status]
-													}
-													className="text-nowrap text-xs"
-												>
-													{expiryStatusDetails.text}
-												</Badge>
-											)}
+											<div className="flex shrink-0 items-center gap-1">
+												{expiryStatusDetails && (
+													<Badge
+														variant={
+															colorByExpiryStatus[expiryStatusDetails.status]
+														}
+														className="text-nowrap text-xs"
+													>
+														{expiryStatusDetails.text}
+													</Badge>
+												)}
+												<OutOfStockButton
+													ingredientId={ingredient._id}
+													householdId={household._id}
+													isDisabled={ingredient.quantities.length === 0}
+												/>
+											</div>
 										</div>
 										<p className="truncate text-muted-foreground text-sm">
 											{ingredient.description}
@@ -227,6 +235,32 @@ function IngredientsPage() {
 										>
 											<Eye className="mr-1 h-3 w-3" />
 											View
+										</Link>
+									</Button>
+									<Button
+										asChild
+										variant="outline"
+										size="sm"
+										className="bg-transparent"
+									>
+										<Link
+											to="/dashboard/ingredients/$id/edit"
+											params={{ id: ingredient._id }}
+											search={(search) => ({
+												...search,
+												origin: "main",
+											})}
+											mask={{
+												to: "/dashboard/ingredients/$id/edit",
+												params: { id: ingredient._id },
+												search: (search) => ({
+													...search,
+													origin: undefined,
+												}),
+											}}
+										>
+											<Edit2 className="h-4 w-4" />
+											<span className="sr-only">Edit</span>
 										</Link>
 									</Button>
 									<DeleteIngredientButton

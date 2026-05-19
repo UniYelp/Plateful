@@ -9,8 +9,8 @@ import {
 	Plus,
 	Trash2,
 } from "lucide-react";
-import { useState } from "react";
 import { usePostHog } from "posthog-js/react";
+import { useState } from "react";
 import type { z } from "zod";
 
 import {
@@ -25,13 +25,16 @@ import type { Id } from "@backend/dataModel";
 import { submitFormHandler } from "&/forms/utils/submission";
 import { focusInvalid, isInvalidTouched } from "&/forms/utils/validation";
 import { useCurrentHousehold } from "&/households/hooks/useCurrentHouseholds";
+import { ingredientLoader } from "&/ingredients/component/loaders/ingredient";
 import { DeleteIngredientButton } from "&/ingredients/components/DeleteIngredientButton";
+import { OutOfStockButton } from "&/ingredients/components/OutOfStockButton";
 import {
 	colorByExpiryStatus,
 	ingredientImgByCategory,
 } from "&/ingredients/constants";
 import { IngredientQuantitySchema } from "&/ingredients/forms/schemas";
 import { getTotalAmount } from "&/ingredients/utils/total-amount";
+import { Loader } from "@/components/layouts/Loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -111,7 +114,9 @@ export function IngredientDetailPage() {
 		onSubmitInvalid: focusInvalid,
 		onSubmit: async ({ value }) => {
 			if (!household || !ingredient) return;
-			posthog?.capture("ingredient_quantity_add", { ingredientId: ingredient._id });
+			posthog?.capture("ingredient_quantity_add", {
+				ingredientId: ingredient._id,
+			});
 			await addQuantity({
 				householdId: household._id,
 				ingredientId: ingredient._id,
@@ -126,12 +131,14 @@ export function IngredientDetailPage() {
 		},
 	});
 
-	if (!household || !ingredient) return "Loading...";
+	if (!household || !ingredient) return ingredientLoader;
 
 	const totalAmount = getTotalAmount(ingredient.quantities);
 
 	const handleRemoveQuantity = async (index: number) => {
-		posthog?.capture("ingredient_quantity_remove", { ingredientId: ingredient._id });
+		posthog?.capture("ingredient_quantity_remove", {
+			ingredientId: ingredient._id,
+		});
 		await removeQuantityAt({
 			householdId: household._id,
 			ingredientId: ingredient._id,
@@ -140,7 +147,9 @@ export function IngredientDetailPage() {
 	};
 
 	const handleMergeQuantities = async () => {
-		posthog?.capture("ingredient_quantity_merge", { ingredientId: ingredient._id });
+		posthog?.capture("ingredient_quantity_merge", {
+			ingredientId: ingredient._id,
+		});
 		await mergeQuantities({
 			ingredientId: ingredient._id,
 			householdId: household._id,
@@ -376,7 +385,7 @@ export function IngredientDetailPage() {
 
 							<CardContent>
 								<div className="space-y-2">
-									{!recipes && "Loading..."}
+									{!recipes && <Loader />}
 									{recipes?.length === 0 && (
 										<p className="text-muted-foreground text-sm">
 											This ingredient is not used in any recipes.
@@ -420,13 +429,30 @@ export function IngredientDetailPage() {
 									<Link
 										to="/dashboard/ingredients/$id/edit"
 										params={{ id: ingredientId }}
+										search={(search) => ({
+											...search,
+											origin: "details",
+										})}
+										mask={{
+											to: "/dashboard/ingredients/$id/edit",
+											params: { id: ingredientId },
+											search: (search) => ({
+												...search,
+												origin: undefined,
+											}),
+										}}
 										className="flex items-center"
 									>
 										<Edit2 className="mr-2 h-4 w-4" />
 										Edit Ingredient
 									</Link>
 								</Button>
-
+								<OutOfStockButton
+									variant="full"
+									ingredientId={ingredient._id}
+									householdId={household._id}
+									isDisabled={ingredient.quantities.length === 0}
+								/>
 								<DeleteIngredientButton
 									variant="full"
 									ingredientId={ingredient._id}

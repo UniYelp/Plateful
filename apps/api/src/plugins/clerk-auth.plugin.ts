@@ -7,7 +7,6 @@ export const clerkAuth = () =>
 	new Elysia({ name: ClerkAuthPluginName }).use(clerkPlugin()).macro({
 		auth: {
 			async resolve({ clerk, auth, status }) {
-				console.log(typeof auth); // prints undefined // TODO: fix this
 				const { userId } = auth?.() ?? {};
 
 				/**

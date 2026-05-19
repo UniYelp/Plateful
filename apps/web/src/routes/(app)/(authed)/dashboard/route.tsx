@@ -3,11 +3,18 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { api } from "@backend/api";
 import { append } from "&/aggregation";
+import { HouseholdLoading } from "&/households/components/loaders/HouseholdLoader";
+import { AIStatusIndicator } from "@/components/layouts/AIStatus";
 import type { NavItem } from "@/components/layouts/Navbar";
 import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 	staticData: {
+		header: {
+			actions: append<React.ReactElement>([
+				<AIStatusIndicator key="ai-status" />,
+			]),
+		},
 		navbar: {
 			items: append<NavItem>([
 				{
@@ -48,6 +55,7 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 		],
 	}),
 	component: RouteComponent,
+	pendingComponent: HouseholdLoading,
 });
 
 function RouteComponent() {

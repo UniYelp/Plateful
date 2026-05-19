@@ -2,12 +2,15 @@ import { SignInButton } from "@clerk/clerk-react";
 import { Link } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 
+import { useAggregatedMatch } from "&/router/hooks/use-aggregated-matches";
 import type { FileRouteTypes } from "@/routeTree.gen";
 import { UserProfile } from "../user-profile";
 import { Brand } from "./Brand";
 import { DesktopNav, MobileNav } from "./Navbar";
 
 export function Header() {
+	const actions = useAggregatedMatch((data) => data.header?.actions);
+
 	return (
 		<header className="sticky top-0 z-50 border-border border-b bg-card/50 backdrop-blur-sm">
 			<div className="container mx-auto flex items-center justify-between px-4 py-4">
@@ -20,6 +23,7 @@ export function Header() {
 				<DesktopNav />
 
 				<div className="flex flex-1 items-center justify-end gap-2 md:gap-4">
+					{actions}
 					<MobileNav />
 					<div className="flex min-w-7 items-center gap-3">
 						<Unauthenticated>

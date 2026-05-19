@@ -1,7 +1,13 @@
 import { usePostHog } from "@posthog/react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	type LinkComponentProps,
+	useNavigate,
+} from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { ArrowLeft, Package } from "lucide-react";
+import { z } from "zod";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
@@ -19,6 +25,9 @@ import {
 export const Route = createFileRoute(
 	"/(app)/(authed)/dashboard/ingredients/$id/edit",
 )({
+	validateSearch: z.object({
+		origin: z.enum(["main", "details"]).optional(),
+	}),
 	loader: ({ context }) => {
 		const { household } = context;
 		return { householdId: household._id };
@@ -34,7 +43,8 @@ function EditIngredientPage() {
 	const { householdId } = Route.useLoaderData();
 
 	const posthog = usePostHog();
-	const navigate = Route.useNavigate();
+	const origin = Route.useSearch({ select: (search) => search.origin });
+	const navigate = useNavigate();
 
 	const editIngredient = useMutation(api.ingredients.edit);
 
@@ -49,6 +59,14 @@ function EditIngredientPage() {
 		householdId,
 		ingredientId: paramIngredientId as Id<"ingredients">,
 	});
+
+	const originLinkProps: LinkComponentProps =
+		origin === "details"
+			? {
+					to: "/dashboard/ingredients/$id",
+					params: { id: paramIngredientId },
+				}
+			: { to: "/dashboard/ingredients" };
 
 	const onSubmit = async (value: IngredientFormOutput) => {
 		const quantities = value.quantities.map((q) => ({
@@ -74,10 +92,7 @@ function EditIngredientPage() {
 			...(ingredient?.name !== value.name && { oldName: ingredient?.name }),
 		});
 
-		navigate({
-			to: "/dashboard/ingredients/$id",
-			params: { id: ingredientId },
-		});
+		void navigate(originLinkProps);
 	};
 
 	return (
@@ -86,10 +101,7 @@ function EditIngredientPage() {
 				{/* Page Header */}
 				<div className="mb-8 flex items-center gap-4">
 					<Button variant="ghost" size="sm" asChild>
-						<Link
-							to="/dashboard/ingredients/$id"
-							params={{ id: paramIngredientId }}
-						>
+						<Link {...originLinkProps}>
 							<ArrowLeft className="mr-2 h-4 w-4" />
 							Back
 						</Link>
@@ -143,6 +155,7 @@ function EditIngredientPage() {
 									: [{ amount: NaN }],
 							}}
 							submitAction="Edit"
+							cancelLink={originLinkProps}
 							onSubmit={onSubmit}
 						/>
 					</CardContent>

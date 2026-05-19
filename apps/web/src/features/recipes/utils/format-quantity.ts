@@ -25,6 +25,6 @@ export const formatQuantity = (quantity: {
 			? (IngredientSymbol[unit.toLowerCase() as IngredientUnit] ?? unit)
 			: "";
 
-		return `${numberPart}x ${unitSymbol}`.trim();
+		return `${numberPart}${unitSymbol ? `x ${unitSymbol}` : ""}`.trim();
 	}
 };

@@ -5,6 +5,7 @@ import { node } from "@elysiajs/node";
 import { openapi } from "@elysiajs/openapi";
 import { serverTiming } from "@elysiajs/server-timing";
 import { Elysia } from "elysia";
+import { clerkPlugin } from "elysia-clerk";
 import { initLogger } from "evlog";
 import z from "zod";
 
@@ -14,10 +15,11 @@ import { LockedError } from "./models/errors/locked";
 import { RateLimitError } from "./models/errors/rate-limit";
 import { devOnly } from "./modules/dev/index";
 import { health } from "./modules/health";
+import { receipts } from "./modules/receipts";
 import { recipes } from "./modules/recipes";
+import { auth } from "./plugins/auth.plugin";
 import { logger } from "./plugins/logger.plugin";
 import { requestId } from "./plugins/request-id.plugin";
-import { receipts } from "./modules/receipts";
 
 initLogger({
 	env: {
@@ -56,6 +58,8 @@ export const app = new Elysia({ adapter: node() })
 		}
 	})
 	.use(serverTiming())
+	.use(clerkPlugin())
+	.use(auth())
 	.get("/", () => `Welcome to ${appConfig.name}`)
 	.use(health)
 	.use(recipes)
