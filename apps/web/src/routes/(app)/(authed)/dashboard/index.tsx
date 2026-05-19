@@ -85,8 +85,8 @@ function DashboardPage() {
 			<div className="mb-8 grid grid-cols-3 gap-4 md:grid-cols-3">
 				<Card>
 					<CardContent className="p-4">
-						<div className="flex items-center gap-3">
-							<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+						<div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+							<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
 								<Package className="h-5 w-5 text-primary" />
 							</div>
 							<div>
@@ -101,8 +101,8 @@ function DashboardPage() {
 
 				<Card>
 					<CardContent className="p-4">
-						<div className="flex items-center gap-3">
-							<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+						<div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+							<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
 								<BookOpen className="h-5 w-5 text-primary" />
 							</div>
 							<div>
@@ -115,8 +115,8 @@ function DashboardPage() {
 
 				<Card className="border-destructive/50">
 					<CardContent className="p-4">
-						<div className="flex items-center gap-3">
-							<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
+						<div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+							<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
 								<AlertTriangle className="h-5 w-5 text-destructive" />
 							</div>
 							<div>

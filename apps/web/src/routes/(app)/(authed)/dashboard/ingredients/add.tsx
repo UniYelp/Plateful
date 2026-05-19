@@ -97,6 +97,7 @@ function AddIngredientPage() {
 						submitAction="Add"
 						householdId={householdId}
 						onSubmit={onSubmit}
+						cancelLink={{ to: "/dashboard/ingredients" }}
 					/>
 				</CardContent>
 			</Card>
