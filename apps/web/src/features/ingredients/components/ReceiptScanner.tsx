@@ -432,212 +432,200 @@ export function ReceiptScanner({
 														key={`ing-${idx}`}
 														className="group relative p-4 transition-colors hover:bg-muted/30"
 													>
-														<div className="flex flex-col gap-4">
-															{/* Main Header Row: Name, Category, Trash */}
-															<div className="flex items-start gap-4">
-																{/* Index Number - Aligned to Name input top */}
-																<div className="mt-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/50 font-bold text-[10px] text-muted-foreground">
-																	{idx + 1}
-																</div>
+														<div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 md:grid-cols-[auto_1fr_1fr_180px_auto] md:items-start md:gap-4">
+															{/* Index Number */}
+															<div className="col-start-1 row-start-1 mt-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/50 font-bold text-[10px] text-muted-foreground md:col-start-auto md:row-start-auto">
+																{idx + 1}
+															</div>
 
-																<div className="flex flex-1 flex-col gap-1.5">
-																	{/* Name and Description Group - Same Row */}
-																	<div className="flex gap-3">
-																		<div className="flex-1">
-																			<form.AppField
-																				name={`ingredients[${idx}].name`}
-																			>
-																				{(field) => (
-																					<Input
-																						value={field.state.value}
-																						onChange={(e) =>
-																							field.handleChange(e.target.value)
-																						}
-																						placeholder="Ingredient Name"
-																						className="h-9 bg-background font-semibold text-base shadow-sm focus-visible:ring-1"
-																					/>
-																				)}
-																			</form.AppField>
-																		</div>
-																		<div className="flex-1">
-																			<form.AppField
-																				name={`ingredients[${idx}].description`}
-																			>
-																				{(field) => (
-																					<Input
-																						value={field.state.value ?? ""}
-																						onChange={(e) =>
-																							field.handleChange(e.target.value)
-																						}
-																						placeholder="Notes/Description"
-																						className="h-9 bg-muted/20 px-3 text-muted-foreground text-xs italic shadow-sm focus-visible:ring-1"
-																					/>
-																				)}
-																			</form.AppField>
-																		</div>
-																	</div>
-
-																	{/* Quantities Section - Indented under name */}
-																	<div className="mt-3 space-y-2">
-																		<form.Subscribe
-																			selector={(state) =>
-																				state.values.ingredients[idx].quantities
+															{/* Ingredient Name */}
+															<div className="col-start-2 row-start-1 md:col-start-auto md:row-start-auto">
+																<form.AppField
+																	name={`ingredients[${idx}].name`}
+																>
+																	{(field) => (
+																		<Input
+																			value={field.state.value}
+																			onChange={(e) =>
+																				field.handleChange(e.target.value)
 																			}
+																			placeholder="Ingredient Name"
+																			className="h-9 bg-background font-semibold text-base shadow-sm focus-visible:ring-1"
+																		/>
+																	)}
+																</form.AppField>
+															</div>
+
+															{/* Notes/Description */}
+															<div className="col-span-2 col-start-2 row-start-2 md:col-span-1 md:col-start-auto md:row-start-auto">
+																<form.AppField
+																	name={`ingredients[${idx}].description`}
+																>
+																	{(field) => (
+																		<Input
+																			value={field.state.value ?? ""}
+																			onChange={(e) =>
+																				field.handleChange(e.target.value)
+																			}
+																			placeholder="Notes/Description"
+																			className="h-9 bg-muted/20 px-3 text-muted-foreground text-xs italic shadow-sm focus-visible:ring-1"
+																		/>
+																	)}
+																</form.AppField>
+															</div>
+
+															{/* Category Select */}
+															<div className="col-span-2 col-start-2 row-start-3 w-full md:col-span-1 md:col-start-auto md:row-start-auto md:w-[180px]">
+																<form.AppField
+																	name={`ingredients[${idx}].category`}
+																>
+																	{(field) => (
+																		<Select
+																			value={field.state.value}
+																			onValueChange={field.handleChange}
 																		>
-																			{(quantities) => (
-																				<>
-																					{quantities.map((_, qIdx) => (
-																						<div
-																							key={`q-${qIdx}`}
-																							className="grid grid-cols-[90px_1fr_160px_32px] items-center gap-2"
+																			<SelectTrigger className="h-9 w-full bg-background text-xs shadow-sm">
+																				<SelectValue placeholder="Category" />
+																			</SelectTrigger>
+																			<SelectContent>
+																				{ingredientsCategoriesOptions.map(
+																					(cat) => (
+																						<SelectItem
+																							key={cat.value}
+																							value={cat.value}
 																						>
-																							<form.AppField
-																								name={`ingredients[${idx}].quantities[${qIdx}].amount`}
-																							>
-																								{(field) => (
-																									<Input
-																										type="number"
-																										value={field.state.value}
-																										onChange={(e) =>
-																											field.handleChange(
-																												parseFloat(
-																													e.target.value,
-																												) || 0,
-																											)
-																										}
-																										placeholder="Qty"
-																										className="h-8 bg-background px-2 text-sm shadow-sm focus-visible:ring-1"
-																									/>
-																								)}
-																							</form.AppField>
-																							<form.AppField
-																								name={`ingredients[${idx}].quantities[${qIdx}].unit`}
-																							>
-																								{(field) => (
-																									<Combobox<string>
-																										value={
-																											field.state.value ?? ""
-																										}
-																										onChange={(value) =>
-																											field.handleChange(
-																												value || null,
-																											)
-																										}
-																										groups={
-																											ingredientUnitGroups
-																										}
-																										className="h-8 bg-background text-xs shadow-sm focus-visible:ring-1"
-																									/>
-																								)}
-																							</form.AppField>
-																							<form.AppField
-																								name={`ingredients[${idx}].quantities[${qIdx}].expiresAt`}
-																							>
-																								{(field) => (
-																									<div className="flex items-center gap-2 rounded-md border bg-background px-2">
-																										<span className="text-[10px] text-muted-foreground uppercase">
-																											Exp:
-																										</span>
-																										<Input
-																											type="date"
-																											value={
-																												field.state.value ?? ""
-																											}
-																											onChange={(e) =>
-																												field.handleChange(
-																													e.target.value,
-																												)
-																											}
-																											className="h-8 border-none bg-transparent p-0 text-xs shadow-none focus-visible:ring-0"
-																										/>
-																									</div>
-																								)}
-																							</form.AppField>
-																							<Button
-																								type="button"
-																								variant="ghost"
-																								size="icon"
-																								onClick={() =>
-																									form.removeFieldValue(
-																										`ingredients[${idx}].quantities`,
-																										qIdx,
+																							{cat.label}
+																						</SelectItem>
+																					),
+																				)}
+																			</SelectContent>
+																		</Select>
+																	)}
+																</form.AppField>
+															</div>
+
+															{/* Delete Button */}
+															<Button
+																type="button"
+																variant="ghost"
+																size="icon"
+																onClick={() =>
+																	form.removeFieldValue("ingredients", idx)
+																}
+																className="col-start-3 row-start-1 h-9 w-9 justify-self-end text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive md:col-start-auto md:row-start-auto md:justify-self-auto"
+															>
+																<Trash2 className="h-4 w-4" />
+															</Button>
+
+															<div className="col-span-2 col-start-2 row-start-4 mt-3 space-y-4 md:col-span-3 md:col-start-2 md:row-start-auto md:space-y-2">
+																<form.Subscribe
+																	selector={(state) =>
+																		state.values.ingredients[idx].quantities
+																	}
+																>
+																	{(quantities) => (
+																		<>
+																			{quantities.map((_, qIdx) => (
+																				<div
+																					key={`q-${qIdx}`}
+																					className="grid grid-cols-[80px_1fr_32px] items-center gap-2 border-border/30 border-b pb-3 last:border-0 last:pb-0 md:grid-cols-[90px_1fr_160px_32px] md:gap-2 md:border-0 md:pb-0"
+																				>
+																					<form.AppField
+																						name={`ingredients[${idx}].quantities[${qIdx}].amount`}
+																					>
+																						{(field) => (
+																							<Input
+																								type="number"
+																								value={field.state.value}
+																								onChange={(e) =>
+																									field.handleChange(
+																										parseFloat(
+																											e.target.value,
+																										) || 0,
 																									)
 																								}
-																								disabled={
-																									quantities.length === 1
+																								placeholder="Qty"
+																								className="col-start-1 row-start-1 h-8 bg-background px-2 text-sm shadow-sm focus-visible:ring-1 md:col-start-auto md:row-start-auto"
+																							/>
+																						)}
+																					</form.AppField>
+																					<form.AppField
+																						name={`ingredients[${idx}].quantities[${qIdx}].unit`}
+																					>
+																						{(field) => (
+																							<Combobox<string>
+																								value={field.state.value ?? ""}
+																								onChange={(value) =>
+																									field.handleChange(
+																										value || null,
+																									)
 																								}
-																								className="h-7 w-7 text-muted-foreground hover:text-destructive"
-																							>
-																								<X className="h-3.5 w-3.5" />
-																							</Button>
-																						</div>
-																					))}
-																				</>
-																			)}
-																		</form.Subscribe>
+																								groups={ingredientUnitGroups}
+																								className="col-start-2 row-start-1 h-8 bg-background text-xs shadow-sm focus-visible:ring-1 md:col-start-auto md:row-start-auto"
+																							/>
+																						)}
+																					</form.AppField>
+																					<form.AppField
+																						name={`ingredients[${idx}].quantities[${qIdx}].expiresAt`}
+																					>
+																						{(field) => (
+																							<div className="col-span-2 col-start-1 row-start-2 flex items-center gap-2 rounded-md border bg-background px-2 md:col-span-1 md:col-start-auto md:row-start-auto">
+																								<span className="text-[10px] text-muted-foreground uppercase">
+																									Exp:
+																								</span>
+																								<Input
+																									type="date"
+																									value={
+																										field.state.value ?? ""
+																									}
+																									onChange={(e) =>
+																										field.handleChange(
+																											e.target.value,
+																										)
+																									}
+																									className="h-8 w-full border-none bg-transparent p-0 text-xs shadow-none focus-visible:ring-0"
+																								/>
+																							</div>
+																						)}
+																					</form.AppField>
+																					<Button
+																						type="button"
+																						variant="ghost"
+																						size="icon"
+																						onClick={() =>
+																							form.removeFieldValue(
+																								`ingredients[${idx}].quantities`,
+																								qIdx,
+																							)
+																						}
+																						disabled={quantities.length === 1}
+																						className="col-start-3 row-start-1 h-7 w-7 justify-self-end text-muted-foreground hover:text-destructive disabled:pointer-events-auto disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground md:col-start-auto md:row-start-auto md:justify-self-auto"
+																					>
+																						<X className="h-3.5 w-3.5" />
+																					</Button>
+																				</div>
+																			))}
+																		</>
+																	)}
+																</form.Subscribe>
 
-																		<Button
-																			type="button"
-																			variant="ghost"
-																			size="sm"
-																			className="h-7 px-0 text-primary text-xs hover:bg-transparent hover:underline"
-																			onClick={() =>
-																				form.pushFieldValue(
-																					`ingredients[${idx}].quantities`,
-																					{
-																						amount: 1,
-																						unit: null,
-																					},
-																				)
-																			}
-																		>
-																			<Plus className="mr-1 h-3 w-3" />
-																			Add Batch
-																		</Button>
-																	</div>
-																</div>
-
-																{/* Category Select - Aligned to Name input top */}
-																<div className="mt-0 w-[180px]">
-																	<form.AppField
-																		name={`ingredients[${idx}].category`}
-																	>
-																		{(field) => (
-																			<Select
-																				value={field.state.value}
-																				onValueChange={field.handleChange}
-																			>
-																				<SelectTrigger className="h-9 bg-background text-xs shadow-sm">
-																					<SelectValue placeholder="Category" />
-																				</SelectTrigger>
-																				<SelectContent>
-																					{ingredientsCategoriesOptions.map(
-																						(cat) => (
-																							<SelectItem
-																								key={cat.value}
-																								value={cat.value}
-																							>
-																								{cat.label}
-																							</SelectItem>
-																						),
-																					)}
-																				</SelectContent>
-																			</Select>
-																		)}
-																	</form.AppField>
-																</div>
-
-																{/* Delete Button - Aligned to Name input top */}
 																<Button
 																	type="button"
 																	variant="ghost"
-																	size="icon"
+																	size="sm"
+																	className="h-7 px-0 text-primary text-xs hover:bg-transparent hover:text-primary-hover hover:underline"
 																	onClick={() =>
-																		form.removeFieldValue("ingredients", idx)
+																		form.pushFieldValue(
+																			`ingredients[${idx}].quantities`,
+																			{
+																				amount: 1,
+																				unit: null,
+																			},
+																		)
 																	}
-																	className="mt-0 h-9 w-9 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
 																>
-																	<Trash2 className="h-4 w-4" />
+																	<Plus className="mr-1 h-3 w-3" />
+																	Add Batch
 																</Button>
 															</div>
 														</div>
@@ -651,7 +639,7 @@ export function ReceiptScanner({
 								<Button
 									type="button"
 									variant="outline"
-									className="h-12 w-full rounded-2xl border-dashed bg-muted/10 transition-all hover:bg-muted/20 hover:shadow-sm"
+									className="h-12 w-full rounded-2xl border-dashed bg-muted/10 transition-all hover:bg-muted/20 hover:text-foreground hover:shadow-sm"
 									onClick={handleAddRow}
 								>
 									<Plus className="mr-2 h-4 w-4" />
