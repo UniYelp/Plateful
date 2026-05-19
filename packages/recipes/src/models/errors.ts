@@ -125,6 +125,18 @@ export class QuantityExceededError extends Error {
 	}
 }
 
+export class UnusedInputMaterialInStepError extends Error {
+	static readonly _tag = "UnusedInputMaterialInStepError";
+	readonly _tag = UnusedInputMaterialInStepError._tag;
+
+	constructor(
+		public id: string,
+		public stepIndex: number,
+	) {
+		super(`Material ${id} was not used as an input in step ${stepIndex}`);
+	}
+}
+
 export class ExtraIngredientsUsedError extends Error {
 	static readonly _tag = "ExtraIngredientsUsedError";
 	readonly _tag = ExtraIngredientsUsedError._tag;
@@ -152,6 +164,7 @@ export type RecipeValidationIssue =
 	| MaterialUsedBeforeProducedError
 	| MaterialProducedBeforeInputsError
 	| MaterialQuantityExceededError
+	| UnusedInputMaterialInStepError
 	| ExtraIngredientsUsedError
 	| ExtraToolsUsedError
 	| InternalRecipeGraphError;

@@ -1,6 +1,8 @@
 import type { GoogleLanguageModelOptions } from "@ai-sdk/google";
 
 import {
+	ExtraIngredientsUsedError,
+	ExtraToolsUsedError,
 	IngredientNotUsedOnlyAsInputError,
 	InternalRecipeGraphError,
 	MaterialProducedBeforeInputsError,
@@ -10,6 +12,7 @@ import {
 	type RecipeValidationIssue,
 	UnreachableMaterialError,
 	UnusedDerivedOutputError,
+	UnusedInputMaterialInStepError,
 	UsedOutputMaterialError,
 } from "@plateful/recipes";
 
@@ -18,7 +21,7 @@ export const safetySettings = [
 		// Crucial for food apps to prevent advice on eating
 		// inedible items or dangerous prep methods.
 		category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-		threshold: "BLOCK_LOW_AND_ABOVE",
+		threshold: "BLOCK_ONLY_HIGH",
 	},
 	{
 		// Standard protection for community/social recipe sharing.
@@ -36,7 +39,7 @@ export const safetySettings = [
 	},
 	{
 		category: "HARM_CATEGORY_UNSPECIFIED",
-		threshold: "BLOCK_MEDIUM_AND_ABOVE",
+		threshold: "BLOCK_ONLY_HIGH",
 	},
 ] satisfies GoogleLanguageModelOptions["safetySettings"];
 
@@ -56,8 +59,11 @@ export const errorMessageByErrorTag = {
 	[MaterialQuantityExceededError._tag]:
 		"Recipe has materials that exceeded their maximum quantity",
 	[InternalRecipeGraphError._tag]: "Internal recipe graph error",
-	ExtraIngredientsUsedError: "Recipe uses ingredients that were not specified",
-	ExtraToolsUsedError: "Recipe uses tools that were not specified",
+	[UnusedInputMaterialInStepError._tag]:
+		"Recipe has materials that were not used as inputs in some step",
+	[ExtraIngredientsUsedError._tag]:
+		"Recipe uses ingredients that were not specified",
+	[ExtraToolsUsedError._tag]: "Recipe uses tools that were not specified",
 } as const satisfies {
 	[Tag in RecipeValidationIssue["_tag"]]: string;
 };

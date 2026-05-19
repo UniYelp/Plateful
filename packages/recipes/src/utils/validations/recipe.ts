@@ -10,6 +10,7 @@ import type {
 import { createRecipeGraph } from "../recipe-graph";
 import { validateNoExtraIngredients } from "./no-extra-ingredient";
 import { validateNoExtraTools } from "./no-extra-tools";
+import { validateNoUnusedInputMaterialsInStep } from "./no-unused-input-in-step";
 import { validateIngredientsUsedOnlyAsInputs } from "./recipe-graph/ingredient-used-as-only-input";
 import { validateNoMaterialProducedBeforeInputs } from "./recipe-graph/no-material-produced-before-inputs";
 import { validateNoMaterialQuantityExceeded } from "./recipe-graph/no-material-quantity-exceeded";
@@ -30,6 +31,13 @@ export const validateRecipe = (
 
 	if (hasOutputRes) {
 		issues.push(...hasOutputRes.issues);
+	}
+
+	const noUnusedInputMaterialsInStepsRes =
+		validateNoUnusedInputMaterialsInStep(recipe);
+
+	if (noUnusedInputMaterialsInStepsRes) {
+		issues.push(...noUnusedInputMaterialsInStepsRes.issues);
 	}
 
 	const noUnreachableMaterialsRes = validateNoUnreachableMaterials(recipeGraph);
