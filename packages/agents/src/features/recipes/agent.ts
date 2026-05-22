@@ -2,7 +2,7 @@ import { type GoogleLanguageModelOptions, google } from "@ai-sdk/google";
 import { type DeepPartial, Output, stepCountIs, ToolLoopAgent } from "ai";
 
 // import { safetySettings } from "./constants";
-import { type RecipeGenOutput, RecipeGenOutputSchema } from "./schemas";
+import { type RecipeGenResult, RecipeGenResultSchema } from "./schemas";
 
 /**
  * @see {@link https://ai.google.dev/gemini/docs/agent-tool-specs|Agent Tool Specs} for details on the available options
@@ -10,11 +10,11 @@ import { type RecipeGenOutput, RecipeGenOutputSchema } from "./schemas";
 export const recipeAgent: ToolLoopAgent<
 	never,
 	{},
-	Output.Output<RecipeGenOutput, DeepPartial<RecipeGenOutput>, never>
+	Output.Output<RecipeGenResult, DeepPartial<RecipeGenResult>, never>
 > = new ToolLoopAgent({
 	model: google("gemini-2.5-flash"),
 	output: Output.object({
-		schema: RecipeGenOutputSchema,
+		schema: RecipeGenResultSchema,
 	}),
 	// tools: {
 	// 	convertMeasurementUnits,

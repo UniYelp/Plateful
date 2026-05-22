@@ -14,7 +14,12 @@ import {
 } from "convex/values";
 import { typedV } from "convex-helpers/validators";
 
-import { RecipeMaterialKind } from "@plateful/recipes";
+import {
+	MaterialBlockKindsValues,
+	RecipeStepBlockType,
+	recipeDurationKinds,
+	recipeStepPriorities,
+} from "@plateful/recipes";
 import { temperatureUnits } from "@plateful/units/temperature";
 import type { Doc, TableNames } from "./_generated/dataModel";
 import {
@@ -129,7 +134,7 @@ export const recipeFields = {
 	title: v.string(),
 	description: v.optional(v.string()),
 
-	type: v.union(v.literal("simple"), v.literal("advanced")),
+	type: vEnum(["simple", "advanced"]),
 
 	prepTime: v.nullable(vDuration),
 	cookTime: v.nullable(vDuration),
@@ -153,9 +158,24 @@ export const recipeIngredientFields = {
 	),
 };
 
+export const vRecipeMaterial = v.union(
+	v.object({
+		id: v.id("ingredients"), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
+	}),
+	v.object({
+		name: v.string(),
+	}),
+);
+
+export const vRecipeMaterialQuantity = v.union(
+	v.object(ingredientQuantityFields),
+	v.literal(REMAINING_QUANTITY),
+	v.literal(ALL_QUANTITY),
+);
+
 export const recipeStepBlock = v.union(
 	v.object({
-		type: v.literal("text"),
+		type: v.literal(RecipeStepBlockType.Text),
 		text: v.string(),
 	}),
 	v.object({
@@ -163,45 +183,59 @@ export const recipeStepBlock = v.union(
 		action: v.string(),
 	}),
 	v.object({
-		type: v.literal("tool"),
+		type: v.literal(RecipeStepBlockType.Tool),
 		name: v.string(),
 	}),
 	v.object({
-		type: v.literal("duration"),
+		type: v.literal(RecipeStepBlockType.Duration),
+		kind: vEnum(recipeDurationKinds),
 		value: vDuration,
-		kind: v.union(v.literal("prep"), v.literal("cook")),
 	}),
 	v.object({
-		type: v.literal("temperature"),
+		type: v.literal(RecipeStepBlockType.Temperature),
 		value: v.number(),
 		unit: vEnum(temperatureUnits),
 	}),
 	v.object({
-		type: v.literal("material"),
-		ingredient: v.union(
-			v.object({
-				id: v.id("ingredients"), //! lookup recipeIngredient by ingredientId x recipeId | validate uniqueness
-			}),
-			v.object({
-				name: v.string(),
-			}),
-		),
-		quantity: v.union(
-			v.object(ingredientQuantityFields),
-			v.literal(REMAINING_QUANTITY),
-			v.literal(ALL_QUANTITY),
-		),
+		type: v.literal(RecipeStepBlockType.Material),
+		kind: vEnum(MaterialBlockKindsValues),
+		ingredient: vRecipeMaterial,
+		quantity: vRecipeMaterialQuantity,
 		// state: v.optional(v.string()),
-		kind: vEnum(Object.values(RecipeMaterialKind)),
 	}),
 );
+
+export const recipeMaterialWasteFields = {
+	of: vRecipeMaterial,
+	quantity: v.object(ingredientQuantityFields),
+};
+
+export const recipeStepMetadataFields = {
+	priority: vEnum(recipeStepPriorities),
+	// level: vEnum(["beginner", "intermediate", "advanced"]),
+	setupTime: v.optional(vDuration),
+	waste: v.optional(v.array(v.object(recipeMaterialWasteFields))),
+	derivedOutputs: v.optional(
+		v.array(
+			v.object({
+				of: vRecipeMaterial,
+				quantity: vRecipeMaterialQuantity,
+			}),
+		),
+	),
+};
+
+export type RecipeStepMetadata = ObjectType<typeof recipeStepMetadataFields>;
 
 export const recipeStepFields = {
 	recipeId: v.id("recipes"),
 
 	index: v.number(),
 	blocks: v.array(recipeStepBlock),
+	metadata: v.optional(v.object(recipeStepMetadataFields)),
 };
+
+export type RecipeStep = ObjectType<typeof recipeStepFields>;
 
 export const recipeGenV0MetadataFields = {
 	version: v.literal("v0"),
@@ -218,11 +252,7 @@ export const recipeGensFields = {
 
 	state: v.union(
 		v.object({
-			status: v.union(
-				v.literal("pending"),
-				v.literal("generating"),
-				v.literal("validating"),
-			),
+			status: vEnum(["pending", "generating", "validating"]),
 		}),
 		v.object({
 			status: v.literal("completed"),
@@ -241,7 +271,7 @@ export const recipeGensFields = {
 export const recipeFeedbackFields = {
 	recipeId: v.id("recipes"),
 	userId: v.id("users"),
-	value: v.union(v.literal("positive"), v.literal("negative")),
+	value: vEnum(["positive", "negative"]),
 };
 
 export const userPreferencesFields = {

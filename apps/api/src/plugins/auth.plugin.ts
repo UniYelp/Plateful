@@ -15,7 +15,6 @@ export const auth = ({ header = "x-api-key" }: AuthOptions = {}) => {
 
 	return new Elysia({ name: AuthPluginName, seed: { headerKey } })
 		.use(env())
-		.use(clerkAuth())
 		.error({
 			UnauthorizedError,
 		})

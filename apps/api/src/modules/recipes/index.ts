@@ -95,6 +95,16 @@ export const recipes = new Elysia({
 							RecipeService.generateRecipe(currentBody),
 						);
 
+						if (recipeResult.type === "unfeasible") {
+							log.set({
+								event: { unfeasible: true, reason: recipeResult.reason },
+							});
+
+							throw new Error(
+								`Unable to produce a recipe: ${recipeResult.reason}`,
+							);
+						}
+
 						finalRecipe = recipeResult;
 
 						// Critique with safety agent

@@ -2,10 +2,17 @@ import dedent from "dedent";
 import z from "zod";
 
 import {
+	type HealthRecipeStep,
+	type MandatoryRecipeMaterialBlock,
+	type MandatoryRecipeStep,
+	type MaterialBlockKind,
+	type Quantity,
 	type Recipe,
-	type RecipeMaterialBlock,
+	RecipeDurationKind,
 	RecipeMaterialKind,
 	RecipeStepBlockType,
+	RecipeStepPriority,
+	recipeDurationKinds,
 } from "@plateful/recipes";
 import type { Satisfies } from "@plateful/types";
 import { MaterialUnitSchema, TemperatureUnitSchema } from "./literals";
@@ -38,14 +45,28 @@ const OutputMaterialKindSchema = z.literal(RecipeMaterialKind.Output).meta({
 		"A final yield material that is not used to produce any other material.",
 });
 
+const ReferenceMaterialKindSchema = z
+	.literal(RecipeMaterialKind.Referenced)
+	.meta({
+		title: "Reference Material Kind",
+		description:
+			"A material mentioned for context or passive handling without being altered, consumed, or bound to an output in this step (e.g., washing raw potatoes, or chilling dough).",
+	});
+
+const WasteMaterialKindSchema = z.literal(RecipeMaterialKind.Waste).meta({
+	title: "Waste Material Kind",
+	description:
+		"A material that is produced as waste during the step (e.g. egg shells when making scrambled eggs, vegetable peels when peeling vegetables).",
+});
+
 const schemaByMaterialKind = {
 	[InputMaterialKindSchema.value]: InputMaterialKindSchema,
 	[DerivedInputMaterialKindSchema.value]: DerivedInputMaterialKindSchema,
 	[OutputMaterialKindSchema.value]: OutputMaterialKindSchema,
 	[DerivedOutputMaterialKindSchema.value]: DerivedOutputMaterialKindSchema,
-	// TODO: add reference blocks for referencing a material during a step without using it actively
+	[ReferenceMaterialKindSchema.value]: ReferenceMaterialKindSchema,
 } as const satisfies {
-	[U in RecipeMaterialKind]: z.ZodLiteral<U>;
+	[U in MaterialBlockKind]: z.ZodLiteral<U>;
 };
 
 export const RecipeMaterialKindSchema = z
@@ -54,23 +75,33 @@ export const RecipeMaterialKindSchema = z
 		title: "Recipe Material Kind",
 	});
 
+export const MaterialQuantitySchema = z
+	.object({
+		value: z.number(),
+		unit: z.nullable(MaterialUnitSchema).optional().meta({
+			description:
+				"The unit of the material. Must be null if the ingredient inherently lacks one (e.g. '5 tomatoes' -> unit: null, value: 5). Do not hallucinate a unit here.",
+		}),
+	})
+	.meta({
+		title: "Material Quantity",
+	});
+
+export type MaterialQuantity = Satisfies<
+	z.infer<typeof MaterialQuantitySchema>,
+	Quantity
+>;
+
 export const MaterialBlockSchema = z
 	.object({
 		type: z.literal(RecipeStepBlockType.Material),
+		kind: RecipeMaterialKindSchema,
 		name: z.string(),
-		quantity: z.object({
-			value: z.number(),
-			unit: z.nullable(MaterialUnitSchema).optional().meta({
-				description:
-					"The unit of the material. Must be null if the ingredient inherently lacks one (e.g. '5 tomatoes' -> unit: null, value: 5). Do not hallucinate a unit here.",
-			}),
-		}),
+		quantity: MaterialQuantitySchema,
 		// state: z.optional(z.string()).meta({
 		// 	description: "The state of the material.",
 		// }),
 		// - When referencing materials, use the base material name whenever possible. Do NOT include the state in the material's name unless the state is a commonly recognized part of the material name (e.g., “whipped cream”), in that case, do not use the state field. Track any changes in state using the state field of the material block. Mention the state in the name only if it is necessary for clarity.
-
-		kind: RecipeMaterialKindSchema,
 	})
 	.meta({
 		title: "Material Block",
@@ -82,42 +113,69 @@ export const MaterialBlockSchema = z
             (for input materials) or produced (for derived materials).
 
             Input-kind materials are:
-            - "input"
-            - "derived-input"
+            - "${RecipeMaterialKind.Input}"
+            - "${RecipeMaterialKind.DerivedInput}"
 
             Output-kind materials are:
-            - "output"
-            - "derived-output"
+            - "${RecipeMaterialKind.DerivedOutput}"
+            - "${RecipeMaterialKind.Output}"
+
+            Reference materials are:
+            - "${RecipeMaterialKind.Referenced}"
+
+            By-product materials are:
+            - "${RecipeMaterialKind.Waste}"
+            - "${RecipeMaterialKind.DerivedOutput}" (only if there is some leftover quantity after the recipe is made)
 
             Within a single step:
-            - Input-kind materials must appear before any Output-kind materials.
+            - Input-kind and Reference materials must appear before any Output-kind materials.
             - If a step would require mixing material kinds in a way that violates these rules, the action must be split into multiple steps.
-            - Represent materials inline using a material block of kind "input" or "derived-input", with quantity${/** and optional state*/ ""}.
+            - Represent materials inline using a material block of kind ${RecipeMaterialKind.Input} or ${RecipeMaterialKind.DerivedInput} with their quantity${/** and optional state*/ ""}.
             ${/**- When referencing materials, use the base material name whenever possible. Do NOT include the state in the material's name unless the state is a commonly recognized part of the material name (e.g., “whipped cream”), in that case, do not use the state field. Track any changes in state using the state field of the material block. Mention the state in the name only if it is necessary for clarity. */ ""}
             - Materials produced in the step ("output-kind") must appear as material blocks at the **end of the step**
 
             Across steps:
-            - An "output-kind" material may appear at any point in the recipe, but only after all "input-kind" materials required to produce it have appeared earlier in the same step or in previous steps.
-            - "output" materials may not be used to produce other materials.
-            - Multiple output materials are allowed.
+            - An "output-kind" material may appear at any point in the recipe, but only after all input-kind materials required to produce it have appeared earlier.
+            - ${RecipeMaterialKind.Output} and ${RecipeMaterialKind.Referenced} materials may not be used to produce other materials (they do not create new derived states).
+            - Multiple ${RecipeMaterialKind.Output} materials are allowed.
+
+            Lifecycle Example:
+            - **Stage 1: Prep**
+                - Action: Wash
+                - Reference: Potatoes
+            - **Stage 2: Sear**
+                - Action: Sear
+                - Input: Beef
+                - Derived Output: Seared Beef
+            - **Stage 3: Stew**
+                - Action: Stew
+                - Input: Broth
+                - Derived Input: Seared Beef
+                - Output: Beef Stew
         `,
 	});
 
 export type MaterialBlock = Satisfies<
 	z.infer<typeof MaterialBlockSchema>,
-	RecipeMaterialBlock
+	MandatoryRecipeMaterialBlock
 >;
 
 export const DurationBlockSchema = z
 	.object({
 		type: z.literal(RecipeStepBlockType.Duration),
-		kind: z.enum(["prep", "cook"]),
+		kind: z.enum(recipeDurationKinds).meta({
+			description: dedent`
+                - Use these for times that MUST read naturally in the step's prose.
+                - **${RecipeDurationKind.Prep}**: Active preparation text that needs to be explicitly read (e.g., "Whisk the eggs for 2 minutes").
+                - **${RecipeDurationKind.Cook}**: Active cooking or process waiting times (e.g., "Simmer for 15 minutes", "Marinate for 2 hours").
+                - *Rule:* The duration for both types must fluidly integrate into the generated text.
+            `,
+		}),
 		duration: z.iso.duration(), //? ISO 8601 duration (e.g., 'PT5M')
 	})
 	.meta({
 		title: "Duration Block",
 	});
-
 export const TemperatureBlockSchema = z
 	.object({
 		type: z.literal(RecipeStepBlockType.Temperature),
@@ -161,40 +219,204 @@ export const TextBlockSchema = z
 		title: "Text Block",
 	});
 
-const schemaByBlockKind = {
+const baseBlockSchemaByKind = {
 	// [RecipeStepBlockType.Action]: ActionBlockSchema,
 	[RecipeStepBlockType.Duration]: DurationBlockSchema,
-	[RecipeStepBlockType.Material]: MaterialBlockSchema,
 	[RecipeStepBlockType.Temperature]: TemperatureBlockSchema,
 	[RecipeStepBlockType.Text]: TextBlockSchema,
 	[RecipeStepBlockType.Tool]: ToolBlockSchema,
-	// TODO: add reference blocks for referencing a material during a step without using it actively
+} as const satisfies {
+	[U in RecipeStepBlockType]?: z.ZodObject<{
+		type: z.ZodLiteral<U>;
+	}>;
+};
+
+const mandatoryBlockSchemaByKind = {
+	...baseBlockSchemaByKind,
+	[RecipeStepBlockType.Material]: MaterialBlockSchema,
 } as const satisfies {
 	[U in RecipeStepBlockType]: z.ZodObject<{
 		type: z.ZodLiteral<U>;
 	}>;
 };
 
-export const StepBlockSchema = z.union(Object.values(schemaByBlockKind));
+export const MandatoryStepBlockSchema = z.union(
+	Object.values(mandatoryBlockSchemaByKind),
+);
 
-const RecipeStepSchema = z
-	.array(StepBlockSchema)
+export const MaterialWasteSchema = z
+	.object({
+		type: z.literal(RecipeStepBlockType.Material),
+		kind: WasteMaterialKindSchema,
+		name: z.string(),
+		quantity: MaterialQuantitySchema,
+	})
+	.meta({
+		title: "Material Waste Block",
+		description: dedent`
+            Represents a material that is produced as waste during the step (e.g. egg shells when making scrambled eggs, vegetable peels when peeling vegetables).
+        `,
+	});
+
+export type MaterialWaste = Satisfies<
+	z.infer<typeof MaterialWasteSchema>,
+	NonNullable<NonNullable<MandatoryRecipeStep["metadata"]>["waste"]>[number]
+>;
+
+export const DerivedOutputMaterialSchema = z
+	.object({
+		type: z.literal(RecipeStepBlockType.Material),
+		kind: DerivedOutputMaterialKindSchema,
+		name: z.string(),
+		quantity: MaterialQuantitySchema,
+	})
+	.meta({
+		title: "Derived Output Material",
+		description: dedent`
+            Implicit ${RecipeMaterialKind.DerivedOutput} materials produced during the step that WILL be consumed by future steps as a ${RecipeMaterialKind.DerivedInput}, but are not explicitly typed out in the text narrative (e.g., "Peel the potatoes" implicitly creates "Peeled Potatoes").
+            Should follow all of the other rules as regular ${RecipeMaterialKind.DerivedOutput} materials, except they MUST NOT appear as material blocks in the step.
+
+            Isolation Rule:
+            - These materials are completely implicit to the step's written instructions.
+            - They must remain strictly here in metadata and must not appear anywhere in the parent step's structural blocks array
+        `,
+	});
+
+export type DerivedOutputMaterial = Satisfies<
+	z.infer<typeof DerivedOutputMaterialSchema>,
+	NonNullable<
+		NonNullable<MandatoryRecipeStep["metadata"]>["derivedOutputs"]
+	>[number]
+>;
+
+const MandatoryStepPrioritySchema = z
+	.literal(RecipeStepPriority.Mandatory)
+	.meta({
+		title: "Mandatory Step Priority",
+		description:
+			"A step that is required for the recipe to be considered complete.",
+	});
+
+export const BaseStepMetadataSchema = z.object({
+	setupTime: z.optional(z.iso.duration()).meta({
+		description: dedent`
+            - **Purpose:** Represents the hidden, hands-on labor required to process raw ingredients or prepare the station before executing the step (e.g., the 5 minutes spent chopping onions or mincing garlic).
+            - *Rule:* This is metadata only. Do NOT include or mention this duration in the step's natural text description or reading flow.
+        `,
+	}),
+});
+
+const RecipeStepBlockMetaDesc = dedent`
+    - Material blocks must appear at the point in the step where the ingredient is used.
+    - Duration blocks must be logically and naturally embedded within the textual instructions (e.g., 'Roast the potatoes for [DURATION] until golden' instead of 'Roast the potatoes until golden. [DURATION]'). Do NOT simply append time blocks at the end of a sentence.
+    - Do NOT include in plain text that which can be expressed as a structured object.
+    - Do NOT introduce any additional structured block types.
+    - Steps must be readable as-is by a human when rendered sequentially.
+    - Typed blocks (e.g., tool, temperature, time, material) must be inlined at the point in the step where they are necessary, interleaved with plain text so the step reads naturally when rendered sequentially.
+    - Do not restate or duplicate information already expressed via a typed block in prior or later plain text, and do not append typed blocks at the end of a step if the corresponding concept was already referenced inline.
+`;
+
+const MandatoryRecipeStepBlocksSchema = z
+	.array(MandatoryStepBlockSchema)
 	.nonempty()
 	.meta({
-		title: "Recipe Step",
+		title: "Mandatory Recipe Step Blocks",
 		description: dedent`
-            - Material blocks must appear at the point in the step where the ingredient is used.
-            - Duration blocks must be logically and naturally embedded within the textual instructions (e.g., 'Roast the potatoes for [DURATION] until golden' instead of 'Roast the potatoes until golden. [DURATION]'). Do NOT simply append time blocks at the end of a sentence.
-            - Do NOT include in plain text that which can be expressed as a structured object.
-            - Do NOT introduce any additional structured block types.
-            - Steps must be readable as-is by a human when rendered sequentially.
-            - Typed blocks (e.g., tool, temperature, time, material) must be inlined at the point in the step where they are necessary, interleaved with plain text so the step reads naturally when rendered sequentially.
-            - Do not restate or duplicate information already expressed via a typed block in prior or later plain text, and do not append typed blocks at the end of a step if the corresponding concept was already referenced inline.
+            ${RecipeStepBlockMetaDesc}
+
+            Crucial Rule:
+            - Any material listed under metadata.derivedOutputs must not be generated as an inline structural block inside this step's blocks array
         `,
+	});
+
+export const MandatoryStepMetadataSchema = z
+	.object({
+		...BaseStepMetadataSchema.shape,
+		priority: MandatoryStepPrioritySchema,
+		waste: z.array(MaterialWasteSchema).optional(),
+		derivedOutputs: z.array(DerivedOutputMaterialSchema).optional(),
+	})
+	.meta({
+		title: "Mandatory Step Metadata",
+	});
+
+const MandatoryRecipeStepSchema = z
+	.object({
+		blocks: MandatoryRecipeStepBlocksSchema,
+		metadata: MandatoryStepMetadataSchema,
+	})
+	.meta({
+		title: "Mandatory Recipe Step",
+	});
+
+export type MandatoryRecipeStepShape = Satisfies<
+	z.infer<typeof MandatoryRecipeStepSchema>,
+	MandatoryRecipeStep
+>;
+
+const HealthStepPrioritySchema = z.literal(RecipeStepPriority.Health).meta({
+	title: "Health Step Priority",
+	description: dedent`
+		A step that is recommended for the recipe to be considered healthy, but the recipe can still be made without it (e.g., removing excess fat from a meat cut, washing raw ingredients).
+		${RecipeStepPriority.Health} steps may only use ${RecipeMaterialKind.Referenced} materials and mustn't affect the rest of the recipe (i.e. they can be omitted and the recipe should still be valid).
+	`,
+});
+
+const healthSchemaByBlockKind = {
+	...baseBlockSchemaByKind,
+	[RecipeStepBlockType.Material]: MaterialBlockSchema.extend({
+		kind: z.literal(RecipeMaterialKind.Referenced),
+	}),
+} as const satisfies {
+	[U in RecipeStepBlockType]: z.ZodObject<{
+		type: z.ZodLiteral<U>;
+	}>;
+};
+
+const HealthMaterialBlockSchema = z.union(
+	Object.values(healthSchemaByBlockKind),
+);
+
+const HealthRecipeStepBlocksSchema = z
+	.array(HealthMaterialBlockSchema)
+	.nonempty()
+	.meta({
+		title: "Health Recipe Step Blocks",
+		description: RecipeStepBlockMetaDesc,
+	});
+
+export const HealthStepMetadataSchema = z
+	.object({
+		...BaseStepMetadataSchema.shape,
+		priority: HealthStepPrioritySchema,
+	})
+	.meta({
+		title: "Health Step Metadata",
+	});
+
+const HealthRecipeStepSchema = z
+	.object({
+		blocks: HealthRecipeStepBlocksSchema,
+		metadata: HealthStepMetadataSchema,
+	})
+	.meta({
+		title: "Health Recipe Step",
+	});
+
+export type HealthRecipeStepShape = Satisfies<
+	z.infer<typeof HealthRecipeStepSchema>,
+	HealthRecipeStep
+>;
+
+const RecipeStepSchema = z
+	.union([MandatoryRecipeStepSchema, HealthRecipeStepSchema])
+	.meta({
+		title: "Recipe Step",
 	});
 
 export const RecipeGenOutputSchema = z
 	.object({
+		type: z.literal("recipe"),
 		title: z.string().nonempty(),
 		description: z.string().nonempty(),
 		tags: z.array(z.string()),
@@ -211,3 +433,15 @@ export type RecipeGenOutput = Satisfies<
 	z.infer<typeof RecipeGenOutputSchema>,
 	Recipe
 >;
+
+export const UnfeasibleRecipeGenSchema = z.object({
+	type: z.literal("unfeasible"),
+	reason: z.string(),
+});
+
+export const RecipeGenResultSchema = z.discriminatedUnion("type", [
+	RecipeGenOutputSchema,
+	UnfeasibleRecipeGenSchema,
+]);
+
+export type RecipeGenResult = z.infer<typeof RecipeGenResultSchema>;

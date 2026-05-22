@@ -3,7 +3,7 @@ import type z from "zod";
 
 import {
 	RecipeGenInputSchema,
-	RecipeGenOutputSchema,
+	RecipeGenResultSchema,
 } from "@plateful/agents/recipes";
 
 export namespace RecipesModel {
@@ -15,7 +15,7 @@ export namespace RecipesModel {
 
 	export type GenerateRecipeBody = z.infer<typeof generateRecipeBody>;
 
-	export const generateRecipeCompleteEventData = RecipeGenOutputSchema;
+	export const generateRecipeCompleteEventData = RecipeGenResultSchema;
 
 	export type GenerateRecipeCompleteEventData = z.infer<
 		typeof generateRecipeCompleteEventData

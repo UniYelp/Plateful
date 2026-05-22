@@ -6,7 +6,11 @@ import {
 	getIngredientUnitConversions,
 	type IngredientUnit,
 } from "@plateful/ingredients";
-import { RecipeMaterialKind } from "@plateful/recipes";
+import {
+	RecipeDurationKind,
+	RecipeMaterialKind,
+	RecipeStepBlockType,
+} from "@plateful/recipes";
 import { Arr } from "@plateful/utils";
 import type { Id } from "@backend/dataModel";
 import type {
@@ -40,8 +44,8 @@ export const RecipeStepContent = ({
 		const block = blocks[i];
 
 		if (typeof block !== "string") {
-			if (block.type === "duration") {
-				if (block.kind === "prep") {
+			if (block.type === RecipeStepBlockType.Duration) {
+				if (block.kind === RecipeDurationKind.Prep) {
 					adornmentBlocks.push(block);
 					continue;
 				}
@@ -50,8 +54,9 @@ export const RecipeStepContent = ({
 					.slice(i + 1)
 					.every(
 						(b) =>
-							(b.type === "text" && b.text.trim() === "") ||
-							(b.type === "material" &&
+							(b.type === RecipeStepBlockType.Text &&
+								["", ".", ".", "!", "?"].includes(b.text)) ||
+							(b.type === RecipeStepBlockType.Material &&
 								b.kind === RecipeMaterialKind.DerivedOutput),
 					);
 
@@ -61,7 +66,7 @@ export const RecipeStepContent = ({
 				}
 			}
 
-			if (block.type === "material") {
+			if (block.type === RecipeStepBlockType.Material) {
 				if (block.kind === RecipeMaterialKind.DerivedOutput) {
 					adornmentBlocks.push(block);
 					continue;
@@ -115,7 +120,7 @@ const StepAdornment = ({
 }) => {
 	if (typeof block === "string") return null;
 
-	if (block.type === "duration") {
+	if (block.type === RecipeStepBlockType.Duration) {
 		return (
 			<span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-2.5 py-0.5 font-medium text-muted-foreground text-xs">
 				<Clock className="h-3 w-3" />
@@ -124,7 +129,7 @@ const StepAdornment = ({
 		);
 	}
 
-	if (block.type === "material") {
+	if (block.type === RecipeStepBlockType.Material) {
 		const name =
 			"name" in block.ingredient
 				? block.ingredient.name
@@ -151,29 +156,36 @@ const StepBlock = ({
 	if (typeof block === "string") return <span>{block}</span>;
 
 	switch (block.type) {
-		case "text":
+		case RecipeStepBlockType.Text: {
 			return <span>{block.text}</span>;
-		case "action":
+		}
+		case "action": {
 			return <span>{block.action}</span>;
-		case "tool":
+		}
+		case RecipeStepBlockType.Tool: {
 			return (
 				<span className="mx-0.5 inline-flex items-center rounded-md bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 px-1.5 py-0.5 align-baseline font-semibold text-white text-xs shadow-sm">
 					{block.name}
 				</span>
 			);
-		case "duration":
+		}
+		case RecipeStepBlockType.Duration: {
 			return <span>{formatDuration(block.value)}</span>;
-		case "temperature": {
+		}
+		case RecipeStepBlockType.Temperature: {
 			const formatter = new Intl.NumberFormat("en-US", {
 				style: "unit",
 				unit: block.unit,
 			});
 			return <span>{formatter.format(block.value)}</span>;
 		}
-		case "material":
+		case RecipeStepBlockType.Material: {
 			return <MaterialBlockView data={block} nameById={ingredientNameById} />;
-		default:
-			return null;
+		}
+		default: {
+			const _exhaustive: never = block;
+			return _exhaustive;
+		}
 	}
 };
 

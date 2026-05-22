@@ -11,7 +11,7 @@ export const validateNoUnusedInputMaterialsInStep = (
 ): RecipeValidationResult<UnusedInputMaterialInStepError> => {
 	const unusedInputMaterialsInStepsErrors = recipe.steps.flatMap(
 		(step, idx) => {
-			const stepInputKindMaterials = step.filter(
+			const stepInputKindMaterials = step.blocks.filter(
 				(block) =>
 					block.type === RecipeStepBlockType.Material &&
 					isMaterialInputKind(block.kind as RecipeMaterialKind),
@@ -19,7 +19,7 @@ export const validateNoUnusedInputMaterialsInStep = (
 
 			if (!stepInputKindMaterials.length) return [];
 
-			const stepHasOutputKindMaterials = step.some(
+			const stepHasOutputKindMaterials = step.blocks.some(
 				(block) =>
 					block.type === RecipeStepBlockType.Material &&
 					isMaterialOutputKind(block.kind as RecipeMaterialKind),

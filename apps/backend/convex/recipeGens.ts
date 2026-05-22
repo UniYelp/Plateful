@@ -2,6 +2,7 @@ import { Duration } from "luxon";
 
 import type { RecipeGenInput } from "@plateful/agents/recipes";
 import type { IngredientUnit } from "@plateful/ingredients";
+import { RecipeDurationKind, RecipeStepBlockType } from "@plateful/recipes";
 import type { StrictOmit } from "@plateful/types";
 import { TemperatureUnit } from "@plateful/units/temperature";
 import { Arr, bool, entriesOf } from "@plateful/utils";
@@ -19,6 +20,8 @@ import {
 	type EntityShape,
 	type IngredientQuantity,
 	ingredientQuantityFields,
+	type RecipeStep,
+	type RecipeStepMetadata,
 	recipeFields,
 	recipeIngredientFields,
 	recipeStepFields,
@@ -284,7 +287,7 @@ export const completeGen = internalMutation({
 		genId: vv.id("recipeGens"),
 		recipe: vv.object(recipeFields),
 		ingredients: vv.array(vv.object(recipeIngredientFields).omit("recipeId")),
-		steps: vv.array(recipeStepFields.blocks),
+		steps: vv.array(vv.object(recipeStepFields).pick("blocks", "metadata")),
 	},
 	handler: async (ctx, args) => {
 		const { user, recipe, genId } = args;
@@ -320,11 +323,12 @@ export const completeGen = internalMutation({
 		);
 
 		const stepsPromises = args.steps.map(
-			async (blocks, idx) =>
+			async (step, idx) =>
 				await ctx.db.insert("recipeSteps", {
 					recipeId,
 					index: idx,
-					blocks,
+					blocks: step.blocks,
+					metadata: step.metadata,
 					createdBy: user,
 					updatedBy: user,
 					updatedAt: now,
@@ -538,8 +542,8 @@ export const generateRecipe = internalAction({
 						] satisfies (keyof EntityShape<"recipes"> | "steps")[];
 
 						const detailsByIngredient = Object.groupBy(
-							steps.flatMap((parts) =>
-								parts.flatMap((part) => {
+							steps.flatMap(({ blocks }) =>
+								blocks.flatMap((part) => {
 									if (part.type !== "material") return [];
 									if (part.kind !== "input") return [];
 
@@ -591,13 +595,27 @@ export const generateRecipe = internalAction({
 						);
 
 						const timeByKind = Object.groupBy(
-							steps.flatMap((parts) =>
-								parts.flatMap((part) => {
-									if (part.type !== "duration") return [];
+							steps
+								.flatMap(({ blocks }) =>
+									blocks.flatMap((part) => {
+										if (part.type !== "duration") return [];
 
-									return part;
-								}),
-							),
+										return part;
+									}),
+								)
+								.concat(
+									steps.flatMap(({ metadata }) =>
+										metadata?.setupTime
+											? ([
+													{
+														type: RecipeStepBlockType.Duration,
+														kind: RecipeDurationKind.Prep,
+														duration: metadata.setupTime,
+													},
+												] as const)
+											: [],
+									),
+								),
 							(part) => part.kind,
 						);
 
@@ -629,24 +647,22 @@ export const generateRecipe = internalAction({
 							notes: notes ?? undefined,
 						};
 
-						await ctx.runMutation(internal.recipeGens.completeGen, {
-							genId,
-							user: SYSTEM_ID,
-							recipe,
-							ingredients,
-							steps: steps
-								.map((parts) => {
-									const [firstPart] = parts;
+						const transformedSteps = steps
+							.map<StrictOmit<RecipeStep, "recipeId" | "index"> | null>(
+								({ metadata, blocks }) => {
+									const [firstPart] = blocks;
 
 									if (
 										typeof firstPart === "string" &&
 										Arr.includes(stepTokensToSanitize, firstPart)
 									) {
-										console.warn("sanitizing step from recipe", parts);
+										console.warn("sanitizing step from recipe", blocks);
 										return null;
 									}
 
-									return parts.map((part) => {
+									const transformedBlocks = blocks.map<
+										RecipeStep["blocks"][number]
+									>((part) => {
 										if (part.type === "duration") {
 											const { kind, duration } = part;
 											return {
@@ -689,8 +705,44 @@ export const generateRecipe = internalAction({
 
 										return part;
 									});
-								})
-								.filter(bool),
+
+									const transformedMetadata: RecipeStepMetadata = {
+										priority: metadata.priority,
+										setupTime: metadata.setupTime,
+										waste: metadata.waste?.map((waste) => ({
+											of: ingredientIdByName[waste.name]
+												? { id: ingredientIdByName[waste.name] }
+												: { name: waste.name },
+											quantity: {
+												amount: waste.quantity.value,
+												unit: waste.quantity.unit ?? undefined,
+											},
+										})),
+										derivedOutputs: metadata.derivedOutputs?.map((output) => ({
+											of: ingredientIdByName[output.name]
+												? { id: ingredientIdByName[output.name] }
+												: { name: output.name },
+											quantity: {
+												amount: output.quantity.value,
+												unit: output.quantity.unit ?? undefined,
+											},
+										})),
+									};
+
+									return {
+										blocks: transformedBlocks,
+										metadata: transformedMetadata,
+									};
+								},
+							)
+							.filter(bool);
+
+						await ctx.runMutation(internal.recipeGens.completeGen, {
+							genId,
+							user: SYSTEM_ID,
+							recipe,
+							ingredients,
+							steps: transformedSteps,
 						});
 
 						return;

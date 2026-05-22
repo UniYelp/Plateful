@@ -2,7 +2,11 @@ import { Graph } from "effect";
 import type { NodeIndex } from "effect/Graph";
 
 import { isDefined } from "@plateful/utils";
-import { RecipeStepBlockType } from "../../enums";
+import {
+	RecipeMaterialKind,
+	RecipeStepBlockType,
+	RecipeStepPriority,
+} from "../../enums";
 import type {
 	IngredientEdge,
 	MaterialEdge,
@@ -55,11 +59,31 @@ export const createRecipeGraph = (
 
 			for (const [stepIndex, step] of recipe.steps.entries()) {
 				//? Ignore non-material step blocks
-				const stepMaterials = step.flatMap<RecipeMaterial>((block) => {
-					const { type, ...data } = block;
-					if (type !== RecipeStepBlockType.Material) return [];
+				const stepMaterials = step.blocks.flatMap<RecipeMaterial>((block) => {
+					const { type: _, ...data } = block;
+
+					if (
+						block.type !== RecipeStepBlockType.Material ||
+						block.kind === RecipeMaterialKind.Referenced
+					) {
+						return [];
+					}
+
 					return data as RecipeMaterial;
 				});
+
+				const metadata = step.metadata;
+
+				if (metadata?.priority === RecipeStepPriority.Mandatory) {
+					const { derivedOutputs = [] } = metadata;
+
+					stepMaterials.push(
+						...derivedOutputs.map((material) => ({
+							...material,
+							kind: RecipeMaterialKind.DerivedOutput,
+						})),
+					);
+				}
 
 				//? Add the first appearance of a material as a node
 				for (const material of stepMaterials) {

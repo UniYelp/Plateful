@@ -2,6 +2,7 @@ import dedent from "dedent";
 
 import { type RecipeGenInput, RecipeGenInputJsonSchema } from "./schemas";
 
+// Health priority steps will be primarily used by the health-conscious agent.
 export const generateRecipeSystemPrompt = dedent`
     You are a Recipe Composer AI.
 

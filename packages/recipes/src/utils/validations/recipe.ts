@@ -10,6 +10,7 @@ import type {
 import { createRecipeGraph } from "../recipe-graph";
 import { validateNoExtraIngredients } from "./no-extra-ingredient";
 import { validateNoExtraTools } from "./no-extra-tools";
+import { validateNoRepeatingMetadataDerivedOutputMaterialsInSteps } from "./no-repeating-metadata-materials";
 import { validateNoUnusedInputMaterialsInStep } from "./no-unused-input-in-step";
 import { validateIngredientsUsedOnlyAsInputs } from "./recipe-graph/ingredient-used-as-only-input";
 import { validateNoMaterialProducedBeforeInputs } from "./recipe-graph/no-material-produced-before-inputs";
@@ -38,6 +39,13 @@ export const validateRecipe = (
 
 	if (noUnusedInputMaterialsInStepsRes) {
 		issues.push(...noUnusedInputMaterialsInStepsRes.issues);
+	}
+
+	const noRepeatingMetadataDerivedOutputMaterialsInStepsRes =
+		validateNoRepeatingMetadataDerivedOutputMaterialsInSteps(recipe);
+
+	if (noRepeatingMetadataDerivedOutputMaterialsInStepsRes) {
+		issues.push(...noRepeatingMetadataDerivedOutputMaterialsInStepsRes.issues);
 	}
 
 	const noUnreachableMaterialsRes = validateNoUnreachableMaterials(recipeGraph);

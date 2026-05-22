@@ -40,6 +40,7 @@
     },
     "scripts": {
         "build": "tsdown",
+        "build:schemas": "tsx ./scripts/build-schemas.ts",
         "dev": "tsdown --watch",
         "test": "vitest run --typecheck --passWithNoTests",
         "test:w": "vitest --typecheck --passWithNoTests",
