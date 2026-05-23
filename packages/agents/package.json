@@ -51,7 +51,6 @@
     },
     "dependencies": {
         "@ai-sdk/google": "catalog:",
-        "@opentelemetry/api": "catalog:",
         "@pinecone-database/pinecone": "^7.1.0",
         "@plateful/ingredients": "workspace:*",
         "@plateful/recipes": "workspace:*",

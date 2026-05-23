@@ -1,7 +1,6 @@
 import Elysia from "elysia";
 
 import { UnauthorizedError } from "../models/errors/unauthorized";
-import { clerkAuth } from "./clerk-auth.plugin";
 import { env } from "./env.plugin";
 
 type AuthOptions = {

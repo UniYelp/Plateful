@@ -8,6 +8,7 @@ import {
 	UsedOutputMaterialError,
 } from "../../../models";
 import type { RecipeGraph, RecipeValidationResult } from "../../../types";
+import type { RecipeGraphValidatorFn } from "../../../types/validator";
 import { getMaterialNodeByEdgeIndex } from "../../recipe-graph";
 
 export const validateRecipeOutput = (
@@ -76,3 +77,5 @@ const isUsedOutputMaterial = (graph: RecipeGraph, edgeIndex: EdgeIndex) => {
 
 	return false;
 };
+
+validateRecipeOutput satisfies RecipeGraphValidatorFn;

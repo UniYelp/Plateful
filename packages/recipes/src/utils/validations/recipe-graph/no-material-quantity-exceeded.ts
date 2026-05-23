@@ -14,6 +14,7 @@ import type {
 	UnlimitedQuantity,
 } from "../../../types";
 import type { RecipeIngredientUnit } from "../../../types/units";
+import type { RecipeGraphValidatorFn } from "../../../types/validator";
 import { getEdgeIndicesByNodeIndex } from "../../graph";
 import { isInputKindMaterial, isOutputKindMaterial } from "../../guards";
 import { consumeQuantity } from "../../ingredients";
@@ -151,3 +152,5 @@ export const validateNoMaterialQuantityExceeded = (
 
 	return null;
 };
+
+validateNoMaterialQuantityExceeded satisfies RecipeGraphValidatorFn;

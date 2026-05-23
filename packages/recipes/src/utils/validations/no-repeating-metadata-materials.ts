@@ -22,11 +22,12 @@ export const validateNoRepeatingMetadataDerivedOutputMaterialsInSteps = (
 
 		const uniqueMetadataNames = new Set(stepMetadataDerivedOutputMaterialNames);
 
-		const stepDerivedOutputMaterialNames = step.blocks.flatMap((block) =>
-			block.type === RecipeStepBlockType.Material &&
-			block.kind === RecipeMaterialKind.DerivedOutput
-				? (block.name as string)
-				: [],
+		const stepDerivedOutputMaterialNames = step.blocks.flatMap<string>(
+			(block) =>
+				block.type === RecipeStepBlockType.Material &&
+				block.kind === RecipeMaterialKind.DerivedOutput
+					? (block.name as string)
+					: [],
 		);
 
 		const uniqueBlocksNames = new Set(stepDerivedOutputMaterialNames);

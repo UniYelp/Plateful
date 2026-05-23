@@ -1,4 +1,4 @@
-import { RecipeMaterialKind } from "../enums";
+import { RecipeMaterialKind, RecipeStepPriority } from "../enums";
 import type { Quantity } from "../types";
 
 export abstract class BaseRecipeValidationIssue extends Error {
@@ -244,6 +244,27 @@ export class ExtraIngredientsUsedError extends BaseRecipeValidationIssue {
 	}
 }
 
+export class MaterialReferencedBeforeIntroductionError extends BaseRecipeValidationIssue {
+	static readonly _tag = "MaterialReferencedBeforeIntroductionError";
+	static readonly reason =
+		"Recipe has materials that were referenced before they were introduced";
+	static readonly fix =
+		`Ensure that all ${RecipeMaterialKind.Referenced} materials used in the recipe were introduced in a previous step`;
+
+	readonly _tag = MaterialReferencedBeforeIntroductionError._tag;
+	readonly reason = MaterialReferencedBeforeIntroductionError.reason;
+	readonly fix = MaterialReferencedBeforeIntroductionError.fix;
+
+	constructor(
+		public material: string,
+		public stepIndex: number | string,
+	) {
+		super(
+			`Material ${material} was referenced before it was introduced in step ${stepIndex}`,
+		);
+	}
+}
+
 export class ExtraToolsUsedError extends BaseRecipeValidationIssue {
 	static readonly _tag = "ExtraToolsUsedError";
 	static readonly reason = "Recipe uses tools that were not specified";
@@ -259,6 +280,47 @@ export class ExtraToolsUsedError extends BaseRecipeValidationIssue {
 	}
 }
 
+export class NonRefMaterialBlockInHealthPriorityStepError extends BaseRecipeValidationIssue {
+	static readonly _tag = "NonRefMaterialBlockInHealthPriorityStepError";
+	static readonly reason =
+		`Recipe has non-${RecipeMaterialKind.Referenced} material blocks in ${RecipeStepPriority.Health} priority steps`;
+	static readonly fix =
+		`Ensure that all ${RecipeStepPriority.Health} priority steps contain only material blocks of kind ${RecipeMaterialKind.Referenced}`;
+
+	readonly _tag = NonRefMaterialBlockInHealthPriorityStepError._tag;
+	readonly reason = NonRefMaterialBlockInHealthPriorityStepError.reason;
+	readonly fix = NonRefMaterialBlockInHealthPriorityStepError.fix;
+
+	constructor(
+		public material: string,
+		public stepIndex: number | string,
+	) {
+		super(
+			`Non-${RecipeMaterialKind.Referenced} material block ${material} was used in step ${stepIndex}`,
+		);
+	}
+}
+
+export class HealthPriorityStepContainsIrrelevantMetadataFieldError extends BaseRecipeValidationIssue {
+	static readonly _tag =
+		"HealthPriorityStepContainsIrrelevantMetadataFieldError";
+	static readonly reason =
+		`Recipe has ${RecipeStepPriority.Health} priority steps with irrelevant metadata fields`;
+	static readonly fix =
+		`Ensure that all ${RecipeStepPriority.Health} priority steps contain only metadata fields relevant to the step (e.g. skip fields like 'waste', 'derivedOutputs', etc)`;
+
+	readonly _tag = HealthPriorityStepContainsIrrelevantMetadataFieldError._tag;
+	readonly reason =
+		HealthPriorityStepContainsIrrelevantMetadataFieldError.reason;
+	readonly fix = HealthPriorityStepContainsIrrelevantMetadataFieldError.fix;
+
+	constructor(public stepIndex: number | string) {
+		super(
+			`Health-priority step ${stepIndex} has metadata fields that are not relevant to the step (e.g. 'waste', 'derivedOutputs', etc)`,
+		);
+	}
+}
+
 export type RecipeValidationIssue =
 	| IngredientNotUsedOnlyAsInputError
 	| UnreachableMaterialError
@@ -270,7 +332,10 @@ export type RecipeValidationIssue =
 	| MaterialQuantityExceededError
 	| UnusedInputMaterialInStepError
 	| ExtraIngredientsUsedError
+	| MaterialReferencedBeforeIntroductionError
 	| RepeatingMetadataDerivedOutputMaterialInStepError
+	| NonRefMaterialBlockInHealthPriorityStepError
+	| HealthPriorityStepContainsIrrelevantMetadataFieldError
 	| ExtraToolsUsedError
 	| InternalRecipeGraphError;
 

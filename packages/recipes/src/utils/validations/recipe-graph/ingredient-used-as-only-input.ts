@@ -7,6 +7,7 @@ import {
 	RecipeValidationError,
 } from "../../../models";
 import type { RecipeGraph, RecipeValidationResult } from "../../../types";
+import type { RecipeGraphValidatorFn } from "../../../types/validator";
 import { getNodeIndexByEdgeIndex } from "../../graph";
 import { getEdgeIndicesByNodeIndex } from "../../graph/get-edge-indices-by-node-index";
 
@@ -72,3 +73,5 @@ const validateIngredientUsedOnlyAsInputs = (
 
 	return new IngredientNotUsedOnlyAsInputError(node.name, nonInputEdgeKinds);
 };
+
+validateIngredientsUsedOnlyAsInputs satisfies RecipeGraphValidatorFn;

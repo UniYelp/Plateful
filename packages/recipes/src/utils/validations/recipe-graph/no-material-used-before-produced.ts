@@ -12,6 +12,7 @@ import type {
 	RecipeValidationResult,
 } from "../../../types";
 import { getEdgeIndicesByNodeIndex } from "../../graph/get-edge-indices-by-node-index";
+import type { RecipeGraphValidatorFn } from "../../../types/validator";
 
 /**
  * ? validates that each material node's "derived-input" edges' stepIndex is greater than the material node's "derived-output" edge stepIndex
@@ -74,3 +75,5 @@ const validateMaterialNotUsedBeforeProduced = (
 
 	return null;
 };
+
+validateNoMaterialUsedBeforeProduced satisfies RecipeGraphValidatorFn;

@@ -28,7 +28,7 @@ export type RecipeToolBlock = {
 
 export type BaseRecipeStepBlock = RecipeToolBlock;
 
-export type MandatoryRecipeMaterialBlock = {
+export type RecipeMaterialBlock = {
 	type: typeof RecipeStepBlockType.Material;
 } & RecipeMaterial;
 
@@ -37,50 +37,24 @@ export type AnyRecipeBlock = {
 	[x: string]: unknown;
 };
 
-type MandatoryStepTypedRecipeBlock =
-	| MandatoryRecipeMaterialBlock
-	| BaseRecipeStepBlock;
+type StepTypedRecipeBlock = RecipeMaterialBlock | BaseRecipeStepBlock;
 
-export type MandatoryStepRecipeStepBlock =
-	| MandatoryStepTypedRecipeBlock
-	| AnyRecipeBlock;
+export type StepRecipeStepBlock = StepTypedRecipeBlock | AnyRecipeBlock;
 
 type RecipeStepMetadataMaterial = {
 	name: string;
 	quantity: Quantity;
 };
 
-export type MandatoryRecipeStep = {
-	blocks: MandatoryStepRecipeStepBlock[];
+export type RecipeStep = {
+	blocks: StepRecipeStepBlock[];
 	metadata?: {
-		priority: typeof RecipeStepPriority.Mandatory;
+		priority: RecipeStepPriority;
 		setupTime?: string;
 		waste?: RecipeStepMetadataMaterial[];
 		derivedOutputs?: RecipeStepMetadataMaterial[];
 	};
 };
-
-export type HealthRecipeStepMaterialBlock = {
-	type: typeof RecipeStepBlockType.Material;
-} & RecipeMaterial<typeof RecipeMaterialKind.Referenced>;
-
-type HealthStepTypedRecipeBlock =
-	| HealthRecipeStepMaterialBlock
-	| BaseRecipeStepBlock;
-
-export type HealthStepRecipeStepBlock =
-	| HealthStepTypedRecipeBlock
-	| AnyRecipeBlock;
-
-export type HealthRecipeStep = {
-	blocks: HealthStepRecipeStepBlock[];
-	metadata?: {
-		priority: typeof RecipeStepPriority.Health;
-		setupTime?: string;
-	};
-};
-
-export type RecipeStep = MandatoryRecipeStep | HealthRecipeStep;
 
 export type Recipe = {
 	steps: RecipeStep[];

@@ -2,7 +2,7 @@ import { createScorer } from "evalite";
 
 import {
 	UnusedDerivedOutputError,
-	validateUnusedDerivedMaterials,
+	validateNoUnusedDerivedMaterials,
 } from "@plateful/recipes";
 import type {
 	RecipeGenEvalInput,
@@ -21,7 +21,7 @@ export const RecipeGenNoUnusedDerivedMaterialsScorer = createScorer<
 	scorer: ({ output }): RecipeGenScore<UnusedDerivedOutputError> => {
 		const { recipeGraph } = output;
 
-		const res = validateUnusedDerivedMaterials(recipeGraph);
+		const res = validateNoUnusedDerivedMaterials(recipeGraph);
 
 		if (!res) {
 			return { score: 1 };
@@ -34,12 +34,14 @@ export const RecipeGenNoUnusedDerivedMaterialsScorer = createScorer<
 		return {
 			score: Math.max(0, 1 - issues.length * 0.1),
 			metadata: {
-				issues: [{
-					title: issueTag,
-					description: reason,
-					count: issues.length,
-					materials: issues.map((issue) => issue.id),
-				}],
+				issues: [
+					{
+						title: issueTag,
+						description: reason,
+						count: issues.length,
+						materials: issues.map((issue) => issue.id),
+					},
+				],
 			},
 		};
 	},

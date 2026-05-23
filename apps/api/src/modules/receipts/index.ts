@@ -3,7 +3,6 @@ import { Elysia } from "elysia";
 import { LockedError } from "../../models/errors/locked";
 import { RateLimitError } from "../../models/errors/rate-limit";
 import { auth } from "../../plugins/auth.plugin";
-import { clerkAuth } from "../../plugins/clerk-auth.plugin";
 import { logger } from "../../plugins/logger.plugin";
 import { redis } from "../../plugins/redis.plugin";
 import { RedisKeys } from "../../redis/keys";
@@ -15,7 +14,6 @@ export const receipts = new Elysia({
 	prefix: "receipts",
 })
 	.use(logger())
-	.use(clerkAuth())
 	.use(auth())
 	.use(redis())
 	.get(

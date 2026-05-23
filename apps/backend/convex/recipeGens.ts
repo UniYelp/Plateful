@@ -2,7 +2,11 @@ import { Duration } from "luxon";
 
 import type { RecipeGenInput } from "@plateful/agents/recipes";
 import type { IngredientUnit } from "@plateful/ingredients";
-import { RecipeDurationKind, RecipeStepBlockType } from "@plateful/recipes";
+import {
+	RecipeDurationKind,
+	RecipeStepBlockType,
+	RecipeStepPriority,
+} from "@plateful/recipes";
 import type { StrictOmit } from "@plateful/types";
 import { TemperatureUnit } from "@plateful/units/temperature";
 import { Arr, bool, entriesOf } from "@plateful/utils";
@@ -184,6 +188,7 @@ export const start = householdMutation({
 			tools,
 			ingredients,
 			allergens: userPreferences?.allergens,
+			dietaryPreferences: userPreferences?.dietaryPreferences,
 			likedFoods: userPreferences?.likedFoods || undefined,
 			dislikedFoods: userPreferences?.dislikedFoods || undefined,
 		});
@@ -212,6 +217,7 @@ export const retry = householdMutation({
 		}
 
 		const metadata = recipeGen.metadata;
+
 		if (metadata.version !== "v0") {
 			throw new InternalError("Unsupported metadata version for retry");
 		}
@@ -254,6 +260,7 @@ export const retry = householdMutation({
 			tools: metadata.tools || [],
 			ingredients: ingredientsToProcess,
 			allergens: metadata.allergens,
+			dietaryPreferences: metadata.dietaryPreferences,
 			likedFoods: metadata.likedFoods || undefined,
 			dislikedFoods: metadata.dislikedFoods || undefined,
 		});
@@ -397,6 +404,7 @@ export const generateRecipe = internalAction({
 		ingredients: vv.array(vRecipeGenIngredient),
 		tools: vv.array(vv.string()),
 		allergens: vv.optional(vv.array(vv.string())),
+		dietaryPreferences: vv.optional(vv.array(vv.string())),
 		likedFoods: vv.optional(vv.string()),
 		dislikedFoods: vv.optional(vv.string()),
 	},
@@ -411,7 +419,14 @@ export const generateRecipe = internalAction({
 			},
 		});
 
-		const { tags, tools, allergens, likedFoods, dislikedFoods } = args;
+		const {
+			tags,
+			tools,
+			allergens,
+			dietaryPreferences,
+			likedFoods,
+			dislikedFoods,
+		} = args;
 
 		const ingredientIdByName = Object.fromEntries(
 			args.ingredients.map((ing) => [ing.name, ing.id] as const),
@@ -472,6 +487,7 @@ export const generateRecipe = internalAction({
 					ingredients,
 					tags,
 					allergens,
+                    dietaryPreferences,
 					likedFoods,
 					dislikedFoods,
 					temperatureUnit: TemperatureUnit.Celsius,
@@ -709,24 +725,30 @@ export const generateRecipe = internalAction({
 									const transformedMetadata: RecipeStepMetadata = {
 										priority: metadata.priority,
 										setupTime: metadata.setupTime,
-										waste: metadata.waste?.map((waste) => ({
-											of: ingredientIdByName[waste.name]
-												? { id: ingredientIdByName[waste.name] }
-												: { name: waste.name },
-											quantity: {
-												amount: waste.quantity.value,
-												unit: waste.quantity.unit ?? undefined,
-											},
-										})),
-										derivedOutputs: metadata.derivedOutputs?.map((output) => ({
-											of: ingredientIdByName[output.name]
-												? { id: ingredientIdByName[output.name] }
-												: { name: output.name },
-											quantity: {
-												amount: output.quantity.value,
-												unit: output.quantity.unit ?? undefined,
-											},
-										})),
+										...(metadata.priority === RecipeStepPriority.Mandatory
+											? {
+													waste: metadata.waste?.map((waste) => ({
+														of: ingredientIdByName[waste.name]
+															? { id: ingredientIdByName[waste.name] }
+															: { name: waste.name },
+														quantity: {
+															amount: waste.quantity.value,
+															unit: waste.quantity.unit ?? undefined,
+														},
+													})),
+													derivedOutputs: metadata.derivedOutputs?.map(
+														(output) => ({
+															of: ingredientIdByName[output.name]
+																? { id: ingredientIdByName[output.name] }
+																: { name: output.name },
+															quantity: {
+																amount: output.quantity.value,
+																unit: output.quantity.unit ?? undefined,
+															},
+														}),
+													),
+												}
+											: {}),
 									};
 
 									return {

@@ -243,6 +243,7 @@ export const recipeGenV0MetadataFields = {
 	ingredients: v.array(v.id("ingredients")),
 	tools: v.optional(v.array(v.string())),
 	allergens: v.optional(v.array(v.string())),
+	dietaryPreferences: v.optional(v.array(v.string())),
 	likedFoods: v.optional(v.string()),
 	dislikedFoods: v.optional(v.string()),
 };

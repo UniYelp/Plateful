@@ -19,11 +19,12 @@ export const validateNoUnusedInputMaterialsInStep = (
 
 			if (!stepInputKindMaterials.length) return [];
 
-			const stepHasOutputKindMaterials = step.blocks.some(
-				(block) =>
-					block.type === RecipeStepBlockType.Material &&
-					isMaterialOutputKind(block.kind as RecipeMaterialKind),
-			);
+			const stepHasOutputKindMaterials =
+				step.blocks.some(
+					(block) =>
+						block.type === RecipeStepBlockType.Material &&
+						isMaterialOutputKind(block.kind as RecipeMaterialKind),
+				) || (step.metadata?.derivedOutputs?.length ?? 0) > 0;
 
 			if (stepHasOutputKindMaterials) return [];
 

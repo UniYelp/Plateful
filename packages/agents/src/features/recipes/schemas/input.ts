@@ -1,14 +1,11 @@
 import z from "zod";
 
-import type {
-    RecipeIngredient,
-    RecipeInputMetadata
-} from "@plateful/recipes";
+import type { RecipeIngredient, RecipeInputMetadata } from "@plateful/recipes";
 import type { Satisfies } from "@plateful/types";
 import {
-    MaterialUnitSchema,
-    SpiceLevelSchema,
-    TemperatureUnitSchema,
+	MaterialUnitSchema,
+	SpiceLevelSchema,
+	TemperatureUnitSchema,
 } from "./literals";
 
 const IngredientQuantitySchema = z
@@ -68,10 +65,15 @@ export const RecipeGenInputSchema = z.object({
 	tools: ToolsInputSchema,
 	tags: z.array(z.string()),
 	allergens: z.array(z.string()).optional(),
+	dietaryPreferences: z.array(z.string()).optional(),
 	likedFoods: z.string().optional(),
 	dislikedFoods: z.string().optional(),
 	temperatureUnit: TemperatureUnitSchema,
 	toleratedSpiceLevel: SpiceLevelSchema,
+});
+
+export const ExtendedRecipeGenInputSchema = z.object({
+	...RecipeGenInputSchema.shape,
 	safetyCritique: z.string().optional().meta({
 		description:
 			"Safety critique feedback from the previous recipe generation attempt",
@@ -85,6 +87,10 @@ export const RecipeGenInputSchema = z.object({
 export type RecipeGenInput = Satisfies<
 	z.infer<typeof RecipeGenInputSchema>,
 	RecipeInputMetadata
+>;
+
+export type ExtendedRecipeGenInput = z.infer<
+	typeof ExtendedRecipeGenInputSchema
 >;
 
 export const RecipeGenInputJsonSchema = z.toJSONSchema(RecipeGenInputSchema);

@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { Output } from "ai";
 import z from "zod";
 
 import {
@@ -28,10 +29,17 @@ async function dumpJsonSchemas(
 	await Promise.all(
 		Object.entries(schemas).map(async ([name, schema]) => {
 			const jsonSchema = z.toJSONSchema(schema);
+			const responseSchema = await Output.object({ schema }).responseFormat;
 
 			const filePath = join(outputDir, `${name}.json`);
+			const aiFilePath = join(outputDir, `${name}.ai.json`);
 
 			await writeFile(filePath, JSON.stringify(jsonSchema, null, 2), "utf8");
+			await writeFile(
+				aiFilePath,
+				JSON.stringify(responseSchema, null, 2),
+				"utf8",
+			);
 		}),
 	);
 }

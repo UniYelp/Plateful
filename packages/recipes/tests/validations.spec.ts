@@ -109,26 +109,28 @@ describe("ingredients", () => {
 		it("should return `null` when all material quantities are within the limits", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 6 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Orange",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 6 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Orange",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -149,20 +151,22 @@ describe("ingredients", () => {
 		it("should return a `RecipeValidationError<MaterialQuantityExceededError>` when an input exceeds the provided ingredient quantity", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -188,34 +192,38 @@ describe("ingredients", () => {
 		it("should return a `RecipeValidationError<MaterialQuantityExceededError>` when a derived input exceeds the produced material quantity", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Mashed Banana",
-							kind: RecipeMaterialKind.DerivedOutput,
-							quantity: { value: 1 }, // Only 1 produced
-						},
-					],
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Mashed Banana",
-							kind: RecipeMaterialKind.DerivedInput,
-							quantity: { value: 2 }, // But 2 required
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Mashed Banana",
+								kind: RecipeMaterialKind.DerivedOutput,
+								quantity: { value: 1 }, // Only 1 produced
+							},
+						],
+					},
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Mashed Banana",
+								kind: RecipeMaterialKind.DerivedInput,
+								quantity: { value: 2 }, // But 2 required
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -243,20 +251,22 @@ describe("ingredients", () => {
 		it("should return `null` when using unlimited ingredients", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Water",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 1000 }, // Using a lot
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Drink",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1000 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Water",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 1000 }, // Using a lot
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Drink",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1000 },
+							},
+						],
+					},
 				],
 			};
 
@@ -275,20 +285,22 @@ describe("ingredients", () => {
 			// This test assumes that 'cup' and 'tsp' are convertible or at least tracked separately
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Water",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 4, unit: "cup" }, // Exceeds 3 cups (1 + 2)
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Drink",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Water",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 4, unit: "cup" }, // Exceeds 3 cups (1 + 2)
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Drink",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -319,26 +331,28 @@ describe("ingredients", () => {
 		it("should return `null` when no extra ingredients are used", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 6 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Orange",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 6 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Orange",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -358,32 +372,34 @@ describe("ingredients", () => {
 		it("should return a `RecipeValidationError<ExtraIngredientsUsedError>` when extra ingredients are used", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 6 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Orange",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Strawberry",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 6 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Orange",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Strawberry",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -413,26 +429,28 @@ describe("tools", () => {
 		it("should return `null` when the tools are unlimited w/ tools", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 6 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Orange",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 6 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Orange",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -452,30 +470,32 @@ describe("tools", () => {
 		it("should return `null` when the tools are unlimited w/o tools", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 6 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Orange",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Tool,
-							name: "Blender",
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 6 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Orange",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Tool,
+								name: "Blender",
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -495,30 +515,32 @@ describe("tools", () => {
 		it("should return `null` when no extra tools are used", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 6 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Orange",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Tool,
-							name: "Blender",
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 6 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Orange",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Tool,
+								name: "Blender",
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -538,34 +560,36 @@ describe("tools", () => {
 		it("should return `null` when no extra tools + unlimited is set are used", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 6 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Orange",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Tool,
-							name: "Blender",
-						},
-						{
-							type: RecipeStepBlockType.Tool,
-							name: "Spoon",
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 6 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Orange",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Tool,
+								name: "Blender",
+							},
+							{
+								type: RecipeStepBlockType.Tool,
+								name: "Spoon",
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -582,33 +606,35 @@ describe("tools", () => {
 			expect(res).toBeNull();
 		});
 
-		it("should return a `RecipeValidationError<ExtraIngredientsUsedError>` when extra ingredients are used", () => {
+		it("should return a `RecipeValidationError<ExtraToolUsedError>` when extra tools are used", () => {
 			const recipe: Recipe = {
 				steps: [
-					[
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Banana",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 6 },
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Orange",
-							kind: RecipeMaterialKind.Input,
-							quantity: { value: 2 },
-						},
-						{
-							type: RecipeStepBlockType.Tool,
-							name: "Blender",
-						},
-						{
-							type: RecipeStepBlockType.Material,
-							name: "Smoothie",
-							kind: RecipeMaterialKind.Output,
-							quantity: { value: 1 },
-						},
-					],
+					{
+						blocks: [
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Banana",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 6 },
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Orange",
+								kind: RecipeMaterialKind.Input,
+								quantity: { value: 2 },
+							},
+							{
+								type: RecipeStepBlockType.Tool,
+								name: "Blender",
+							},
+							{
+								type: RecipeStepBlockType.Material,
+								name: "Smoothie",
+								kind: RecipeMaterialKind.Output,
+								quantity: { value: 1 },
+							},
+						],
+					},
 				],
 			};
 
@@ -628,7 +654,7 @@ describe("tools", () => {
 			expect(issues?.[0]).toBeInstanceOf(ExtraToolsUsedError);
 
 			const issue = issues[0] as ExtraToolsUsedError;
-			expect.soft(issue.tool).toBe("Spoon");
+			expect.soft(issue.tool).toBe("Blender");
 		});
 	});
 });

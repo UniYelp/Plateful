@@ -2,14 +2,13 @@ import dedent from "dedent";
 import z from "zod";
 
 import {
-	type HealthRecipeStep,
-	type MandatoryRecipeMaterialBlock,
-	type MandatoryRecipeStep,
 	type MaterialBlockKind,
 	type Quantity,
 	type Recipe,
 	RecipeDurationKind,
+	type RecipeMaterialBlock,
 	RecipeMaterialKind,
+	type RecipeStep,
 	RecipeStepBlockType,
 	RecipeStepPriority,
 	recipeDurationKinds,
@@ -139,6 +138,9 @@ export const MaterialBlockSchema = z
             - ${RecipeMaterialKind.Output} and ${RecipeMaterialKind.Referenced} materials may not be used to produce other materials (they do not create new derived states).
             - Multiple ${RecipeMaterialKind.Output} materials are allowed.
 
+            Health Steps Rule:
+            - In a ${RecipeStepPriority.Health} step, all materials must be referenced materials.
+
             Lifecycle Example:
             - **Stage 1: Prep**
                 - Action: Wash
@@ -157,7 +159,7 @@ export const MaterialBlockSchema = z
 
 export type MaterialBlock = Satisfies<
 	z.infer<typeof MaterialBlockSchema>,
-	MandatoryRecipeMaterialBlock
+	RecipeMaterialBlock
 >;
 
 export const DurationBlockSchema = z
@@ -219,7 +221,7 @@ export const TextBlockSchema = z
 		title: "Text Block",
 	});
 
-const baseBlockSchemaByKind = {
+export const baseBlockSchemaByKind = {
 	// [RecipeStepBlockType.Action]: ActionBlockSchema,
 	[RecipeStepBlockType.Duration]: DurationBlockSchema,
 	[RecipeStepBlockType.Temperature]: TemperatureBlockSchema,
@@ -231,7 +233,7 @@ const baseBlockSchemaByKind = {
 	}>;
 };
 
-const mandatoryBlockSchemaByKind = {
+const blockSchemaByKind = {
 	...baseBlockSchemaByKind,
 	[RecipeStepBlockType.Material]: MaterialBlockSchema,
 } as const satisfies {
@@ -240,9 +242,7 @@ const mandatoryBlockSchemaByKind = {
 	}>;
 };
 
-export const MandatoryStepBlockSchema = z.union(
-	Object.values(mandatoryBlockSchemaByKind),
-);
+export const StepBlockSchema = z.union(Object.values(blockSchemaByKind));
 
 export const MaterialWasteSchema = z
 	.object({
@@ -260,7 +260,7 @@ export const MaterialWasteSchema = z
 
 export type MaterialWaste = Satisfies<
 	z.infer<typeof MaterialWasteSchema>,
-	NonNullable<NonNullable<MandatoryRecipeStep["metadata"]>["waste"]>[number]
+	NonNullable<NonNullable<RecipeStep["metadata"]>["waste"]>[number]
 >;
 
 export const DerivedOutputMaterialSchema = z
@@ -284,9 +284,7 @@ export const DerivedOutputMaterialSchema = z
 
 export type DerivedOutputMaterial = Satisfies<
 	z.infer<typeof DerivedOutputMaterialSchema>,
-	NonNullable<
-		NonNullable<MandatoryRecipeStep["metadata"]>["derivedOutputs"]
-	>[number]
+	NonNullable<NonNullable<RecipeStep["metadata"]>["derivedOutputs"]>[number]
 >;
 
 const MandatoryStepPrioritySchema = z
@@ -297,6 +295,22 @@ const MandatoryStepPrioritySchema = z
 			"A step that is required for the recipe to be considered complete.",
 	});
 
+export const HealthStepPrioritySchema = z
+	.literal(RecipeStepPriority.Health)
+	.meta({
+		title: "Health Step Priority",
+		description: dedent`
+		A step that is recommended for the recipe to be considered healthy, but the recipe can still be made without it (e.g., removing excess fat from a meat cut, washing raw ingredients).
+		${RecipeStepPriority.Health} steps may only use ${RecipeMaterialKind.Referenced} materials and mustn't affect the rest of the recipe (i.e. they can be omitted and the recipe should still be valid).
+		A ${RecipeStepPriority.Health} step's metadata should not include any ${RecipeMaterialKind.DerivedOutput} or ${RecipeMaterialKind.Waste} materials.
+	`,
+	});
+
+export const StepPrioritySchema = z.union([
+	MandatoryStepPrioritySchema,
+	HealthStepPrioritySchema,
+]);
+
 export const BaseStepMetadataSchema = z.object({
 	setupTime: z.optional(z.iso.duration()).meta({
 		description: dedent`
@@ -304,9 +318,10 @@ export const BaseStepMetadataSchema = z.object({
             - *Rule:* This is metadata only. Do NOT include or mention this duration in the step's natural text description or reading flow.
         `,
 	}),
+	priority: StepPrioritySchema,
 });
 
-const RecipeStepBlockMetaDesc = dedent`
+export const RecipeStepBlockMetaDesc = dedent`
     - Material blocks must appear at the point in the step where the ingredient is used.
     - Duration blocks must be logically and naturally embedded within the textual instructions (e.g., 'Roast the potatoes for [DURATION] until golden' instead of 'Roast the potatoes until golden. [DURATION]'). Do NOT simply append time blocks at the end of a sentence.
     - Do NOT include in plain text that which can be expressed as a structured object.
@@ -316,11 +331,11 @@ const RecipeStepBlockMetaDesc = dedent`
     - Do not restate or duplicate information already expressed via a typed block in prior or later plain text, and do not append typed blocks at the end of a step if the corresponding concept was already referenced inline.
 `;
 
-const MandatoryRecipeStepBlocksSchema = z
-	.array(MandatoryStepBlockSchema)
+const RecipeStepBlocksSchema = z
+	.array(StepBlockSchema)
 	.nonempty()
 	.meta({
-		title: "Mandatory Recipe Step Blocks",
+		title: "Recipe Step Blocks",
 		description: dedent`
             ${RecipeStepBlockMetaDesc}
 
@@ -329,94 +344,32 @@ const MandatoryRecipeStepBlocksSchema = z
         `,
 	});
 
-export const MandatoryStepMetadataSchema = z
+export const StepMetadataSchema = z
 	.object({
 		...BaseStepMetadataSchema.shape,
-		priority: MandatoryStepPrioritySchema,
 		waste: z.array(MaterialWasteSchema).optional(),
 		derivedOutputs: z.array(DerivedOutputMaterialSchema).optional(),
 	})
 	.meta({
-		title: "Mandatory Step Metadata",
+		title: "Step Metadata",
 	});
-
-const MandatoryRecipeStepSchema = z
-	.object({
-		blocks: MandatoryRecipeStepBlocksSchema,
-		metadata: MandatoryStepMetadataSchema,
-	})
-	.meta({
-		title: "Mandatory Recipe Step",
-	});
-
-export type MandatoryRecipeStepShape = Satisfies<
-	z.infer<typeof MandatoryRecipeStepSchema>,
-	MandatoryRecipeStep
->;
-
-const HealthStepPrioritySchema = z.literal(RecipeStepPriority.Health).meta({
-	title: "Health Step Priority",
-	description: dedent`
-		A step that is recommended for the recipe to be considered healthy, but the recipe can still be made without it (e.g., removing excess fat from a meat cut, washing raw ingredients).
-		${RecipeStepPriority.Health} steps may only use ${RecipeMaterialKind.Referenced} materials and mustn't affect the rest of the recipe (i.e. they can be omitted and the recipe should still be valid).
-	`,
-});
-
-const healthSchemaByBlockKind = {
-	...baseBlockSchemaByKind,
-	[RecipeStepBlockType.Material]: MaterialBlockSchema.extend({
-		kind: z.literal(RecipeMaterialKind.Referenced),
-	}),
-} as const satisfies {
-	[U in RecipeStepBlockType]: z.ZodObject<{
-		type: z.ZodLiteral<U>;
-	}>;
-};
-
-const HealthMaterialBlockSchema = z.union(
-	Object.values(healthSchemaByBlockKind),
-);
-
-const HealthRecipeStepBlocksSchema = z
-	.array(HealthMaterialBlockSchema)
-	.nonempty()
-	.meta({
-		title: "Health Recipe Step Blocks",
-		description: RecipeStepBlockMetaDesc,
-	});
-
-export const HealthStepMetadataSchema = z
-	.object({
-		...BaseStepMetadataSchema.shape,
-		priority: HealthStepPrioritySchema,
-	})
-	.meta({
-		title: "Health Step Metadata",
-	});
-
-const HealthRecipeStepSchema = z
-	.object({
-		blocks: HealthRecipeStepBlocksSchema,
-		metadata: HealthStepMetadataSchema,
-	})
-	.meta({
-		title: "Health Recipe Step",
-	});
-
-export type HealthRecipeStepShape = Satisfies<
-	z.infer<typeof HealthRecipeStepSchema>,
-	HealthRecipeStep
->;
 
 const RecipeStepSchema = z
-	.union([MandatoryRecipeStepSchema, HealthRecipeStepSchema])
+	.object({
+		blocks: RecipeStepBlocksSchema,
+		metadata: StepMetadataSchema,
+	})
 	.meta({
 		title: "Recipe Step",
 	});
 
+export type RecipeStepShape = Satisfies<
+	z.infer<typeof RecipeStepSchema>,
+	RecipeStep
+>;
+
 export const RecipeGenOutputSchema = z
 	.object({
-		type: z.literal("recipe"),
 		title: z.string().nonempty(),
 		description: z.string().nonempty(),
 		tags: z.array(z.string()),
@@ -435,13 +388,30 @@ export type RecipeGenOutput = Satisfies<
 >;
 
 export const UnfeasibleRecipeGenSchema = z.object({
-	type: z.literal("unfeasible"),
 	reason: z.string(),
 });
 
-export const RecipeGenResultSchema = z.discriminatedUnion("type", [
-	RecipeGenOutputSchema,
-	UnfeasibleRecipeGenSchema,
-]);
+export const RecipeGenResultSchema = z
+	.object({
+		type: z.enum(["unfeasible", "recipe"]),
+		recipe: RecipeGenOutputSchema.optional(),
+		unfeasible: UnfeasibleRecipeGenSchema.optional(),
+	})
+	.refine(
+		(data) => {
+			if (data.type === "recipe" && !data.recipe) {
+				return false;
+			}
+
+			if (data.type === "unfeasible" && !data.unfeasible) {
+				return false;
+			}
+
+			return true;
+		},
+		{
+			message: "Must have either a recipe or an unfeasible reason",
+		},
+	);
 
 export type RecipeGenResult = z.infer<typeof RecipeGenResultSchema>;

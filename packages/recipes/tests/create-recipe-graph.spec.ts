@@ -1,7 +1,7 @@
 import { Graph, Option } from "effect";
 import { describe, expect, test } from "vitest";
 
-import type { Recipe, RecipeIngredient } from "../src";
+import type { Recipe, RecipeIngredient, RecipeInputMetadata } from "../src";
 import {
 	createRecipeGraph,
 	getStartNodeIndex,
@@ -16,11 +16,15 @@ import rawRecipe from "./__fixtures__/recipe/raw.json" with { type: "json" };
 
 describe("createRecipeGraph", () => {
 	const recipe: Recipe = {
-		ingredients: rawIngredients as RecipeIngredient[],
 		steps: rawRecipe.steps,
 	};
 
-	const graph = createRecipeGraph(recipe);
+	const inputMetadata: RecipeInputMetadata = {
+		ingredients: rawIngredients as RecipeIngredient[],
+		tools: "unlimited",
+	};
+
+	const graph = createRecipeGraph(recipe, inputMetadata);
 
 	test("Start node should only have ingredient edges", () => {
 		const startNodeIdxRes = getStartNodeIndex(graph);
@@ -28,16 +32,16 @@ describe("createRecipeGraph", () => {
 		expect(startNodeIdxRes).not.toBeInstanceOf(InternalRecipeGraphError);
 
 		const startNodeIdx = Number(startNodeIdxRes);
-        
+
 		const startNodeEdges = new Set(graph.adjacency.get(startNodeIdx));
 
-		expect(startNodeEdges.size).toBe(recipe.ingredients.length);
+		expect(startNodeEdges.size).toBe(inputMetadata.ingredients.length);
 
 		const startEdges = Array.from(graph.edges.entries()).flatMap(
 			([edgeIdx, edge]) => (startNodeEdges.has(edgeIdx) ? edge : []),
 		);
 
-		expect(startEdges).toHaveLength(recipe.ingredients.length);
+		expect(startEdges).toHaveLength(inputMetadata.ingredients.length);
 
 		const areAllIngredientEdges = startEdges.every(
 			(edge) => edge.data.type === "ingredient",
