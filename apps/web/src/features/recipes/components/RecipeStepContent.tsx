@@ -6,12 +6,7 @@ import {
 	getIngredientUnitConversions,
 	type IngredientUnit,
 } from "@plateful/ingredients";
-import {
-	RecipeDurationKind,
-	RecipeMaterialKind,
-	RecipeStepBlockType,
-} from "@plateful/recipes";
-import { Arr } from "@plateful/utils";
+import { RecipeMaterialKind, RecipeStepBlockType } from "@plateful/recipes";
 import type { Id } from "@backend/dataModel";
 import type {
 	MaterialBlock,
@@ -23,6 +18,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ensureV1RecipeStep } from "../utils/convert-recipe";
 import { formatDuration } from "../utils/format-duration";
 import { formatQuantity } from "../utils/format-quantity";
 
@@ -35,60 +31,17 @@ export const RecipeStepContent = ({
 	step: RecipeStep;
 	ingredientNameById: Record<Id<"ingredients">, string>;
 }) => {
-	const { blocks } = step;
-
-	const inlineBlocks: RecipeStepBlock[] = [];
-	const adornmentBlocks: RecipeStepBlock[] = [];
-
-	for (let i = 0; i < blocks.length; i++) {
-		const block = blocks[i];
-
-		if (typeof block !== "string") {
-			if (block.type === RecipeStepBlockType.Duration) {
-				if (block.kind === RecipeDurationKind.Prep) {
-					adornmentBlocks.push(block);
-					continue;
-				}
-
-				const isTrailing = blocks
-					.slice(i + 1)
-					.every(
-						(b) =>
-							(b.type === RecipeStepBlockType.Text &&
-								["", ".", ".", "!", "?"].includes(b.text)) ||
-							(b.type === RecipeStepBlockType.Material &&
-								b.kind === RecipeMaterialKind.DerivedOutput),
-					);
-
-				if (isTrailing) {
-					adornmentBlocks.push(block);
-					continue;
-				}
-			}
-
-			if (block.type === RecipeStepBlockType.Material) {
-				if (block.kind === RecipeMaterialKind.DerivedOutput) {
-					adornmentBlocks.push(block);
-					continue;
-				}
-
-				if (
-					block.kind === RecipeMaterialKind.Output &&
-					i === blocks.length - 1
-				) {
-					adornmentBlocks.push(block);
-					continue;
-				}
-			}
-		}
-
-		inlineBlocks.push(block);
-	}
+	const normalizedStep = ensureV1RecipeStep(step);
+	const hasBlockDerivedOutputMaterials = normalizedStep.blocks.some(
+		(block) =>
+			block.type === RecipeStepBlockType.Material &&
+			block.kind === RecipeMaterialKind.DerivedOutput,
+	);
 
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="leading-loose">
-				{inlineBlocks.map((block, idx) => (
+				{normalizedStep.blocks.map((block, idx) => (
 					<StepBlock
 						key={idx}
 						block={block}
@@ -96,54 +49,39 @@ export const RecipeStepContent = ({
 					/>
 				))}
 			</div>
-			{adornmentBlocks.length > 0 && (
-				<div className="flex flex-wrap gap-2">
-					{adornmentBlocks.map((block, idx) => (
-						<StepAdornment
-							key={`adornment-${idx}`}
-							block={block}
-							ingredientNameById={ingredientNameById}
-						/>
-					))}
+			{(normalizedStep.metadata?.setupTime ||
+				(normalizedStep.metadata?.derivedOutputs &&
+					normalizedStep.metadata.derivedOutputs.length > 0)) && (
+				<div className="mt-1 flex flex-wrap gap-2">
+					{normalizedStep.metadata?.setupTime && (
+						<span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-2.5 py-0.5 font-medium text-muted-foreground text-xs">
+							<Clock className="h-3 w-3" />
+							Setup Time: {formatDuration(normalizedStep.metadata.setupTime)}
+						</span>
+					)}
+					{normalizedStep.metadata?.derivedOutputs?.map((output, idx) => {
+						const name =
+							"name" in output.of
+								? output.of.name
+								: ingredientNameById[output.of.id] || "unknown";
+
+						return (
+							<span
+								key={idx}
+								className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 font-medium text-primary text-xs"
+							>
+								<CheckCircle2 className="h-3 w-3" />
+								{hasBlockDerivedOutputMaterials
+									? "Yields an additional"
+									: "Yields"}
+								: {name}
+							</span>
+						);
+					})}
 				</div>
 			)}
 		</div>
 	);
-};
-
-const StepAdornment = ({
-	block,
-	ingredientNameById,
-}: {
-	block: RecipeStepBlock;
-	ingredientNameById: Record<Id<"ingredients">, string>;
-}) => {
-	if (typeof block === "string") return null;
-
-	if (block.type === RecipeStepBlockType.Duration) {
-		return (
-			<span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-2.5 py-0.5 font-medium text-muted-foreground text-xs">
-				<Clock className="h-3 w-3" />
-				Time: {formatDuration(block.value)}
-			</span>
-		);
-	}
-
-	if (block.type === RecipeStepBlockType.Material) {
-		const name =
-			"name" in block.ingredient
-				? block.ingredient.name
-				: ingredientNameById[block.ingredient.id];
-
-		return (
-			<span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 font-medium text-primary text-xs">
-				<CheckCircle2 className="h-3 w-3" />
-				Yields: {name}
-			</span>
-		);
-	}
-
-	return null;
 };
 
 const StepBlock = ({
@@ -190,20 +128,6 @@ const StepBlock = ({
 };
 
 const MaterialBlockView = ({
-	data,
-	nameById,
-}: {
-	data: MaterialBlock;
-	nameById: Record<Id<"ingredients">, string | undefined>;
-}) => {
-	if (Arr.includes([RecipeMaterialKind.DerivedOutput], data.kind)) {
-		return null;
-	}
-
-	return <InputMaterialBlockView data={data} nameById={nameById} />;
-};
-
-const InputMaterialBlockView = ({
 	data,
 	nameById,
 }: {
