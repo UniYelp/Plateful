@@ -19,10 +19,10 @@
             ],
             "cache": true,
         },
-        "build": {
-            "with": [
-                "build:schemas"
-            ]
-        }
+        // "build": {
+        //     "with": [
+        //         "build:schemas"
+        //     ]
+        // }
     }
 }
