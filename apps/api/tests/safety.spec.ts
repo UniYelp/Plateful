@@ -48,8 +48,8 @@ describe("Safety Agent", () => {
 			expect(goodResult.safetyScore).toBeGreaterThan(
 				badResult.safetyScore || 0,
 			);
-			expect(goodResult.safetyScore).toBeGreaterThan(0.5);
-			expect(badResult.safetyScore).toBeLessThan(0.5);
+			expect(goodResult.safetyScore).toBeGreaterThan(50);
+			expect(badResult.safetyScore).toBeLessThan(50);
 		},
 	);
 });
