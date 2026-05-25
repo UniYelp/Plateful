@@ -131,7 +131,7 @@ export const MaterialBlockSchema = z
             - If a step would require mixing material kinds in a way that violates these rules, the action must be split into multiple steps.
             - Represent materials inline using a material block of kind ${RecipeMaterialKind.Input} or ${RecipeMaterialKind.DerivedInput} with their quantity${/** and optional state*/ ""}.
             ${/**- When referencing materials, use the base material name whenever possible. Do NOT include the state in the material's name unless the state is a commonly recognized part of the material name (e.g., “whipped cream”), in that case, do not use the state field. Track any changes in state using the state field of the material block. Mention the state in the name only if it is necessary for clarity. */ ""}
-            - Materials produced in the step ("output-kind") must appear as material blocks at the **end of the step**
+			- Place ${RecipeMaterialKind.DerivedOutput} in "metadata.derivedOutputs" if the text flow does not explicitly mention it as an output (e.g. "Sear the beef" with a "Seared Beef" as an implicit ${RecipeMaterialKind.DerivedOutput} material metadata), but if it is explicitly mentioned in the text flow then it should remain as a block (e.g. "Bake the dough until it turns into a golden brown bread. Remove from oven and let cool." -> ${RecipeMaterialKind.DerivedOutput} remains a block and is not added to "metadata.derivedOutputs").
 
             Across steps:
             - An "output-kind" material may appear at any point in the recipe, but only after all input-kind materials required to produce it have appeared earlier.
