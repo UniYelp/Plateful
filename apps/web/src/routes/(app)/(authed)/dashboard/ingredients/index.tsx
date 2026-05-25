@@ -109,7 +109,7 @@ function IngredientsPage() {
 	return (
 		<>
 			{/* Page Header */}
-			<div className="mb-8 flex items-center justify-between">
+			<div className="mb-8 flex flex-wrap items-center justify-between gap-2">
 				<div>
 					<h1 className="mb-2 font-bold text-3xl">Ingredients</h1>
 					<p className="text-muted-foreground">Manage your kitchen inventory</p>

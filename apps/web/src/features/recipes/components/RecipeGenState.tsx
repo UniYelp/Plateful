@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { AlertCircle, ChefHat, ExternalLink, RotateCcw } from "lucide-react";
@@ -18,7 +19,6 @@ import {
 	RecipeGenStatusSmall,
 	stageStatusDetails,
 } from "./loaders/recipe-gen-status";
-import { usePostHog } from "@posthog/react";
 
 type Props = {
 	gen: RecipeGenDoc;
@@ -94,8 +94,11 @@ export const RecipeGenState = (props: Props) => {
 							</div>
 
 							<div className="min-w-0 flex-1">
-								<div className="mb-2 flex items-start justify-between gap-4">
+								<div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
 									<div className="flex min-w-0 flex-1 flex-col justify-center">
+										<span className="text-muted-foreground text-xs sm:hidden">
+											{new Date(gen._creationTime).toLocaleDateString()}
+										</span>
 										<div className="mt-2 mb-1 flex items-center gap-2">
 											<h3 className="font-semibold text-base">
 												Generation Failed
@@ -109,18 +112,16 @@ export const RecipeGenState = (props: Props) => {
 										</p>
 									</div>
 
-									<div className="flex min-w-max flex-col gap-2 self-center">
-										<div className="flex justify-end">
-											<span className="whitespace-nowrap text-muted-foreground text-xs">
-												{new Date(gen._creationTime).toLocaleDateString()}
-											</span>
-										</div>
+									<div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:min-w-max sm:flex-col sm:items-end sm:justify-start sm:gap-2 sm:self-center">
+										<span className="hidden text-muted-foreground text-xs sm:inline">
+											{new Date(gen._creationTime).toLocaleDateString()}
+										</span>
 										{!isOutdated && (
 											<Button
 												onClick={handleRetry}
 												size="sm"
 												variant="outline"
-												className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+												className="w-full border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive sm:w-auto"
 												disabled={isQuotaReached}
 											>
 												<RotateCcw className="mr-2 h-3 w-3" />
@@ -143,16 +144,19 @@ export const RecipeGenState = (props: Props) => {
 							<div className="flex h-15 w-15 shrink-0 items-center justify-center rounded-lg bg-primary/10">
 								<ChefHat className="h-5 w-5" />
 							</div>
-							<div className="flex w-full justify-between">
-								<div className="mt-4">{title}</div>
+							<div className="flex flex-1 flex-col gap-3 sm:flex-row sm:justify-between">
+								<div className="mt-1 flex flex-col justify-center">
+									<span className="text-muted-foreground text-xs sm:hidden">
+										{new Date(gen._creationTime).toLocaleDateString()}
+									</span>
+									<div className="font-medium text-base">{title}</div>
+								</div>
 
-								<div className="flex min-w-max flex-col gap-2">
-									<div className="flex justify-end">
-										<span className="whitespace-nowrap text-muted-foreground text-xs">
-											{new Date(gen._creationTime).toLocaleDateString()}
-										</span>
-									</div>
-									<Button size="sm" asChild>
+								<div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:min-w-max sm:flex-col sm:items-end sm:justify-start sm:gap-2">
+									<span className="hidden text-muted-foreground text-xs sm:inline">
+										{new Date(gen._creationTime).toLocaleDateString()}
+									</span>
+									<Button size="sm" asChild className="w-full sm:w-auto">
 										<Link
 											to={`/dashboard/recipes/$id`}
 											params={{ id: gen.state.recipeId }}
