@@ -2,7 +2,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { usePostHog } from "@posthog/react";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useConvexAuth, useMutation as useConvexMutation } from "convex/react";
+import { useMutation as useConvexMutation } from "convex/react";
 import {
 	AlertCircle,
 	Camera,
