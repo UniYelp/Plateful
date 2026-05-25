@@ -139,10 +139,19 @@ export const recipes = new Elysia({
 						);
 
 						if (safetyResult.injectedSteps.length) {
-							recipeGen.steps = SafetyUtils.injectSafetySteps(
-								recipeGen.steps,
-								safetyResult.injectedSteps,
+							const { result, stepModifications } =
+								SafetyUtils.injectSafetySteps(
+									recipeGen.steps,
+									safetyResult.injectedSteps,
+								);
+
+							const reindexed = SafetyUtils.reindexCriticismsWithModifications(
+								safetyResult.structuralCriticisms,
+								stepModifications,
 							);
+
+							recipeGen.steps = result;
+							safetyResult.structuralCriticisms = reindexed;
 						}
 
 						const rawScore = safetyResult.safetyScore;

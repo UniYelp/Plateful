@@ -75,6 +75,8 @@ export const StructuralCriticismSchema = z
 			"Use this ONLY if there is a severe safety hazard or absolute dietary violation built into the cooking process itself that requires the recipe, or parts of it, to be rewritten (e.g., dangerous material mixtures, internal temperatures too low to kill bacteria, or direct cross-contamination built into the core steps).",
 	});
 
+export type StructuralCriticism = z.infer<typeof StructuralCriticismSchema>;
+
 export const SafetyOutputSchema = z.object({
 	reasoning: z.string().meta({
 		description:
