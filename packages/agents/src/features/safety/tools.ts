@@ -71,3 +71,7 @@ export const searchSafetyInstructions = tool({
 	}),
 	execute: queryPinecone,
 });
+
+export const safetyToolsSet = {
+	searchSafetyInstructions,
+} as const;

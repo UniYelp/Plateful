@@ -7,7 +7,6 @@ import {
 	UsedOutputMaterialError,
 	validateRecipeOutput,
 } from "@plateful/recipes";
-import { errorMessageByErrorTag } from "../../../src/features/recipes/constants";
 import type {
 	RecipeGenEvalInput,
 	RecipeGenEvalOutput,
@@ -42,6 +41,7 @@ export const RecipeGenOutputScorer = createScorer<
 
 		if (hasNoOutput) {
 			const issueTag = RecipeHasNoOutputError._tag;
+			const reason = RecipeHasNoOutputError.reason;
 
 			return {
 				score: 0,
@@ -49,7 +49,7 @@ export const RecipeGenOutputScorer = createScorer<
 					issues: [
 						{
 							title: issueTag,
-							description: errorMessageByErrorTag[issueTag],
+							description: reason,
 						},
 					],
 				},
@@ -71,6 +71,7 @@ export const RecipeGenOutputScorer = createScorer<
 		const usedOutputsScore = 1 - usedOutputsIssues.length / outputNodes.length;
 
 		const issueTag = UsedOutputMaterialError._tag;
+		const reason = UsedOutputMaterialError.reason;
 
 		return {
 			score: Math.max(0, Math.min(1, usedOutputsScore)),
@@ -78,7 +79,7 @@ export const RecipeGenOutputScorer = createScorer<
 				issues: [
 					{
 						title: issueTag,
-						description: errorMessageByErrorTag[issueTag],
+						description: reason,
 						count: usedOutputsIssues.length,
 						outputs: outputNodes.length,
 						materials: usedOutputsIssues.map((issue) => issue.id),

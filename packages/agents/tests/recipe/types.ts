@@ -6,6 +6,7 @@ import type {
 	RecipeGraph,
 	RecipeValidationIssue,
 	UnreachableMaterialError,
+	UnusedInputMaterialInStepError,
 	UsedOutputMaterialError,
 } from "@plateful/recipes";
 import type { Satisfies, SuggestStr } from "@plateful/types";
@@ -58,6 +59,17 @@ type ScoreMetadataByIssue = Satisfies<
 		[MaterialQuantityExceededError._tag]: {
 			count: number;
 			materials: string[];
+		};
+		[UnusedInputMaterialInStepError._tag]: {
+			materials: {
+				unused: {
+					occurrences: number;
+					in: {
+						names: string[];
+						step: number | string;
+					}[];
+				} | null;
+			};
 		};
 		IngredientsUsage: {
 			ingredients: {

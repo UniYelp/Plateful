@@ -11,6 +11,7 @@ import type {
 	RecipeGraph,
 	RecipeValidationResult,
 } from "../../../types";
+import type { RecipeGraphValidatorFn } from "../../../types/validator";
 import { getEdgeIndicesByNodeIndex } from "../../graph/get-edge-indices-by-node-index";
 import { isMaterialInputKind } from "../../guards";
 
@@ -75,3 +76,5 @@ const validateMaterialNotProducedBeforeInputs = (
 
 	return null;
 };
+
+validateNoMaterialProducedBeforeInputs satisfies RecipeGraphValidatorFn;

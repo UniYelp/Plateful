@@ -3,7 +3,7 @@ import { clerkPlugin } from "elysia-clerk";
 
 export const ClerkAuthPluginName = "clerkAuth.Plugin";
 
-export const clerkAuth = () =>
+export const clerkAuth: any = () =>
 	new Elysia({ name: ClerkAuthPluginName }).use(clerkPlugin()).macro({
 		auth: {
 			async resolve({ clerk, auth, status }) {

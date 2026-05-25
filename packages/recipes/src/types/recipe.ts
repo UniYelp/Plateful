@@ -1,4 +1,8 @@
-import type { RecipeMaterialKind, RecipeStepBlockType } from "../enums";
+import type {
+	RecipeMaterialKind,
+	RecipeStepBlockType,
+	RecipeStepPriority,
+} from "../enums";
 import type { Quantity, UnlimitedQuantity } from "./quantity";
 
 export type RecipeIngredient = {
@@ -14,10 +18,6 @@ export type RecipeMaterial<
 	quantity: Quantity;
 };
 
-export type RecipeMaterialBlock = {
-	type: typeof RecipeStepBlockType.Material;
-} & RecipeMaterial;
-
 export type RecipeTool = {
 	name: string;
 };
@@ -26,15 +26,35 @@ export type RecipeToolBlock = {
 	type: typeof RecipeStepBlockType.Tool;
 } & RecipeTool;
 
+export type BaseRecipeStepBlock = RecipeToolBlock;
+
+export type RecipeMaterialBlock = {
+	type: typeof RecipeStepBlockType.Material;
+} & RecipeMaterial;
+
 export type AnyRecipeBlock = {
 	type: string;
 	[x: string]: unknown;
 };
 
-type TypedRecipeBlock = RecipeMaterialBlock | RecipeToolBlock;
+type StepTypedRecipeBlock = RecipeMaterialBlock | BaseRecipeStepBlock;
 
-export type RecipeStepBlock = TypedRecipeBlock | AnyRecipeBlock;
-export type RecipeStep = RecipeStepBlock[];
+export type StepRecipeStepBlock = StepTypedRecipeBlock | AnyRecipeBlock;
+
+type RecipeStepMetadataMaterial = {
+	name: string;
+	quantity: Quantity;
+};
+
+export type RecipeStep = {
+	blocks: StepRecipeStepBlock[];
+	metadata?: {
+		priority: RecipeStepPriority;
+		setupTime?: string;
+		waste?: RecipeStepMetadataMaterial[];
+		derivedOutputs?: RecipeStepMetadataMaterial[];
+	};
+};
 
 export type Recipe = {
 	steps: RecipeStep[];

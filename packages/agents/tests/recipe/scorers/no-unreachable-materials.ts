@@ -6,7 +6,6 @@ import {
 	UnreachableMaterialError,
 	validateNoUnreachableMaterials,
 } from "@plateful/recipes";
-import { errorMessageByErrorTag } from "../../../src/features/recipes/constants";
 import type {
 	RecipeGenEvalInput,
 	RecipeGenEvalOutput,
@@ -31,6 +30,7 @@ export const RecipeGenNoUnreachableMaterialsScorer = createScorer<
 
 		const issues = res.issues;
 		const issueTag = UnreachableMaterialError._tag;
+		const reason = UnreachableMaterialError.reason;
 
 		const derivedOutputNodes = getMaterialNodeIndicesByKind(
 			recipeGraph,
@@ -46,7 +46,7 @@ export const RecipeGenNoUnreachableMaterialsScorer = createScorer<
 				issues: [
 					{
 						title: issueTag,
-						description: errorMessageByErrorTag[issueTag],
+						description: reason,
 						count: issues.length,
 						materials: issues.map((issue) => issue.id),
 					},

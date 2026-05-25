@@ -5,6 +5,7 @@ import {
 	UnreachableMaterialError,
 } from "../../../models";
 import type { RecipeGraph, RecipeValidationResult } from "../../../types";
+import type { RecipeGraphValidatorFn } from "../../../types/validator";
 
 export const validateNoUnreachableMaterials = (
 	graph: RecipeGraph,
@@ -24,3 +25,5 @@ export const validateNoUnreachableMaterials = (
 
 	return new RecipeValidationError(issues);
 };
+
+validateNoUnreachableMaterials satisfies RecipeGraphValidatorFn;

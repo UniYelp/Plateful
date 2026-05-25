@@ -1,7 +1,6 @@
 import Elysia from "elysia";
 
 import { UnauthorizedError } from "../models/errors/unauthorized";
-import { clerkAuth } from "./clerk-auth.plugin";
 import { env } from "./env.plugin";
 
 type AuthOptions = {
@@ -15,7 +14,6 @@ export const auth = ({ header = "x-api-key" }: AuthOptions = {}) => {
 
 	return new Elysia({ name: AuthPluginName, seed: { headerKey } })
 		.use(env())
-		.use(clerkAuth())
 		.error({
 			UnauthorizedError,
 		})

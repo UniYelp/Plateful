@@ -8,6 +8,7 @@ import {
 	UnusedDerivedOutputError,
 } from "../../../models";
 import type { RecipeGraph, RecipeValidationResult } from "../../../types";
+import type { RecipeGraphValidatorFn } from "../../../types/validator";
 import {
 	getEdgeIndicesByNodeIndex,
 	getNodeIndexByEdgeIndex,
@@ -16,7 +17,7 @@ import {
 /**
  * ? validate that each material node that has an edge of kind "derived-output" has at least one "derived-input" outgoing edge
  */
-export const validateUnusedDerivedMaterials = (
+export const validateNoUnusedDerivedMaterials = (
 	graph: RecipeGraph,
 ): RecipeValidationResult<UnusedDerivedOutputError> => {
 	const derivedOutputMaterialsEdgeIndices = Graph.findEdges(
@@ -75,3 +76,5 @@ const isDerivedOutputMaterialUnused = (
 
 	return edgeData.kind === RecipeMaterialKind.DerivedInput;
 };
+
+validateNoUnusedDerivedMaterials satisfies RecipeGraphValidatorFn;

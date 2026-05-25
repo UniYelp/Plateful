@@ -5,7 +5,6 @@ import {
 	MaterialQuantityExceededError,
 	validateNoMaterialQuantityExceeded,
 } from "@plateful/recipes";
-import { errorMessageByErrorTag } from "../../../src/features/recipes/constants";
 import type {
 	RecipeGenEvalInput,
 	RecipeGenEvalOutput,
@@ -44,8 +43,7 @@ export const RecipeGenNoExceedingIngredientsScorer = createScorer<
 					issues: [
 						{
 							title: InternalRecipeGraphError._tag,
-							description:
-								errorMessageByErrorTag[InternalRecipeGraphError._tag],
+							description: InternalRecipeGraphError.reason,
 							count: internalIssues.length,
 							reason: internalIssues.map((issue) => issue.message).join(", "),
 						},
@@ -56,6 +54,7 @@ export const RecipeGenNoExceedingIngredientsScorer = createScorer<
 
 		const issues = res.issues as MaterialQuantityExceededError[];
 		const issueTag = MaterialQuantityExceededError._tag;
+		const reason = MaterialQuantityExceededError.reason;
 
 		// Assuming inputs = flattenedIngredients, but we can just use the absolute count of violations
 		// Or we can say 1 - (issues.length / totalIngredients) but we might just use issues.length to decrease score
@@ -75,7 +74,7 @@ export const RecipeGenNoExceedingIngredientsScorer = createScorer<
 				issues: [
 					{
 						title: issueTag,
-						description: errorMessageByErrorTag[issueTag],
+						description: reason,
 						count: issues.length,
 						materials: issues.map((issue) => issue.id),
 					},

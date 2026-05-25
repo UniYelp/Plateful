@@ -4,6 +4,6 @@ export * from "./no-exceeding-ingredients";
 export * from "./no-material-produced-before-inputs";
 export * from "./no-material-used-before-produced";
 export * from "./no-unreachable-materials";
-export * from "./no-unused-derived-materials";
+export * from "./input-materials-usage";
 export * from "./output";
 export * from "./tools-usage";

@@ -2,6 +2,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Check, Clock, Play, Utensils, X } from "lucide-react";
+import { useMemo } from "react";
 
 import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
@@ -14,7 +15,9 @@ import {
 	calculateRecipeMaxPortions,
 	isIngredientSufficient,
 } from "&/recipes/utils/available-ingredients";
+import { ensureV1RecipeStep } from "&/recipes/utils/convert-recipe";
 import { formatDuration } from "&/recipes/utils/format-duration";
+import { formatQuantity } from "&/recipes/utils/format-quantity";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +28,11 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard/recipes/$id")({
 	component: RouteComponent,
@@ -61,6 +69,8 @@ function RecipeDetailPage() {
 	);
 
 	const { recipe, ingredients, imgGen, steps } = fullRecipe;
+
+	const convertedSteps = useMemo(() => steps.map(ensureV1RecipeStep), [steps]);
 
 	const ingredientNameById = Object.fromEntries(
 		ingredients.map(({ ingredient: { name, _id } }) => [_id, name] as const),
@@ -247,19 +257,119 @@ function RecipeDetailPage() {
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
-								{steps.map((step) => (
-									<div key={step._id} className="flex items-start gap-4">
-										<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
-											{step.index + 1}
+								{convertedSteps.map((step, index) => {
+									const hasWaste =
+										step.metadata?.waste && step.metadata.waste.length > 0;
+
+									const hasDerivedOutput =
+										step.metadata?.derivedOutputs &&
+										step.metadata.derivedOutputs.length > 0;
+
+									const bulletElement = (
+										<div className="relative">
+											<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground text-sm">
+												{index + 1}
+											</div>
+											{step.metadata?.priority === "health" && (
+												<span className="-top-1 -right-1 absolute flex h-4 w-4 animate-pulse items-center justify-center rounded-full border border-background bg-emerald-500 font-black text-[10px] text-white shadow-[0_0_8px_rgba(16,185,129,0.7)]">
+													H
+												</span>
+											)}
 										</div>
-										<div className="flex-1 text-sm leading-relaxed">
-											<RecipeStepContent
-												step={step}
-												ingredientNameById={ingredientNameById}
-											/>
+									);
+
+									const tooltipContent =
+										hasWaste || hasDerivedOutput ? (
+											<TooltipContent side="right" className="max-w-[280px]">
+												<div className="space-y-2.5 p-0.5 text-xs">
+													{hasWaste && (
+														<div>
+															<p className="mb-1 flex items-center gap-1.5 font-semibold text-[11px] text-rose-500 uppercase tracking-wider">
+																<span>Waste produced</span>
+															</p>
+															<ul className="list-inside list-disc space-y-1 text-muted-foreground">
+																{step.metadata?.waste?.map((w, idx) => {
+																	const name =
+																		"name" in w.of
+																			? w.of.name
+																			: ingredientNameById[w.of.id] ||
+																				"Unknown Ingredient";
+																	const qtyStr =
+																		typeof w.quantity === "string"
+																			? w.quantity
+																			: formatQuantity(w.quantity);
+																	return (
+																		<li key={idx}>
+																			<span className="font-medium text-foreground">
+																				{name}
+																			</span>
+																			: {qtyStr}
+																		</li>
+																	);
+																})}
+															</ul>
+														</div>
+													)}
+													{hasDerivedOutput && (
+														<div>
+															<p className="mb-1 flex items-center gap-1.5 font-semibold text-[11px] text-primary uppercase tracking-wider">
+																<span>Yields</span>
+															</p>
+															<ul className="list-inside list-disc space-y-1 text-muted-foreground">
+																{step.metadata?.derivedOutputs?.map(
+																	(o, idx) => {
+																		const name =
+																			"name" in o.of
+																				? o.of.name
+																				: ingredientNameById[o.of.id] ||
+																					"Unknown Ingredient";
+																		const qtyStr =
+																			typeof o.quantity === "string"
+																				? o.quantity
+																				: formatQuantity(o.quantity);
+																		return (
+																			<li key={idx}>
+																				<span className="font-medium text-foreground">
+																					{name}
+																				</span>
+																				: {qtyStr}
+																			</li>
+																		);
+																	},
+																)}
+															</ul>
+														</div>
+													)}
+												</div>
+											</TooltipContent>
+										) : null;
+
+									return (
+										<div key={step.index} className="flex items-start gap-4">
+											{tooltipContent ? (
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<button
+															type="button"
+															className="text-left focus:outline-none"
+														>
+															{bulletElement}
+														</button>
+													</TooltipTrigger>
+													{tooltipContent}
+												</Tooltip>
+											) : (
+												bulletElement
+											)}
+											<div className="flex-1 text-sm leading-relaxed">
+												<RecipeStepContent
+													step={step}
+													ingredientNameById={ingredientNameById}
+												/>
+											</div>
 										</div>
-									</div>
-								))}
+									);
+								})}
 							</div>
 						</CardContent>
 					</Card>

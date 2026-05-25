@@ -13,8 +13,8 @@
         },
         "build": {
             "dependsOn": [
-                "^build"
-                // "test"
+                "^build",
+                "test"
             ],
             "inputs": [
                 "$TURBO_DEFAULT$",

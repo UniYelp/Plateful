@@ -5,7 +5,6 @@ import { node } from "@elysiajs/node";
 import { openapi } from "@elysiajs/openapi";
 import { serverTiming } from "@elysiajs/server-timing";
 import { Elysia } from "elysia";
-import { clerkPlugin } from "elysia-clerk";
 import { initLogger } from "evlog";
 import z from "zod";
 
@@ -58,7 +57,6 @@ export const app = new Elysia({ adapter: node() })
 		}
 	})
 	.use(serverTiming())
-	.use(clerkPlugin())
 	.use(auth())
 	.get("/", () => `Welcome to ${appConfig.name}`)
 	.use(health)

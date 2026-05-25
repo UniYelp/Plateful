@@ -1,7 +1,11 @@
 import dedent from "dedent";
 
-import { type RecipeGenInput, RecipeGenInputJsonSchema } from "./schemas";
+import {
+	type ExtendedRecipeGenInput,
+	RecipeGenInputJsonSchema,
+} from "./schemas";
 
+// Health priority steps will be primarily used by the health-conscious agent.
 export const generateRecipeSystemPrompt = dedent`
     You are a Recipe Composer AI.
 
@@ -25,12 +29,9 @@ export const generateRecipeSystemPrompt = dedent`
     Your goal is to produce a clear, consistent recipe that can be rendered as human-readable instructions while allowing reliable extraction of ingredient usage and time information.
 `;
 
-export const generateRecipePrompt = (input: RecipeGenInput) => {
+export const generateRecipePrompt = (input: ExtendedRecipeGenInput) => {
 	const { safetyCritique, previouslyGenerated, ...inputWithoutCritique } =
-		input as RecipeGenInput & {
-			safetyCritique?: string;
-			previouslyGenerated?: string;
-		};
+		input;
 
 	const safetySection =
 		previouslyGenerated && safetyCritique

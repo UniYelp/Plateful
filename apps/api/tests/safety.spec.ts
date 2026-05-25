@@ -1,7 +1,7 @@
 import dedent from "dedent";
 import { describe, expect, it } from "vitest";
 
-import { critiqueRecipeSafety } from "../src/features/safety/service";
+import * as RecipeService from "../src/modules/recipes/service";
 
 const goodRecipe = dedent`
 	Lemon Herb Roasted Chicken & Asparagus
@@ -36,16 +36,20 @@ describe("Safety Agent", () => {
 		"should critique the safety of a recipe",
 		{ timeout: 100_000, skip: !hasApiKey },
 		async () => {
-			const goodResult = await critiqueRecipeSafety({ recipe: goodRecipe });
-			const badResult = await critiqueRecipeSafety({ recipe: badRecipe });
+			const goodResult = await RecipeService.safetyCheck({
+				recipe: goodRecipe,
+			});
+			const badResult = await RecipeService.safetyCheck({ recipe: badRecipe });
 
-			expect(goodResult.text).toBeTruthy();
-			expect(badResult.text).toBeTruthy();
-			expect(goodResult.score).toBeTypeOf("number");
-			expect(badResult.score).toBeTypeOf("number");
-			expect(goodResult.score).toBeGreaterThan(badResult.score || 0);
-			expect(goodResult.score).toBeGreaterThan(0.5);
-			expect(badResult.score).toBeLessThan(0.5);
+			// expect(goodResult.text).toBeTruthy();
+			// expect(badResult.text).toBeTruthy();
+			expect(goodResult.safetyScore).toBeTypeOf("number");
+			expect(badResult.safetyScore).toBeTypeOf("number");
+			expect(goodResult.safetyScore).toBeGreaterThan(
+				badResult.safetyScore || 0,
+			);
+			expect(goodResult.safetyScore).toBeGreaterThan(50);
+			expect(badResult.safetyScore).toBeLessThan(50);
 		},
 	);
 });

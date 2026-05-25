@@ -1,6 +1,12 @@
 import { context, trace } from "@opentelemetry/api";
+import dedent from "dedent";
 import Elysia, { sse } from "elysia";
 
+import type {
+	ExtendedRecipeGenInput,
+	RecipeGenOutput,
+} from "@plateful/agents/recipes";
+import { SafetyUtils } from "@plateful/agents/safety";
 import { validateRecipe } from "@plateful/recipes";
 import { ENV } from "../../configs/env.config";
 import { LockedError } from "../../models/errors/locked";
@@ -26,6 +32,8 @@ export const recipes = new Elysia({
 			const redis = getRedis();
 
 			log.set({ household: { id: householdId } });
+
+			log.info("Received request");
 
 			const householdLock = RedisLocks.recipes.gen.household.lock(
 				redis,
@@ -78,10 +86,9 @@ export const recipes = new Elysia({
 					const MAX_ATTEMPTS = 5;
 					const SAFETY_THRESHOLD = 0.8;
 
-					let finalRecipe: RecipesModel.GenerateRecipeCompleteEventData | null =
-						null;
+					let finalRecipe: RecipeGenOutput | null = null;
 					let finalSafetyScore: number | null = null;
-					let currentBody = body;
+					let currentBody: ExtendedRecipeGenInput = body;
 
 					for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
 						// Generate recipe
@@ -95,7 +102,26 @@ export const recipes = new Elysia({
 							RecipeService.generateRecipe(currentBody),
 						);
 
-						finalRecipe = recipeResult;
+						log.info("Generated recipe", {
+							successful: recipeResult.type !== "unfeasible",
+						});
+
+						if (recipeResult.type === "unfeasible") {
+							log.set({
+								event: {
+									unfeasible: true,
+									reason: recipeResult.unfeasible?.reason,
+								},
+							});
+
+							throw new Error(
+								`Unable to produce a recipe: ${recipeResult.unfeasible?.reason}`,
+							);
+						}
+
+						const recipeGen = recipeResult.recipe as RecipeGenOutput;
+
+						finalRecipe = recipeGen;
 
 						// Critique with safety agent
 						log.set({ event: { safetyCheck: { attempt } } });
@@ -105,27 +131,45 @@ export const recipes = new Elysia({
 						});
 
 						const safetyResult = await context.with(activeContext, () =>
-							RecipeService.safetyCheck(JSON.stringify(recipeResult)),
+							RecipeService.safetyCheck({
+								recipe: JSON.stringify(recipeGen),
+								allergens: body.allergens,
+								dietaryPreferences: body.dietaryPreferences,
+							}),
 						);
 
-						const rawScore = safetyResult.score;
+						if (safetyResult.injectedSteps.length) {
+							const { result, stepModifications } =
+								SafetyUtils.injectSafetySteps(
+									recipeGen.steps,
+									safetyResult.injectedSteps,
+								);
+
+							const reindexed = SafetyUtils.reindexCriticismsWithModifications(
+								safetyResult.structuralCriticisms,
+								stepModifications,
+							);
+
+							recipeGen.steps = result;
+							safetyResult.structuralCriticisms = reindexed;
+						}
+
+						const rawScore = safetyResult.safetyScore;
 
 						log.set({ event: { safetyCheck: { [attempt]: { rawScore } } } });
 
-						finalSafetyScore =
-							typeof rawScore === "number" &&
-							Number.isFinite(rawScore) &&
-							rawScore >= 0 &&
-							rawScore <= 1
-								? rawScore
-								: null;
+						finalSafetyScore = rawScore / 100;
+
+						log.info("Reviewed recipe", {
+							score: safetyResult.safetyScore,
+						});
 
 						// Static validation
-						const validationResult = validateRecipe(recipeResult, currentBody);
+						const validationResult = validateRecipe(recipeGen, currentBody);
 
 						const hasStaticErrors = validationResult !== null;
-						const isSafe =
-							finalSafetyScore !== null && finalSafetyScore >= SAFETY_THRESHOLD;
+
+						const isSafe = finalSafetyScore >= SAFETY_THRESHOLD;
 
 						// Check if both safety score and static validation are acceptable
 						if (isSafe && !hasStaticErrors) {
@@ -134,7 +178,18 @@ export const recipes = new Elysia({
 
 						// If not acceptable and we have more attempts, prepare for retry
 						if (attempt < MAX_ATTEMPTS) {
-							let combinedCritique = safetyResult.text;
+							let combinedCritique = safetyResult.reasoning;
+
+							if (safetyResult.structuralCriticisms.length) {
+								const structuralCriticismMessages = JSON.stringify(
+									safetyResult.structuralCriticisms,
+								);
+
+								combinedCritique += dedent`
+                                    The recipe failed the following structural safety criteria which you must fix:
+                                    ${structuralCriticismMessages}
+                                `;
+							}
 
 							if (hasStaticErrors) {
 								const staticErrorMessages = validationResult.issues
@@ -223,6 +278,8 @@ export const recipes = new Elysia({
 				} else {
 					error = new Error(JSON.stringify(err));
 				}
+
+				log.error(error);
 
 				yield sse({
 					event: "failed",

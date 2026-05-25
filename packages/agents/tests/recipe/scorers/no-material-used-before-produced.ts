@@ -4,7 +4,6 @@ import {
 	MaterialUsedBeforeProducedError,
 	validateNoMaterialUsedBeforeProduced,
 } from "@plateful/recipes";
-import { errorMessageByErrorTag } from "../../../src/features/recipes/constants";
 import type {
 	RecipeGenEvalInput,
 	RecipeGenEvalOutput,
@@ -30,6 +29,7 @@ export const RecipeGenNoMaterialUsedBeforeProducedScorer = createScorer<
 
 		const issues = res.issues;
 		const issueTag = MaterialUsedBeforeProducedError._tag;
+		const reason = MaterialUsedBeforeProducedError.reason;
 
 		return {
 			score: Math.max(0, 1 - issues.length * 0.1),
@@ -37,7 +37,7 @@ export const RecipeGenNoMaterialUsedBeforeProducedScorer = createScorer<
 				issues: [
 					{
 						title: issueTag,
-						description: errorMessageByErrorTag[issueTag],
+						description: reason,
 						count: issues.length,
 						materials: issues.map((issue) => issue.id),
 					},

@@ -1,0 +1,28 @@
+{
+    "$schema": "https://v2-9-10.turborepo.dev/schema.json",
+    "extends": [
+        "//"
+    ],
+    "tasks": {
+        "build:schemas": {
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "package.json",
+                "tsconfig.json",
+                "src/**/*.ts",
+                "scripts/build-schemas.ts"
+            ],
+            "outputs": [
+                "json-schema/**/*.json"
+            ],
+            "cache": true,
+        },
+        // "build": {
+        //     "with": [
+        //         "build:schemas"
+        //     ]
+        // }
+    }
+}
