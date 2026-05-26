@@ -375,6 +375,7 @@ export function IngredientForm({
 																	field.handleChange(value || undefined)
 																}
 																groups={ingredientUnitGroups}
+																placeholder="None"
 															/>
 															<field.FieldError />
 														</div>
