@@ -9,7 +9,7 @@ import {
 	ingredientImgByCategory,
 	ingredientsCategoriesOptions,
 } from "&/ingredients/constants";
-import { ingredientSymbolToDisplay } from "&/ingredients/utils/ingredient-symbol-to-display";
+import { getTotalAmount } from "&/ingredients/utils/total-amount";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -338,13 +338,7 @@ export const GenerateRecipeForm = (props: Props) => {
 																<>
 																	Available:{" "}
 																	<span>
-																		{ing.availableQuantities
-																			.map((quantity) =>
-																				`${quantity.amount} ${ingredientSymbolToDisplay(
-																					quantity.unit ?? "",
-																				)}`.trim(),
-																			)
-																			.join(", ")}
+																		{getTotalAmount(ing.availableQuantities)}
 																	</span>
 																</>
 															) : (
