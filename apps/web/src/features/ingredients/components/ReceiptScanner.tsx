@@ -247,6 +247,8 @@ export function ReceiptScanner({
 				hasIngredients: value.ingredients.length > 0,
 				hasNonEdible: nonEdibleItems.length > 0,
 				keepOriginalLanguage,
+				ingredientsCount: value.ingredients.length,
+				nonEdibleCount: nonEdibleItems.length,
 			});
 
 			try {
