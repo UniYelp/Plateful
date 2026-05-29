@@ -26,6 +26,7 @@ import {
 	InputGroupInput,
 } from "@/components/ui/input-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { TextArea } from "@/components/ui/textarea";
 import { useAppForm } from "@/lib/form";
 import { commonAppliances, quickTags } from "../../constants";
 import { recipeGenDefaultValues } from "../constants";
@@ -501,6 +502,33 @@ export const GenerateRecipeForm = (props: Props) => {
 											</InputGroup>
 										</div>
 									</div>
+								</CardContent>
+							</Card>
+						)}
+					</form.AppField>
+					<form.AppField name="userRequest">
+						{(field) => (
+							<Card aria-invalid={isInvalidTouched(field)}>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<Sparkles className="size-5 text-primary" />
+										<span>Specific Request</span>
+									</CardTitle>
+									<CardDescription>
+										Specify a particular food, dish, or additional instructions (e.g. "please make sushi")
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<TextArea
+										className="field-sizing-fixed"
+										placeholder="e.g. Please make sushi, a warm comfort soup, spicy curry, etc."
+										rows={3}
+										value={field.state.value ?? ""}
+										disabled={isSubmitting}
+										aria-invalid={isInvalidTouched(field)}
+										onChange={(e) => field.handleChange(e.target.value)}
+									/>
+									<field.FieldError />
 								</CardContent>
 							</Card>
 						)}

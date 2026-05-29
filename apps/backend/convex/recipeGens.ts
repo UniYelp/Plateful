@@ -151,11 +151,12 @@ export const start = householdMutation({
 		tags: vv.array(vv.string()),
 		tools: vv.array(vv.string()),
 		ingredients: vv.array(vRecipeGenIngredient),
+		userRequest: vv.optional(vv.string()),
 	},
 	handler: async (ctx, args) => {
 		const now = Date.now();
 		const { _id: userId } = ctx.user;
-		const { householdId, tags, tools, ingredients } = args;
+		const { householdId, tags, tools, ingredients, userRequest } = args;
 
 		const userPreferences = await ctx.db
 			.query("userPreferences")
@@ -175,6 +176,7 @@ export const start = householdMutation({
 				allergens: userPreferences?.allergens,
 				likedFoods: userPreferences?.likedFoods || undefined,
 				dislikedFoods: userPreferences?.dislikedFoods || undefined,
+				userRequest: userRequest || undefined,
 			},
 			createdBy: userId,
 			updatedBy: userId,
@@ -191,6 +193,7 @@ export const start = householdMutation({
 			dietaryPreferences: userPreferences?.dietaryPreferences,
 			likedFoods: userPreferences?.likedFoods || undefined,
 			dislikedFoods: userPreferences?.dislikedFoods || undefined,
+			userRequest: userRequest || undefined,
 		});
 
 		return genId;
@@ -263,6 +266,7 @@ export const retry = householdMutation({
 			dietaryPreferences: metadata.dietaryPreferences,
 			likedFoods: metadata.likedFoods || undefined,
 			dislikedFoods: metadata.dislikedFoods || undefined,
+			userRequest: metadata.userRequest || undefined,
 		});
 
 		return genId;
@@ -407,6 +411,7 @@ export const generateRecipe = internalAction({
 		dietaryPreferences: vv.optional(vv.array(vv.string())),
 		likedFoods: vv.optional(vv.string()),
 		dislikedFoods: vv.optional(vv.string()),
+		userRequest: vv.optional(vv.string()),
 	},
 	handler: async (ctx, args) => {
 		const { genId, householdId } = args;
@@ -426,6 +431,7 @@ export const generateRecipe = internalAction({
 			dietaryPreferences,
 			likedFoods,
 			dislikedFoods,
+			userRequest,
 		} = args;
 
 		const ingredientIdByName = Object.fromEntries(
@@ -493,6 +499,7 @@ export const generateRecipe = internalAction({
 					temperatureUnit: TemperatureUnit.Celsius,
 					toleratedSpiceLevel: "no-preference",
 					tools: tools.length > 0 ? tools : "unlimited",
+					userRequest: userRequest || undefined,
 				},
 				{
 					query: {

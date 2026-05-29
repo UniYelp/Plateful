@@ -6,6 +6,7 @@ export const RecipeGenFormSchema = z.object({
 	ingredients: z
 		.array(z.string())
 		.min(1, "Must select at least one ingredient"),
+	userRequest: z.string().optional(),
 });
 
 export type RecipeGenForm = z.infer<typeof RecipeGenFormSchema>;

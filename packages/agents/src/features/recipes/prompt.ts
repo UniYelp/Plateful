@@ -23,6 +23,7 @@ export const generateRecipeSystemPrompt = dedent`
 
     GENERAL CONSTRAINTS:
     - Respect all dietary tags and allergies with zero exceptions.
+    - If a specific food or dish request is provided (via the "userRequest" field in the input), you must prioritize creating that exact food/dish or a close variation using the available ingredients and tools. If it's completely impossible to make the requested food/dish with the provided ingredients, try to make a closely related item or use the notes to explain what was missing.
     - Prefer simple, practical cooking methods.
     - Avoid unnecessary verbosity.
 

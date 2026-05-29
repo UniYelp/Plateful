@@ -103,6 +103,7 @@ function GenerateNewRecipePage() {
 			tags: value.tags,
 			tools: value.tools || [],
 			ingredients,
+			userRequest: value.userRequest || undefined,
 		});
 
 		posthog?.capture("recipe_generate", {
@@ -110,6 +111,7 @@ function GenerateNewRecipePage() {
 			ingredients: ingredients.map((ing) => ing.name).join(","),
 			tools: value.tools?.length ? value.tools.join(",") : "unlimited",
 			tags: value.tags.join(","),
+			userRequest: value.userRequest || undefined,
 		});
 
 		navigate({
