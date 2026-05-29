@@ -19,4 +19,10 @@ crons.weekly(
 	internal.households.deleteVacantHouseholds,
 );
 
+crons.daily(
+	"checkExpiringIngredients",
+	{ hourUTC: 8, minuteUTC: 0 },
+	internal.pushSubscriptions.checkExpiringIngredientsAction,
+);
+
 export default crons;

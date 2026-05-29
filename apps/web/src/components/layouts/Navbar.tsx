@@ -14,6 +14,8 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/utils/ui";
+import { AIStatusIndicator } from "./AIStatus";
+import { NotificationStatus } from "./NotificationStatus";
 
 export type NavItem = LinkComponentProps & {
 	icon?: React.JSX.Element;
@@ -83,6 +85,16 @@ export function MobileNav() {
 								onClick={() => setIsOpen(false)}
 							/>
 						))}
+
+						<div className="mt-6 flex flex-col gap-4 border-t pt-6">
+							<span className="px-2 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+								Settings & Status
+							</span>
+							<div className="flex flex-col gap-2">
+								<AIStatusIndicator variant="mobile" />
+								<NotificationStatus variant="mobile" />
+							</div>
+						</div>
 					</div>
 				</SheetContent>
 			</Sheet>

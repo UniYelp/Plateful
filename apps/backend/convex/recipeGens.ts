@@ -11,7 +11,7 @@ import type { StrictOmit } from "@plateful/types";
 import { TemperatureUnit } from "@plateful/units/temperature";
 import { Arr, bool, entriesOf } from "@plateful/utils";
 import { internal } from "./_generated/api";
-import { internalAction } from "./_generated/server";
+import { internalAction, internalQuery } from "./_generated/server";
 import { apiClient } from "./configs/api.config";
 import { ENV } from "./configs/env.config";
 import { nanoBanana } from "./configs/nano-banana.config";
@@ -139,6 +139,32 @@ export const stats = householdQuery({
 				total: generationsToday.length,
 				max: maxDailyGen,
 			},
+		};
+	},
+});
+
+export const getGenAndRecipeDetails = internalQuery({
+	args: {
+		genId: vv.id("recipeGens"),
+	},
+	handler: async (ctx, args) => {
+		const recipeGen = await ctx.db.get("recipeGens", args.genId);
+		if (!recipeGen) return null;
+
+		let recipeTitle: string | undefined;
+		if (recipeGen.state.status === "completed") {
+			const recipe = await ctx.db.get("recipes", recipeGen.state.recipeId);
+			recipeTitle = recipe?.title;
+		}
+
+		return {
+			createdBy: recipeGen.createdBy,
+			status: recipeGen.state.status,
+			recipeTitle,
+			reason:
+				recipeGen.state.status === "failed"
+					? recipeGen.state.reason
+					: undefined,
 		};
 	},
 });
@@ -398,6 +424,29 @@ export const finalizeRecipeGen = internalAction({
 				imgGenId,
 			},
 		});
+
+		try {
+			const details = await ctx.runQuery(
+				internal.recipeGens.getGenAndRecipeDetails,
+				{ genId: args.genId },
+			);
+			if (details?.createdBy) {
+				await ctx.scheduler.runAfter(
+					0,
+					internal.pushSubscriptions.sendNotificationToUser,
+					{
+						userId: details.createdBy,
+						title: "Recipe Ready! 🍳",
+						body: details.recipeTitle
+							? `Your recipe "${details.recipeTitle}" is ready!`
+							: "Your recipe has been generated successfully!",
+						url: "/dashboard/recipes",
+					},
+				);
+			}
+		} catch (err) {
+			console.error("Failed to schedule recipe ready push notification:", err);
+		}
 	},
 });
 
@@ -499,7 +548,7 @@ export const generateRecipe = internalAction({
 					ingredients,
 					tags,
 					allergens,
-                    dietaryPreferences,
+					dietaryPreferences,
 					likedFoods,
 					dislikedFoods,
 					temperatureUnit: TemperatureUnit.Celsius,
@@ -802,14 +851,41 @@ export const generateRecipe = internalAction({
 				cause: "Stream ended without completion",
 			});
 		} catch (err) {
+			const errorMsg =
+				err instanceof InternalError ? err.message : "Internal Error";
+
 			await ctx.runMutation(internal.recipeGens.updateState, {
 				genId,
 				user: SYSTEM_ID,
 				state: {
 					status: "failed",
-					reason: err instanceof InternalError ? err.message : "Internal Error",
+					reason: errorMsg,
 				},
 			});
+
+			try {
+				const details = await ctx.runQuery(
+					internal.recipeGens.getGenAndRecipeDetails,
+					{ genId },
+				);
+				if (details?.createdBy) {
+					await ctx.scheduler.runAfter(
+						0,
+						internal.pushSubscriptions.sendNotificationToUser,
+						{
+							userId: details.createdBy,
+							title: "Recipe Generation Failed ❌",
+							body: errorMsg,
+							url: "/dashboard",
+						},
+					);
+				}
+			} catch (pushErr) {
+				console.error(
+					"Failed to schedule recipe failure push notification:",
+					pushErr,
+				);
+			}
 
 			console.error(JSON.stringify(err, null, 2));
 		}

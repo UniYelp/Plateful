@@ -12,7 +12,13 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export function AIStatusIndicator() {
+interface AIStatusIndicatorProps {
+	variant?: "desktop" | "mobile";
+}
+
+export function AIStatusIndicator({
+	variant = "desktop",
+}: AIStatusIndicatorProps) {
 	const queryClient = useQueryClient();
 
 	const { data, isLoading } = useQuery(aiStatusQueryOptions);
@@ -35,6 +41,29 @@ export function AIStatusIndicator() {
 
 		queryClient.resetQueries({ queryKey: aiStatusQueryOptions.queryKey });
 	};
+
+	if (variant === "mobile") {
+		return (
+			<button
+				type="button"
+				onClick={handleToggle}
+				className="flex w-full cursor-pointer items-center justify-between rounded-lg p-2 text-left transition-colors hover:bg-muted/80"
+			>
+				<div className="flex flex-col gap-0.5">
+					<span className="flex items-center gap-2 font-medium text-sm">
+						<Power className={`h-4 w-4 ${statusConfig.colorClass}`} />
+						Local AI Model
+					</span>
+					<span className="text-muted-foreground text-xs">
+						{statusConfig.title}: {statusConfig.description}
+					</span>
+				</div>
+				<span
+					className={`h-2.5 w-2.5 rounded-full border border-background ${statusConfig.dotClass}`}
+				/>
+			</button>
+		);
+	}
 
 	return (
 		<TooltipProvider delayDuration={100}>

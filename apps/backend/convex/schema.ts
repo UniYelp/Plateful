@@ -126,6 +126,7 @@ export const ingredientFields = {
 	notes: v.optional(v.string()), //? user non-searchable
 
 	images: v.array(vAsset),
+	lastNotifiedExpiryAt: v.optional(vTimestamp),
 };
 
 export const recipeFields = {
@@ -364,6 +365,17 @@ const schema = defineSchema({
 		...recipeFeedbackFields,
 		...stampsFields,
 	}).index("by_recipe_and_user", ["recipeId", "userId"]),
+	pushSubscriptions: defineTable({
+		userId: v.id("users"),
+		endpoint: v.string(),
+		keys: v.object({
+			p256dh: v.string(),
+			auth: v.string(),
+		}),
+		...timestampsFields,
+	})
+		.index("by_user", ["userId"])
+		.index("by_endpoint", ["endpoint"]),
 	// #endregion
 });
 

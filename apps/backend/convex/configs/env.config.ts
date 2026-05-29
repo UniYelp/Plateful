@@ -17,6 +17,10 @@ export const ENV = createEnv({
 		CLERK_SECRET_KEY: z.string(),
 		//? GenAi
 		GEMINI_API_KEY: z.string(),
+		//? Vapid
+		VAPID_PRIVATE_KEY: z.string().optional(),
+		VAPID_PRIVATE_KEY_PATH: z.string().optional(),
+		VAPID_SUBJECT: z.string().optional(),
 	},
 
 	/**

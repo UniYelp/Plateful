@@ -6,6 +6,7 @@ import { append } from "&/aggregation";
 import { HouseholdLoading } from "&/households/components/loaders/HouseholdLoader";
 import { AIStatusIndicator } from "@/components/layouts/AIStatus";
 import type { NavItem } from "@/components/layouts/Navbar";
+import { NotificationStatus } from "@/components/layouts/NotificationStatus";
 import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/(app)/(authed)/dashboard")({
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/(app)/(authed)/dashboard")({
 		header: {
 			actions: append<React.ReactElement>([
 				<AIStatusIndicator key="ai-status" />,
+				<NotificationStatus key="notification-status" />,
 			]),
 		},
 		navbar: {
