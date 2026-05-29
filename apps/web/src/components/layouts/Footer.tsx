@@ -9,9 +9,9 @@ export function Footer() {
 					<div className="md:col-span-2">
 						<Brand />
 						<p className="mb-4 max-w-md text-muted-foreground">
-							Making cooking and household management easy and fun. Transform
+							Making cooking and kitchen organization easy and fun. Transform
 							your kitchen experience with organized ingredients, delicious
-							recipes, and seamless meal planning.
+							recipes, and smart cooking tools.
 						</p>
 					</div>
 

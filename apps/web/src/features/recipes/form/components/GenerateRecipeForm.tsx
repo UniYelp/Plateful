@@ -67,7 +67,17 @@ export const GenerateRecipeForm = (props: Props) => {
 		if (!ingredients) return [];
 		const cats = new Set(ingredients.map((i) => i.category));
 		return Array.from(cats)
-			.sort()
+			.sort((a, b) => {
+				if (a === "other") return 1;
+				if (b === "other") return -1;
+				const top5 = ["vegetables", "fruits", "meat", "dairy", "breads"];
+				const idxA = top5.indexOf(a);
+				const idxB = top5.indexOf(b);
+				if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+				if (idxA !== -1) return -1;
+				if (idxB !== -1) return 1;
+				return a.localeCompare(b);
+			})
 			.map((cat) => ({
 				value: cat,
 				label:

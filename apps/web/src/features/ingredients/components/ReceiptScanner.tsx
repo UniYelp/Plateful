@@ -92,6 +92,9 @@ interface ExtractedIngredient {
 
 // --- Helpers ---
 
+const MAX_RECEIPT_FILE_SIZE_MB = 5;
+const MAX_RECEIPT_FILE_SIZE = MAX_RECEIPT_FILE_SIZE_MB * 1024 * 1024;
+
 const ingredientUnitGroups = entriesOf(ingredientUnitsByCategory).map(
 	([label, units]) =>
 		({
@@ -134,7 +137,6 @@ export function ReceiptScanner({
 		isLoading,
 		isError,
 		refetch: refetchLimits,
-		// eslint-disable-next-line @tanstack/query/exhaustive-deps
 	} = useQuery({
 		queryKey: ["receipt-limits", householdId],
 		queryFn: async () => {
@@ -282,7 +284,18 @@ export function ReceiptScanner({
 
 	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
+
 		if (!file) return;
+
+		if (file.size > MAX_RECEIPT_FILE_SIZE) {
+			toast.error(
+				`File is too large. Please upload an image smaller than ${MAX_RECEIPT_FILE_SIZE_MB}MB.`,
+			);
+
+			e.target.value = "";
+			return;
+		}
+
 		parseReceiptMutation.mutate({ file, keepOriginalLanguage });
 	};
 

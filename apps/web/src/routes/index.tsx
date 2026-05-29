@@ -60,8 +60,7 @@ function LandingPage() {
 					</h1>
 					<p className="mx-auto mb-8 max-w-2xl text-balance text-muted-foreground text-xl">
 						Transform your cooking experience with smart ingredient management,
-						personalized recipes, and seamless meal planning for your entire
-						household.
+						personalized recipes, and interactive cooking guides.
 					</p>
 					<div className="mb-12 flex flex-col justify-center gap-4 sm:flex-row">
 						<Button size="lg" className="px-8 text-lg" asChild>
@@ -99,8 +98,8 @@ function LandingPage() {
 							Everything You Need to Cook with Confidence
 						</h2>
 						<p className="mx-auto max-w-2xl text-muted-foreground text-xl">
-							From ingredient tracking to meal planning, we've got your kitchen
-							covered.
+							From ingredient tracking to smart recipe creation, we've got your
+							kitchen covered.
 						</p>
 					</div>
 
@@ -131,7 +130,7 @@ function LandingPage() {
 										</li>
 										<li className="flex items-center gap-2">
 											<CheckCircle className="h-4 w-4 text-primary" />
-											Expiry date alerts
+											Expiry date tracking
 										</li>
 										<li className="flex items-center gap-2">
 											<CheckCircle className="h-4 w-4 text-primary" />
