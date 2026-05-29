@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import Elysia from "elysia";
 
 import { UnauthorizedError } from "../models/errors/unauthorized";
@@ -22,7 +23,17 @@ export const auth = ({ header = "x-api-key" }: AuthOptions = {}) => {
 				resolve({ headers, env }) {
 					const apiKey = headers[headerKey];
 
-					const isValidApiKey = apiKey === env.API_KEY;
+					if (typeof apiKey !== "string") {
+						throw new UnauthorizedError();
+					}
+
+					const hashA = crypto.createHash("sha256").update(apiKey).digest();
+					const hashB = crypto
+						.createHash("sha256")
+						.update(env.API_KEY)
+						.digest();
+
+					const isValidApiKey = crypto.timingSafeEqual(hashA, hashB);
 
 					if (!isValidApiKey) {
 						throw new UnauthorizedError();
