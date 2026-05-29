@@ -7,6 +7,13 @@ const redisKey = <const K extends RedisKeyLike>(key: K) =>
 	});
 
 export const RedisKeys = {
+	ingredients: {
+		safety: {
+			cache: redisKey(
+				(name: string) => `ingredients:safety:cache:${name}` as const,
+			).$type<string>(),
+		},
+	},
 	health: redisKey((id: string) => `health:${id}` as const).$type<true>(),
 	recipes: {
 		gen: {

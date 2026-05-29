@@ -94,6 +94,7 @@ function GenerateNewRecipePage() {
 			return {
 				id: ing.id,
 				name: ing.name,
+				category: ing.category,
 				quantities: quantities.length ? quantities : "unlimited",
 			} as const;
 		});

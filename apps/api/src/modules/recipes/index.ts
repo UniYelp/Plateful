@@ -6,7 +6,8 @@ import type {
 	ExtendedRecipeGenInput,
 	RecipeGenOutput,
 } from "@plateful/agents/recipes";
-import { SafetyUtils } from "@plateful/agents/safety";
+import { SafetyTools, SafetyUtils } from "@plateful/agents/safety";
+import { IngredientCategory } from "@plateful/ingredients";
 import { validateRecipe } from "@plateful/recipes";
 import { ENV } from "../../configs/env.config";
 import { LockedError } from "../../models/errors/locked";
@@ -18,6 +19,13 @@ import { RedisKeys } from "../../redis/keys";
 import { RedisLocks } from "../../redis/locks";
 import { RecipesModel } from "./model";
 import * as RecipeService from "./service";
+
+const priorityCategories = [
+	IngredientCategory.Meat,
+	IngredientCategory.Dairy,
+	IngredientCategory.Seafood,
+	IngredientCategory.Fish,
+];
 
 export const recipes = new Elysia({
 	prefix: "recipes",
@@ -74,6 +82,68 @@ export const recipes = new Elysia({
 
 				log.set({ event: { started: true } });
 
+				// --- SAFETY CONTEXT PRE-FETCH ---
+
+				const sortedIngredients = body.ingredients
+					.toSorted((a, b) => {
+						const aCategory = (a.category ?? "").toLowerCase();
+						const bCategory = (b.category ?? "").toLowerCase();
+
+						const aIsPriority = priorityCategories.some((p) =>
+							aCategory.includes(p),
+						)
+							? 1
+							: 0;
+						const bIsPriority = priorityCategories.some((p) =>
+							bCategory.includes(p),
+						)
+							? 1
+							: 0;
+
+						return bIsPriority - aIsPriority;
+					})
+					.slice(0, 20);
+
+				const safetyContexts: string[] = [];
+
+				for (const ingredient of sortedIngredients) {
+					const cacheKey = RedisKeys.ingredients.safety.cache(
+						ingredient.name,
+					) as unknown as string;
+					const cachedResult = await redis.get<string>(cacheKey);
+
+					if (cachedResult) {
+						safetyContexts.push(cachedResult);
+					} else {
+						try {
+							const pineconeResult = await SafetyTools.queryPinecone({
+								query: `safe handling and cooking of ${ingredient.name}`,
+							});
+
+							if (pineconeResult && pineconeResult.result.length > 0) {
+								const instructions = pineconeResult.result
+									.map((hit: any) => hit.fields?.chunk_text as string)
+									.filter(Boolean);
+								if (instructions.length > 0) {
+									const contextString = `Ingredient: ${ingredient.name}\nSafety Instructions:\n${instructions.join("\n")}`;
+									safetyContexts.push(contextString);
+
+									// Set in Redis with 30-day TTL (30 * 24 * 60 * 60 seconds)
+									await redis.setex(cacheKey, 30 * 24 * 60 * 60, contextString);
+								}
+							}
+						} catch (err) {
+							log.error(
+								`Failed to fetch safety context for ${ingredient.name}: ${err instanceof Error ? err.message : String(err)}`,
+							);
+						}
+					}
+				}
+
+				const initialSafetyContext =
+					safetyContexts.length > 0 ? safetyContexts.join("\n\n") : undefined;
+				// --- END SAFETY CONTEXT PRE-FETCH ---
+
 				// Criticizer-optimizer loop
 				const tracer = trace.getTracer("recipe-generation");
 				const span = tracer.startSpan("generate-recipe-flow");
@@ -88,7 +158,10 @@ export const recipes = new Elysia({
 
 					let finalRecipe: RecipeGenOutput | null = null;
 					let finalSafetyScore: number | null = null;
-					let currentBody: ExtendedRecipeGenInput = body;
+					let currentBody: ExtendedRecipeGenInput = {
+						...body,
+						safetyContext: initialSafetyContext,
+					};
 
 					for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
 						// Generate recipe
@@ -200,7 +273,7 @@ export const recipes = new Elysia({
 							}
 
 							currentBody = {
-								...body,
+								...currentBody,
 								safetyCritique: combinedCritique,
 								previouslyGenerated: JSON.stringify(recipeResult),
 							};
