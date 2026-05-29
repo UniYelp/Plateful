@@ -6,6 +6,10 @@ import { useMutation } from "convex/react";
 import z from "zod";
 
 import { api } from "@backend/api";
+import {
+	COMMON_ALLERGENS,
+	DIETARY_OPTIONS,
+} from "&/preferences/form/constants";
 import { PreferencesForm } from "&/preferences/form/PreferencesForm";
 import type { PreferencesFormOutput } from "&/preferences/form/schema";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,12 +62,44 @@ export function PreferencesPage() {
 		// TODO: handle errors
 		await upsertUserPreferences(value);
 
+		const systemAllergens = value.allergens.filter((a) =>
+			COMMON_ALLERGENS.includes(a),
+		);
+
+		const hasCustomAllergens = value.allergens.length > systemAllergens.length;
+
+		const trackedAllergens = systemAllergens.concat(
+			hasCustomAllergens ? ["Custom"] : [],
+		);
+
+		const systemDietaryPreferences = value.dietaryPreferences.filter((opt) =>
+			DIETARY_OPTIONS.includes(opt),
+		);
+
+		const hasCustomDietaryPreferences =
+			value.dietaryPreferences.length > systemDietaryPreferences.length;
+
+		const trackedDietaryPreferences = systemDietaryPreferences.concat(
+			hasCustomDietaryPreferences ? ["Custom"] : [],
+		);
+
 		if (isOnboarding) {
-			posthog?.capture("onboarding:preferences_create");
+			posthog?.capture("onboarding:preferences_create", {
+				allergens: trackedAllergens,
+				dietaryPreferences: trackedDietaryPreferences,
+				spiceLevel: value.spiceLevel,
+				hasLikedFoods: !!value.likedFoods,
+				hasDislikedFoods: !!value.dislikedFoods,
+			});
 			posthog?.capture("onboarding_complete");
 		} else {
 			posthog?.capture("preferences_update", {
 				source: "web_page",
+				allergens: trackedAllergens,
+				dietaryPreferences: trackedDietaryPreferences,
+				spiceLevel: value.spiceLevel,
+				hasLikedFoods: !!value.likedFoods,
+				hasDislikedFoods: !!value.dislikedFoods,
 			});
 		}
 

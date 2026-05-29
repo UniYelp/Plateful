@@ -134,6 +134,7 @@ export function ReceiptScanner({
 		isLoading,
 		isError,
 		refetch: refetchLimits,
+		// eslint-disable-next-line @tanstack/query/exhaustive-deps
 	} = useQuery({
 		queryKey: ["receipt-limits", householdId],
 		queryFn: async () => {
@@ -246,6 +247,8 @@ export function ReceiptScanner({
 				hasIngredients: value.ingredients.length > 0,
 				hasNonEdible: nonEdibleItems.length > 0,
 				keepOriginalLanguage,
+				ingredientsCount: value.ingredients.length,
+				nonEdibleCount: nonEdibleItems.length,
 			});
 
 			try {
@@ -271,7 +274,7 @@ export function ReceiptScanner({
 				setOpen(false);
 				form.reset();
 				setNonEdibleItems([]);
-			} catch (err) {
+			} catch {
 				toast.error("Failed to add ingredients");
 			}
 		},
@@ -582,6 +585,7 @@ export function ReceiptScanner({
 																									)
 																								}
 																								groups={ingredientUnitGroups}
+																								placeholder="None"
 																								className="col-start-2 row-start-1 h-8 bg-background text-xs shadow-sm focus-visible:ring-1 md:col-start-auto md:row-start-auto"
 																							/>
 																						)}

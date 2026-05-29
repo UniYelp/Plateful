@@ -21,6 +21,7 @@ import { cn } from "@/utils/ui";
 type ComboboxProps<T extends string> = {
 	value?: NoInfer<T> | undefined;
 	className?: string;
+	placeholder?: string;
 	onChange?: (value: NoInfer<T> | undefined) => void;
 } & (
 	| {
@@ -46,7 +47,7 @@ const getSelectedMatch = <T extends string>(
 };
 
 export function Combobox<T extends string = string>(props: ComboboxProps<T>) {
-	const { options, groups, value, className, onChange } = props;
+	const { options, groups, value, className, placeholder = "Select...", onChange } = props;
 
 	const [open, setOpen] = React.useState(false);
 
@@ -71,7 +72,7 @@ export function Combobox<T extends string = string>(props: ComboboxProps<T>) {
 						className,
 					)}
 				>
-					{selectedOption?.label || "Select..."}
+					{selectedOption?.label || placeholder}
 					<ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 				</Button>
 			</PopoverTrigger>

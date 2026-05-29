@@ -7,6 +7,10 @@ import { SlidersIcon } from "lucide-react";
 
 import type { ValueOf } from "@plateful/types";
 import { api } from "@backend/api";
+import {
+	COMMON_ALLERGENS,
+	DIETARY_OPTIONS,
+} from "&/preferences/form/constants";
 import { PreferencesForm } from "&/preferences/form/PreferencesForm";
 import type { PreferencesFormOutput } from "&/preferences/form/schema";
 
@@ -22,8 +26,34 @@ const UserPreferencesPage = () => {
 	const onSubmit = async (value: PreferencesFormOutput) => {
 		await upsertUserPreferences(value);
 
+		const systemAllergens = value.allergens.filter((a) =>
+			COMMON_ALLERGENS.includes(a),
+		);
+
+		const hasCustomAllergens = value.allergens.length > systemAllergens.length;
+
+		const trackedAllergens = systemAllergens.concat(
+			hasCustomAllergens ? ["Custom"] : [],
+		);
+
+		const systemDietaryPreferences = value.dietaryPreferences.filter((opt) =>
+			DIETARY_OPTIONS.includes(opt),
+		);
+
+		const hasCustomDietaryPreferences =
+			value.dietaryPreferences.length > systemDietaryPreferences.length;
+
+		const trackedDietaryPreferences = systemDietaryPreferences.concat(
+			hasCustomDietaryPreferences ? ["Custom"] : [],
+		);
+
 		posthog?.capture("preferences_update", {
 			source: "clerk_user_profile",
+			allergens: trackedAllergens,
+			dietaryPreferences: trackedDietaryPreferences,
+			spiceLevel: value.spiceLevel,
+			hasLikedFoods: !!value.likedFoods,
+			hasDislikedFoods: !!value.dislikedFoods,
 		});
 
 		closeUserProfile();

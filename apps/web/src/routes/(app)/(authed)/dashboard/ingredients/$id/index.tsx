@@ -276,6 +276,7 @@ export function IngredientDetailPage() {
 																		field.handleChange(value || undefined)
 																	}
 																	groups={ingredientUnitGroups}
+																	placeholder="None"
 																/>
 																<field.FieldError />
 															</div>
