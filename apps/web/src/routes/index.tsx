@@ -188,17 +188,9 @@ function LandingPage() {
 							className="px-8 text-lg"
 							asChild
 						>
-							{/* <Link href='/auth/signup'>
-                                Start Your Free Trial
-                                <ArrowRight className='ml-2 h-5 w-5' />
-                            </Link> */}
-						</Button>
-						<Button
-							size="lg"
-							variant="outline"
-							className="border-primary-foreground bg-transparent px-8 text-lg text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-						>
-							Schedule a Demo
+							<Link to={isSignedIn ? "/dashboard" : "/sign-in"}>
+								Start Cooking Today <ArrowRight className="ml-2 h-5 w-5" />
+							</Link>
 						</Button>
 					</div>
 				</div>

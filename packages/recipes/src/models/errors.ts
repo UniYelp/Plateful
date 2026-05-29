@@ -225,7 +225,7 @@ export class UnusedInputMaterialInStepError extends BaseRecipeValidationIssue {
 		public id: string,
 		public stepIndex: number,
 	) {
-		super(`Material ${id} was not used as an input in step ${stepIndex}`);
+		super(`Material ${id} was referenced as an input-kind material in step ${stepIndex}, but was not used to create a ${RecipeMaterialKind.DerivedOutput}. Consider changing it to a ${RecipeMaterialKind.Referenced} material`);
 	}
 }
 

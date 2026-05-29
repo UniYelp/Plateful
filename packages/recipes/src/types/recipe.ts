@@ -7,6 +7,7 @@ import type { Quantity, UnlimitedQuantity } from "./quantity";
 
 export type RecipeIngredient = {
 	name: string;
+	category?: string;
 	quantity: Quantity | UnlimitedQuantity;
 };
 

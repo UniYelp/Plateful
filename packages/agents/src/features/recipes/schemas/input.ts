@@ -32,6 +32,7 @@ const IngredientQuantitySchema = z
 const IngredientInputSchema = z
 	.object({
 		name: z.string(),
+		category: z.string().optional(),
 		// state: z.nullable(z.string()).meta({
 		// 	description: "The state of the ingredient.",
 		// }),
@@ -75,6 +76,9 @@ export const RecipeGenInputSchema = z.object({
 
 export const ExtendedRecipeGenInputSchema = z.object({
 	...RecipeGenInputSchema.shape,
+	safetyContext: z.string().optional().meta({
+		description: "Safety and handling context for ingredients",
+	}),
 	safetyCritique: z.string().optional().meta({
 		description:
 			"Safety critique feedback from the previous recipe generation attempt",

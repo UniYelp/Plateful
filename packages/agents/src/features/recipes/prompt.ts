@@ -31,7 +31,7 @@ export const generateRecipeSystemPrompt = dedent`
 `;
 
 export const generateRecipePrompt = (input: ExtendedRecipeGenInput) => {
-	const { safetyCritique, previouslyGenerated, ...inputWithoutCritique } =
+	const { safetyCritique, previouslyGenerated, safetyContext, ...inputWithoutCritique } =
 		input;
 
 	const safetySection =
@@ -51,9 +51,20 @@ export const generateRecipePrompt = (input: ExtendedRecipeGenInput) => {
             `
 			: "";
 
+	const safetyContextSection = safetyContext
+		? dedent`
+            <ingredient_safety_context>
+            ${safetyContext}
+            </ingredient_safety_context>
+            
+            Please use the provided safety context to ensure the ingredients are handled and cooked safely.
+        `
+		: "";
+
 	const prompt = dedent`
         <system>
         ${generateRecipeSystemPrompt}
+        ${safetyContextSection}
         ${safetySection}
         </system>
 

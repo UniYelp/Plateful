@@ -43,6 +43,7 @@ const vRecipeGenState = vRecipeGen.pick("state").fields.state;
 const vRecipeGenIngredient = vv.object({
 	id: vv.id("ingredients"),
 	name: vv.string(),
+	category: vv.string(),
 	quantities: vv.union(
 		vv.array(
 			vv.object({
@@ -242,6 +243,7 @@ export const retry = householdMutation({
 					ingredientsToProcess.push({
 						id: ing._id,
 						name: ing.name,
+						category: ing.category,
 						quantities: nonExpiredQuantities,
 					});
 				}
@@ -446,10 +448,11 @@ export const generateRecipe = internalAction({
 
 		const ingredients = args.ingredients.flatMap<
 			RecipeGenInput["ingredients"][number]
-		>(({ name, quantities }) => {
+		>(({ name, category, quantities }) => {
 			if (!Array.isArray(quantities)) {
 				return {
 					name,
+					category,
 					quantity: "unlimited",
 				};
 			}
@@ -467,6 +470,7 @@ export const generateRecipe = internalAction({
 			for (const [unit, value] of amountByUnit.entries()) {
 				result.push({
 					name,
+					category,
 					quantity: {
 						value,
 						unit: unit as IngredientUnit | null,
@@ -488,6 +492,8 @@ export const generateRecipe = internalAction({
 		console.log({ ingredientIdByName, hasWater });
 
 		try {
+			console.time(`recipe-gen-api-${genId}`);
+
 			const res = await apiClient.recipes.generate.post(
 				{
 					ingredients,
@@ -510,6 +516,8 @@ export const generateRecipe = internalAction({
 					},
 				},
 			);
+
+			console.timeEnd(`recipe-gen-api-${genId}`);
 
 			const { data, error } = res;
 
