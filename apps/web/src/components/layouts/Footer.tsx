@@ -15,10 +15,10 @@ export function Footer() {
 						</p>
 					</div>
 
-					<div>
+					{/* <div>
 						<h3 className="mb-4 font-semibold">Support</h3>
 						<div className="space-y-2">
-							{/* <Link
+							<Link
                                 href='/contact'
                                 className='block text-muted-foreground transition-colors hover:text-foreground'
                             >
@@ -35,14 +35,14 @@ export function Footer() {
                                 className='block text-muted-foreground transition-colors hover:text-foreground'
                             >
                                 FAQ
-                            </Link> */}
+                            </Link>
 						</div>
-					</div>
+					</div> */}
 
-					<div>
+					{/* <div>
 						<h3 className="mb-4 font-semibold">Legal</h3>
 						<div className="space-y-2">
-							{/* <Link
+							<Link
                                 href='/privacy'
                                 className='block text-muted-foreground transition-colors hover:text-foreground'
                             >
@@ -59,9 +59,9 @@ export function Footer() {
                                 className='block text-muted-foreground transition-colors hover:text-foreground'
                             >
                                 Cookie Policy
-                            </Link> */}
+                            </Link> 
 						</div>
-					</div>
+					</div>*/}
 				</div>
 
 				<div className="mt-8 border-border border-t pt-8 text-center text-muted-foreground">
