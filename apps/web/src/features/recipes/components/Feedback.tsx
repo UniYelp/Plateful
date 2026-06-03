@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import { useMutation, useQuery } from "convex/react";
 import { ChefHat, ThumbsDown, ThumbsUp } from "lucide-react";
 
@@ -5,7 +6,6 @@ import { api } from "@backend/api";
 import type { Id } from "@backend/dataModel";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAppForm } from "@/lib/form";
-import { usePostHog } from "@posthog/react";
 
 interface FeedbackProps {
 	householdId: Id<"households">;
@@ -68,13 +68,13 @@ export const Feedback = ({ householdId, recipeId }: FeedbackProps) => {
 												form.handleSubmit();
 											}}
 											disabled={isSubmitting}
-											className="group flex flex-col items-center gap-2 rounded-xl border-2 border-transparent bg-card p-4 transition-all duration-200 hover:scale-105 hover:border-green-300 hover:bg-green-50 dark:hover:border-green-800 dark:hover:bg-green-950/30 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:border-transparent disabled:hover:bg-card"
+											className="group flex flex-col items-center gap-2 rounded-xl border-2 border-transparent bg-card p-4 transition-all duration-200 hover:scale-105 hover:border-green-300 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:border-transparent disabled:hover:bg-card dark:hover:border-green-800 dark:hover:bg-green-950/30"
 											aria-label="Give positive feedback"
 										>
-											<div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-950/50 transition-colors group-hover:bg-green-200 dark:group-hover:bg-green-900/50">
+											<div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 transition-colors group-hover:bg-green-200 dark:bg-green-950/50 dark:group-hover:bg-green-900/50">
 												<ThumbsUp className="h-6 w-6 text-green-600 dark:text-green-400" />
 											</div>
-											<span className="font-medium text-green-700 dark:text-green-400 text-sm">
+											<span className="font-medium text-green-700 text-sm dark:text-green-400">
 												Delicious!
 											</span>
 										</button>
@@ -85,13 +85,13 @@ export const Feedback = ({ householdId, recipeId }: FeedbackProps) => {
 												form.handleSubmit();
 											}}
 											disabled={isSubmitting}
-											className="group flex flex-col items-center gap-2 rounded-xl border-2 border-transparent bg-card p-4 transition-all duration-200 hover:scale-105 hover:border-orange-300 hover:bg-orange-50 dark:hover:border-orange-800 dark:hover:bg-orange-950/30 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:border-transparent disabled:hover:bg-card"
+											className="group flex flex-col items-center gap-2 rounded-xl border-2 border-transparent bg-card p-4 transition-all duration-200 hover:scale-105 hover:border-orange-300 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:border-transparent disabled:hover:bg-card dark:hover:border-orange-800 dark:hover:bg-orange-950/30"
 											aria-label="Give constructive feedback"
 										>
-											<div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-950/50 transition-colors group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+											<div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 transition-colors group-hover:bg-orange-200 dark:bg-orange-950/50 dark:group-hover:bg-orange-900/50">
 												<ThumbsDown className="h-6 w-6 text-orange-600 dark:text-orange-400" />
 											</div>
-											<span className="font-medium text-orange-700 dark:text-orange-400 text-sm">
+											<span className="font-medium text-orange-700 text-sm dark:text-orange-400">
 												Needs work
 											</span>
 										</button>
