@@ -210,6 +210,10 @@
 	button:enabled {
 		cursor: pointer;
 	}
+
+	.no-transitions * {
+		transition: none !important;
+	}
 }
 
 body {

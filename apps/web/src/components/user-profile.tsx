@@ -3,7 +3,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { usePostHog } from "@posthog/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
-import { SlidersIcon } from "lucide-react";
+import { Monitor, Moon, SlidersIcon, Sun } from "lucide-react";
 
 import type { ValueOf } from "@plateful/types";
 import { api } from "@backend/api";
@@ -13,6 +13,7 @@ import {
 } from "&/preferences/form/constants";
 import { PreferencesForm } from "&/preferences/form/PreferencesForm";
 import type { PreferencesFormOutput } from "&/preferences/form/schema";
+import { useTheme } from "@/components/ThemeProvider";
 
 const UserPreferencesPage = () => {
 	const posthog = usePostHog();
@@ -79,6 +80,18 @@ const componentByPage = {
 } satisfies Record<UserProfilePage, React.ComponentType>;
 
 export function UserProfile() {
+	const { theme, toggleFullTheme: toggleTheme } = useTheme();
+
+	const themeLabel =
+		theme === "system"
+			? "Theme: System"
+			: theme === "dark"
+				? "Theme: Dark"
+				: "Theme: Light";
+
+	const ThemeIcon =
+		theme === "system" ? Monitor : theme === "dark" ? Moon : Sun;
+
 	return (
 		<UserButton>
 			<UserButton.MenuItems>
@@ -90,6 +103,11 @@ export function UserProfile() {
 						open={url}
 					/>
 				))}
+				<UserButton.Action
+					label={themeLabel}
+					labelIcon={<ThemeIcon className="h-4 w-4" />}
+					onClick={toggleTheme}
+				/>
 			</UserButton.MenuItems>
 
 			{Object.entries(UserProfilePage).map(([label, url]) => {

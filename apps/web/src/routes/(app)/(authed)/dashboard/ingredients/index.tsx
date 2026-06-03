@@ -188,7 +188,7 @@ function IngredientsPage() {
 											]
 										}
 										alt={ingredient.name}
-										className="h-16 w-16 rounded-lg bg-muted object-cover"
+										className="h-16 w-16 rounded-lg bg-[oklch(0.95_0.02_40)] object-cover"
 									/>
 									<div className="min-w-0 flex-1">
 										<div className="flex items-start justify-between gap-2">
