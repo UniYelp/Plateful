@@ -1,7 +1,13 @@
 import { useMutation } from "convex/react";
-import { CheckCircle2, Package, Play, XCircle } from "lucide-react";
-import { useState } from "react";
+import {
+	AlertCircle,
+	CheckCircle2,
+	Package,
+	Play,
+	XCircle,
+} from "lucide-react";
 import { usePostHog } from "posthog-js/react";
+import { useState } from "react";
 
 import { api } from "@backend/api";
 import type { Doc, Id } from "@backend/dataModel";
@@ -62,7 +68,10 @@ export function CookNowDialog({
 
 	const handleCook = async () => {
 		try {
-			posthog?.capture("recipe_cook", { portions, ingredientsCount: ingredients.length });
+			posthog?.capture("recipe_cook", {
+				portions,
+				ingredientsCount: ingredients.length,
+			});
 			const result = await consumeForRecipe({
 				householdId,
 				ingredients: ingredients.map((ing) => ({
@@ -91,36 +100,63 @@ export function CookNowDialog({
 							<DialogTitle>Ready to cook?</DialogTitle>
 						</DialogHeader>
 
-						<div className="my-4 border-b pb-4">
-							<Label
-								htmlFor="portions"
-								className="mb-2 block font-medium text-sm"
-							>
-								How many portions are you cooking?
-							</Label>
-							<div className="flex items-center gap-3">
-								<Input
-									id="portions"
-									type="number"
-									min={1}
-									max={maxPortions}
-									value={portions}
-									onChange={(e) => {
-										const val = e.target.valueAsNumber;
-										if (!Number.isNaN(val)) {
-											setPortions(Math.min(maxPortions, Math.max(1, val)));
-										}
-									}}
-									className="w-24"
-								/>
-								<span className="text-muted-foreground text-sm">
-									Maximum possible:{" "}
-									{maxPortions === Number.POSITIVE_INFINITY
-										? "Unlimited"
-										: maxPortions}
-								</span>
+						{maxPortions <= 1 ? (
+							<div className="my-4 border-b pb-4">
+								{maxPortions === 0 ? (
+									<div className="flex items-start gap-3 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-destructive">
+										<AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+										<div className="text-sm">
+											<p className="font-semibold text-destructive">
+												Not enough ingredients
+											</p>
+											<p className="mt-0.5 text-muted-foreground text-xs">
+												You don't have enough ingredients in your pantry to cook
+												this recipe.
+											</p>
+										</div>
+									</div>
+								) : (
+									<p className="text-muted-foreground text-sm">
+										Cooking{" "}
+										<strong className="font-semibold text-foreground">
+											1 portion
+										</strong>{" "}
+										(based on available ingredients).
+									</p>
+								)}
 							</div>
-						</div>
+						) : (
+							<div className="my-4 border-b pb-4">
+								<Label
+									htmlFor="portions"
+									className="mb-2 block font-medium text-sm"
+								>
+									How many portions are you cooking?
+								</Label>
+								<div className="flex items-center gap-3">
+									<Input
+										id="portions"
+										type="number"
+										min={1}
+										max={maxPortions}
+										value={portions}
+										onChange={(e) => {
+											const val = e.target.valueAsNumber;
+											if (!Number.isNaN(val)) {
+												setPortions(Math.min(maxPortions, Math.max(1, val)));
+											}
+										}}
+										className="w-24"
+									/>
+									<span className="text-muted-foreground text-sm">
+										Maximum possible:{" "}
+										{maxPortions === Number.POSITIVE_INFINITY
+											? "Unlimited"
+											: maxPortions}
+									</span>
+								</div>
+							</div>
+						)}
 
 						<p className="mt-4 text-muted-foreground text-sm">
 							The following ingredients will be deducted from your pantry:
@@ -134,7 +170,6 @@ export function CookNowDialog({
 									>
 										<span className="font-medium">{ing.ingredient.name}</span>
 										<span className="text-muted-foreground">
-											-
 											{getTotalAmount(
 												ing.quantities.map((q) => ({
 													...q,
@@ -152,10 +187,21 @@ export function CookNowDialog({
 							</Button>
 							<Button
 								onClick={handleCook}
-								disabled={portions > maxPortions || portions < 1}
+								disabled={
+									portions > maxPortions || portions < 1 || maxPortions === 0
+								}
 							>
-								<Play className="mr-2 h-4 w-4" />
-								Cook Now
+								{maxPortions === 0 ? (
+									<>
+										<XCircle className="mr-2 h-4 w-4" />
+										Not Enough Ingredients
+									</>
+								) : (
+									<>
+										<Play className="mr-2 h-4 w-4" />
+										Cook Now
+									</>
+								)}
 							</Button>
 						</DialogFooter>
 					</>

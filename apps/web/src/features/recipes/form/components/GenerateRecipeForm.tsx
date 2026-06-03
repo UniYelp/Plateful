@@ -26,6 +26,7 @@ import {
 	InputGroupInput,
 } from "@/components/ui/input-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { TextArea } from "@/components/ui/textarea";
 import { useAppForm } from "@/lib/form";
 import { commonAppliances, quickTags } from "../../constants";
 import { recipeGenDefaultValues } from "../constants";
@@ -66,7 +67,17 @@ export const GenerateRecipeForm = (props: Props) => {
 		if (!ingredients) return [];
 		const cats = new Set(ingredients.map((i) => i.category));
 		return Array.from(cats)
-			.sort()
+			.sort((a, b) => {
+				if (a === "other") return 1;
+				if (b === "other") return -1;
+				const top5 = ["vegetables", "fruits", "meat", "dairy", "breads"];
+				const idxA = top5.indexOf(a);
+				const idxB = top5.indexOf(b);
+				if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+				if (idxA !== -1) return -1;
+				if (idxB !== -1) return 1;
+				return a.localeCompare(b);
+			})
 			.map((cat) => ({
 				value: cat,
 				label:
@@ -501,6 +512,33 @@ export const GenerateRecipeForm = (props: Props) => {
 											</InputGroup>
 										</div>
 									</div>
+								</CardContent>
+							</Card>
+						)}
+					</form.AppField>
+					<form.AppField name="userRequest">
+						{(field) => (
+							<Card aria-invalid={isInvalidTouched(field)}>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<Sparkles className="size-5 text-primary" />
+										<span>Specific Request</span>
+									</CardTitle>
+									<CardDescription>
+										Specify a particular food, dish, or additional instructions (e.g. "please make sushi")
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<TextArea
+										className="field-sizing-fixed"
+										placeholder="e.g. Please make sushi, a warm comfort soup, spicy curry, etc."
+										rows={3}
+										value={field.state.value ?? ""}
+										disabled={isSubmitting}
+										aria-invalid={isInvalidTouched(field)}
+										onChange={(e) => field.handleChange(e.target.value)}
+									/>
+									<field.FieldError />
 								</CardContent>
 							</Card>
 						)}

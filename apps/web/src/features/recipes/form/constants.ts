@@ -4,4 +4,5 @@ export const recipeGenDefaultValues: RecipeGenForm = {
 	tags: [],
 	tools: [],
 	ingredients: [],
+	userRequest: "",
 };

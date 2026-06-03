@@ -71,6 +71,7 @@ export const RecipeGenInputSchema = z.object({
 	dislikedFoods: z.string().optional(),
 	temperatureUnit: TemperatureUnitSchema,
 	toleratedSpiceLevel: SpiceLevelSchema,
+	userRequest: z.string().optional(),
 });
 
 export const ExtendedRecipeGenInputSchema = z.object({

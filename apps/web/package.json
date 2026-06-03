@@ -55,6 +55,7 @@
         "effect": "catalog:",
         "iso8601-duration": "^2.1.3",
         "lucide-react": "^1.11.0",
+        "motion": "^12.40.0",
         "posthog-js": "^1.372.3",
         "react": "^19.2.5",
         "react-dom": "^19.2.5",

@@ -179,8 +179,8 @@ function IngredientsPage() {
 							key={ingredient._id}
 							className="py-6 transition-shadow hover:shadow-md"
 						>
-							<CardContent className="px-4">
-								<div className="mb-3 flex items-start gap-3">
+							<CardContent className="flex h-full flex-col justify-between gap-2.5 px-4">
+								<div className="flex items-start gap-3">
 									<img
 										src={
 											ingredientImgByCategory[
@@ -201,7 +201,7 @@ function IngredientsPage() {
 														variant={
 															colorByExpiryStatus[expiryStatusDetails.status]
 														}
-														className="text-nowrap text-xs"
+														className="self-start text-nowrap text-xs"
 													>
 														{expiryStatusDetails.text}
 													</Badge>
@@ -213,16 +213,17 @@ function IngredientsPage() {
 												/>
 											</div>
 										</div>
-										<p className="truncate text-muted-foreground text-sm">
-											{ingredient.description}
-										</p>
 										<p className="mt-1 font-medium text-sm">
 											{getTotalAmount(ingredient.quantities) || "0"}
 										</p>
 									</div>
 								</div>
-
-								<div className="mt-4 flex gap-2">
+								<div>
+									<p className="truncate text-muted-foreground text-sm">
+										{ingredient.description}
+									</p>
+								</div>
+								<div className="flex gap-2">
 									<Button
 										asChild
 										variant="outline"

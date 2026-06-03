@@ -246,6 +246,7 @@ export const recipeGenV0MetadataFields = {
 	dietaryPreferences: v.optional(v.array(v.string())),
 	likedFoods: v.optional(v.string()),
 	dislikedFoods: v.optional(v.string()),
+	userRequest: v.optional(v.string()),
 };
 
 export const recipeGensFields = {
