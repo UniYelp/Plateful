@@ -340,7 +340,7 @@ export const GenerateRecipeForm = (props: Props) => {
 															]
 														}
 														alt={ing.name}
-														className="h-10 w-10 rounded-lg object-cover"
+														className="h-10 w-10 rounded-lg bg-[oklch(0.95_0.02_40)] object-cover"
 													/>
 													<div className="flex flex-col items-start justify-start">
 														<p className="font-medium text-sm">{ing.name}</p>
