@@ -124,18 +124,6 @@ function LandingPage() {
 												{info}
 											</li>
 										))}
-										<li className="flex items-center gap-2">
-											<CheckCircle className="h-4 w-4 text-primary" />
-											Visual ingredient library
-										</li>
-										<li className="flex items-center gap-2">
-											<CheckCircle className="h-4 w-4 text-primary" />
-											Expiry date tracking
-										</li>
-										<li className="flex items-center gap-2">
-											<CheckCircle className="h-4 w-4 text-primary" />
-											Quantity management
-										</li>
 									</ul>
 								</CardContent>
 							</Card>
